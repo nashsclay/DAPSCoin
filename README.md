@@ -1,5 +1,3 @@
-Readme:
-
 DAPScoin integration/staging repository
 =====================================
 
