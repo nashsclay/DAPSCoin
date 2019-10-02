@@ -40,6 +40,15 @@ libtool
 src/config/dapscoin-config.h
 src/config/dapscoin-config.h.in
 src/config/stamp-h1
+src/secp256k1-mw/build-aux/compile
+src/secp256k1-mw/build-aux/config.guess
+src/secp256k1-mw/build-aux/config.sub
+src/secp256k1-mw/build-aux/depcomp
+src/secp256k1-mw/build-aux/install-sh
+src/secp256k1-mw/build-aux/ltmain.sh
+src/secp256k1-mw/build-aux/m4/libtool.m4
+src/secp256k1-mw/build-aux/missing
+src/secp256k1-mw/build-aux/test-driver
 share/setup.nsi
 share/qt/Info.plist
 contrib/devtools/split-debug.sh
