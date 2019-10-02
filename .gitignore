@@ -49,6 +49,9 @@ src/secp256k1-mw/build-aux/ltmain.sh
 src/secp256k1-mw/build-aux/m4/libtool.m4
 src/secp256k1-mw/build-aux/missing
 src/secp256k1-mw/build-aux/test-driver
+src/secp256k1-mw/gen_context
+src/secp256k1-mw/libsecp256k1.pc
+src/secp256k1-mw/src/libsecp256k1-config.h
 share/setup.nsi
 share/qt/Info.plist
 contrib/devtools/split-debug.sh
