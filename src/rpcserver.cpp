@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2018 The PIVX developers
-// Copyright (c) 2018-2019 The DAPScoin developers
+// Copyright (c) 2018-2019 The DAPS Project developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -112,8 +112,6 @@ CAmount AmountFromValue(const UniValue& value) {
     if (dAmount <= 0.0 || dAmount > Params().MAX_MONEY)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     CAmount nAmount = roundint64(dAmount * COIN);
-    if (!MoneyRange(nAmount))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     return nAmount;
 }
 
@@ -252,11 +250,11 @@ UniValue stop(const UniValue& params, bool fHelp) {
     if (fHelp || params.size() > 1)
         throw runtime_error(
                 "stop\n"
-                "\nStop DAPScoin server.");
+                "\nStop DAPS server.");
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
     StartShutdown();
-    return "DAPScoin server stopping";
+    return "DAPS server stopping";
 }
 
 
@@ -405,7 +403,7 @@ static const CRPCCommand vRPCCommands[] =
         // {"wallet", "listlockunspent", &listlockunspent, false, false, true},
         // {"wallet", "listreceivedbyaccount", &listreceivedbyaccount, false, false, true},
         // {"wallet", "listreceivedbyaddress", &listreceivedbyaddress, false, false, true},
-        // {"wallet", "listsinceblock", &listsinceblock, false, false, true},
+        {"wallet", "listsinceblock", &listsinceblock, false, false, true},
         {"wallet", "listtransactions", &listtransactions, false, false, true},
         {"wallet", "listunspent", &listunspent, false, false, true},
         // {"wallet", "lockunspent", &lockunspent, true, false, true},
@@ -421,7 +419,8 @@ static const CRPCCommand vRPCCommands[] =
         // {"wallet", "signmessage", &signmessage, true, false, true},
         // {"wallet", "walletlock", &walletlock, true, false, true},
         {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true},
-        {"wallet", "unlockwallet", &unlockwallet, true, false, true}
+        {"wallet", "unlockwallet", &unlockwallet, true, false, true},
+        {"wallet", "revealmnemonicphrase", &revealmnemonicphrase, true, false, true}
 
 #endif // ENABLE_WALLET
         };
