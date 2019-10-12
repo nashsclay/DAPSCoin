@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2018 The PIVX developers
-// Copyright (c) 2018-2019 The DAPScoin developers
+// Copyright (c) 2018-2019 The DAPS Project developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -453,7 +453,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             pblock->vtx[0].vout[0].nValue += nFees;
             pblocktemplate->vTxFees[0] = nFees;
         } else {
-        	pblock->vtx[1].vout[1].nValue += nFees;
+        	pblock->vtx[1].vout[2].nValue += nFees;
         	pblocktemplate->vTxFees[0] = nFees;
         }
         
@@ -466,17 +466,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             pwallet->EncodeTxOutAmount(pblock->vtx[0].vout[0], pblock->vtx[0].vout[0].nValue, sharedSec.begin());
             nValue = pblock->vtx[0].vout[0].nValue;
             if (!pwallet->CreateCommitment(zeroBlind, nValue, pblock->vtx[0].vout[0].commitment)) {
-                LogPrintf("\n%s: coinbase unable to create commitment to 0\n", __func__);
                 return NULL;
             }
         } else {
             sharedSec.Set(pblock->vtx[1].vout[2].txPub.begin(), pblock->vtx[1].vout[2].txPub.end());
             pwallet->EncodeTxOutAmount(pblock->vtx[1].vout[2], pblock->vtx[1].vout[2].nValue, sharedSec.begin());
             nValue = pblock->vtx[1].vout[2].nValue;
-            LogPrintf("\n%s:Commitment value = %d\n", __func__, nValue);
             pblock->vtx[1].vout[2].commitment.clear();
             if (!pwallet->CreateCommitment(zeroBlind, nValue, pblock->vtx[1].vout[2].commitment)) {
-                LogPrintf("\n%s: pos unable to create commitment to 0\n", __func__);
                 return NULL;
             }
 
@@ -746,7 +743,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
             	}
             }
 
-            MilliSleep(10000);
+            MilliSleep(30000);
 
         }
 
@@ -763,7 +760,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
             continue;
 
         CBlock* pblock = &pblocktemplate->block;
-        LogPrintf("Bitcoinminer: generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
         //Stake miner main
@@ -866,7 +862,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
             }
         }
     }
-    LogPrintf("Finish creating block\n");
 }
 
 void static ThreadBitcoinMiner(void* parg)
