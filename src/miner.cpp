@@ -742,19 +742,21 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
             		continue;
             	}
             }
-
-            MilliSleep(30000);
-
+            
         }
-
+        MilliSleep(30000);
         //
         // Create new block
         //
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
-        CBlockIndex* pindexPrev = chainActive.Tip();
+        CBlockIndex* pindexPrev; 
+        {
+            LOCK(cs_main);
+            pindexPrev = chainActive.Tip();
+        }
         if (!pindexPrev)
             continue;
-
+ 
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
         if (!pblocktemplate.get())
             continue;
