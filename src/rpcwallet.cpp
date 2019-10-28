@@ -2132,7 +2132,7 @@ UniValue getstakesplitthreshold(const UniValue& params, bool fHelp)
     return int(pwalletMain->nStakeSplitThreshold);
 }
 
-UniValue autocombinerewards(const UniValue& params, bool fHelp)
+UniValue autocombinedust(const UniValue& params, bool fHelp)
 {
     bool fEnable;
     if (params.size() >= 1)
@@ -2140,21 +2140,24 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp)
 
     if (fHelp || params.size() < 1 || (fEnable && params.size() != 2) || params.size() > 2)
         throw runtime_error(
-            "autocombinerewards true|false ( threshold )\n"
+            "autocombinedust true|false ( threshold )\n"
             "\nWallet will automatically monitor for any coins with value below the threshold amount, and combine them if they reside with the same DAPS address\n"
-            "When autocombinerewards runs it will create a transaction, and therefore will be subject to transaction fees.\n"
+            "When autocombinedust runs it will create a transaction, and therefore will be subject to transaction fees. Minimum of 25 dust transactions before activation.\n"
 
             "\nArguments:\n"
             "1. true|false      (boolean, required) Enable auto combine (true) or disable (false)\n"
             "2. threshold       (numeric, optional) Threshold amount (default: 0)\n"
             "\nExamples:\n" +
-            HelpExampleCli("autocombinerewards", "true 540") + HelpExampleRpc("autocombinerewards", "true 540"));
+            HelpExampleCli("autocombinedust", "true 540") + HelpExampleRpc("autocombinedust", "true 540"));
 
     CWalletDB walletdb(pwalletMain->strWalletFile);
     CAmount nThreshold = 0;
 
-    if (fEnable)
+    if (fEnable) {
         nThreshold = params[1].get_int();
+    } else {
+        nThreshold = 0;
+    }
 
     pwalletMain->fCombineDust = fEnable;
     pwalletMain->nAutoCombineThreshold = nThreshold;
@@ -2162,7 +2165,10 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp)
     if (!walletdb.WriteAutoCombineSettings(fEnable, nThreshold))
         throw runtime_error("Changed settings in wallet but failed to save to database\n");
 
-    return NullUniValue;
+    UniValue result(UniValue::VOBJ);
+    result.push_back(Pair("autocombinedust", params[0].get_bool()));
+    result.push_back(Pair("amount", int(pwalletMain->nAutoCombineThreshold)));
+    return result;
 }
 
 UniValue printMultiSend()
@@ -2678,6 +2684,28 @@ UniValue createprivacysubaddress(const UniValue& params, bool fHelp)
     return ret;
 }
 
+UniValue readmasteraccount(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+                "readmasteraccount \n"
+                "\nRead stealth master account address.\n"
+                "\nArguments:\n"
+                "\nResult:\n"
+                "\"public address\" (string) the public address"
+                "\nExamples:\n" +
+                HelpExampleCli("readmasteraccount", "") + HelpExampleCli("readmasteraccount", "\"\"") + HelpExampleCli("readmasteraccount", "") + HelpExampleRpc("readmasteraccount", ""));
+
+    if (!pwalletMain) {
+        //privacy wallet is not yet created
+        throw JSONRPCError(RPC_PRIVACY_WALLET_EXISTED,
+                           "Error: There is no privacy wallet, please use createprivacyaccount to create one.");
+    }
+    std::string address;
+    pwalletMain->ComputeStealthPublicAddress("masteraccount", address);
+    return address;
+}
+
 UniValue decodestealthaddress(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -2747,6 +2775,61 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
                            "Cannot create transaction.");
     }
     return wtx.GetHash().GetHex();
+}
+
+UniValue setdecoyconfirmation(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+                "setdecoyconfirmation\n"
+                "\nSend the minimum confirmation for decoys in RingCT\n" +
+                HelpRequiringPassphrase() +
+                "\nArguments:\n"
+                "2. \"confirm\"      (numeric, required) The required minim confirmation for decoys\n"
+                "\nResult:\n"
+                "\"decoy_confirmation\"  (numeric) The minimum decoy confirmation.\n"
+                "\nExamples:\n" +
+                HelpExampleCli("setdecoyconfirmation", "\"20\"") + HelpExampleCli("setdecoyconfirmation", "\"20\"") + HelpExampleRpc("setdecoyconfirmation", "\"20\""));
+
+    if (!pwalletMain) {
+        //privacy wallet is already created
+        throw JSONRPCError(RPC_PRIVACY_WALLET_EXISTED,
+                           "Error: There is no privacy wallet, please use createprivacyaccount to create one.");
+    }
+
+    int confirmation = params[0].get_int();
+
+    if (confirmation <= 0) {
+        throw JSONRPCError(RPC_PRIVACY_DECOY_MIN,
+                           "Error: Min decoy confirmation must be positive.");
+    }
+    pwalletMain->DecoyConfirmationMinimum = confirmation;
+    UniValue ret(UniValue::VOBJ);
+    ret.push_back(Pair("decoy_confirmation", confirmation));
+    return ret;
+}
+
+UniValue getdecoyconfirmation(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+                "getdecoyconfirmation\n"
+                "\nShow the current decoy confirmation\n" +
+                HelpRequiringPassphrase() +
+                "\nArguments:\n"
+                "\nResult:\n"
+                "\"decoy_confirmation\"  (numeric) The minimum decoy confirmation.\n"
+                "\nExamples:\n" +
+                HelpExampleCli("getdecoyconfirmation", "") + HelpExampleCli("getdecoyconfirmation", "") + HelpExampleRpc("getdecoyconfirmation", ""));
+    if (!pwalletMain) {
+        //privacy wallet is already created
+        throw JSONRPCError(RPC_PRIVACY_WALLET_EXISTED,
+                           "Error: There is no privacy wallet, please use createprivacyaccount to create one.");
+    }
+
+    UniValue ret(UniValue::VOBJ);
+    ret.push_back(Pair("decoy_confirmation", pwalletMain->DecoyConfirmationMinimum));
+    return ret;
 }
 
 std::string GetHex(const unsigned char* vch, int sz) {
