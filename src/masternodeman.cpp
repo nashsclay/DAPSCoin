@@ -864,7 +864,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         if (!VerifyShnorrKeyImageTxIn(vin, GetTxInSignatureHash(vin))) {
-            LogPrint("masternode","dsee - Shnorr Signature rejected%s\n", vin.prevout.hash.ToString());
+            LogPrint("masternode","dsee - Shnorr Signature rejected: %s\n", vin.prevout.hash.ToString());
             return;
         }
 
@@ -1064,7 +1064,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         vRecv >> vin >> vchSig >> sigTime >> stop;
 
         if (!VerifyShnorrKeyImageTxIn(vin, GetTxInSignatureHash(vin))) {
-        	LogPrintf("dsee - Shnorr Signature rejected%s\n", vin.prevout.hash.ToString());
+            LogPrintf("dsee - Shnorr Signature rejected: %s\n", vin.prevout.hash.ToString());
         	return;
         }
 
