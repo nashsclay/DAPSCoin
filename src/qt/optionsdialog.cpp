@@ -31,7 +31,7 @@
 #include <QMessageBox>
 #include <QTimer>
 
-OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet) : QDialog(parent),
+OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
                                                                    ui(new Ui::OptionsDialog),
                                                                    model(0),
                                                                    mapper(0),
@@ -194,6 +194,7 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->lang, OptionsModel::Language);
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->thirdPartyTxUrls, OptionsModel::ThirdPartyTxUrls);
+    //mapper->addMapping(ui->checkBoxHideOrphans, OptionsModel::HideOrphans); //not currently hooked up to anything
 
     /* Masternode Tab */
     mapper->addMapping(ui->showMasternodesTab, OptionsModel::ShowMasternodesTab);

@@ -38,6 +38,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"getnetworkhashps", 0},
         {"getnetworkhashps", 1},
         {"sendtoaddress", 1},
+        {"rescanwallettransactions", 0},
         {"sendtostealthaddress", 1},
         {"sendtoaddressix", 1},
         {"settxfee", 0},
@@ -53,6 +54,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"getbalances", 0},
         {"getbalance", 2},
         {"getblockhash", 0},
+        {"setdecoyconfirmation", 0},
         {"getrawtransactionbyblockheight", 0},
         {"move", 2},
         {"move", 3},
@@ -126,8 +128,8 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"reservebalance", 0},
         {"reservebalance", 1},
         {"setstakesplitthreshold", 0},
-        {"autocombinerewards", 0},
-        {"autocombinerewards", 1}
+        {"autocombinedust", 0},
+        {"autocombinedust", 1}
     };
 
 class CRPCConvertTable
