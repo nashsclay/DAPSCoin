@@ -172,7 +172,6 @@ extern std::map<uint256, int64_t> mapRejectedBlocks;
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern std::map<COutPoint, COutPoint> mapInvalidOutPoints;
 extern std::map<CBigNum, CAmount> mapInvalidSerials;
-extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex* pindexBestHeader;
