@@ -5,14 +5,14 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "activemasternode.h"
-#include "db.h"
+#include "wallet/db.h"
 #include "init.h"
 #include "main.h"
 #include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
-#include "rpcserver.h"
+#include "rpc/server.h"
 #include "utilmoneystr.h"
 
 #include <univalue.h>

@@ -5,7 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "rpcserver.h"
+#include "rpc/server.h"
 
 #include "clientversion.h"
 #include "main.h"
@@ -14,7 +14,7 @@
 #include "protocol.h"
 #include "sync.h"
 #include "timedata.h"
-#include "ui_interface.h"
+#include "guiinterface.h"
 #include "util.h"
 #include "version.h"
 

@@ -118,7 +118,7 @@ HEADERS += src/activemasternode.h \
            src/tinyformat.h \
            src/txdb.h \
            src/txmempool.h \
-           src/ui_interface.h \
+           src/guiinterface.h \
            src/uint256.h \
            src/undo.h \
            src/util.h \
@@ -411,18 +411,18 @@ SOURCES += src/activemasternode.cpp \
            src/pubkey.cpp \
            src/random.cpp \
            src/rest.cpp \
-           src/rpcblockchain.cpp \
-           src/rpcclient.cpp \
-           src/rpcdump.cpp \
-           src/rpcmasternode-budget.cpp \
-           src/rpcmasternode.cpp \
-           src/rpcmining.cpp \
-           src/rpcmisc.cpp \
-           src/rpcnet.cpp \
-           src/rpcprotocol.cpp \
-           src/rpcrawtransaction.cpp \
-           src/rpcserver.cpp \
-           src/rpcwallet.cpp \
+           src/rpc/blockchain.cpp \
+           src/rpc/client.cpp \
+           src/rpc/dump.cpp \
+           src/rpc/budget.cpp \
+           src/rpc/masternode.cpp \
+           src/rpc/mining.cpp \
+           src/rpc/misc.cpp \
+           src/rpc/net.cpp \
+           src/rpc/protocol.cpp \
+           src/rpc/rawtransaction.cpp \
+           src/rpc/server.cpp \
+           src/rpc/wallet.cpp \
            src/spork.cpp \
            src/sync.cpp \
            src/timedata.cpp \

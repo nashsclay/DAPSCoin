@@ -8,14 +8,14 @@
 #include "bip38.h"
 #include "init.h"
 #include "main.h"
-#include "rpcserver.h"
+#include "rpc/server.h"
 #include "script/script.h"
 #include "script/standard.h"
 #include "sync.h"
 #include "util.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <fstream>
 #include <secp256k1.h>
