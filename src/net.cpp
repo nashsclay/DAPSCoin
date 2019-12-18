@@ -87,6 +87,7 @@ static std::vector <ListenSocket> vhListenSocket;
 CAddrMan addrman;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
+std::string strSubVersion;
 
 vector<CNode *> vNodes;
 CCriticalSection cs_vNodes;
@@ -215,7 +216,8 @@ bool IsPeerAddrLocalGood(CNode *pnode) {
 }
 
 // pushes our own address to a peer
-void AdvertizeLocal(CNode *pnode) {
+void AdvertiseLocal(CNode* pnode)
+{
     if (fListen && pnode->fSuccessfullyConnected) {
         CAddress addrLocal = GetLocalAddress(&pnode->addr);
         // If discovery is enabled, sometimes give our peer the address it
@@ -226,7 +228,7 @@ void AdvertizeLocal(CNode *pnode) {
             addrLocal.SetIP(pnode->addrLocal);
         }
         if (addrLocal.IsRoutable()) {
-            LogPrintf("AdvertizeLocal: advertizing address %s\n", addrLocal.ToString());
+            LogPrintf("AdvertiseLocal: advertising address %s\n", addrLocal.ToString());
             pnode->PushAddress(addrLocal);
         }
     }
@@ -464,8 +466,7 @@ void CNode::PushVersion() {
         LogPrint("net", "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight,
                  addrMe.ToString(), id);
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
-                nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight,
-                true);
+        nLocalHostNonce, strSubVersion, nBestHeight, true);
 }
 
 

@@ -57,7 +57,6 @@ CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
-set<pair<COutPoint, unsigned int> > setStakeSeen;
 map<unsigned int, unsigned int> mapHashedBlocks;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
@@ -925,7 +924,7 @@ void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex
     mapBlocksInFlight[hash] = std::make_pair(nodeid, it);
 }
 
-/** Check whether the last unknown block a peer advertized is not yet known. */
+/** Check whether the last unknown block a peer advertiszed is not yet known. */
 void ProcessBlockAvailability(NodeId nodeid)
 {
     CNodeState* state = State(nodeid);
@@ -2850,10 +2849,13 @@ bool RecalculateDAPSSupply(int nHeightStart)
     CBlockIndex* pindex = chainActive[nHeightStart];
     CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
 
+    uiInterface.ShowProgress(_("Recalculating DAPS supply..."), 0);
     while (true) {
-        if (pindex->nHeight % 1000 == 0)
+        if (pindex->nHeight % 1000 == 0) {
             LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
-
+            int percent = std::max(1, std::min(99, (int)((double)((pindex->nHeight - nHeightStart) * 100) / (chainActive.Height() - nHeightStart))));
+            uiInterface.ShowProgress(_("Recalculating DAPS supply..."), percent);
+        }
         CBlock block;
         assert(ReadBlockFromDisk(block, pindex));
 
@@ -3851,10 +3853,6 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     pindexNew->nSequenceId = 0;
     BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
 
-    //mark as PoS seen
-    if (pindexNew->IsProofOfStake())
-        setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
-
     pindexNew->phashBlock = &((*mi).first);
     BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);
     if (miPrev != mapBlockIndex.end()) {
@@ -4829,10 +4827,6 @@ CBlockIndex* InsertBlockIndex(uint256 hash)
     if (!pindexNew)
         throw runtime_error("LoadBlockIndex() : new CBlockIndex failed");
     mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
-
-    //mark as PoS seen
-    if (pindexNew->IsProofOfStake())
-        setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
     pindexNew->phashBlock = &((*mi).first);
 
@@ -5827,7 +5821,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!vRecv.empty())
             vRecv >> addrFrom >> nNonce;
         if (!vRecv.empty()) {
-            vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
+            vRecv >> LIMITED_STRING(pfrom->strSubVer, MAX_SUBVERSION_LENGTH);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
         if (pfrom->strSubVer == "/DAPScoin:0.27.5.1/" || pfrom->strSubVer == "/DAPScoin:1.0.0/" || pfrom->strSubVer == "/DAPScoin:1.0.1/" || pfrom->strSubVer == "/DAPS:1.0.1.3/" || pfrom->strSubVer == "/DAPS:1.0.2/") {
@@ -6760,7 +6754,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     pnode->setAddrKnown.clear();
 
                 // Rebroadcast our address
-                AdvertizeLocal(pnode);
+                AdvertiseLocal(pnode);
             }
             if (!vNodes.empty())
                 nLastRebroadcast = GetTime();
@@ -6886,7 +6880,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
         // (with N the number of validated blocks that were in flight at the time it was requested), disconnect due to
         // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
-        // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
+        // being saturated. We only count validated in-flight blocks so peers can't advertise nonexisting block hashes
         // to unreasonably increase our timeout.
         if (!pto->fDisconnect && state.vBlocksInFlight.size() > 0 && state.vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state.vBlocksInFlight.front().nValidatedQueuedBefore)) {
             LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n",
