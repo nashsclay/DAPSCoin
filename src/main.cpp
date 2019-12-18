@@ -2849,10 +2849,13 @@ bool RecalculateDAPSSupply(int nHeightStart)
     CBlockIndex* pindex = chainActive[nHeightStart];
     CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
 
+    uiInterface.ShowProgress(_("Recalculating DAPS supply..."), 0);
     while (true) {
-        if (pindex->nHeight % 1000 == 0)
+        if (pindex->nHeight % 1000 == 0) {
             LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
-
+            int percent = std::max(1, std::min(99, (int)((double)((pindex->nHeight - nHeightStart) * 100) / (chainActive.Height() - nHeightStart))));
+            uiInterface.ShowProgress(_("Recalculating DAPS supply..."), percent);
+        }
         CBlock block;
         assert(ReadBlockFromDisk(block, pindex));
 
