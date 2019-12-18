@@ -5818,7 +5818,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!vRecv.empty())
             vRecv >> addrFrom >> nNonce;
         if (!vRecv.empty()) {
-            vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
+            vRecv >> LIMITED_STRING(pfrom->strSubVer, MAX_SUBVERSION_LENGTH);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
         if (pfrom->strSubVer == "/DAPScoin:0.27.5.1/" || pfrom->strSubVer == "/DAPScoin:1.0.0/" || pfrom->strSubVer == "/DAPScoin:1.0.1/" || pfrom->strSubVer == "/DAPS:1.0.1.3/" || pfrom->strSubVer == "/DAPS:1.0.2/") {
