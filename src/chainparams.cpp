@@ -93,11 +93,24 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     (147200, uint256("55fcf4abbd7a1b3aa91460378c3b833f9d1569780b0a1e7e6ee2d1b3a4256b24"))
     (147400, uint256("15d8ed0575995a4b3ab8337d87213943abb9e3fba5389c57cbd48a2751f78a5d"))
     (188549, uint256("cfe3696e23e393fa9230f84dfa16a505ac3f40fd147a79adba8a54fa17d24e91"))
+    (190000, uint256("733448a9b7429b4387610c0e6d7c62eddf6dea928dc1b53a6d3f64bfa753ff0f"))
+    (192500, uint256("d4279eaff8eda44f854d4eebadfd2b321541e998f3e884594f95d32bc301591d"))
+    (195000, uint256("d0b7aaa2f79c9dacd1583419fcd36534e42f304dc3ae411eb4cac9937860f2a5"))
+    (197500, uint256("d929090435e931bb160fd49905ef0ae6fad00e57e03b036a5b426a18fd712051"))
+    (200000, uint256("876a19d823513ad7c58dfd95d5d41e4f7f96450ddb0803001f9581a14f1eebf5"))
+    (201000, uint256("bcd41352ffff450691c0c8cfc83ac1d776f679691539baf1c4eadd9b666c820a"))
+    (202000, uint256("b1c5ad472a396dca3bd26bd0e607a5e93484315fd85af8ff71610743718a949b"))
+    (203000, uint256("ba981cf2bc14d172b7813b9b27022a127dc6d5c59b5febea187c8e751da79eeb"))
+    (204000, uint256("f66d3c726fd217908728ccd7405b108d7eb22cfff880bfcbe8995291d9a07fa5"))
+    (205000, uint256("31e73a522aca4a4513cd07c4888ffa061d396039ae00812dc673fb181068d880"))
+    (206000, uint256("03ef5e49e95d5b6caf6f5c9083a6505aecaaf110d352dfbd3e5ed226673c085f"))
+    (207000, uint256("173efe8f8cc450a83353c31c1d06d7b8c284eac46ed2d4c916cac29713a09abe"))
+    (208000, uint256("995328748210f12b77700e5589cb5bb4d5b84353682647d1771cbc77e77ffa35"))  
     ;
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1576134192, // * UNIX timestamp of last checkpoint block
-    479108,    // * total number of transactions between genesis and last checkpoint
+    1577304443, // * UNIX timestamp of last checkpoint block
+    524535,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     0        // * estimated number of transactions per day after checkpoint
 };
