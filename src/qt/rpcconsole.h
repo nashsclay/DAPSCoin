@@ -117,6 +117,8 @@ public slots:
     void banSelectedNode(int bantime);
     /** Unban a selected node on the Bans tab */
     void unbanSelectedNode();
+    /** Show DataDir folder in default browser */
+    void showDataDir();
     /** Show folder with wallet backups in default browser */
     void showBackups();
 
