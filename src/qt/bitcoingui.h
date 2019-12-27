@@ -122,6 +122,15 @@ private:
     QAction* showBackupsAction;
     QAction* openAction;
     QAction* openBlockExplorerAction;
+    QAction* facebookAction;
+    QAction* twitterAction;
+    QAction* discordAction;
+    QAction* telegramOfficialAction;
+    QAction* telegramLoungeAction;
+    QAction* mediumAction;
+    QAction* steemitAction;
+    QAction* instagramAction;
+    QAction* redditAction;
     QAction* showHelpMessageAction;
     QAction* openTGTechSupportAction;
     QAction* openTGMNSupportAction;
@@ -232,6 +241,16 @@ private slots:
     void openClicked();
 
 #endif // ENABLE_WALLET
+    /** Social Networks */
+    void facebookActionClicked();
+    void twitterActionClicked();
+    void discordActionClicked();
+    void telegramOfficialActionClicked();
+    void telegramLoungeActionClicked();
+    void mediumActionClicked();
+    void redditActionClicked();
+    void instagramActionClicked();
+    void steemitActionClicked();
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */
