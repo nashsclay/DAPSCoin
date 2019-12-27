@@ -123,6 +123,9 @@ private:
     QAction* openAction;
     QAction* openBlockExplorerAction;
     QAction* showHelpMessageAction;
+    QAction* openTGTechSupportAction;
+    QAction* openTGMNSupportAction;
+    QAction* openDiscordSupportAction;
     QAction* multiSendAction;
     QFrame* frameBlocks;
     QLabel *stakingState;
@@ -235,6 +238,9 @@ private slots:
     void aboutClicked();
     /** Show help message dialog */
     void showHelpMessageClicked();
+    void openTGTechSupportClicked();
+    void openTGMNSupportClicked();
+    void openDiscordSupportClicked();
 #ifndef Q_OS_MAC
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);

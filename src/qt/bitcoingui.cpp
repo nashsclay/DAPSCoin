@@ -59,6 +59,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QDesktopServices>
 
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
@@ -437,12 +438,23 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the DAPS help message to get a list with possible DAPS command-line options"));
 
+    // Help Links
+    openTGTechSupportAction = new QAction(QIcon(":/icons/telegram"), tr("&Telegram Tech Support"), this);
+    openTGTechSupportAction->setStatusTip(tr("Telegram Tech Support"));
+    openTGMNSupportAction = new QAction(QIcon(":/icons/telegram"), tr("&Telegram Masternode Support"), this);
+    openTGMNSupportAction->setStatusTip(tr("Telegram Masternode Support"));
+    openDiscordSupportAction = new QAction(QIcon(":/icons/discord"), tr("&Discord Tech Support"), this);
+    openDiscordSupportAction->setStatusTip(tr("Discord Tech Support"));
+
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(optionsAction, SIGNAL(triggered()), this, SLOT(gotoOptionsPage()));
     connect(toggleHideAction, SIGNAL(triggered()), this, SLOT(toggleHidden()));
     connect(showHelpMessageAction, SIGNAL(triggered()), this, SLOT(showHelpMessageClicked()));
+    connect(openTGTechSupportAction, SIGNAL(triggered()), this, SLOT(openTGTechSupportClicked()));
+    connect(openTGMNSupportAction, SIGNAL(triggered()), this, SLOT(openTGMNSupportClicked()));
+    connect(openDiscordSupportAction, SIGNAL(triggered()), this, SLOT(openDiscordSupportClicked()));
 #ifdef ENABLE_WALLET
     if (walletFrame) {
         connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
@@ -515,6 +527,11 @@ void BitcoinGUI::createMenuBar()
 
     QMenu* help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(showHelpMessageAction);
+    help->addSeparator();
+    help->addAction(openTGTechSupportAction);
+    help->addAction(openTGMNSupportAction);
+    help->addSeparator();
+    help->addAction(openDiscordSupportAction);
     help->addSeparator();
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
@@ -772,6 +789,21 @@ void BitcoinGUI::showHelpMessageClicked()
     HelpMessageDialog* help = new HelpMessageDialog(this, false);
     help->setAttribute(Qt::WA_DeleteOnClose);
     help->show();
+}
+
+void BitcoinGUI::openTGTechSupportClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://t.me/DAPSTechSupport"));
+}
+
+void BitcoinGUI::openTGMNSupportClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://t.me/DAPS_MN_Support"));
+}
+
+void BitcoinGUI::openDiscordSupportClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://discord.gg/8vbXJMf"));
 }
 
 #ifdef ENABLE_WALLET
