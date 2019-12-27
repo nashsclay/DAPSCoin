@@ -471,28 +471,28 @@ void BitcoinGUI::createMenuBar()
     // Configure the menus
     QMenu* file = appMenuBar->addMenu(tr("&File"));
     if (walletFrame) {
-        file->addAction(openAction);
+        //file->addAction(openAction);
         file->addAction(backupWalletAction);
         file->addSeparator();
-        file->addAction(usedSendingAddressesAction);
-        file->addAction(usedReceivingAddressesAction);
-        file->addSeparator();
-        file->addAction(multisigCreateAction);
-        file->addAction(multisigSpendAction);
-        file->addAction(multisigSignAction);
-        file->addSeparator();
+        //file->addAction(usedSendingAddressesAction);
+        //file->addAction(usedReceivingAddressesAction);
+        //file->addSeparator();
+        //file->addAction(multisigCreateAction);
+        //file->addAction(multisigSpendAction);
+        //file->addAction(multisigSignAction);
+        //file->addSeparator();
     }
     file->addAction(quitAction);
 
-    QMenu* settings = appMenuBar->addMenu(tr("&Settings"));
-    if (walletFrame) {
-        settings->addAction(encryptWalletAction);
-        settings->addAction(changePassphraseAction);
-        settings->addAction(unlockWalletAction);
-        settings->addAction(lockWalletAction);
-        settings->addAction(multiSendAction);
-        settings->addSeparator();
-    }
+    //QMenu* settings = appMenuBar->addMenu(tr("&Settings"));
+    //if (walletFrame) {
+        //settings->addAction(encryptWalletAction);
+        //settings->addAction(changePassphraseAction);
+        //settings->addAction(unlockWalletAction);
+        //settings->addAction(lockWalletAction);
+        //settings->addAction(multiSendAction);
+        //settings->addSeparator();
+    //}
 
     if (walletFrame) {
         walletFrame->addAction(openRPCConsoleAction);
@@ -514,7 +514,7 @@ void BitcoinGUI::createMenuBar()
     help->addSeparator();
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
-    appMenuBar->setVisible(false);
+    appMenuBar->setVisible(true);
 }
 
 void BitcoinGUI::createToolBars()
