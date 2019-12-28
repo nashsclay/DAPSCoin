@@ -343,8 +343,9 @@ static const CRPCCommand vRPCCommands[] =
         // {"hidden", "setmocktime", &setmocktime, true, false, false},
 
         /* Dapscoin features */
-        {"dapscoin", "listmasternodes", &listmasternodes, true, true, false},
-        {"dapscoin", "getmasternodecount", &getmasternodecount, true, true, false},
+         {"dapscoin", "masternode", &masternode, true, true, false},
+         {"dapscoin", "listmasternodes", &listmasternodes, true, true, false},
+         {"dapscoin", "getmasternodecount", &getmasternodecount, true, true, false},
          {"dapscoin", "getcurrentseesawreward", &getcurrentseesawreward, true, true, false},
          {"dapscoin", "getseesawrewardratio", &getseesawrewardratio, true, true, false},
          {"dapscoin", "getseesawrewardwithheight", &getseesawrewardwithheight, true, true, false},
