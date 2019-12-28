@@ -118,10 +118,25 @@ private:
     QAction* openRepairAction;
     QAction* openConfEditorAction;
     QAction* openMNConfEditorAction;
+    QAction* showDataDirAction;
     QAction* showBackupsAction;
     QAction* openAction;
     QAction* openBlockExplorerAction;
+    QAction* facebookAction;
+    QAction* twitterAction;
+    QAction* discordAction;
+    QAction* telegramOfficialAction;
+    QAction* telegramLoungeAction;
+    QAction* mediumAction;
+    QAction* steemitAction;
+    QAction* instagramAction;
+    QAction* redditAction;
     QAction* showHelpMessageAction;
+    QAction* openBlockExplorerAPIAction;
+    QAction* openBootStrapAction;
+    QAction* openTGTechSupportAction;
+    QAction* openTGMNSupportAction;
+    QAction* openDiscordSupportAction;
     QAction* multiSendAction;
     QFrame* frameBlocks;
     QLabel *stakingState;
@@ -228,12 +243,27 @@ private slots:
     void openClicked();
 
 #endif // ENABLE_WALLET
+    /** Social Networks */
+    void facebookActionClicked();
+    void twitterActionClicked();
+    void discordActionClicked();
+    void telegramOfficialActionClicked();
+    void telegramLoungeActionClicked();
+    void mediumActionClicked();
+    void redditActionClicked();
+    void instagramActionClicked();
+    void steemitActionClicked();
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
     /** Show help message dialog */
     void showHelpMessageClicked();
+    void openBlockExplorerAPIClicked();
+    void openBootStrapClicked();
+    void openTGTechSupportClicked();
+    void openTGMNSupportClicked();
+    void openDiscordSupportClicked();
 #ifndef Q_OS_MAC
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
