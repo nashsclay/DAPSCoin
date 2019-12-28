@@ -66,6 +66,14 @@
         <file alias="staking_inactive">res/icons/staking_inactive.png</file>
         <file alias="staking_disabled">res/icons/staking_disabled.png</file>
         <file alias="staking_waiting">res/icons/staking_waiting.png</file>
+        <file alias="discord">res/icons/discord.png</file>
+        <file alias="facebook">res/icons/facebook.png</file>
+        <file alias="instagram">res/icons/instagram.png</file>
+        <file alias="medium">res/icons/medium.png</file>
+        <file alias="reddit">res/icons/reddit.png</file>
+        <file alias="steemit">res/icons/steemit.png</file>
+        <file alias="telegram">res/icons/telegram.png</file>
+        <file alias="twitter">res/icons/twitter.png</file>
     </qresource>
     <qresource prefix="/css">
         <file alias="light">res/css/Light.css</file>

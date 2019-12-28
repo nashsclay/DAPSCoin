@@ -157,7 +157,6 @@ BITCOIN_QT_H = \
   qt/2faqrdialog.h \
   qt/encryptdialog.h \
   qt/qgoogleauth.h \
-  qt/qgoogleauth_global.h \
   qt/addressbookpage.h \
   qt/addresstablemodel.h \
   qt/askpassphrasedialog.h \

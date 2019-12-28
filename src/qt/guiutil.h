@@ -121,6 +121,9 @@ void openConfigfile();
 // Open masternode.conf
 void openMNConfigfile();
 
+// Browse DataDir folder
+void showDataDir();
+
 // Browse backup folder
 void showBackups();
 

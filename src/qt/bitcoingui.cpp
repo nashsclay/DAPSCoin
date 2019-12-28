@@ -59,6 +59,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QDesktopServices>
 
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
@@ -218,6 +219,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     connect(openRepairAction, SIGNAL(triggered()), rpcConsole, SLOT(showRepair()));
     connect(openConfEditorAction, SIGNAL(triggered()), rpcConsole, SLOT(showConfEditor()));
     connect(openMNConfEditorAction, SIGNAL(triggered()), rpcConsole, SLOT(showMNConfEditor()));
+    connect(showDataDirAction, SIGNAL(triggered()), rpcConsole, SLOT(showDataDir()));
     connect(showBackupsAction, SIGNAL(triggered()), rpcConsole, SLOT(showBackups()));
     connect(labelConnectionsIcon, SIGNAL(clicked()), rpcConsole, SLOT(showPeers()));
     connect(labelEncryptionIcon, SIGNAL(clicked()), walletFrame, SLOT(toggleLockWallet()));
@@ -397,12 +399,12 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 
     openInfoAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Information"), this);
     openInfoAction->setStatusTip(tr("Show diagnostic information"));
-    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug console"), this);
+    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug Console"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging console"));
     openRPCConsoleAction->setShortcut(Qt::Key_F1);
     openNetworkAction = new QAction(QIcon(":/icons/connect_4"), tr("&Network Monitor"), this);
     openNetworkAction->setStatusTip(tr("Show network monitor"));
-    openPeersAction = new QAction(QIcon(":/icons/connect_4"), tr("&Peers list"), this);
+    openPeersAction = new QAction(QIcon(":/icons/connect_4"), tr("&Peers List"), this);
     openPeersAction->setStatusTip(tr("Show peers info"));
     openRepairAction = new QAction(QIcon(":/icons/options"), tr("Wallet &Repair"), this);
     openRepairAction->setStatusTip(tr("Show wallet repair options"));
@@ -410,6 +412,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openConfEditorAction->setStatusTip(tr("Open configuration file"));
     openMNConfEditorAction = new QAction(QIcon(":/icons/edit"), tr("Open &Masternode Configuration File"), this);
     openMNConfEditorAction->setStatusTip(tr("Open Masternode configuration file"));
+    showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &DAPScoin Folder"), this);
+    showDataDirAction->setStatusTip(tr("Show the DAPScoin folder"));
     showBackupsAction = new QAction(QIcon(":/icons/browse"), tr("Show Automatic &Backups"), this);
     showBackupsAction->setStatusTip(tr("Show automatically created wallet backups"));
 
@@ -427,12 +431,43 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 
     openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a DAPS: URI or payment request"));
-    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain explorer"), this);
+    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain Explorer"), this);
     openBlockExplorerAction->setStatusTip(tr("Block explorer window"));
 
-    showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
+    facebookAction = new QAction(QIcon(":/icons/facebook"), tr("Facebook"), this);
+    facebookAction->setStatusTip(tr("DAPS Facebook"));
+    twitterAction = new QAction(QIcon(":/icons/twitter"), tr("Twitter"), this);
+    twitterAction->setStatusTip(tr("DAPS Twitter"));
+    discordAction = new QAction(QIcon(":/icons/discord"), tr("Discord"), this);
+    discordAction->setStatusTip(tr("DAPS Discord"));
+    telegramOfficialAction = new QAction(QIcon(":/icons/telegram"), tr("Telegram - Main"), this);
+    telegramOfficialAction->setStatusTip(tr("DAPS Telegram - Main"));
+    telegramLoungeAction = new QAction(QIcon(":/icons/telegram"), tr("Telegram - Lounge"), this);
+    telegramLoungeAction->setStatusTip(tr("DAPS Telegram - Lounge"));
+    mediumAction = new QAction(QIcon(":/icons/medium"), tr("Medium"), this);
+    mediumAction->setStatusTip(tr("DAPS Medium"));
+    steemitAction = new QAction(QIcon(":/icons/steemit"), tr("Steemit"), this);
+    steemitAction->setStatusTip(tr("DAPS Steemit"));
+    instagramAction = new QAction(QIcon(":/icons/instagram"), tr("Instagram"), this);
+    instagramAction->setStatusTip(tr("DAPS Instagram"));
+    redditAction = new QAction(QIcon(":/icons/reddit"), tr("Reddit"), this);
+    redditAction->setStatusTip(tr("DAPS Reddit"));
+
+    showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line Options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the DAPS help message to get a list with possible DAPS command-line options"));
+
+    // Help Links
+    openBlockExplorerAPIAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Blockhain Explorer API"), this);
+    openBlockExplorerAPIAction->setStatusTip(tr("Blockhain Explorer API"));
+    openBootStrapAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&BootStrap"), this);
+    openBootStrapAction->setStatusTip(tr("BootStrap Link"));
+    openTGTechSupportAction = new QAction(QIcon(":/icons/telegram"), tr("&Telegram Tech Support"), this);
+    openTGTechSupportAction->setStatusTip(tr("Telegram Tech Support"));
+    openTGMNSupportAction = new QAction(QIcon(":/icons/telegram"), tr("&Telegram Masternode Support"), this);
+    openTGMNSupportAction->setStatusTip(tr("Telegram Masternode Support"));
+    openDiscordSupportAction = new QAction(QIcon(":/icons/discord"), tr("&Discord Tech Support"), this);
+    openDiscordSupportAction->setStatusTip(tr("Discord Tech Support"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -440,6 +475,11 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(optionsAction, SIGNAL(triggered()), this, SLOT(gotoOptionsPage()));
     connect(toggleHideAction, SIGNAL(triggered()), this, SLOT(toggleHidden()));
     connect(showHelpMessageAction, SIGNAL(triggered()), this, SLOT(showHelpMessageClicked()));
+    connect(openBlockExplorerAPIAction, SIGNAL(triggered()), this, SLOT(openBlockExplorerAPIClicked()));
+    connect(openBootStrapAction, SIGNAL(triggered()), this, SLOT(openBootStrapClicked()));
+    connect(openTGTechSupportAction, SIGNAL(triggered()), this, SLOT(openTGTechSupportClicked()));
+    connect(openTGMNSupportAction, SIGNAL(triggered()), this, SLOT(openTGMNSupportClicked()));
+    connect(openDiscordSupportAction, SIGNAL(triggered()), this, SLOT(openDiscordSupportClicked()));
 #ifdef ENABLE_WALLET
     if (walletFrame) {
         connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
@@ -456,6 +496,15 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
         connect(multisigSignAction, SIGNAL(triggered()), this, SLOT(gotoMultisigSign()));
     }
 #endif // ENABLE_WALLET
+    connect(facebookAction, SIGNAL(triggered()), this, SLOT(facebookActionClicked()));
+    connect(twitterAction, SIGNAL(triggered()), this, SLOT(twitterActionClicked()));
+    connect(discordAction, SIGNAL(triggered()), this, SLOT(discordActionClicked()));
+    connect(telegramOfficialAction, SIGNAL(triggered()), this, SLOT(telegramOfficialActionClicked()));
+    connect(telegramLoungeAction, SIGNAL(triggered()), this, SLOT(telegramLoungeActionClicked()));
+    connect(mediumAction, SIGNAL(triggered()), this, SLOT(mediumActionClicked()));
+    connect(steemitAction, SIGNAL(triggered()), this, SLOT(steemitActionClicked()));
+    connect(instagramAction, SIGNAL(triggered()), this, SLOT(instagramActionClicked()));
+    connect(redditAction, SIGNAL(triggered()), this, SLOT(redditActionClicked()));
 }
 
 void BitcoinGUI::createMenuBar()
@@ -471,28 +520,28 @@ void BitcoinGUI::createMenuBar()
     // Configure the menus
     QMenu* file = appMenuBar->addMenu(tr("&File"));
     if (walletFrame) {
-        file->addAction(openAction);
+        //file->addAction(openAction);
         file->addAction(backupWalletAction);
         file->addSeparator();
-        file->addAction(usedSendingAddressesAction);
-        file->addAction(usedReceivingAddressesAction);
-        file->addSeparator();
-        file->addAction(multisigCreateAction);
-        file->addAction(multisigSpendAction);
-        file->addAction(multisigSignAction);
-        file->addSeparator();
+        //file->addAction(usedSendingAddressesAction);
+        //file->addAction(usedReceivingAddressesAction);
+        //file->addSeparator();
+        //file->addAction(multisigCreateAction);
+        //file->addAction(multisigSpendAction);
+        //file->addAction(multisigSignAction);
+        //file->addSeparator();
     }
     file->addAction(quitAction);
 
-    QMenu* settings = appMenuBar->addMenu(tr("&Settings"));
-    if (walletFrame) {
-        settings->addAction(encryptWalletAction);
-        settings->addAction(changePassphraseAction);
-        settings->addAction(unlockWalletAction);
-        settings->addAction(lockWalletAction);
-        settings->addAction(multiSendAction);
-        settings->addSeparator();
-    }
+    //QMenu* settings = appMenuBar->addMenu(tr("&Settings"));
+    //if (walletFrame) {
+        //settings->addAction(encryptWalletAction);
+        //settings->addAction(changePassphraseAction);
+        //settings->addAction(unlockWalletAction);
+        //settings->addAction(lockWalletAction);
+        //settings->addAction(multiSendAction);
+        //settings->addSeparator();
+    //}
 
     if (walletFrame) {
         walletFrame->addAction(openRPCConsoleAction);
@@ -505,16 +554,36 @@ void BitcoinGUI::createMenuBar()
         tools->addSeparator();
         tools->addAction(openConfEditorAction);
         tools->addAction(openMNConfEditorAction);
+        tools->addAction(showDataDirAction);
         tools->addAction(showBackupsAction);
         tools->addAction(openBlockExplorerAction);
     }
 
+    QMenu* socials = appMenuBar->addMenu(tr("Social"));
+    socials->addAction(facebookAction);
+    socials->addAction(twitterAction);
+    socials->addAction(discordAction);
+    socials->addAction(telegramOfficialAction);
+    socials->addAction(telegramLoungeAction);
+    socials->addAction(mediumAction);
+    socials->addAction(steemitAction);
+    socials->addAction(instagramAction);
+    socials->addAction(redditAction);
+
     QMenu* help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(showHelpMessageAction);
     help->addSeparator();
+    help->addAction(openBlockExplorerAPIAction);
+    help->addAction(openBootStrapAction);
+    help->addSeparator();
+    help->addAction(openTGTechSupportAction);
+    help->addAction(openTGMNSupportAction);
+    help->addSeparator();
+    help->addAction(openDiscordSupportAction);
+    help->addSeparator();
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
-    appMenuBar->setVisible(false);
+    appMenuBar->setVisible(true);
 }
 
 void BitcoinGUI::createToolBars()
@@ -725,6 +794,7 @@ void BitcoinGUI::createTrayIconMenu()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(openConfEditorAction);
     trayIconMenu->addAction(openMNConfEditorAction);
+    trayIconMenu->addAction(showDataDirAction);
     trayIconMenu->addAction(showBackupsAction);
     trayIconMenu->addAction(openBlockExplorerAction);
 #ifndef Q_OS_MAC // This is built-in on Mac
@@ -753,6 +823,43 @@ void BitcoinGUI::optionsClicked()
     dlg.exec();
 }
 
+void BitcoinGUI::facebookActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://www.facebook.com/officialdapscoin/"));
+}
+void BitcoinGUI::twitterActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://twitter.com/DAPScoin"));
+}
+void BitcoinGUI::discordActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://officialdapscoin.com/discord"));
+}
+void BitcoinGUI::telegramOfficialActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://t.me/dapscoin"));
+}
+void BitcoinGUI::telegramLoungeActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://t.me/DAPS_LOUNGE"));
+}
+void BitcoinGUI::mediumActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://medium.com/DAPScoin"));
+}
+void BitcoinGUI::instagramActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://www.instagram.com/DAPSCoin/"));
+}
+void BitcoinGUI::redditActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://www.reddit.com/r/DAPSCoin/"));
+}
+void BitcoinGUI::steemitActionClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://steemit.com/@DAPSCoin/"));
+}
+
 void BitcoinGUI::aboutClicked()
 {
     if (!clientModel)
@@ -767,6 +874,31 @@ void BitcoinGUI::showHelpMessageClicked()
     HelpMessageDialog* help = new HelpMessageDialog(this, false);
     help->setAttribute(Qt::WA_DeleteOnClose);
     help->show();
+}
+
+void BitcoinGUI::openBlockExplorerAPIClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://explorer.dapscoin.com/api/getblockcount"));
+}
+
+void BitcoinGUI::openBootStrapClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/DAPSCoin/BootStrap/releases/tag/latest"));
+}
+
+void BitcoinGUI::openTGTechSupportClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://t.me/DAPSTechSupport"));
+}
+
+void BitcoinGUI::openTGMNSupportClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://t.me/DAPS_MN_Support"));
+}
+
+void BitcoinGUI::openDiscordSupportClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://discord.gg/8vbXJMf"));
 }
 
 #ifdef ENABLE_WALLET
