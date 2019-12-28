@@ -399,12 +399,12 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 
     openInfoAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Information"), this);
     openInfoAction->setStatusTip(tr("Show diagnostic information"));
-    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug console"), this);
+    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug Console"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging console"));
     openRPCConsoleAction->setShortcut(Qt::Key_F1);
     openNetworkAction = new QAction(QIcon(":/icons/connect_4"), tr("&Network Monitor"), this);
     openNetworkAction->setStatusTip(tr("Show network monitor"));
-    openPeersAction = new QAction(QIcon(":/icons/connect_4"), tr("&Peers list"), this);
+    openPeersAction = new QAction(QIcon(":/icons/connect_4"), tr("&Peers List"), this);
     openPeersAction->setStatusTip(tr("Show peers info"));
     openRepairAction = new QAction(QIcon(":/icons/options"), tr("Wallet &Repair"), this);
     openRepairAction->setStatusTip(tr("Show wallet repair options"));
@@ -431,7 +431,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 
     openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a DAPS: URI or payment request"));
-    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain explorer"), this);
+    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain Explorer"), this);
     openBlockExplorerAction->setStatusTip(tr("Block explorer window"));
 
     facebookAction = new QAction(QIcon(":/icons/facebook"), tr("Facebook"), this);
@@ -453,7 +453,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     redditAction = new QAction(QIcon(":/icons/reddit"), tr("Reddit"), this);
     redditAction->setStatusTip(tr("DAPS Reddit"));
 
-    showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
+    showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line Options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the DAPS help message to get a list with possible DAPS command-line options"));
 
