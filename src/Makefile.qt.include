@@ -11,13 +11,18 @@ QT_TS = \
   qt/locale/dapscoin_de.ts \
   qt/locale/dapscoin_en.ts \
   qt/locale/dapscoin_en_US.ts \
+  qt/locale/dapscoin_eo.ts \
   qt/locale/dapscoin_es.ts \
+  qt/locale/dapscoin_es_ES.ts \
   qt/locale/dapscoin_fi.ts \
   qt/locale/dapscoin_fr_FR.ts \
+  qt/locale/dapscoin_hi_IN.ts \
   qt/locale/dapscoin_hr.ts \
+  qt/locale/dapscoin_hr_HR.ts \  
   qt/locale/dapscoin_it.ts \
   qt/locale/dapscoin_ja.ts \
   qt/locale/dapscoin_ko_KR.ts \
+  qt/locale/dapscoin_lt_LT.ts \
   qt/locale/dapscoin_nl.ts \
   qt/locale/dapscoin_pl.ts \
   qt/locale/dapscoin_pt.ts \
@@ -28,6 +33,7 @@ QT_TS = \
   qt/locale/dapscoin_sv.ts \
   qt/locale/dapscoin_tr.ts \
   qt/locale/dapscoin_uk.ts \
+  qt/locale/dapscoin_vi.ts \
   qt/locale/dapscoin_zh_CN.ts \
   qt/locale/dapscoin_zh_TW.ts
 
