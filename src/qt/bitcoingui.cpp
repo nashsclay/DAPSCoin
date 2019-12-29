@@ -414,6 +414,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openMNConfEditorAction->setStatusTip(tr("Open Masternode configuration file"));
     showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &DAPScoin Folder"), this);
     showDataDirAction->setStatusTip(tr("Show the DAPScoin folder"));
+    showDataDirAction->setShortcut(Qt::Key_F2);
     showBackupsAction = new QAction(QIcon(":/icons/browse"), tr("Show Automatic &Backups"), this);
     showBackupsAction->setStatusTip(tr("Show automatically created wallet backups"));
 
