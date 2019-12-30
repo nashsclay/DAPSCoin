@@ -36,6 +36,7 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget* parent) : QDialog(parent, Qt::Wi
     QAction* copyLabelAction = new QAction(tr("Copy label"), this);
     QAction* copyMessageAction = new QAction(tr("Copy message"), this);
     QAction* copyAmountAction = new QAction(tr("Copy amount"), this);
+    QAction* copyAddressAction = new QAction(tr("Copy address"), this);
 
     // context menu
     contextMenu = new QMenu(this);
@@ -43,6 +44,7 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget* parent) : QDialog(parent, Qt::Wi
     contextMenu->addAction(copyLabelAction);
     contextMenu->addAction(copyMessageAction);
     contextMenu->addAction(copyAmountAction);
+    contextMenu->addAction(copyAddressAction);
 
     // Show privacy account address
     ui->lineEditAddress->setStyleSheet("border:none; background: transparent; text-align:center;");
