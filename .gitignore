@@ -147,3 +147,5 @@ CMakeLists.txt
 cmake-build-debug
 .vscode/*
 BackupWallet*
+dapscoin-qt.pro
+!contrib/dapscoin-qt.pro

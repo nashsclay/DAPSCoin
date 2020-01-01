@@ -18,7 +18,7 @@ QT_TS = \
   qt/locale/dapscoin_fr_FR.ts \
   qt/locale/dapscoin_hi_IN.ts \
   qt/locale/dapscoin_hr.ts \
-  qt/locale/dapscoin_hr_HR.ts \  
+  qt/locale/dapscoin_hr_HR.ts \
   qt/locale/dapscoin_it.ts \
   qt/locale/dapscoin_ja.ts \
   qt/locale/dapscoin_ko_KR.ts \
