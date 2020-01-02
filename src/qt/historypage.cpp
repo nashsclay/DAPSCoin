@@ -194,10 +194,6 @@ void HistoryPage::keyPressEvent(QKeyEvent* event)
     this->QDialog::keyPressEvent(event);
 }
 
-void HistoryPage::addTableData(std::map<QString, QString>)
-{
-}
-
 void HistoryPage::updateTableData()
 {
 	if (pwalletMain) {

@@ -64,7 +64,6 @@ private:
     void initWidgets();
     void connectWidgets();
     virtual void resizeEvent(QResizeEvent* event);
-    void addTableData(std::map<QString, QString>);
     void updateTableData(CWallet *wallet);
     void updateAddressBookData(CWallet *wallet);
 
