@@ -269,7 +269,7 @@ void HistoryPage::updateTableData(CWallet* wallet)
             }
         }
         ui->tableView->setVisible(ui->tableView->rowCount());
-        ui->tableView->sortByColumn(0);
+        ui->tableView->sortByColumn(4, Qt::AscendingOrder);
         ui->tableView->setSortingEnabled(true);
     }
 }
