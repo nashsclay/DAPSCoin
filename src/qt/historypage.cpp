@@ -15,7 +15,6 @@
 #include "transactionrecord.h"
 #include "walletmodel.h"
 #include "revealtxdialog.h"
-#include "custom/dapstablewidgetitem.h"
 
 #include <algorithm>
 
@@ -245,7 +244,7 @@ void HistoryPage::updateTableData(CWallet* wallet)
             for (QString dataName : {"date", "type", "address", "amount", "confirmations"}) {
                 QString data = txs[row].at(dataName);
                 QString date = data;
-                DAPSTableWidgetItem* cell = new DAPSTableWidgetItem();
+                QTableWidgetItem* cell = new QTableWidgetItem();
                 switch (col) {
                 case 0: /*date*/
                     cell->setData(0, date);
