@@ -265,6 +265,7 @@ void HistoryPage::updateTableData(CWallet* wallet)
                     break;
                 }
                 ui->tableView->setItem(row, col, cell);
+                cell->setTextAlignment(Qt::AlignHCenter);
                 col++;
             }
         }
