@@ -17,16 +17,7 @@ DAPS is the world's first coin to implement Bulletproofs and RingCT & Ring Signa
 
 ## About this Project
 
-DAPS is a non-ICO community driven project. The project has funded itself to deliver ground-breaking technology in the privacy coin industry and the main team consists of:
-
-Adel de Meyer – Leading DAPS
-Andrew Huntley – CTO
-Justin Da Silva - Development Lead
-Charley van Laar - Senior Management
-Stuart Gee -DAPS Council
-Matt Howard - DAPS Community Manager
-Dave van Muster - DAPS Community - International
-
+DAPS is a non-ICO community driven project. The project has funded itself to deliver ground-breaking technology in the privacy coin industry.
 
 DAPS Team
 The team consists of a total of 20 members located worldwide.
