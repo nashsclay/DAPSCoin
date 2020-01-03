@@ -524,7 +524,7 @@ UniValue signmessage(const UniValue& params, bool fHelp)
 UniValue getreceivedbyaddress(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
-        throw runtime_error(
+        throw std::runtime_error(
             "getreceivedbyaddress \"dapscoinaddress\" ( minconf )\n"
             "\nReturns the total amount received by the given dapscoinaddress in transactions with at least minconf confirmations.\n"
             "\nArguments:\n"
@@ -547,7 +547,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DAPS address");
     CScript scriptPubKey = GetScriptForDestination(address.Get());
     if (!IsMine(*pwalletMain, scriptPubKey))
-        return (double)0.0;
+        throw JSONRPCError(RPC_WALLET_ERROR, "Address not found in wallet");
 
     // Minimum confirmations
     int nMinDepth = 1;
@@ -556,7 +556,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp)
 
     // Tally
     CAmount nAmount = 0;
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
+    for (std::map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
         const CWalletTx& wtx = (*it).second;
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
             continue;
@@ -2019,6 +2019,7 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp)
             "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
             "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
             "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
+            "  \"paytxfee\": x.xxxx,         (numeric) the transaction fee configuration, set in DAPS/kB\n"
             "}\n"
             "\nExamples:\n" +
             HelpExampleCli("getwalletinfo", "") + HelpExampleRpc("getwalletinfo", ""));
@@ -2033,6 +2034,7 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp)
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
     if (pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+    obj.push_back(Pair("paytxfee", ValueFromAmount(payTxFee.GetFeePerK())));
     return obj;
 }
 

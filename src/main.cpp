@@ -1945,7 +1945,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             // do all inputs exist?
             // Note that this does not check for the presence of actual outputs (see the next check for that),
             // only helps filling in pfMissingInputs (to determine missing vs spent).
-            for (const CTxIn txin : tx.vin) {
+            for (const CTxIn& txin : tx.vin) {
                 if (!view.HaveCoins(txin.prevout.hash)) {
                     if (pfMissingInputs)
                         *pfMissingInputs = true;
@@ -2862,7 +2862,7 @@ bool RecalculateDAPSSupply(int nHeightStart)
         CAmount nValueIn = 0;
         CAmount nValueOut = 0;
         CAmount nFees = 0;
-        for (const CTransaction tx : block.vtx) {
+        for (const CTransaction& tx : block.vtx) {
             nFees += tx.nTxFee;
             if (tx.IsCoinStake()) {
                 for (unsigned int i = 0; i < tx.vin.size(); i++) {
@@ -4843,7 +4843,7 @@ bool static LoadBlockIndexDB(string& strError)
     // Calculate nChainWork
     vector<pair<int, CBlockIndex*> > vSortedByHeight;
     vSortedByHeight.reserve(mapBlockIndex.size());
-    for (const PAIRTYPE(uint256, CBlockIndex*) & item : mapBlockIndex) {
+    for (const std::pair<const uint256, CBlockIndex*>& item : mapBlockIndex) {
         CBlockIndex* pindex = item.second;
         vSortedByHeight.push_back(make_pair(pindex->nHeight, pindex));
     }
@@ -4898,7 +4898,7 @@ bool static LoadBlockIndexDB(string& strError)
     // Check presence of blk files
     LogPrintf("Checking all blk files are present...\n");
     set<int> setBlkDataFiles;
-    for (const PAIRTYPE(uint256, CBlockIndex*) & item : mapBlockIndex) {
+    for (const std::pair<const uint256, CBlockIndex*>& item : mapBlockIndex) {
         CBlockIndex* pindex = item.second;
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             setBlkDataFiles.insert(pindex->nFile);
