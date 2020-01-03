@@ -46,8 +46,6 @@ public:
 public slots:
     void updateFilter();
     void syncTime(QDateTimeEdit* calendar, QTimeEdit* clock);
-    void txalert(QString, int, CAmount, QString, QString, QString);
-
 
 protected:
     virtual void keyPressEvent(QKeyEvent* event);
@@ -66,7 +64,6 @@ private:
     void initWidgets();
     void connectWidgets();
     virtual void resizeEvent(QResizeEvent* event);
-    void addTableData(std::map<QString, QString>);
     void updateTableData(CWallet *wallet);
     void updateAddressBookData(CWallet *wallet);
 
