@@ -725,9 +725,11 @@ UniValue getbalances(const UniValue& params, bool fHelp)
             "getbalances"
             "\nArguments:\n"
             "\nResult:\n"
-            "total              (numeric) The total amount in DAPS received for this wallet.\n"
-        	"spendable 			(numeric) The total amount in DAPS spendable for this wallet.\n"
-        	"pending			(numeric) The total amount in DAPS pending for this wallet."
+            "total              (numeric) The total amount of DAPS received for this wallet.\n"
+            "spendable 			(numeric) The total amount of DAPS spendable for this wallet.\n"
+            "pending			(numeric) The total amount of DAPS pending for this wallet.\n"
+            "immature			(numeric) The total amount of DAPS that are immature for this wallet.\n"
+            "locked 			(numeric) The total amount of DAPS that are locked for this wallet."
             "\nExamples:\n"
             "\nThe total amount in the server across all accounts\n" +
             HelpExampleCli("getbalances", ""));
@@ -736,6 +738,8 @@ UniValue getbalances(const UniValue& params, bool fHelp)
     obj.push_back(Pair("total", ValueFromAmount(pwalletMain->GetBalance())));
     obj.push_back(Pair("spendable", ValueFromAmount(pwalletMain->GetSpendableBalance())));
     obj.push_back(Pair("pending", ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
+    obj.push_back(Pair("immature", ValueFromAmount(pwalletMain->GetImmatureBalance())));
+    obj.push_back(Pair("locked", ValueFromAmount(pwalletMain->GetLockedCoins())));
 
     return obj;
 }

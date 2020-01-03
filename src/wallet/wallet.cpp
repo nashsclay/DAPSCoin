@@ -1712,6 +1712,7 @@ CAmount CWallet::GetBalance()
 
 CAmount CWallet::GetSpendableBalance()
 {
+    CAmount nLockedBalance = 0;
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
@@ -1725,6 +1726,8 @@ CAmount CWallet::GetSpendableBalance()
         }
     }
 
+    nLockedBalance = pwalletMain->GetLockedCoins();
+    nTotal = nTotal - nLockedBalance;
     return nTotal;
 }
 

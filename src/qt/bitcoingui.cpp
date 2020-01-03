@@ -248,7 +248,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
 
     QTimer* timerStakingIcon = new QTimer(labelStakingIcon);
     connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(setStakingStatus()));
-    timerStakingIcon->start(1000);
+    timerStakingIcon->start(10000);
     setStakingStatus();
 }
 
@@ -414,6 +414,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openMNConfEditorAction->setStatusTip(tr("Open Masternode configuration file"));
     showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &DAPScoin Folder"), this);
     showDataDirAction->setStatusTip(tr("Show the DAPScoin folder"));
+    showDataDirAction->setShortcut(Qt::Key_F2);
     showBackupsAction = new QAction(QIcon(":/icons/browse"), tr("Show Automatic &Backups"), this);
     showBackupsAction->setStatusTip(tr("Show automatically created wallet backups"));
 
@@ -1249,11 +1250,11 @@ void BitcoinGUI::setStakingStatus()
         stakingState->setText(tr("Staking Enabled"));
         stakingState->setToolTip("Staking Enabled");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));
-    } else if (nConsolidationTime > 0) {
+    /*} else if (nConsolidationTime > 0) {
         nConsolidationTime --;
         stakingState->setText(tr("Consolidating Transactions…"));
         stakingState->setToolTip("Consolidating Transactions… Please wait few minutes for it to be consolidated.");
-        stakingAction->setIcon(QIcon(":/icons/staking_active"));
+        stakingAction->setIcon(QIcon(":/icons/staking_active"));*/
     } else {
         stakingState->setText(tr("Enabling Staking..."));
         stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");

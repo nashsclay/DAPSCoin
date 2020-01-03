@@ -486,7 +486,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
 								CWallet::MINIMUM_STAKE_AMOUNT,
 								CWallet::MINIMUM_STAKE_AMOUNT, nTime);
                 if (success) {
-                    nConsolidationTime = 1800;
+                    //nConsolidationTime = 1800;
                     QString msg = "Consolidation transaction created!";
                     QMessageBox msgBox;
                     msgBox.setWindowTitle("Information");

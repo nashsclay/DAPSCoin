@@ -15,7 +15,6 @@
 #include "transactionrecord.h"
 #include "walletmodel.h"
 #include "revealtxdialog.h"
-#include "custom/dapstablewidgetitem.h"
 
 #include <algorithm>
 
@@ -194,10 +193,6 @@ void HistoryPage::keyPressEvent(QKeyEvent* event)
     this->QDialog::keyPressEvent(event);
 }
 
-void HistoryPage::addTableData(std::map<QString, QString>)
-{
-}
-
 void HistoryPage::updateTableData()
 {
 	if (pwalletMain) {
@@ -207,8 +202,6 @@ void HistoryPage::updateTableData()
 
 void HistoryPage::updateTableData(CWallet* wallet)
 {
-    if (!wallet) return;
-    if (!wallet || wallet->IsLocked()) return;
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain)
         return;
@@ -251,7 +244,7 @@ void HistoryPage::updateTableData(CWallet* wallet)
             for (QString dataName : {"date", "type", "address", "amount", "confirmations"}) {
                 QString data = txs[row].at(dataName);
                 QString date = data;
-                DAPSTableWidgetItem* cell = new DAPSTableWidgetItem();
+                QTableWidgetItem* cell = new QTableWidgetItem();
                 switch (col) {
                 case 0: /*date*/
                     cell->setData(0, date);
@@ -271,11 +264,12 @@ void HistoryPage::updateTableData(CWallet* wallet)
                     break;
                 }
                 ui->tableView->setItem(row, col, cell);
+                cell->setTextAlignment(Qt::AlignHCenter);
                 col++;
             }
         }
         ui->tableView->setVisible(ui->tableView->rowCount());
-        ui->tableView->sortByColumn(0);
+        ui->tableView->sortByColumn(4, Qt::AscendingOrder);
         ui->tableView->setSortingEnabled(true);
     }
 }
@@ -339,52 +333,4 @@ void HistoryPage::setModel(WalletModel* model)
 	this->model = model;
 	connect(model, SIGNAL(WalletUnlocked()), this,
 	                                         SLOT(updateTableData()));
-}
-
-void HistoryPage::txalert(QString a, int b, CAmount c, QString d, QString e, QString f){
-    // ui->tableView->setSortingEnabled(false);
-    // int row = ui->tableView->rowCount();
-    // ui->tableView->insertRow(row);
-    // int col = 0;
-    // QStringList splits = d.split(" ");
-    // QString type = splits[0];
-    // if (type == QString("Payment")) {
-    // 	type = d;
-    // }
-    // QString addr = e.trimmed().mid(1, e.trimmed().length() - 2);
-    // if (!e.trimmed().startsWith(QString("("))) {
-    // 	addr = e.trimmed();
-    // }
-    // for (QString dataName : {"date", "type", "address", "amount", "confirmations"}) {
-    //     QTableWidgetItem* cell = new QTableWidgetItem();
-    //     switch (col) {
-
-    //         case 0: /*date*/
-    //             cell->setData(0, a);
-    //             break;
-    //         case 1: /*type*/
-    //             cell->setData(0, type);
-    //             break;
-    //         case 2: /*address*/
-    //             cell->setData(0, addr);
-    //             break;
-    //         case 3: /*amount*/
-    //             cell->setData(0, BitcoinUnits::format(0, c));
-    //             break;
-    //         case 4: /*confirmations*/
-    //             cell->setData(0, f);
-    //             break;
-    //             /*default:
-    //                 cell->setData(0, data);
-    //                 break;*/
-    //     }
-    //         ui->tableView->setItem(row, col, cell);
-    //         col++;
-    //         ui->tableView->update();
-    //     }
-    // ui->tableView->setSortingEnabled(true);
-    // ui->tableView->setVisible(ui->tableView->rowCount());
-    // ui->tableView->update();
-    // ui->tableView->viewport()->update();
-    //updateTableData(pwalletMain);
 }
