@@ -15,7 +15,6 @@
 #include "transactionrecord.h"
 #include "walletmodel.h"
 #include "revealtxdialog.h"
-#include "custom/dapstablewidgetitem.h"
 
 #include <algorithm>
 
@@ -194,10 +193,6 @@ void HistoryPage::keyPressEvent(QKeyEvent* event)
     this->QDialog::keyPressEvent(event);
 }
 
-void HistoryPage::addTableData(std::map<QString, QString>)
-{
-}
-
 void HistoryPage::updateTableData()
 {
 	if (pwalletMain) {
@@ -249,7 +244,7 @@ void HistoryPage::updateTableData(CWallet* wallet)
             for (QString dataName : {"date", "type", "address", "amount", "confirmations"}) {
                 QString data = txs[row].at(dataName);
                 QString date = data;
-                DAPSTableWidgetItem* cell = new DAPSTableWidgetItem();
+                QTableWidgetItem* cell = new QTableWidgetItem();
                 switch (col) {
                 case 0: /*date*/
                     cell->setData(0, date);
@@ -269,11 +264,12 @@ void HistoryPage::updateTableData(CWallet* wallet)
                     break;
                 }
                 ui->tableView->setItem(row, col, cell);
+                cell->setTextAlignment(Qt::AlignHCenter);
                 col++;
             }
         }
         ui->tableView->setVisible(ui->tableView->rowCount());
-        ui->tableView->sortByColumn(0);
+        ui->tableView->sortByColumn(4, Qt::AscendingOrder);
         ui->tableView->setSortingEnabled(true);
     }
 }
