@@ -305,7 +305,8 @@ void OverviewPage::updateDisplayUnit()
 
 void OverviewPage::hideOrphans(bool fHide)
 {
-    filter->setHideOrphans(fHide);
+    if (filter)
+        filter->setHideOrphans(fHide);
 }
 
 void OverviewPage::updateAlerts(const QString& warnings)
