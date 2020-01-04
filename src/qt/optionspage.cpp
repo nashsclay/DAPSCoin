@@ -205,10 +205,9 @@ void OptionsPage::on_pushButtonSave_clicked() {
 
 void OptionsPage::on_pushButtonDisable_clicked() {
     ui->lineEditWithhold->setText("0");
-    nReserveBalance = getValidatedAmount();
 
     CWalletDB walletdb(pwalletMain->strWalletFile);
-    walletdb.WriteReserveAmount(nReserveBalance / COIN);
+    walletdb.WriteReserveAmount(0);
 
     emit model->stakingStatusChanged(nLastCoinStakeSearchInterval);
     QMessageBox msgBox;
