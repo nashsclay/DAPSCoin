@@ -1436,7 +1436,7 @@ bool CloseSocket(SOCKET& hSocket)
     int ret = close(hSocket);
 #endif
     if (ret) {
-        LogPrintf("Socket close failed: %d. Error: %s\n", hSocket, NetworkErrorString(WSAGetLastError()));
+        LogPrint("net", "Socket close failed: %d. Error: %s\n", hSocket, NetworkErrorString(WSAGetLastError()));
     }
     hSocket = INVALID_SOCKET;
     return ret != SOCKET_ERROR;
