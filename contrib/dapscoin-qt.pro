@@ -114,7 +114,6 @@ HEADERS += src/activemasternode.h \
            src/obfuscation-relay.h \
            src/obfuscation.h \
            src/poa.h \
-           src/pow.h \
            src/protocol.h \
            src/pubkey.h \
            src/random.h \
