@@ -434,7 +434,6 @@ SOURCES += src/activemasternode.cpp \
            src/obfuscation-relay.cpp \
            src/obfuscation.cpp \
            src/poa.cpp \
-           src/pow.cpp \
            src/protocol.cpp \
            src/pubkey.cpp \
            src/random.cpp \
