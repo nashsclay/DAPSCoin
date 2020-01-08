@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2018-2019 The DAPS Project developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DAPSCOIN_POA_H
-#define DAPSCOIN_POA_H
+#ifndef BITCOIN_POA_H
+#define BITCOIN_POA_H
 
 #include <stdint.h>
 #include <primitives/block.h>
