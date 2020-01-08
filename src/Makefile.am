@@ -213,7 +213,7 @@ libbitcoin_server_a_SOURCES = \
   miner.cpp \
   net.cpp \
   noui.cpp \
-  pow.cpp \
+  poa.cpp \
   rest.cpp \
   rpc/blockchain.cpp \
   rpc/masternode.cpp \
