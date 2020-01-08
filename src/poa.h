@@ -29,9 +29,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 uint256 GetBlockProof(const CBlockIndex& block);
 
-extern const uint32_t POA_BLOCK_PERIOD;
 extern unsigned int N_BITS;
-//unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock);
 
 //Check PoA block header consensus rules
 bool CheckPrevPoABlockHash(const CBlockHeader& block);
