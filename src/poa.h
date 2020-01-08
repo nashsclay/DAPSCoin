@@ -49,4 +49,4 @@ bool CheckPoAblockTime(const CBlock& block);
 bool CheckPoABlockNotAuditingOverlap(const CBlock& block);
 
 
-#endif // DAPSCOIN_POA_H
+#endif // BITCOIN_POA_H
