@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2018 The PIVX developers
-// Copyright (c) 2018-2019 The DAPS Project developers
+// Copyright (c) 2018-2020 The DAPS Project developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7027,7 +7027,7 @@ bool CWallet::mySpendPrivateKey(CKey& spend) const
         CAccount spendAccount;
         CWalletDB pDB(strWalletFile);
         if (!pDB.ReadAccount(spendAccountLabel, spendAccount)) {
-            LogPrintf("Cannot Load Spend private key, now create the master keys");
+            LogPrintf("Cannot Load Spend private key, now create the master keys\n");
             createMasterKey();
             pDB.ReadAccount(spendAccountLabel, spendAccount);
         }
@@ -7048,7 +7048,7 @@ bool CWallet::myViewPrivateKey(CKey& view) const
         CAccount viewAccount;
         CWalletDB pDB(strWalletFile);
         if (!pDB.ReadAccount(viewAccountLabel, viewAccount)) {
-            LogPrintf("Cannot Load view private key, now create the master keys");
+            LogPrintf("Cannot Load view private key, now create the master keys\n");
             createMasterKey();
             pDB.ReadAccount(viewAccountLabel, viewAccount);
         }

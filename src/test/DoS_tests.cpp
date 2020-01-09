@@ -11,7 +11,7 @@
 #include "keystore.h"
 #include "main.h"
 #include "net.h"
-#include "pow.h"
+#include "poa.h"
 #include "script/sign.h"
 #include "serialize.h"
 #include "util.h"

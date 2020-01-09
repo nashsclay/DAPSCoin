@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2018 The PIVX developers
-// Copyright (c) 2018-2019 The DAPS Project developers
+// Copyright (c) 2018-2020 The DAPS Project developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,7 +22,6 @@
 #include "net.h"
 #include "obfuscation.h"
 #include "poa.h"
-#include "pow.h"
 #include "swifttx.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -1695,22 +1694,22 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees)
 {
     AssertLockHeld(cs_main);
-    if (tx.nTxFee <= BASE_FEE)
-        return state.DoS(100, error("AcceptToMemoryPool: Fee less than base fee 1 DAPS"), REJECT_INVALID, "fee-too-low");
     if (pfMissingInputs)
         *pfMissingInputs = false;
+
+	// Check transaction
     if (!CheckTransaction(tx, false, true, state))
-        return state.DoS(100, error("AcceptToMemoryPool: : CheckTransaction failed"), REJECT_INVALID, "bad-tx");
+        return state.DoS(100, error("%s : CheckTransaction failed", __func__), REJECT_INVALID, "bad-tx");
+
     // Coinbase is only valid in a block, not as a loose transaction
     if (tx.IsCoinBase())
-        return state.DoS(100, error("AcceptToMemoryPool: : coinbase as individual tx"),
-            REJECT_INVALID, "coinbase");
+        return state.DoS(100, error("%s : coinbase as individual tx",
+                __func__), REJECT_INVALID, "coinbase");
+
     //Coinstake is also only valid in a block, not as a loose transaction
-    if (tx.IsCoinStake()) {
-        LogPrintf("%s: txRejected=%s\n", __func__, tx.GetHash().GetHex());
-        return state.DoS(100, error("AcceptToMemoryPool: coinstake as individual tx"),
-            REJECT_INVALID, "coinstake");
-    }
+    if (tx.IsCoinStake())
+        return state.DoS(100, error("%s : coinstake as individual tx (id=%s): %s",
+                __func__, tx.GetHash().GetHex(), tx.ToString()), REJECT_INVALID, "coinstake");
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
     string reason;
     if (Params().RequireStandard() && !IsStandardTx(tx, reason))
@@ -1734,17 +1733,13 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             view.SetBackend(viewMemPool);
             // do we already have it?
             if (view.HaveCoins(hash)) {
-                LogPrintf("%s: Error: Hash exists in the mempool\n", __func__);
                 return false;
             }
 
             // are the actual inputs available?
-            if (!CheckHaveInputs(view, tx)) {
-                //check input spents
-
-                return state.Invalid(error("AcceptToMemoryPool : inputs already spent"),
-                    REJECT_DUPLICATE, "bad-txns-inputs-spent");
-            }
+            if (!view.HaveInputs(tx))
+                return state.Invalid(error("%s: inputs already spent",
+                        __func__), REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
             if (!tx.IsCoinStake() && !tx.IsCoinBase() && !tx.IsCoinAudit()) {
                 if (!tx.IsCoinAudit()) {
@@ -1962,9 +1957,9 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             }
 
             // are the actual inputs available?
-            if (!CheckHaveInputs(view, tx))
-                return state.Invalid(error("AcceptableInputs : inputs already spent"),
-                    REJECT_DUPLICATE, "bad-txns-inputs-spent");
+            if (!view.HaveInputs(tx))
+                return state.Invalid(error("%s : inputs already spent",
+                        __func__), REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
             // Bring the best block into scope
             view.GetBestBlock();
@@ -4717,7 +4712,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     }
 
 
-    LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d, height=%d\n", __func__, GetTimeMillis() - nStartTime,
+    LogPrintf("%s: ACCEPTED in %ld milliseconds with size=%d, height=%d\n", __func__, GetTimeMillis() - nStartTime,
         pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION), chainActive.Height());
 
     return true;
@@ -5041,39 +5036,30 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
     CValidationState state;
     for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
         boost::this_thread::interruption_point();
-        uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99,
-                                                                           (int)(((double)(chainActive.Height() -
-                                                                                           pindex->nHeight)) /
-                                                                                 (double)nCheckDepth *
-                                                                                 (nCheckLevel >= 4 ? 50 : 100)))));
+        uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
         if (pindex->nHeight < chainActive.Height() - nCheckDepth)
             break;
         CBlock block;
         // check level 0: read from disk
         if (!ReadBlockFromDisk(block, pindex))
-            return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight,
-                pindex->GetBlockHash().ToString());
+            return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state))
-            return error("VerifyDB() : *** found bad block at %d, hash=%s\n", pindex->nHeight,
-                pindex->GetBlockHash().ToString());
+            return error("VerifyDB() : *** found bad block at %d, hash=%s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
         // check level 2: verify undo validity
         if (nCheckLevel >= 2 && pindex) {
             CBlockUndo undo;
             CDiskBlockPos pos = pindex->GetUndoPos();
             if (!pos.IsNull()) {
                 if (!undo.ReadFromDisk(pos, pindex->pprev->GetBlockHash()))
-                    return error("VerifyDB() : *** found bad undo data at %d, hash=%s\n", pindex->nHeight,
-                        pindex->GetBlockHash().ToString());
+                    return error("VerifyDB() : *** found bad undo data at %d, hash=%s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
             }
         }
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
-        if (nCheckLevel >= 3 && pindex == pindexState &&
-            (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= nCoinCacheSize) {
+        if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= nCoinCacheSize) {
             bool fClean = true;
             if (!DisconnectBlock(block, state, pindex, coins, &fClean))
-                return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s",
-                    pindex->nHeight, pindex->GetBlockHash().ToString());
+                return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
             pindexState = pindex->pprev;
             if (!fClean) {
                 nGoodTransactions = 0;
@@ -5085,9 +5071,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
             return true;
     }
     if (pindexFailure)
-        return error(
-            "VerifyDB() : *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n",
-            chainActive.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
+        return error("VerifyDB() : *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n", chainActive.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
 
     // check level 4: try reconnecting blocks
     if (nCheckLevel >= 4) {
@@ -5098,16 +5082,13 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
             pindex = chainActive.Next(pindex);
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex))
-                return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight,
-                    pindex->GetBlockHash().ToString());
+                return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
             if (!ConnectBlock(block, state, pindex, coins, false))
-                return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight,
-                    pindex->GetBlockHash().ToString());
+                return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
         }
     }
 
-    LogPrintf("No coin database inconsistencies in last %i blocks (%i transactions)\n",
-        chainActive.Height() - pindexState->nHeight, nGoodTransactions);
+    LogPrintf("No coin database inconsistencies in last %i blocks (%i transactions)\n", chainActive.Height() - pindexState->nHeight, nGoodTransactions);
 
     return true;
 }
