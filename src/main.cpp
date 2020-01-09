@@ -22,7 +22,6 @@
 #include "net.h"
 #include "obfuscation.h"
 #include "poa.h"
-#include "pow.h"
 #include "swifttx.h"
 #include "txdb.h"
 #include "txmempool.h"
