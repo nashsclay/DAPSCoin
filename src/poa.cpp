@@ -18,10 +18,6 @@
 
 unsigned int N_BITS = 0x1e1ffff0;
 unsigned int N_BITS_SF = 0x1e050000;
-bool CheckPoAMiningBlockHeight(const CBlockHeader* pblock)
-{
-    return false;
-}
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
@@ -306,13 +302,6 @@ bool CheckPoABlockMinedHash(const CBlockHeader& block)
         //As of now, there is no PoA miner, this will let all emulated PoA blocks bypass the check
         if (Params().SkipProofOfWorkCheck() || Params().NetworkID() == CBaseChainParams::TESTNET)
             return true;
-
-        //The current mainnet is at 10800 blocks, this check will ignore these first blocks
-        if (mapBlockIndex.count(block.hashPrevBlock) != 0) {
-            if (CheckPoAMiningBlockHeight(&block)) {
-                return true;
-            }
-        }
 
         bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
         LogPrintf("Target:%s, minedHash:%s\n", bnTarget.GetHex(), minedHash.GetHex());
