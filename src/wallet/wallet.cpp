@@ -7027,7 +7027,7 @@ bool CWallet::mySpendPrivateKey(CKey& spend) const
         CAccount spendAccount;
         CWalletDB pDB(strWalletFile);
         if (!pDB.ReadAccount(spendAccountLabel, spendAccount)) {
-            LogPrintf("Cannot Load Spend private key, now create the master keys");
+            LogPrintf("Cannot Load Spend private key, now create the master keys\n");
             createMasterKey();
             pDB.ReadAccount(spendAccountLabel, spendAccount);
         }
@@ -7048,7 +7048,7 @@ bool CWallet::myViewPrivateKey(CKey& view) const
         CAccount viewAccount;
         CWalletDB pDB(strWalletFile);
         if (!pDB.ReadAccount(viewAccountLabel, viewAccount)) {
-            LogPrintf("Cannot Load view private key, now create the master keys");
+            LogPrintf("Cannot Load view private key, now create the master keys\n");
             createMasterKey();
             pDB.ReadAccount(viewAccountLabel, viewAccount);
         }
