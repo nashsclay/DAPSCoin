@@ -28,7 +28,7 @@ The team consists of a total of 20 members located worldwide.
 
 ## How to Contribute to DAPS
 
-We have an extensive ![Contributing.md](https://github.com/DAPSCoin/DAPSCoin/blob/master/CONTRIBUTING.md) guide on how to contribute to DAPS source code.
+We have an extensive [Contributing.md](https://github.com/DAPSCoin/DAPSCoin/blob/master/CONTRIBUTING.md) guide on how to contribute to DAPS source code.
 Please have a look at this first before deciding to contribute to our codebase.
 
 We welcome developers from all backgrounds to take a look at our code and welcome all suggestions and changes.
