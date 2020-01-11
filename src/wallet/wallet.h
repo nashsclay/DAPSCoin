@@ -401,8 +401,6 @@ public:
     std::map<std::string, std::string> addrToTxHashMap;
     std::vector<CKey> txPrivKeys;	//only for temporary storing tx private keys for user transactions, dont care staking transactions
 
-    CPubKey vchDefaultKey;
-
     std::set<COutPoint> setLockedCoins;
     bool walletStakingInProgress;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
@@ -706,8 +704,6 @@ public:
         AssertLockHeld(cs_wallet); // setKeyPool
         return setKeyPool.size();
     }
-
-    bool SetDefaultKey(const CPubKey& vchPubKey);
 
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
     bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);
