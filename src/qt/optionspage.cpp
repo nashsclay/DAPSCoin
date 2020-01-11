@@ -120,6 +120,10 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     } else {
         ui->addNewFunds->setChecked(false);
         ui->addNewFunds->setEnabled(false);
+        QFont font = ui->addNewFunds->font();
+        font.setStrikeOut(true);
+        ui->addNewFunds->setFont(font);
+        ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 DAPS fee each time you receive a new deposit that needs to be consolidated for staking.");
     }
     connect(ui->addNewFunds, SIGNAL(stateChanged(int)), this, SLOT(setAutoConsolidate(int)));
 }
