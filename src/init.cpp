@@ -1846,12 +1846,12 @@ bool AppInit2(bool isDaemon)
         //read decoy confirmation min
         pwalletMain->DecoyConfirmationMinimum = GetArg("-decoyconfirm", 15);
     }
-#endif
 
     CWalletDB walletdb(strWalletFile);
     double reserveBalance;
     if (walletdb.ReadReserveAmount(reserveBalance))
         nReserveBalance = reserveBalance * COIN;
+#endif
 
     return !fRequestShutdown;
 }
