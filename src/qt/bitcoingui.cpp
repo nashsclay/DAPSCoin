@@ -1237,25 +1237,33 @@ void BitcoinGUI::setStakingStatus()
         fMultiSend = pwalletMain->isMultiSendEnabled();
         stkStatus = pwalletMain->ReadStakingStatus();
     }
-
     if (!stkStatus || pwalletMain->stakingMode == StakingMode::STOPPED || pwalletMain->IsLocked()) {
         stakingState->setText(tr("Staking Disabled"));
         stakingState->setToolTip("Staking Disabled");
         stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
         return;
     }
-
+    if (vNodes.empty()) {
+        stakingState->setText(tr("No Active Peers"));
+        stakingState->setToolTip("No Active Peers");
+        stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
+        return;
+    }
+    if (IsInitialBlockDownload()) {
+        stakingState->setText(tr("Syncing..."));
+        stakingState->setToolTip("Syncing");
+        stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
+        return;
+    }
     if (!masternodeSync.IsSynced()) {
         stakingState->setText(tr("Syncing MN List..."));
         stakingState->setToolTip("Syncing Masternode List");
         stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
         return;
     }
-
     if (stakingState->text().contains("Enabling")) {
         if (!nLastCoinStakeSearchInterval) return;
     }
-
     if (nLastCoinStakeSearchInterval) {
         stakingState->setText(tr("Staking Enabled"));
         stakingState->setToolTip("Staking Enabled");
