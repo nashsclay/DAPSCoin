@@ -305,7 +305,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlockHeader blockFrom, cons
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
 
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
-        return error("CheckStakeKernelHash() : nTime violation");
+        return false;
 
     if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
         return false;
@@ -348,8 +348,6 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlockHeader blockFrom, cons
 
         // if stake hash does not meet the target then continue to next iteration
         if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay)) {
-        	if (fDebug)
-        		LogPrintf("CheckStakeKernelHash() : staking not found, you're not lucky enough\n");
             continue;
         }
 
