@@ -1553,16 +1553,18 @@ bool AppInit2(bool isDaemon)
             }
 
             CPubKey newDefaultKey;
-            if (pwalletMain->GetKeyFromPool(newDefaultKey)) {
-                pwalletMain->SetDefaultKey(newDefaultKey);
-                if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive"))
-                    strErrors << _("Cannot write default address") << "\n";
+            // Top up the keypool
+            if (!pwalletMain->TopUpKeyPool()) {
+                // Error generating keys
+                InitError(_("Unable to generate initial key") += "\n");
+                LogPrintf("%s %s\n", __func__ , "Unable to generate initial key");
+                return false;
             }
 
             pwalletMain->SetBestChain(chainActive.GetLocator());
         }
 
-        LogPrintf("%s", strErrors.str());
+        LogPrintf("Init errors: %s\n", strErrors.str());
         LogPrintf("Wallet completed loading in %15dms\n", GetTimeMillis() - nWalletStartTime);
 
         RegisterValidationInterface(pwalletMain);
