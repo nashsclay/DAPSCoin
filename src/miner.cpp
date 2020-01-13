@@ -61,6 +61,7 @@ public:
 uint64_t nLastBlockTx = 0;
 uint64_t nLastBlockSize = 0;
 int64_t nLastCoinStakeSearchInterval = 0;
+int64_t nDefaultMinerSleep = 0;
 //int64_t nConsolidationTime = 0;
 
 // We want to sort transactions by priority and fee rate, so:
@@ -642,7 +643,8 @@ bool fGenerateDapscoins = false;
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
 {
-    LogPrintf("DAPScoinMiner started\n");
+    nDefaultMinerSleep = GetArg("-minersleep", 30000);
+    LogPrintf("DAPScoinMiner started with %sms sleep time\n", nDefaultMinerSleep);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("dapscoin-miner");
     fGenerateDapscoins = true;
@@ -701,6 +703,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
             }
             
         }
+        MilliSleep(nDefaultMinerSleep);
         //
         // Create new block
         //
