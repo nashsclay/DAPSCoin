@@ -1238,24 +1238,28 @@ void BitcoinGUI::setStakingStatus()
         stkStatus = pwalletMain->ReadStakingStatus();
     }
     if (!stkStatus || pwalletMain->stakingMode == StakingMode::STOPPED || pwalletMain->IsLocked()) {
+        LogPrint("staking","Checking Staking Status: Disabled.\n");
         stakingState->setText(tr("Staking Disabled"));
         stakingState->setToolTip("Staking Disabled");
         stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
         return;
     }
     if (vNodes.empty()) {
+        LogPrint("staking","Checking Staking Status: No Active Peers...\n");
         stakingState->setText(tr("No Active Peers"));
         stakingState->setToolTip("No Active Peers");
         stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
         return;
     }
     if (IsInitialBlockDownload()) {
+        LogPrint("staking","Checking Staking Status: Syncing...\n");
         stakingState->setText(tr("Syncing..."));
         stakingState->setToolTip("Syncing");
         stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
         return;
     }
     if (!masternodeSync.IsSynced()) {
+        LogPrint("staking","Checking Staking Status: Syncing MN List...\n");
         stakingState->setText(tr("Syncing MN List..."));
         stakingState->setToolTip("Syncing Masternode List");
         stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
@@ -1265,6 +1269,7 @@ void BitcoinGUI::setStakingStatus()
         if (!nLastCoinStakeSearchInterval) return;
     }
     if (nLastCoinStakeSearchInterval) {
+        LogPrint("staking","Checking Staking Status: Enabled.\n");
         stakingState->setText(tr("Staking Enabled"));
         stakingState->setToolTip("Staking Enabled");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));
@@ -1274,6 +1279,7 @@ void BitcoinGUI::setStakingStatus()
         stakingState->setToolTip("Consolidating Transactions… Please wait few minutes for it to be consolidated.");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));*/
     } else {
+        LogPrint("staking","Checking Staking Status: Enabling...\n");
         stakingState->setText(tr("Enabling Staking..."));
         stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));
