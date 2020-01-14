@@ -41,6 +41,7 @@
  */
 
 static bool fDaemon;
+static bool fMasternode;
 
 void WaitForShutdown()
 {
@@ -70,13 +71,13 @@ bool AppInit(int argc, char* argv[])
 
     // Process help and version before taking care about datadir
     if (mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
-        std::string strUsage = _("Dapscoin Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n";
+        std::string strUsage = _("DAPS Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n";
 
         if (mapArgs.count("-version")) {
             strUsage += LicenseInfo();
         } else {
             strUsage += "\n" + _("Usage:") + "\n" +
-                        "  dapscoind [options]                     " + _("Start Dapscoin Core Daemon") + "\n";
+                        "  dapscoind [options]                     " + _("Start DAPS Daemon") + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }
@@ -121,9 +122,14 @@ bool AppInit(int argc, char* argv[])
         }
 #ifndef WIN32
         fDaemon = GetBoolArg("-daemon", false);
+        fMasternode = GetBoolArg("-masternode", false);
         if (fDaemon) {
+            std::string strUsage = _("DAPS Daemon") + " " + FormatFullVersion() + "\n";
+            fprintf(stdout, "%s", strUsage.c_str());
             fprintf(stdout, "DAPS server starting\n");
-
+            if (fMasternode) {
+                fprintf(stdout, "Masternode = 1 - This is a masternode\n");
+            }
             // Daemonize
             pid_t pid = fork();
             if (pid < 0) {
