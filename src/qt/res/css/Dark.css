@@ -220,6 +220,12 @@ QTextEdit:focus {
   background: #31398c;
 }
 
+#messagesWidget {
+  border-width: 4px;
+  background: #1e223a;
+  selection-color: yellow;
+}
+
 QToolTip {
   color: white;
   background-color: #5E1C5A;

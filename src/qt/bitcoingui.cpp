@@ -119,6 +119,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     GUIUtil::restoreWindowGeometry("nWindow", QSize(1147, 768), this);
 
     QString windowTitle = tr("DAPS Coin") + " ";
+    fLiteMode = GetBoolArg("-litemode", false);
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */
     enableWallet = !GetBoolArg("-disablewallet", false);
@@ -129,6 +130,9 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
         windowTitle += tr("Keychain Wallet");
     } else {
         windowTitle += tr("Node");
+    }
+    if (fLiteMode) {
+        windowTitle += tr(" - Lite Mode");
     }
     QString userWindowTitle = QString::fromStdString(GetArg("-windowtitle", ""));
     if (!userWindowTitle.isEmpty()) windowTitle += " - " + userWindowTitle;
@@ -329,7 +333,9 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 #else
         masternodeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
 #endif
-        tabGroup->addAction(masternodeAction);
+        if (!fLiteMode) {
+            tabGroup->addAction(masternodeAction);
+        }
         connect(masternodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
         connect(masternodeAction, SIGNAL(triggered()), this, SLOT(gotoMasternodePage()));
 
@@ -603,8 +609,9 @@ void BitcoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
-        toolbar->addAction(masternodeAction);
-
+        if (!fLiteMode) {
+            toolbar->addAction(masternodeAction);
+        }
         toolbar->setMovable(false); // remove unused icon in upper left corner
         overviewAction->setChecked(true);
         toolbar->setStyleSheet("QToolBar{spacing:25px;}");
@@ -616,8 +623,10 @@ void BitcoinGUI::createToolBars()
         bottomToolbar->setOrientation(Qt::Vertical);
         bottomToolbar->addAction(optionsAction);
         bottomToolbar->addSeparator();
-        bottomToolbar->addAction(stakingAction);
-        bottomToolbar->addWidget(stakingState);
+        if (!fLiteMode) {
+            bottomToolbar->addAction(stakingAction);
+            bottomToolbar->addWidget(stakingState);
+        }
         bottomToolbar->addAction(networkAction);
         bottomToolbar->addWidget(connectionCount);
         bottomToolbar->setStyleSheet("QToolBar{spacing:5px;}");
@@ -788,7 +797,9 @@ void BitcoinGUI::createTrayIconMenu()
     trayIconMenu->addAction(sendCoinsAction);
     trayIconMenu->addAction(receiveCoinsAction);
     trayIconMenu->addAction(historyAction);
-    trayIconMenu->addAction(masternodeAction);
+    if (!fLiteMode) {
+        trayIconMenu->addAction(masternodeAction);
+    }
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addSeparator();
@@ -1237,26 +1248,39 @@ void BitcoinGUI::setStakingStatus()
         fMultiSend = pwalletMain->isMultiSendEnabled();
         stkStatus = pwalletMain->ReadStakingStatus();
     }
-
     if (!stkStatus || pwalletMain->stakingMode == StakingMode::STOPPED || pwalletMain->IsLocked()) {
+        LogPrint("staking","Checking Staking Status: Disabled.\n");
         stakingState->setText(tr("Staking Disabled"));
         stakingState->setToolTip("Staking Disabled");
         stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
         return;
     }
-
+    if (vNodes.empty()) {
+        LogPrint("staking","Checking Staking Status: No Active Peers...\n");
+        stakingState->setText(tr("No Active Peers"));
+        stakingState->setToolTip("No Active Peers");
+        stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
+        return;
+    }
+    if (IsInitialBlockDownload()) {
+        LogPrint("staking","Checking Staking Status: Syncing...\n");
+        stakingState->setText(tr("Syncing..."));
+        stakingState->setToolTip("Syncing");
+        stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
+        return;
+    }
     if (!masternodeSync.IsSynced()) {
+        LogPrint("staking","Checking Staking Status: Syncing MN List...\n");
         stakingState->setText(tr("Syncing MN List..."));
         stakingState->setToolTip("Syncing Masternode List");
         stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
         return;
     }
-
     if (stakingState->text().contains("Enabling")) {
         if (!nLastCoinStakeSearchInterval) return;
     }
-
     if (nLastCoinStakeSearchInterval) {
+        LogPrint("staking","Checking Staking Status: Enabled.\n");
         stakingState->setText(tr("Staking Enabled"));
         stakingState->setToolTip("Staking Enabled");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));
@@ -1266,6 +1290,7 @@ void BitcoinGUI::setStakingStatus()
         stakingState->setToolTip("Consolidating Transactions… Please wait few minutes for it to be consolidated.");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));*/
     } else {
+        LogPrint("staking","Checking Staking Status: Enabling...\n");
         stakingState->setText(tr("Enabling Staking..."));
         stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
         stakingAction->setIcon(QIcon(":/icons/staking_active"));

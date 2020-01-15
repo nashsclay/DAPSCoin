@@ -499,7 +499,7 @@ void CoinControlDialog::updateDialogLabels()
     }
 
     vector<COutPoint> vCoinControl;
-    vector<COutput> vOutputs;
+    std::vector<COutput> vOutputs;
     coinControl->ListSelected(vCoinControl);
     model->getOutputs(vCoinControl, vOutputs);
 
@@ -560,7 +560,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)
     bool fAllowFree = false;
 
     vector<COutPoint> vCoinControl;
-    vector<COutput> vOutputs;
+    std::vector<COutput> vOutputs;
     coinControl->ListSelected(vCoinControl);
     model->getOutputs(vCoinControl, vOutputs);
 

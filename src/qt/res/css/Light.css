@@ -175,11 +175,30 @@ QTextEdit {
 QAbstractSpinBox:focus,
 QComboBox:focus,
 QComboBox::item:selected,
-QMenuBar::item:selected,
 QMenu::item:selected,
 QTextEdit:focus {
   border-width: 4px;
   background: #a7a7a7;
+}
+
+QMenuBar {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                      stop:0 lightgray, stop:1 darkgray);
+    spacing: 3px; /* spacing between menu bar items */
+}
+
+QMenuBar::item {
+    padding: 1px 4px;
+    background: transparent;
+    border-radius: 4px;
+}
+
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+    background: #a7a7a7;
+}
+
+QMenuBar::item:pressed {
+    background: #888888;
 }
 
 QToolTip {
@@ -193,7 +212,14 @@ QMenu::item {
     padding: 2px 25px 2px 20px;
     border: 1px solid transparent; /* reserve space for selection border */
     color: black;
-    background: white;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                      stop:0 lightgray, stop:1 darkgray);
+}
+
+QMenu::separator {
+    background: black;
+    width: 1px; /* when vertical */
+    height: 1px; /* when horizontal */
 }
 
 QComboBox:checked {

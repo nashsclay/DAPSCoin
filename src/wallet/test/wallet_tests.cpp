@@ -67,7 +67,7 @@ static void generate_block(int count) {
 
 #ifdef DISABLE_FAILED_TEST
 static CWallet wallet;
-static vector<COutput> vCoins;
+static std::vector<COutput> vCoins;
 
 static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput=0)
 {

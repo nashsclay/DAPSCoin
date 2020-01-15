@@ -2050,7 +2050,7 @@ bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, vector
 
 map<CBitcoinAddress, vector<COutput> > CWallet::AvailableCoinsByAddress(bool fConfirmed, CAmount maxCoinValue)
 {
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     AvailableCoins(vCoins, fConfirmed);
 
     map<CBitcoinAddress, vector<COutput> > mapCoins;
@@ -2136,7 +2136,7 @@ bool less_then_denom(const COutput& out1, const COutput& out2)
 
 bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount)
 {
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
     CAmount nAmountSelected = 0;
 
@@ -2165,7 +2165,7 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
 
 bool CWallet::MintableCoins()
 {
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
 
     {
         LOCK2(cs_main, cs_wallet);
@@ -2207,7 +2207,7 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
         return StakingStatusError::UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH;
     }
 
-    vector<COutput> vCoins, coinsUnderThreshold, coinsOverThreshold;
+    std::vector<COutput> vCoins, coinsUnderThreshold, coinsOverThreshold;
     StakingStatusError ret = StakingStatusError::STAKING_OK;
     CAmount nSpendableBalance = GetSpendableBalance();
 
@@ -2341,7 +2341,7 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
     return ret;
 }
 
-bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize, int numOut, const CAmount& nTargetValue, int nConfMine, int nConfTheirs, vector<COutput> vCoins, set<pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet)
+bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize, int numOut, const CAmount& nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, set<pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet)
 {
     setCoinsRet.clear();
     nValueRet = 0;
@@ -2521,7 +2521,7 @@ void CWallet::resetPendingOutPoints()
 bool CWallet::SelectCoins(bool needFee, CAmount& estimatedFee, int ringSize, int numOut, const CAmount& nTargetValue, set<pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX)
 {
     // Note: this function should never be used for "always free" tx types like dstx
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     vCoins.clear();
 
     {
@@ -2613,7 +2613,7 @@ bool CWallet::SelectCoinsByDenominations(int nDenom, CAmount nValueMin, CAmount 
     nValueRet = 0;
 
     vCoinsRet2.clear();
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true, NULL, false, ONLY_DENOMINATED);
 
     std::random_shuffle(vCoins.rbegin(), vCoins.rend());
@@ -2733,7 +2733,7 @@ bool CWallet::SelectCoinsDark(CAmount nValueMin, CAmount nValueMax, std::vector<
     setCoinsRet.clear();
     nValueRet = 0;
 
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true, coinControl, false, nObfuscationRoundsMin < 0 ? ONLY_NONDENOMINATED_NOT1000000IFMN : ONLY_DENOMINATED);
 
     set<pair<const CWalletTx*, unsigned int> > setCoinsRet2;
@@ -2772,7 +2772,7 @@ bool CWallet::SelectCoinsDark(CAmount nValueMin, CAmount nValueMax, std::vector<
 
 bool CWallet::SelectCoinsCollateral(std::vector<CTxIn>& setCoinsRet, CAmount& nValueRet)
 {
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
 
     AvailableCoins(vCoins);
 
@@ -2824,7 +2824,7 @@ int CWallet::CountInputsWithAmount(CAmount nInputAmount)
 
 bool CWallet::HasCollateralInputs(bool fOnlyConfirmed)
 {
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     AvailableCoins(vCoins, fOnlyConfirmed);
 
     int nFound = 0;
@@ -3099,28 +3099,23 @@ bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey&
                 if (!SelectCoins(true, estimateFee, ringSize, 2, nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
                     if (coin_type == ALL_COINS) {
                         if (nSpendableBalance < nTotalValue + estimateFee) {
-                            if (estimateFee > 0)
+                            //spendable is less than total + fee
+                           if (estimateFee > 0)
+                               //fee is greater than 0, causing insufficient funds
                                 strFailReason = "Insufficient funds. Transaction requires a fee of " + ValueFromAmountToString(estimateFee);
-                            else if (nReserveBalance <= nTotalValue)
+                            else if (nReserveBalance <= nTotalValue && nReserveBalance != 0)
+                               //reserve less than/equal total value
                                 strFailReason = "Insufficient reserved funds! Your wallet is staking with a reserve balance of " + ValueFromAmountToString(nReserveBalance) + " less than the sending amount " + ValueFromAmountToString(nTotalValue);
-                        } else if (nTotalValue >= nReserveBalance) {
+                        } else if (nTotalValue >= nReserveBalance && nReserveBalance != 0) {
+                               //total greater than equal to reserve
                                 strFailReason = "Insufficient reserved funds! Your wallet is staking with a reserve balance of " + ValueFromAmountToString(nReserveBalance) + " less than the sending amount " + ValueFromAmountToString(nTotalValue);
                         } else if (setCoins.size() > MAX_TX_INPUTS) {
+                            //max inputs
                             strFailReason = _("You have attempted to send more than 50 UTXOs in a single transaction. This is a rare occurrence, and to work around this limitation, please either lower the total amount of the transaction, or send two separate transactions with 50% of your total desired amount.");
-                        } else if (nValueIn == 0) {
-                            strFailReason = _("You have attempted to send more than 50 UTXOs in a single transaction. This is a rare occurrence, and to work around this limitation, please either lower the total amount of the transaction, or send two separate transactions with 50% of your total desired amount.");
+                        } else {
+                            //other
+                            strFailReason = _("Error in CreateTransactionBulletProof. Please try again.");
                         }
-                    } else if (coin_type == ONLY_NOT1000000IFMN) {
-                        strFailReason = _("Unable to locate enough funds for this transaction that are not equal 10000 DAPS.");
-                    } else if (coin_type == ONLY_NONDENOMINATED_NOT1000000IFMN) {
-                        strFailReason = _("Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 1000000 DAPS.");
-                    } else {
-                        strFailReason = _("Unable to locate enough Obfuscation denominated funds for this transaction.");
-                        strFailReason += " " + _("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");
-                    }
-
-                    if (useIX) {
-                        strFailReason += " " + _("SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.");
                     }
 
                     ret = false;
@@ -3306,15 +3301,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                         strFailReason = _("Insufficient funds.");
                     } else if (coin_type == ONLY_NOT1000000IFMN) {
                         strFailReason = _("Unable to locate enough funds for this transaction that are not equal 10000 DAPS.");
-                    } else if (coin_type == ONLY_NONDENOMINATED_NOT1000000IFMN) {
-                        strFailReason = _("Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 DAPS.");
                     } else {
-                        strFailReason = _("Unable to locate enough Obfuscation denominated funds for this transaction.");
-                        strFailReason += " " + _("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");
-                    }
-
-                    if (useIX) {
-                        strFailReason += " " + _("SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.");
+                        strFailReason = _("Error in CreateTransaction. Please try again.");
                     }
 
                     return false;
@@ -4154,8 +4142,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     txNew.txType = TX_TYPE_REVEAL_BOTH;
 
     // Choose coins to use
-    LogPrintf("%s: Start staking\n", __func__);
-
     CAmount nSpendableBalance = 0;
     CAmount nTargetAmount = 9223372036854775807;
     if (nReserveBalance > 0) {
@@ -4198,7 +4184,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             // Make sure the wallet is unlocked and shutdown hasn't been requested
             if (IsLocked() || ShutdownRequested())
                     return false;
-            vector<COutput> vCoins;
+            std::vector<COutput> vCoins;
             int cannotSpend = 0;
             {
                 AvailableCoins(wtxid, pcoin, vCoins, cannotSpend, true, NULL, false, STAKABLE_COINS, false);
@@ -4850,7 +4836,7 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
 {
     if (!fFileBacked)
         return DB_LOAD_OK;
-    fFirstRunRet = false;
+
     DBErrors nLoadWalletRet = CWalletDB(strWalletFile, "cr+").LoadWallet(this);
     if (nLoadWalletRet == DB_NEED_REWRITE) {
         if (CDB::Rewrite(strWalletFile, "\x04pool")) {
@@ -4862,9 +4848,11 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
         }
     }
 
+    // This wallet is in its first run if all of these are empty
+    fFirstRunRet = mapKeys.empty() && mapCryptedKeys.empty() && mapMasterKeys.empty() && setWatchOnly.empty() && mapScripts.empty();
+
     if (nLoadWalletRet != DB_LOAD_OK)
         return nLoadWalletRet;
-    fFirstRunRet = !vchDefaultKey.IsValid();
 
     uiInterface.LoadWallet(this);
     ScanWalletKeyImages();
@@ -4936,16 +4924,6 @@ bool CWallet::DelAddressBook(const CTxDestination& address)
         return false;
     CWalletDB(strWalletFile).ErasePurpose(CBitcoinAddress(address).ToString());
     return CWalletDB(strWalletFile).EraseName(CBitcoinAddress(address).ToString());
-}
-
-bool CWallet::SetDefaultKey(const CPubKey& vchPubKey)
-{
-    if (fFileBacked) {
-        if (!CWalletDB(strWalletFile).WriteDefaultKey(vchPubKey))
-            return false;
-    }
-    vchDefaultKey = vchPubKey;
-    return true;
 }
 
 /**
@@ -5586,7 +5564,7 @@ bool CWallet::SendAll(std::string des)
     }
 
     CAmount total = 0;
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     vCoins.clear();
     std::string strFailReason;
     bool ret = true;
@@ -5781,7 +5759,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
         return false;
     }
     CAmount total = 0;
-    vector<COutput> vCoins;
+    std::vector<COutput> vCoins;
     COutput lowestLarger(NULL, 0, 0, false);
     CAmount currentLowestLargerAmount = 0;
     vCoins.clear();
@@ -6059,7 +6037,7 @@ void CWallet::AutoCombineDust()
 bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee) {
     //finding all spendable UTXOs < MIN_STAKING
     CAmount total = 0;
-	vector<COutput> vCoins, underStakingThresholdCoins;
+    std::vector<COutput> vCoins, underStakingThresholdCoins;
 	{
 		LOCK2(cs_main, cs_wallet);
 		{
