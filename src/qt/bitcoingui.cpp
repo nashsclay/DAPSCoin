@@ -636,8 +636,8 @@ void BitcoinGUI::createToolBars()
             stakingState->setVisible(false);
         }
 
-        QHBoxLayout* layout = new QHBoxLayout(this);
-        QVBoxLayout* navLayout = new QVBoxLayout(this);
+        QHBoxLayout* layout = new QHBoxLayout();
+        QVBoxLayout* navLayout = new QVBoxLayout();
         QWidget* navWidget = new QWidget(this);
         navWidget->setObjectName("navLayout");
 
