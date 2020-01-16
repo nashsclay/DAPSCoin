@@ -526,6 +526,9 @@ void BitcoinApplication::initializeResult(int retval)
                 unlockdlg.setStyleSheet(GUIUtil::loadStyleSheet());
                 if (unlockdlg.exec() == QDialog::Accepted) {
                     walletUnlocked = true;
+                    if (fLiteMode) {
+                        pwalletMain->WriteStakingStatus(false);
+                    }
                 }
                 emit requestedRegisterNodeSignal();
             }

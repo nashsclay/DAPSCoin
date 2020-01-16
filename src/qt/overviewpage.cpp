@@ -187,7 +187,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
         ui->labelUnconfirmed->setText("Locked; Hidden");
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
     } else {
-        if (stkStatus && !nLastCoinStakeSearchInterval) {
+        if (stkStatus && !nLastCoinStakeSearchInterval && !fLiteMode) {
             ui->labelBalance_2->setText("Enabling Staking...");
             ui->labelBalance_2->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
             ui->labelBalance->setText("Enabling Staking...");
