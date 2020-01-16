@@ -246,7 +246,6 @@ void OverviewPage::setWalletModel(WalletModel* model)
     this->walletModel = model;
     if (model && model->getOptionsModel()) {
         // Set up transaction list
-        LogPrintf("%s:setWalletModel\n", __func__);
         filter = new TransactionFilterProxy(this);
         filter->setSourceModel(model->getTransactionTableModel());
         filter->setLimit(NUM_ITEMS);
