@@ -250,10 +250,12 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     // Subscribe to notifications from core
     subscribeToCoreSignals();
 
-    QTimer* timerStakingIcon = new QTimer(labelStakingIcon);
-    connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(setStakingStatus()));
-    timerStakingIcon->start(10000);
-    setStakingStatus();
+    if (!fLiteMode) {
+        QTimer* timerStakingIcon = new QTimer(labelStakingIcon);
+        connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(setStakingStatus()));
+        timerStakingIcon->start(10000);
+        setStakingStatus();
+    }
 }
 
 BitcoinGUI::~BitcoinGUI()
@@ -623,18 +625,19 @@ void BitcoinGUI::createToolBars()
         bottomToolbar->setOrientation(Qt::Vertical);
         bottomToolbar->addAction(optionsAction);
         bottomToolbar->addSeparator();
-        if (!fLiteMode) {
-            bottomToolbar->addAction(stakingAction);
-            bottomToolbar->addWidget(stakingState);
-        }
+        bottomToolbar->addAction(stakingAction);
+        bottomToolbar->addWidget(stakingState);
         bottomToolbar->addAction(networkAction);
         bottomToolbar->addWidget(connectionCount);
         bottomToolbar->setStyleSheet("QToolBar{spacing:5px;}");
-
         bottomToolbar->setObjectName("bottomToolbar");
+        if (fLiteMode) {
+            stakingAction->setVisible(false);
+            stakingState->setVisible(false);
+        }
 
-        QHBoxLayout* layout = new QHBoxLayout(this);
-        QVBoxLayout* navLayout = new QVBoxLayout(this);
+        QHBoxLayout* layout = new QHBoxLayout();
+        QVBoxLayout* navLayout = new QVBoxLayout();
         QWidget* navWidget = new QWidget(this);
         navWidget->setObjectName("navLayout");
 
