@@ -1267,8 +1267,8 @@ void BitcoinGUI::setStakingStatus()
     }
     if (IsInitialBlockDownload()) {
         LogPrint("staking","Checking Staking Status: Syncing...\n");
-        stakingState->setText(tr("Syncing..."));
-        stakingState->setToolTip("Syncing");
+        stakingState->setText(tr("Syncing Blocks..."));
+        stakingState->setToolTip("Syncing Blocks");
         stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
         return;
     }
