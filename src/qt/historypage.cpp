@@ -31,15 +31,6 @@
 #include <QTextStream>
 #include <QProcess>
 
-bool TxCompare (std::map<QString, QString> i, std::map<QString, QString> j) { 
-    QString str_i = i.at("date");
-    QString str_j = j.at("date");
-    QDateTime date_i = QDateTime::fromString(str_i,"MM/dd/yy hh:mm");
-    QDateTime date_j = QDateTime::fromString(str_j,"MM/dd/yy hh:mm");
-
-    return date_i > date_j;
-}
-
 HistoryPage::HistoryPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
                                             ui(new Ui::HistoryPage),
                                             // m_SizeGrip(this),
@@ -237,7 +228,6 @@ void HistoryPage::updateTableData(CWallet* wallet)
         } else {
             txs = WalletUtil::getTXs(wallet);
         }
-        std::sort (txs.begin(), txs.end(), TxCompare);
         for (int row = 0; row < (short)txs.size(); row++) {
             ui->tableView->insertRow(row);
             int col = 0;
