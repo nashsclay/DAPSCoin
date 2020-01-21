@@ -233,10 +233,11 @@ void HistoryPage::updateTableData(CWallet* wallet)
             int col = 0;
             for (QString dataName : {"date", "type", "address", "amount", "confirmations"}) {
                 QString data = txs[row].at(dataName);
-                QString date = data;
+                QDateTime date;
                 QTableWidgetItem* cell = new QTableWidgetItem();
                 switch (col) {
                 case 0: /*date*/
+                    date = QDateTime::fromString(data, "MM/dd/yy hh:mm:ss").addYears(100);
                     cell->setData(0, date);
                     break;
                 case 3: /*amount*/
