@@ -802,6 +802,8 @@ std::string CWallet::GetTransactionType(const CTransaction& tx)
     }
 
     if (fToMe) return "deposit";
+
+    return "other";
 }
 
 void CWallet::AddToSpends(const uint256& wtxid)
@@ -6091,16 +6093,14 @@ bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee)
 
     minFee = 0;
     maxFee = 0;
-    if (total < MINIMUM_STAKE_AMOUNT) false; //no staking sweeping will be created
+    if (total < MINIMUM_STAKE_AMOUNT) return false; //no staking sweeping will be created
     size_t numUTXOs = vCoins.size();
-
-
+    return true;
 }
 
 int CWallet::MaxTxSizePerTx() {
     return ComputeTxSize(50, 2, 15);
 }
-
 
 bool CWallet::MultiSend()
 {
