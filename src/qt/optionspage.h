@@ -97,6 +97,7 @@ private slots:
     void onShowMnemonic();
     void setStakingToggle();
     void setAutoConsolidate(int);
+    void mapPortUpnp_clicked(int);
 };
 
 #endif // BITCOIN_QT_OPTIONSPAGE_H
