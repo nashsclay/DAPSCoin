@@ -627,6 +627,35 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QCheckBox" name="mapPortUpnp">
+         <property name="toolTip">
+          <string>Automatically open the DAPS client port on the router. This only works when your router supports UPnP and it is enabled.</string>
+         </property>
+         <property name="text">
+          <string>Map port using &amp;UPnP</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="line_5">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>5</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>

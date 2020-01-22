@@ -147,7 +147,10 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         ui->addNewFunds->setFont(font);
         ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 DAPS fee each time you receive a new deposit that needs to be consolidated for staking.");
     }
+    ui->mapPortUpnp->setChecked(settings.value("fUseUPnP", false).toBool());
     connect(ui->addNewFunds, SIGNAL(stateChanged(int)), this, SLOT(setAutoConsolidate(int)));
+    connect(ui->mapPortUpnp, SIGNAL(stateChanged(int)), this, SLOT(mapPortUpnp_clicked(int)));
+
 }
 
 void OptionsPage::setStakingToggle()
@@ -896,4 +899,19 @@ void OptionsPage::saveConsolidationSettingTime(bool autoConsolidate)
     } else {
         pwalletMain->WriteAutoConsolidateSettingTime(GetAdjustedTime());
     }
+}
+
+void OptionsPage::mapPortUpnp_clicked(int state)
+{
+    if (ui->mapPortUpnp->isChecked()) {
+        settings.setValue("fUseUPnP", true);
+    } else {
+        settings.setValue("fUseUPnP", false);
+    }
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("UPNP Settings");
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText("UPNP Settings successfully changed. Please restart the wallet for changes to take effect.");
+    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+    msgBox.exec();
 }
