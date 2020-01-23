@@ -32,9 +32,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>823</width>
-        <height>513</height>
+        <y>-22</y>
+        <width>806</width>
+        <height>535</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -628,32 +628,45 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="mapPortUpnp">
-         <property name="toolTip">
-          <string>Automatically open the DAPS client port on the router. This only works when your router supports UPnP and it is enabled.</string>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Network Settings</string>
          </property>
-         <property name="text">
-          <string>Map port using &amp;UPnP</string>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QCheckBox" name="mapPortUpnp">
+            <property name="toolTip">
+             <string>Automatically open the DAPS client port on the router. This only works when your router supports UPnP and it is enabled.</string>
+            </property>
+            <property name="text">
+             <string>Map port using &amp;UPnP</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="line_5">
-         <property name="enabled">
-          <bool>true</bool>
+        <widget class="QGroupBox" name="windowSettings">
+         <property name="title">
+          <string>Window Settings</string>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>5</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="minimizeToTray">
+            <property name="text">
+             <string>&amp;Minimize to the tray instead of the taskbar</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="minimizeOnClose">
+            <property name="text">
+             <string>M&amp;inimize on close</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

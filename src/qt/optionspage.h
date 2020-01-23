@@ -98,6 +98,8 @@ private slots:
     void setStakingToggle();
     void setAutoConsolidate(int);
     void mapPortUpnp_clicked(int);
+    void minimizeToTray_clicked(int);
+    void minimizeOnClose_clicked(int);
 };
 
 #endif // BITCOIN_QT_OPTIONSPAGE_H

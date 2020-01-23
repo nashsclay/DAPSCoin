@@ -148,9 +148,12 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 DAPS fee each time you receive a new deposit that needs to be consolidated for staking.");
     }
     ui->mapPortUpnp->setChecked(settings.value("fUseUPnP", false).toBool());
+    ui->minimizeToTray->setChecked(settings.value("fMinimizeToTray", false).toBool());
+    ui->minimizeOnClose->setChecked(settings.value("fMinimizeOnClose", false).toBool());
     connect(ui->addNewFunds, SIGNAL(stateChanged(int)), this, SLOT(setAutoConsolidate(int)));
     connect(ui->mapPortUpnp, SIGNAL(stateChanged(int)), this, SLOT(mapPortUpnp_clicked(int)));
-
+    connect(ui->minimizeToTray, SIGNAL(stateChanged(int)), this, SLOT(minimizeToTray_clicked(int)));
+    connect(ui->minimizeOnClose, SIGNAL(stateChanged(int)), this, SLOT(minimizeOnClose_clicked(int)));
 }
 
 void OptionsPage::setStakingToggle()
@@ -914,4 +917,22 @@ void OptionsPage::mapPortUpnp_clicked(int state)
     msgBox.setText("UPNP Settings successfully changed. Please restart the wallet for changes to take effect.");
     msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
     msgBox.exec();
+}
+
+void OptionsPage::minimizeToTray_clicked(int state)
+{
+    if (ui->minimizeToTray->isChecked()) {
+        settings.setValue("fMinimizeToTray", true);
+    } else {
+        settings.setValue("fMinimizeToTray", false);
+    }
+}
+
+void OptionsPage::minimizeOnClose_clicked(int state)
+{
+    if (ui->minimizeOnClose->isChecked()) {
+        settings.setValue("fMinimizeOnClose", true);
+    } else {
+        settings.setValue("fMinimizeOnClose", false);
+    }
 }
