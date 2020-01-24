@@ -83,14 +83,20 @@ public:
         {
             if (wallet->IsLocked()) return;
             cachedWallet.clear();
+            //Use defined values
+            int customThreadLimit = SINGLE_THREAD_MAX_TXES_SIZE;
+            int maxTXUIlLimit = MAX_AMOUNT_LOADED_RECORDS;
+            //Change to user values if set
+            customThreadLimit = GetArg("-txthreadinglimit", 4000);
+            maxTXUIlLimit = GetArg("-maxtxuilimit", 20000);
 
             std::vector<CWalletTx> walletTxes = wallet->getWalletTxs();
 
             // Divide the work between multiple threads to speedup the process if the vector is larger than 4k txes
             std::size_t txesSize = walletTxes.size();
-            if (txesSize > SINGLE_THREAD_MAX_TXES_SIZE) {
+            if (txesSize > customThreadLimit && GetBoolArg("-txthreading", true)) {
                 // First check if the amount of txs exceeds the UI limit
-                if (txesSize > MAX_AMOUNT_LOADED_RECORDS) {
+                if (txesSize > maxTXUIlLimit) {
                     // Sort the txs by date just to be really really sure that them are ordered.
                     // (this extra calculation should be removed in the future if can ensure that
                     // txs are stored in order in the db, which is what should be happening)
