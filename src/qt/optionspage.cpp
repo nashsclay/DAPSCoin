@@ -92,22 +92,20 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         timerStakingToggleSync->start(10000);
         ui->labelStaking->show();
         ui->toggleStaking->show();
-        ui->quantityLabel->show();
+        ui->reservegroupBox->show();
         ui->lineEditWithhold->show();
         ui->addNewFunds->show();
         ui->pushButtonSave->show();
         ui->pushButtonDisable->show();
-        ui->line_3->show();
     } else {
         //Staking related items and functions hidden/removed in litemode
         ui->labelStaking->hide();
         ui->toggleStaking->hide();
-        ui->quantityLabel->hide();
+        ui->reservegroupBox->hide();
         ui->lineEditWithhold->hide();
         ui->addNewFunds->hide();
         ui->pushButtonSave->hide();
         ui->pushButtonDisable->hide();
-        ui->line_3->hide();
     }
 
 
@@ -704,7 +702,6 @@ void OptionsPage::disable2FA() {
 
     ui->label_3->setEnabled(false);
     ui->lblAuthCode->setEnabled(false);
-    ui->label->setEnabled(false);
     ui->btn_day->setEnabled(false);
     ui->btn_week->setEnabled(false);
     ui->btn_month->setEnabled(false);
@@ -718,7 +715,6 @@ void OptionsPage::disable2FA() {
 void OptionsPage::enable2FA() {
     ui->label_3->setEnabled(true);
     ui->lblAuthCode->setEnabled(true);
-    ui->label->setEnabled(true);
     ui->btn_day->setEnabled(true);
     ui->btn_week->setEnabled(true);
     ui->btn_month->setEnabled(true);
