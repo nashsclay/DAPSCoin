@@ -92,22 +92,20 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         timerStakingToggleSync->start(10000);
         ui->labelStaking->show();
         ui->toggleStaking->show();
-        ui->quantityLabel->show();
+        ui->reservegroupBox->show();
         ui->lineEditWithhold->show();
         ui->addNewFunds->show();
         ui->pushButtonSave->show();
         ui->pushButtonDisable->show();
-        ui->line_3->show();
     } else {
         //Staking related items and functions hidden/removed in litemode
         ui->labelStaking->hide();
         ui->toggleStaking->hide();
-        ui->quantityLabel->hide();
+        ui->reservegroupBox->hide();
         ui->lineEditWithhold->hide();
         ui->addNewFunds->hide();
         ui->pushButtonSave->hide();
         ui->pushButtonDisable->hide();
-        ui->line_3->hide();
     }
 
 
@@ -147,7 +145,13 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         ui->addNewFunds->setFont(font);
         ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 DAPS fee each time you receive a new deposit that needs to be consolidated for staking.");
     }
+    ui->mapPortUpnp->setChecked(settings.value("fUseUPnP", false).toBool());
+    ui->minimizeToTray->setChecked(settings.value("fMinimizeToTray", false).toBool());
+    ui->minimizeOnClose->setChecked(settings.value("fMinimizeOnClose", false).toBool());
     connect(ui->addNewFunds, SIGNAL(stateChanged(int)), this, SLOT(setAutoConsolidate(int)));
+    connect(ui->mapPortUpnp, SIGNAL(stateChanged(int)), this, SLOT(mapPortUpnp_clicked(int)));
+    connect(ui->minimizeToTray, SIGNAL(stateChanged(int)), this, SLOT(minimizeToTray_clicked(int)));
+    connect(ui->minimizeOnClose, SIGNAL(stateChanged(int)), this, SLOT(minimizeOnClose_clicked(int)));
 }
 
 void OptionsPage::setStakingToggle()
@@ -698,7 +702,6 @@ void OptionsPage::disable2FA() {
 
     ui->label_3->setEnabled(false);
     ui->lblAuthCode->setEnabled(false);
-    ui->label->setEnabled(false);
     ui->btn_day->setEnabled(false);
     ui->btn_week->setEnabled(false);
     ui->btn_month->setEnabled(false);
@@ -712,7 +715,6 @@ void OptionsPage::disable2FA() {
 void OptionsPage::enable2FA() {
     ui->label_3->setEnabled(true);
     ui->lblAuthCode->setEnabled(true);
-    ui->label->setEnabled(true);
     ui->btn_day->setEnabled(true);
     ui->btn_week->setEnabled(true);
     ui->btn_month->setEnabled(true);
@@ -895,5 +897,38 @@ void OptionsPage::saveConsolidationSettingTime(bool autoConsolidate)
         pwalletMain->WriteAutoConsolidateSettingTime(0);
     } else {
         pwalletMain->WriteAutoConsolidateSettingTime(GetAdjustedTime());
+    }
+}
+
+void OptionsPage::mapPortUpnp_clicked(int state)
+{
+    if (ui->mapPortUpnp->isChecked()) {
+        settings.setValue("fUseUPnP", true);
+    } else {
+        settings.setValue("fUseUPnP", false);
+    }
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("UPNP Settings");
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText("UPNP Settings successfully changed. Please restart the wallet for changes to take effect.");
+    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+    msgBox.exec();
+}
+
+void OptionsPage::minimizeToTray_clicked(int state)
+{
+    if (ui->minimizeToTray->isChecked()) {
+        settings.setValue("fMinimizeToTray", true);
+    } else {
+        settings.setValue("fMinimizeToTray", false);
+    }
+}
+
+void OptionsPage::minimizeOnClose_clicked(int state)
+{
+    if (ui->minimizeOnClose->isChecked()) {
+        settings.setValue("fMinimizeOnClose", true);
+    } else {
+        settings.setValue("fMinimizeOnClose", false);
     }
 }

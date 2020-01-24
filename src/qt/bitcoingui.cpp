@@ -68,6 +68,10 @@
 #include <QUrlQuery>
 #endif
 
+#define BASE_WINDOW_WIDTH 1147
+#define BASE_WINDOW_HEIGHT 768
+#define BASE_WINDOW_MIN_HEIGHT 720
+
 const QString BitcoinGUI::DEFAULT_WALLET = "~Default";
 
 BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMainWindow(parent),
@@ -115,8 +119,8 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     /* Open CSS when configured */
     this->setStyleSheet(GUIUtil::loadStyleSheet());
 
-    this->setMinimumSize(1147, 768);
-    GUIUtil::restoreWindowGeometry("nWindow", QSize(1147, 768), this);
+    this->setMinimumSize(BASE_WINDOW_WIDTH, BASE_WINDOW_MIN_HEIGHT);
+    GUIUtil::restoreWindowGeometry("nWindow", QSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT), this);
 
     QString windowTitle = tr("DAPS Coin") + " ";
     fLiteMode = GetBoolArg("-litemode", false);
