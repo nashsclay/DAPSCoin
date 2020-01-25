@@ -422,8 +422,10 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openRepairAction->setStatusTip(tr("Show wallet repair options"));
     openConfEditorAction = new QAction(QIcon(":/icons/edit"), tr("Open Wallet &Configuration File"), this);
     openConfEditorAction->setStatusTip(tr("Open configuration file"));
+    openConfEditorAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
     openMNConfEditorAction = new QAction(QIcon(":/icons/edit"), tr("Open &Masternode Configuration File"), this);
     openMNConfEditorAction->setStatusTip(tr("Open Masternode configuration file"));
+    openMNConfEditorAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
     showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &DAPScoin Folder"), this);
     showDataDirAction->setStatusTip(tr("Show the DAPScoin folder"));
     showDataDirAction->setShortcut(Qt::Key_F2);
