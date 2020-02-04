@@ -19,6 +19,7 @@
 #include <QPushButton>
 #include <QSystemTrayIcon>
 #include <QProgressDialog>
+#include <QNetworkReply>
 
 class ClientModel;
 class NetworkStyle;
@@ -138,6 +139,7 @@ private:
     QAction* openTGTechSupportAction;
     QAction* openTGMNSupportAction;
     QAction* openDiscordSupportAction;
+    QAction* checkForUpdatesAction;
     QAction* multiSendAction;
     QFrame* frameBlocks;
     QLabel *stakingState;
@@ -266,6 +268,8 @@ private slots:
     void openTGTechSupportClicked();
     void openTGMNSupportClicked();
     void openDiscordSupportClicked();
+    void checkForUpdatesClicked();
+    void serviceRequestFinished(QNetworkReply* reply);
 #ifndef Q_OS_MAC
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);

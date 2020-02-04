@@ -60,6 +60,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QDesktopServices>
+#include <QNetworkAccessManager>
 
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
@@ -485,6 +486,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openTGMNSupportAction->setStatusTip(tr("Telegram Masternode Support"));
     openDiscordSupportAction = new QAction(QIcon(":/icons/discord"), tr("&Discord Tech Support"), this);
     openDiscordSupportAction->setStatusTip(tr("Discord Tech Support"));
+    checkForUpdatesAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Check For Updates"), this);
+    checkForUpdatesAction->setStatusTip(tr("Check For Updates"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -498,6 +501,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(openTGTechSupportAction, SIGNAL(triggered()), this, SLOT(openTGTechSupportClicked()));
     connect(openTGMNSupportAction, SIGNAL(triggered()), this, SLOT(openTGMNSupportClicked()));
     connect(openDiscordSupportAction, SIGNAL(triggered()), this, SLOT(openDiscordSupportClicked()));
+    connect(checkForUpdatesAction, SIGNAL(triggered()), this, SLOT(checkForUpdatesClicked()));
 #ifdef ENABLE_WALLET
     if (walletFrame) {
         connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
@@ -600,6 +604,8 @@ void BitcoinGUI::createMenuBar()
     help->addAction(openTGMNSupportAction);
     help->addSeparator();
     help->addAction(openDiscordSupportAction);
+    help->addSeparator();
+    help->addAction(checkForUpdatesAction);
     help->addSeparator();
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
@@ -930,6 +936,49 @@ void BitcoinGUI::openTGMNSupportClicked()
 void BitcoinGUI::openDiscordSupportClicked()
 {
     QDesktopServices::openUrl(QUrl("https://discord.gg/8vbXJMf"));
+}
+
+void BitcoinGUI::checkForUpdatesClicked()
+{
+    QUrl serviceUrl = QUrl("https://raw.githubusercontent.com/DAPSCoin/DAPSCoin/master/version.txt");
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(serviceRequestFinished(QNetworkReply*)));
+    QNetworkRequest request;
+    request.setUrl(serviceUrl);
+    QNetworkReply* reply = manager->get(request);
+}
+
+void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
+{
+    QString currentVersion = QString::number(CLIENT_VERSION_MAJOR) + "." + QString::number(CLIENT_VERSION_MINOR)+ "." + QString::number(CLIENT_VERSION_REVISION)+ "." + QString::number(CLIENT_VERSION_BUILD);
+    reply->deleteLater();
+    if(reply->error() == QNetworkReply::NoError) {
+        QByteArray data = reply->readAll();
+        if (data != currentVersion) {
+            QMessageBox::StandardButton msgReply;
+            msgReply = QMessageBox::question(this, "Wallet Update Available!", "Wallet update available.\n\nWould you like to go to the GitHub Releases page to download v" + data.trimmed() + "?", QMessageBox::Yes|QMessageBox::No);
+            if (msgReply == QMessageBox::Yes) {
+                QDesktopServices::openUrl(QUrl("https://github.com/DAPSCoin/DAPSCoin/releases/latest"));
+            } else {
+                return;
+            }
+        } else {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("No Update Available");
+            msgBox.setText("No update available.\n\nYour wallet is up to date.");
+            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.exec();
+        }
+    } else {
+        QByteArray error = reply->readAll();
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Error checking for updates.\n\n" + error);
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
 }
 
 #ifdef ENABLE_WALLET
