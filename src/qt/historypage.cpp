@@ -273,7 +273,7 @@ void HistoryPage::updateAddressBookData(CWallet* wallet)
 void HistoryPage::updateFilter()
 {
     syncTime(ui->dateTimeEditFrom, timeEditFrom);
-    syncTime(ui->dateTimeEditFrom, timeEditFrom);
+    syncTime(ui->dateTimeEditTo, timeEditTo);
     auto selectedAmount = ui->lineEditAmount->text().toFloat();
     QString selectedType = ui->comboBoxType->currentText();
     QList<QString> selectedAddresses = ui->lineEditDesc->lineEdit()->text().split(" | ");
