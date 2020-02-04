@@ -69,11 +69,6 @@ void HistoryPage::initWidgets()
     timeEditFrom = new QTimeEdit(ui->dateTimeEditFrom);
     ui->dateTimeEditTo->calendarWidget()->parentWidget()->layout()->addWidget(timeEditTo);
     ui->dateTimeEditFrom->calendarWidget()->parentWidget()->layout()->addWidget(timeEditFrom);
-    //remove window frames from widgets
-    GUIUtil::setWindowless(ui->dateTimeEditTo->calendarWidget()->parentWidget());
-    GUIUtil::setWindowless(ui->dateTimeEditFrom->calendarWidget()->parentWidget());
-    GUIUtil::setWindowless(ui->comboBoxType->view()->parentWidget());
-    GUIUtil::setWindowless(ui->lineEditDesc->view()->parentWidget());
     //color calendarwidgets
     GUIUtil::colorCalendarWidgetWeekends(ui->dateTimeEditTo->calendarWidget(), QColor("gray"));
     GUIUtil::colorCalendarWidgetWeekends(ui->dateTimeEditFrom->calendarWidget(), QColor("gray"));
