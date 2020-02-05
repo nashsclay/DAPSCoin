@@ -144,6 +144,7 @@ private:
     QFrame* frameBlocks;
     QLabel *stakingState;
     QLabel* connectionCount;
+    QLabel* blockCount;
     
     QProgressDialog* progressDialog = nullptr;
 
