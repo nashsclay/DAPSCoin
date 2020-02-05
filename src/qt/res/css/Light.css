@@ -46,6 +46,12 @@ QComboBox:disabled,
   padding-left: 52px;
   color: white;
 }
+#blockCount {
+  font-size: 11px;
+  font-style: italic;
+  padding-left: 68px;
+  color: white;
+}
 
 QDialog {
   min-width: 500px;
