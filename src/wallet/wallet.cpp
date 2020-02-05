@@ -3447,7 +3447,7 @@ bool CWallet::generateBulletProofAggregate(CTransaction& tx)
 
 bool CWallet::makeRingCT(CTransaction& wtxNew, int ringSize, std::string& strFailReason)
 {
-    LogPrintf("making ringCT, ringsize=%d\n", ringSize);
+    LogPrintf("Making RingCT using ring size=%d\n", ringSize);
     int myIndex;
     if (!selectDecoysAndRealIndex(wtxNew, myIndex, ringSize)) {
         return false;
@@ -3898,7 +3898,7 @@ bool CWallet::MakeShnorrSignatureTxIn(CTxIn& txin, uint256 cts)
 
 bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringSize)
 {
-    LogPrintf("Selecting coinbase decoys\n");
+    LogPrintf("Selecting coinbase decoys for transaction\n");
     if (coinbaseDecoysPool.size() <= 100) {
         for (int i = chainActive.Height() - Params().COINBASE_MATURITY(); i > 0; i--) {
             if (coinbaseDecoysPool.size() > 100) break;
@@ -3959,7 +3959,7 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
 
         CKeyImage ki;
         if (!generateKeyImage(txPrev.vout[tx.vin[i].prevout.n].scriptPubKey, ki)) {
-            LogPrintf("Cannot generate key image");
+            LogPrintf("Cannot generate key image\n");
             return false;
         } else {
             tx.vin[i].keyImage = ki;
@@ -4004,7 +4004,7 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                     if (numDecoys == ringSize) break;
                 }
             } else {
-                LogPrintf("Dont have enough decoys, please wait for around 10 minutes and re-try\n");
+                LogPrintf("Not enough decoys. Please wait approximately 10 minutes and try again.\n");
                 return false;
             }
         } else {
@@ -4046,7 +4046,7 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                     if (numDecoys == ringSize) break;
                 }
             } else {
-                LogPrintf("Dont have enough decoys, please wait for around 10 minutes and re-try\n");
+                LogPrintf("Not enough decoys. Please wait approximately 10 minutes and try again.\n");
                 return false;
             }
         }
@@ -4240,7 +4240,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     pindex = it->second;
                 } else {
                     if (fDebug) {
-                        LogPrintf("CreateCoinStake() failed to find block index \n");
+                        LogPrintf("CreateCoinStake() failed to find block index\n");
                     }
                     continue;
                 }
@@ -4261,7 +4261,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, sharedSec.begin(), nTxNewTime, nHashDrift, false, hashProofOfStake, true)) {
                     //Double check that this will pass time requirements
                     if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) {
-                        LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
+                        LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past\n");
                         continue;
                     }
 
@@ -4301,7 +4301,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
                     CTxIn in(pcoin.first->GetHash(), pcoin.second);
                     if (!generateKeyImage(scriptPubKeyKernel, in.keyImage)) {
-                        LogPrintf("CreateCoinStake : cannot generate key image");
+                        LogPrintf("CreateCoinStake : cannot generate key image\n");
                         break;
                     }
                     //copy encryption key so that full nodes can decode the amount in the txin
@@ -4341,7 +4341,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     break;
                 }
                 if (fKernelFound) {
-                    LogPrintf("CreateCoinStake: Kernel is found");
+                    LogPrintf("CreateCoinStake: Kernel is found\n");
                     break; // if kernel is found stop searching
                 }
             }
@@ -5678,7 +5678,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                     try {
                         SendToStealthAddress(masterAddr, ComputeReserveUTXOAmount(), wtx);
                     } catch (const std::exception& err) {
-                        LogPrintf("failed to create reserve UTXO");
+                        LogPrintf("failed to create reserve UTXO\n");
                     }
                     return false;
                 } else {
@@ -5708,7 +5708,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                         }
                     }
                 }
-                LogPrintf("Generate consolidation, total = %d\n", total);
+                LogPrintf("Generating consolidation transaction, total = %d DAPS\n", total);
                 // Generate transaction public key
                 CWalletTx wtxNew;
                 CKey secret;
@@ -5850,7 +5850,7 @@ void CWallet::AutoCombineDust()
             }
             uint32_t nTime = ReadAutoConsolidateSettingTime();
             nTime = (nTime == 0)? GetAdjustedTime() : nTime;
-            LogPrintf("Creating a consolidation transaction for a larger UTXO for staking\n");
+            LogPrintf("Attempting to create a consolidation transaction for a larger UTXO for staking\n");
             CreateSweepingTransaction(MINIMUM_STAKE_AMOUNT, max + COIN, nTime);
         }
         return;
@@ -6458,7 +6458,7 @@ bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount
     string strError;
     if (this->IsLocked()) {
         strError = "Error: Wallet locked, unable to create transaction!";
-        LogPrintf("SendToStealthAddress() : %s", strError);
+        LogPrintf("SendToStealthAddress() : %s\n", strError);
         throw runtime_error(strError);
     }
 
@@ -6810,7 +6810,7 @@ void CWallet::createMasterKey() const
                 i++;
                 continue;
             }
-            LogPrintf("Created master account");
+            LogPrintf("Created master account\n");
             break;
         }
     }
