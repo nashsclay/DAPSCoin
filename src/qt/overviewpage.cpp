@@ -483,10 +483,10 @@ void OverviewPage::updateRecentTransactions(){
 
                 for (int i = 0; i < (int)latestTxes.size(); i++) {
                     txs.push_back(WalletUtil::getTx(pwalletMain, latestTxes[i]));
-                    if (txs.size() >= 5) break;
+                    if (txs.size() >= NUM_ITEMS) break;
                 }
 
-                int length = (txs.size()>5)? 5:txs.size();
+                int length = (txs.size()>NUM_ITEMS)? NUM_ITEMS:txs.size();
                 for (int i = 0; i< length; i++){
                     uint256 txHash;
                     txHash.SetHex(txs[i]["id"].toStdString());
