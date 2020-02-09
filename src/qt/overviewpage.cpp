@@ -131,10 +131,6 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
 
     initSyncCircle(.8);
 
-    QTimer* timerBlockHeightLabel = new QTimer(this);
-    connect(timerBlockHeightLabel, SIGNAL(timeout()), this, SLOT(showBlockCurrentHeight()));
-    timerBlockHeightLabel->start(60000);
-
     connect(ui->btnLockUnlock, SIGNAL(clicked()), this, SLOT(on_lockUnlock()));
 }
 
@@ -221,6 +217,8 @@ void OverviewPage::setClientModel(ClientModel* model)
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
         updateAlerts(model->getStatusBarWarnings());
+        connect(model, SIGNAL(numBlocksChanged(int)), this, SLOT(showBlockCurrentHeight(int)));
+        showBlockCurrentHeight(clientModel->getNumBlocks());
     }
 }
 
@@ -339,12 +337,12 @@ void OverviewPage::showBlockSync(bool fShow)
     }
 }
 
-void OverviewPage::showBlockCurrentHeight()
+void OverviewPage::showBlockCurrentHeight(int count)
 {
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain)
         return;
-	ui->labelBlockCurrent->setText(QString::number(chainActive.Height()));
+    ui->labelBlockCurrent->setText(QString::number(count));
 }
 
 void OverviewPage::initSyncCircle(float ratioToParent)
