@@ -125,9 +125,8 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
 
     pingNetworkInterval = new QTimer(this);
     connect(pingNetworkInterval, SIGNAL(timeout()), this, SLOT(tryNetworkBlockCount()));
-    pingNetworkInterval->setInterval(3000); pingNetworkInterval->start(); 
-    
-    pingNetworkInterval = new QTimer();
+    pingNetworkInterval->setInterval(3000);
+    pingNetworkInterval->start();
 
     initSyncCircle(.8);
 
