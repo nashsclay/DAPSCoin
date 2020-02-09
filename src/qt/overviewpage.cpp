@@ -316,11 +316,18 @@ void OverviewPage::showBalanceSync(bool fShow){
         ui->labelUnconfirmed->setVisible(true);
         ui->labelBalanceText->setVisible(true);
         isSyncingBalance = fShow;
+        if (isSyncingBalance){
+            QString tooltip = "The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.";
+            ui->labelUnconfirmed->setToolTip(tooltip);
+            ui->labelBalance->setToolTip(tooltip);
+        } else {
+            ui->labelUnconfirmed->setToolTip("Your pending balance");
+            ui->labelBalance->setToolTip("Your current balance");
+        }
 }
 
 void OverviewPage::showBlockSync(bool fShow)
 {
-    ui->labelBlockStatus->setVisible(true);
     ui->labelBlockOf->setVisible(fShow);
     ui->labelBlocksTotal->setVisible(fShow);
 
@@ -329,9 +336,11 @@ void OverviewPage::showBlockSync(bool fShow)
     ui->labelBlockCurrent->setText(QString::number(clientModel->getNumBlocks()));
     if (isSyncingBlocks){
         ui->labelBlockStatus->setText("(syncing)");
+        ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
     } else {
         ui->labelBlockStatus->setText("(synced)");
+        ui->labelBlockStatus->setToolTip("Your wallet is fully synchronized with the DAPS network.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignHCenter|Qt::AlignVCenter));
     }
 }
