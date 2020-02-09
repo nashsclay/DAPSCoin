@@ -1176,6 +1176,7 @@ void BitcoinGUI::setNumBlocks(int count)
     } else {
         blockCount->setText(tr("%n Blocks", "", count));
     }
+    blockCount->setToolTip(tooltip);
 }
 
 void BitcoinGUI::message(const QString& title, const QString& message, unsigned int style, bool* ret)
