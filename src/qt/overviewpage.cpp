@@ -125,15 +125,10 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
 
     pingNetworkInterval = new QTimer(this);
     connect(pingNetworkInterval, SIGNAL(timeout()), this, SLOT(tryNetworkBlockCount()));
-    pingNetworkInterval->setInterval(3000); pingNetworkInterval->start(); 
-    
-    pingNetworkInterval = new QTimer();
+    pingNetworkInterval->setInterval(3000);
+    pingNetworkInterval->start();
 
     initSyncCircle(.8);
-
-    QTimer* timerBlockHeightLabel = new QTimer(this);
-    connect(timerBlockHeightLabel, SIGNAL(timeout()), this, SLOT(showBlockCurrentHeight()));
-    timerBlockHeightLabel->start(60000);
 
     connect(ui->btnLockUnlock, SIGNAL(clicked()), this, SLOT(on_lockUnlock()));
 }
@@ -221,6 +216,8 @@ void OverviewPage::setClientModel(ClientModel* model)
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
         updateAlerts(model->getStatusBarWarnings());
+        connect(model, SIGNAL(numBlocksChanged(int)), this, SLOT(showBlockCurrentHeight(int)));
+        showBlockCurrentHeight(clientModel->getNumBlocks());
     }
 }
 
@@ -319,11 +316,18 @@ void OverviewPage::showBalanceSync(bool fShow){
         ui->labelUnconfirmed->setVisible(true);
         ui->labelBalanceText->setVisible(true);
         isSyncingBalance = fShow;
+        if (isSyncingBalance){
+            QString tooltip = "The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.";
+            ui->labelUnconfirmed->setToolTip(tooltip);
+            ui->labelBalance->setToolTip(tooltip);
+        } else {
+            ui->labelUnconfirmed->setToolTip("Your pending balance");
+            ui->labelBalance->setToolTip("Your current balance");
+        }
 }
 
 void OverviewPage::showBlockSync(bool fShow)
 {
-    ui->labelBlockStatus->setVisible(true);
     ui->labelBlockOf->setVisible(fShow);
     ui->labelBlocksTotal->setVisible(fShow);
 
@@ -332,19 +336,21 @@ void OverviewPage::showBlockSync(bool fShow)
     ui->labelBlockCurrent->setText(QString::number(clientModel->getNumBlocks()));
     if (isSyncingBlocks){
         ui->labelBlockStatus->setText("(syncing)");
+        ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
     } else {
         ui->labelBlockStatus->setText("(synced)");
+        ui->labelBlockStatus->setToolTip("Your wallet is fully synchronized with the DAPS network.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignHCenter|Qt::AlignVCenter));
     }
 }
 
-void OverviewPage::showBlockCurrentHeight()
+void OverviewPage::showBlockCurrentHeight(int count)
 {
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain)
         return;
-	ui->labelBlockCurrent->setText(QString::number(chainActive.Height()));
+    ui->labelBlockCurrent->setText(QString::number(count));
 }
 
 void OverviewPage::initSyncCircle(float ratioToParent)
@@ -483,10 +489,10 @@ void OverviewPage::updateRecentTransactions(){
 
                 for (int i = 0; i < (int)latestTxes.size(); i++) {
                     txs.push_back(WalletUtil::getTx(pwalletMain, latestTxes[i]));
-                    if (txs.size() >= 5) break;
+                    if (txs.size() >= NUM_ITEMS) break;
                 }
 
-                int length = (txs.size()>5)? 5:txs.size();
+                int length = (txs.size()>NUM_ITEMS)? NUM_ITEMS:txs.size();
                 for (int i = 0; i< length; i++){
                     uint256 txHash;
                     txHash.SetHex(txs[i]["id"].toStdString());

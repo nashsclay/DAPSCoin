@@ -619,6 +619,7 @@ void BitcoinGUI::createToolBars()
     if (walletFrame) {
         QToolBar* toolbar = new QToolBar(this);
         toolbar->setOrientation(Qt::Vertical);
+        toolbar->setObjectName("Main-Toolbar"); // Name for CSS addressing
         toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
         toolbar->addAction(overviewAction);
@@ -674,10 +675,6 @@ void BitcoinGUI::createToolBars()
         QWidget* containerWidget = new QWidget();
         containerWidget->setLayout(layout);
         setCentralWidget(containerWidget);
-
-        auto toolLayout = toolbar->layout();
-        for (int i = 0; i < toolLayout->count(); i++)
-            toolLayout->itemAt(i)->setAlignment(Qt::AlignLeft);
     }
 }
 
@@ -1176,6 +1173,7 @@ void BitcoinGUI::setNumBlocks(int count)
     } else {
         blockCount->setText(tr("%n Blocks", "", count));
     }
+    blockCount->setToolTip(tooltip);
 }
 
 void BitcoinGUI::message(const QString& title, const QString& message, unsigned int style, bool* ret)

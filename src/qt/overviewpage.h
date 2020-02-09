@@ -54,7 +54,7 @@ public slots:
     void updateRecentTransactions();
     void refreshRecentTransactions();
     void setSpendableBalance(bool isStaking);
-    void showBlockCurrentHeight();
+    void showBlockCurrentHeight(int count);
     void updateBalance();
 
 signals:
