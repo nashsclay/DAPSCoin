@@ -25,6 +25,7 @@
 #include "wallet/wallet.h"
 extern CWallet *pwalletMain;
 #endif
+#include "validationinterface.h"
 #include "masternode-payments.h"
 
 #include <boost/thread.hpp>
@@ -624,6 +625,9 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         LOCK(wallet.cs_wallet);
         wallet.mapRequestCount[pblock->GetHash()] = 0;
     }
+
+    // Inform about the new block
+    GetMainSignals().BlockFound(pblock->GetHash());
 
     // Process this block the same as if we had received it from another node
     CValidationState state;
