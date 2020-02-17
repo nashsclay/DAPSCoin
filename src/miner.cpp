@@ -650,7 +650,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
     nDefaultMinerSleep = GetArg("-minersleep", 30000);
     LogPrintf("DAPScoinMiner started with %sms sleep time\n", nDefaultMinerSleep);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("dapscoin-miner");
+    util::ThreadRename("dapscoin-miner");
     fGenerateDapscoins = true;
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
