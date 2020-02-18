@@ -129,12 +129,26 @@ void WalletModel::updateStatus()
         emit encryptionStatusChanged(newEncryptionStatus);
 }
 
+bool IsImportingOrReindexing() {
+    return fImporting || fReindex;
+}
+
 void WalletModel::pollBalanceChanged()
 {
 	if (wallet->walletUnlockCountStatus == 1) {
 		emit WalletUnlocked();
 		wallet->walletUnlockCountStatus++;
 	}
+
+    // Wait a little bit more when the wallet is reindexing and/or importing, no need to lock cs_main so often.
+    if (IsImportingOrReindexing()) {
+        static uint8_t waitLonger = 0;
+        waitLonger++;
+        if (waitLonger < 10) // 10 seconds
+            return;
+        waitLonger = 0;
+    }
+
     // Get required locks upfront. This avoids the GUI from getting stuck on
     // periodical polls if the core is holding the locks for a longer time -
     // for example, during a wallet rescan.
@@ -145,11 +159,12 @@ void WalletModel::pollBalanceChanged()
     if (!lockWallet)
         return;
 
-    if (fForceCheckBalanceChanged || chainActive.Height() != cachedNumBlocks || cachedTxLocks != nCompleteTXLocks) {
+    int chainHeight = chainActive.Height();
+    if (fForceCheckBalanceChanged || chainHeight != cachedNumBlocks) {
         fForceCheckBalanceChanged = false;
 
         // Balance and number of transactions might have changed
-        cachedNumBlocks = chainActive.Height();
+        cachedNumBlocks = chainHeight;
 
         checkBalanceChanged();
         if (transactionTableModel) {
