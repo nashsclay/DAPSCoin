@@ -45,14 +45,18 @@ bool CMasternodeSync::IsBlockchainSynced()
 
     if (fImporting || fReindex) return false;
 
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain) return false;
+    int64_t blockTime = 0;
+    {
+        TRY_LOCK(cs_main, lockMain);
+        if (!lockMain) return false;
 
-    CBlockIndex* pindex = chainActive.Tip();
-    if (pindex == NULL) return false;
+        CBlockIndex *pindex = chainActive.Tip();
+        if (pindex == NULL) return false;
 
+        blockTime = pindex->nTime;
+    }
 
-    if (pindex->nTime + 60 * 60 < GetTime())
+    if (blockTime + 60 * 60 < lastProcess)
         return false;
 
     fBlockchainSynced = true;
@@ -314,9 +318,6 @@ void CMasternodeSync::Process()
                 }
 
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
-
-                CBlockIndex* pindexPrev = chainActive.Tip();
-                if (pindexPrev == NULL) return;
 
                 int nMnCount = mnodeman.CountEnabled();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
