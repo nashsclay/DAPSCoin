@@ -6490,6 +6490,298 @@ bool CMerkleTx::IsTransactionLockTimedOut() const
     return false;
 }
 
+CWallet::CWallet()
+{
+    SetNull();
+}
+
+CWallet::CWallet(std::string strWalletFileIn)
+{
+    SetNull();
+
+    strWalletFile = strWalletFileIn;
+    fFileBacked = true;
+}
+
+CWallet::~CWallet()
+{
+    delete pwalletdbEncryption;
+}
+
+void CWallet::SetNull()
+{
+    nWalletVersion = FEATURE_BASE;
+    nWalletMaxVersion = FEATURE_BASE;
+    fFileBacked = false;
+    nMasterKeyMaxID = 0;
+    pwalletdbEncryption = NULL;
+    nOrderPosNext = 0;
+    nNextResend = 0;
+    nLastResend = 0;
+    nTimeFirstKey = 0;
+    fWalletUnlockAnonymizeOnly = false;
+    walletStakingInProgress = false;
+    fBackupMints = false;
+
+    // Stake Settings
+    nHashDrift = 45;
+    nStakeSplitThreshold = 100000;
+    nHashInterval = 22;
+    nStakeSetUpdateTime = 300; // 5 minutes
+
+    //MultiSend
+    vMultiSend.clear();
+    fMultiSendStake = false;
+    fMultiSendMasternodeReward = false;
+    fMultiSendNotify = false;
+    strMultiSendChangeAddress = "";
+    nLastMultiSendHeight = 0;
+    vDisabledAddresses.clear();
+
+    //Auto Combine Dust
+    fCombineDust = true;
+    nAutoCombineThreshold = 540 * COIN;
+}
+
+bool CWallet::isMultiSendEnabled()
+{
+    return fMultiSendMasternodeReward || fMultiSendStake;
+}
+
+void CWallet::setMultiSendDisabled()
+{
+    fMultiSendMasternodeReward = false;
+    fMultiSendStake = false;
+}
+
+bool CWallet::CanSupportFeature(enum WalletFeature wf)
+{
+    AssertLockHeld(cs_wallet);
+    return nWalletMaxVersion >= wf;
+}
+
+bool CWallet::LoadMinVersion(int nVersion)
+{
+    AssertLockHeld(cs_wallet);
+    nWalletVersion = nVersion;
+    nWalletMaxVersion = std::max(nWalletMaxVersion, nVersion);
+    return true;
+}
+
+isminetype CWallet::IsMine(const CTxOut& txout) const
+{
+    return ::IsMine(*this, txout.scriptPubKey);
+}
+
+CAmount CWallet::GetCredit(const CTransaction& tx, const CTxOut& txout, const isminefilter& filter) const
+{
+    return ((IsMine(txout) & filter) ? getCTxOutValue(tx, txout) : 0);
+}
+
+CAmount CWallet::GetChange(const CTransaction& tx, const CTxOut& txout) const
+{
+    return (IsChange(txout) ? getCTxOutValue(tx, txout) : 0);
+}
+
+bool CWallet::IsMine(const CTransaction& tx) const
+{
+    for (const CTxOut& txout : tx.vout)
+    if (IsMine(txout))
+        return true;
+    return false;
+}
+
+bool CWallet::IsFromMe(const CTransaction& tx) const
+{
+    return (GetDebit(tx, ISMINE_ALL) > 0);
+}
+
+CAmount CWallet::GetDebit(const CTransaction& tx, const isminefilter& filter) const
+{
+    CAmount nDebit = 0;
+    for (const CTxIn& txin : tx.vin) {
+        nDebit += GetDebit(txin, filter);
+    }
+    return nDebit;
+}
+
+CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter) const
+{
+    CAmount nCredit = 0;
+    for (const CTxOut& txout : tx.vout) {
+        nCredit += GetCredit(tx, txout, filter);
+    }
+    return nCredit;
+}
+
+CAmount CWallet::GetChange(const CTransaction& tx) const
+{
+    CAmount nChange = 0;
+    for (const CTxOut& txout : tx.vout) {
+        nChange += GetChange(tx, txout);
+    }
+    return nChange;
+}
+
+void CWallet::Inventory(const uint256& hash)
+{
+    {
+        LOCK(cs_wallet);
+        std::map<uint256, int>::iterator mi = mapRequestCount.find(hash);
+        if (mi != mapRequestCount.end())
+            (*mi).second++;
+    }
+}
+
+unsigned int CWallet::GetKeyPoolSize()
+{
+    AssertLockHeld(cs_wallet); // setKeyPool
+    return setKeyPool.size();
+}
+
+int CWallet::GetVersion()
+{
+    LOCK(cs_wallet);
+    return nWalletVersion;
+}
+
+CWalletTx::CWalletTx()
+{
+    Init(NULL);
+}
+
+CWalletTx::CWalletTx(CWallet* pwalletIn)
+{
+    Init(pwalletIn);
+}
+
+CWalletTx::CWalletTx(CWallet* pwalletIn, const CMerkleTx& txIn) : CMerkleTx(txIn)
+{
+    Init(pwalletIn);
+}
+
+CWalletTx::CWalletTx(CWallet* pwalletIn, const CTransaction& txIn) : CMerkleTx(txIn)
+{
+    Init(pwalletIn);
+}
+
+void CWalletTx::Init(CWallet* pwalletIn)
+{
+    pwallet = pwalletIn;
+    mapValue.clear();
+    vOrderForm.clear();
+    fTimeReceivedIsTxTime = false;
+    nTimeReceived = 0;
+    nTimeSmart = 0;
+    fFromMe = false;
+    strFromAccount.clear();
+    fDebitCached = false;
+    fCreditCached = false;
+    fImmatureCreditCached = false;
+    fAvailableCreditCached = false;
+    fAnonymizableCreditCached = false;
+    fAnonymizedCreditCached = false;
+    fDenomUnconfCreditCached = false;
+    fDenomConfCreditCached = false;
+    fWatchDebitCached = false;
+    fWatchCreditCached = false;
+    fImmatureWatchCreditCached = false;
+    fAvailableWatchCreditCached = false;
+    fChangeCached = false;
+    nDebitCached = 0;
+    nCreditCached = 0;
+    nImmatureCreditCached = 0;
+    nAvailableCreditCached = 0;
+    nAnonymizableCreditCached = 0;
+    nAnonymizedCreditCached = 0;
+    nDenomUnconfCreditCached = 0;
+    nDenomConfCreditCached = 0;
+    nWatchDebitCached = 0;
+    nWatchCreditCached = 0;
+    nAvailableWatchCreditCached = 0;
+    nImmatureWatchCreditCached = 0;
+    nChangeCached = 0;
+    nOrderPos = -1;
+}
+
+bool CWalletTx::IsTrusted() const
+{
+    // Quick answer in most cases
+    if (!IsFinalTx(*this))
+        return false;
+    int nDepth = GetDepthInMainChain();
+    if (nDepth >= 1)
+        return true;
+    if (nDepth < 0)
+        return false;
+    if (!bSpendZeroConfChange || !IsFromMe(ISMINE_ALL)) // using wtx's cached debit
+        return false;
+     // Don't trust unconfirmed transactions from us unless they are in the mempool.
+    {
+        LOCK(mempool.cs);
+        if (!mempool.exists(GetHash())) {
+            return false;
+        }
+    }
+    // Trusted if all inputs are from us and are in the mempool:
+    for (const CTxIn& txin : vin) {
+        // Transactions not sent by us: not trusted
+        COutPoint prevout = pwallet->findMyOutPoint(txin);
+        const CWalletTx* parent = pwallet->GetWalletTx(prevout.hash);
+        if (parent == NULL)
+            return false;
+        const CTxOut& parentOut = parent->vout[prevout.n];
+        if (pwallet->IsMine(parentOut) != ISMINE_SPENDABLE)
+            return false;
+    }
+    return true;
+}
+
+void CWalletTx::MarkDirty()
+{
+    fCreditCached = false;
+    fAvailableCreditCached = false;
+    fAnonymizableCreditCached = false;
+    fAnonymizedCreditCached = false;
+    fDenomUnconfCreditCached = false;
+    fDenomConfCreditCached = false;
+    fWatchDebitCached = false;
+    fWatchCreditCached = false;
+    fAvailableWatchCreditCached = false;
+    fImmatureWatchCreditCached = false;
+    fDebitCached = false;
+    fChangeCached = false;
+}
+
+void CWalletTx::BindWallet(CWallet* pwalletIn)
+{
+    pwallet = pwalletIn;
+    MarkDirty();
+}
+
+CAmount CWalletTx::GetChange() const
+{
+    if (fChangeCached)
+        return nChangeCached;
+    nChangeCached = pwallet->GetChange(*this);
+    fChangeCached = true;
+    return nChangeCached;
+}
+
+bool CWalletTx::IsFromMe(const isminefilter& filter) const
+{
+    return (GetDebit(filter) > 0);
+}
+
+int CWalletTx::GetBlockHeight() const
+{
+    if (hashBlock.IsNull()) {
+        return -1; //not in the chain
+    } else {
+        return mapBlockIndex[hashBlock]->nHeight;
+    }
+}
+
 bool CWallet::ReadAccountList(std::string& accountList)
 {
     return CWalletDB(strWalletFile).ReadStealthAccountList(accountList);
