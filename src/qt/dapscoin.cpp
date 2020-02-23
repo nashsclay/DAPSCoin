@@ -41,7 +41,6 @@
 #endif
 
 #include "encryptdialog.h"
-#include "unlockdialog.h"
 #include "entermnemonics.h"
 
 #include <signal.h>
@@ -500,11 +499,8 @@ void BitcoinApplication::initializeResult(int retval)
         QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
         if (pwalletMain) {
             if (walletModel->getEncryptionStatus() == WalletModel::Locked) {
-                UnlockDialog unlockdlg;
-                unlockdlg.setWindowTitle("Unlock Keychain Wallet");
-                unlockdlg.setModel(walletModel);
-                unlockdlg.setStyleSheet(GUIUtil::loadStyleSheet());
-                if (unlockdlg.exec() == QDialog::Accepted) {
+                WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
+                if (ctx.isValid()) {
                     walletUnlocked = true;
                     if (fLiteMode) {
                         pwalletMain->WriteStakingStatus(false);
