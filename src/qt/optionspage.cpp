@@ -817,7 +817,7 @@ void OptionsPage::on_month() {
 void OptionsPage::onShowMnemonic() {
     int status = model->getEncryptionStatus();
     if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
-        WalletModel::UnlockContext ctx(model->requestUnlock(false));
+        WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
         if (!ctx.isValid()) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Mnemonic Recovery Phrase");
@@ -837,7 +837,7 @@ void OptionsPage::onShowMnemonic() {
         reply = QMessageBox::question(this, "Are You Sure?", "Are you sure you would like to view your Mnemonic Phrase?\nYou will be required to enter your passphrase. Failed or canceled attempts will be logged.", QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             model->setWalletLocked(true);
-            WalletModel::UnlockContext ctx(model->requestUnlock(false));
+            WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
             if (!ctx.isValid()) {
                 QMessageBox msgBox;
                 msgBox.setWindowTitle("Mnemonic Recovery Phrase");
