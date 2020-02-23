@@ -50,9 +50,10 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel
         break;
         ui->anonymizationCheckBox->setChecked(false);
         ui->anonymizationCheckBox->hide();
-        ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
     case Mode::UnlockAnonymize:
     case Mode::Unlock: // Ask passphrase
+        ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet.<br/><br/>(Wallet may appear not responding as it rescans for all transactions)<br/><br/>"));
+        ui->warningLabel->setAlignment(Qt::AlignHCenter);
         ui->passLabel2->hide();
         ui->passEdit2->hide();
         ui->passLabel3->hide();
