@@ -197,7 +197,6 @@ HEADERS += src/activemasternode.h \
            src/qt/historypage.h \
            src/qt/importorcreate.h \
            src/qt/intro.h \
-           src/qt/lockdialog.h \
            src/qt/macdockiconhandler.h \
            src/qt/macnotificationhandler.h \
            src/qt/masternodelist.h \
@@ -522,7 +521,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/historypage.cpp \
            src/qt/importorcreate.cpp \
            src/qt/intro.cpp \
-           src/qt/lockdialog.cpp \
            src/qt/masternodelist.cpp \
            src/qt/multisenddialog.cpp \
            src/qt/multisigdialog.cpp \
