@@ -1897,31 +1897,6 @@ lowercase letters, numbers, symbols) </source>
     </message>
 </context>
 <context>
-    <name>LockDialog</name>
-    <message>
-        <location filename="../forms/lockdialog.ui" line="+20"/>
-        <source>Transaction Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Would you like to lock your keychain wallet now?
-
-(Staking will also be stopped)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>Lock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MasternodeList</name>
     <message>
         <location filename="../forms/masternodelist.ui" line="+14"/>
@@ -5324,44 +5299,6 @@ Please try again.</source>
         <location filename="../bitcoingui.cpp" line="+87"/>
         <source>Unit to show amounts in. Click to select another unit.</source>
         <translation>Unit to show amounts in. Click to select another unit.</translation>
-    </message>
-</context>
-<context>
-    <name>UnlockDialog</name>
-    <message>
-        <location filename="../forms/unlockdialog.ui" line="+20"/>
-        <source>Transaction Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Enter your passphrase:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>(Wallet may appear not responding as it rescans for all transactions)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+73"/>
-        <source>Unlock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../unlockdialog.cpp" line="+40"/>
-        <source>Wallet unlock failed</source>
-        <translation type="unfinished">Wallet unlock failed</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>The passphrase entered for the wallet decryption was incorrect.</source>
-        <translation type="unfinished">The passphrase entered for the wallet decryption was incorrect.</translation>
     </message>
 </context>
 <context>

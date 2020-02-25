@@ -7,8 +7,6 @@
 
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
-#include "unlockdialog.h"
-#include "lockdialog.h"
 #include "bitcoinunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -525,41 +523,26 @@ void OverviewPage::refreshRecentTransactions() {
 
 void OverviewPage::on_lockUnlock() {
     if (walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForAnonymizationOnly) {
-        UnlockDialog unlockdlg;
-        unlockdlg.setWindowTitle("Unlock Keychain Wallet");
-        unlockdlg.setModel(walletModel);
-        unlockdlg.setStyleSheet(GUIUtil::loadStyleSheet());
-        connect(&unlockdlg, SIGNAL(finished (int)), this, SLOT(unlockDialogIsFinished(int)));
-        unlockdlg.exec();
+        WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
+        if (ctx.isValid()) {
+            ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
+            ui->labelBalance_2->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getBalance(), false, BitcoinUnits::separatorAlways));
+            ui->labelBalance->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
+            ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
+            pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
+        }
     }
     else {
-        LockDialog lockdlg;
-        lockdlg.setWindowTitle("Lock Keychain Wallet");
-        lockdlg.setModel(walletModel);
-        lockdlg.setStyleSheet(GUIUtil::loadStyleSheet());
-        connect(&lockdlg, SIGNAL(finished (int)), this, SLOT(lockDialogIsFinished(int)));
-        lockdlg.exec();   
-    }
-}
-
-
-void OverviewPage::unlockDialogIsFinished(int result) {
-    if(result == QDialog::Accepted){
-        ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
-        ui->labelBalance_2->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getBalance(), false, BitcoinUnits::separatorAlways));
-        ui->labelBalance->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
-        ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
-        pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
-    }
-}
-
-void OverviewPage::lockDialogIsFinished(int result) {
-    if(result == QDialog::Accepted){
-        ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
-        ui->labelBalance_2->setText("Locked; Hidden");
-        ui->labelBalance->setText("Locked; Hidden");
-        ui->labelUnconfirmed->setText("Locked; Hidden");
-        pwalletMain->stakingMode = StakingMode::STOPPED;
+        QMessageBox::StandardButton msgReply;
+        msgReply = QMessageBox::question(this, "Lock Keychain Wallet", "Would you like to lock your keychain wallet now?\n\n(Staking will also be stopped)", QMessageBox::Yes|QMessageBox::No);
+        if (msgReply == QMessageBox::Yes) {
+            walletModel->setWalletLocked(true);
+            ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
+            ui->labelBalance_2->setText("Locked; Hidden");
+            ui->labelBalance->setText("Locked; Hidden");
+            ui->labelUnconfirmed->setText("Locked; Hidden");
+            pwalletMain->stakingMode = StakingMode::STOPPED;
+        }
     }
 }
 
