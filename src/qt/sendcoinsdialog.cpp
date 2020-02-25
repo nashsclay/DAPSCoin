@@ -309,9 +309,13 @@ void SendCoinsDialog::sendTx() {
                 return;
             }
         } else {
+            QString msg = err.what();
+            if (msg == "") {
+                msg = "Unable to create transaction. Please try again later.";
+            }
             QMessageBox msgBox;
             msgBox.setWindowTitle("Transaction Creation Error");
-            msgBox.setText(QString(err.what()));
+            msgBox.setText(msg);
             msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
