@@ -388,6 +388,6 @@ BOOST_AUTO_TEST_CASE(test_StealthSend)
     printf("%llu/%llu/%llu/%llu\n", pwalletMain->GetSpendableBalance(), pwalletMain->GetBalance(), pwalletMain->GetUnlockedCoins(), pwalletMain->GetLockedCoins());
 
     // check stealth sending on not enough balance wallet
-    SelectParams(CBaseChainParams::UNITTEST);
+    SelectParams(CBaseChainParams::MAIN);
 }
 BOOST_AUTO_TEST_SUITE_END()
