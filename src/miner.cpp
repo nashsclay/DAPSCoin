@@ -612,7 +612,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 
     // Found a solution
     {
-        WaitableLock lock(g_best_block_mutex);
+        WAIT_LOCK(g_best_block_mutex, lock);
         if (pblock->hashPrevBlock != g_best_block)
             return error("DAPScoinMiner : generated block is stale");
     }
