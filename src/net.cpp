@@ -1219,7 +1219,7 @@ void ThreadDNSAddressSeed() {
         } else {
             vector <CNetAddr> vIPs;
             vector <CAddress> vAdd;
-            if (LookupHost(seed.host.c_str(), vIPs)) {
+            if (LookupHost(seed.host.c_str(), vIPs, 0, true)) {
                 for (CNetAddr & ip : vIPs)
                 {
                     int nOneDay = 24 * 3600;
@@ -1627,7 +1627,7 @@ void static Discover(boost::thread_group &threadGroup) {
     char pszHostName[256] = "";
     if (gethostname(pszHostName, sizeof(pszHostName)) != SOCKET_ERROR) {
         vector<CNetAddr> vaddr;
-        if (LookupHost(pszHostName, vaddr)) {
+        if (LookupHost(pszHostName, vaddr, 0, true)) {
             for (const CNetAddr& addr : vaddr) {
                 if (AddLocal(addr, LOCAL_IF))
                     LogPrintf("%s: %s - %s\n", __func__, pszHostName, addr.ToString());
