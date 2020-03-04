@@ -77,7 +77,7 @@ namespace {
 bool fDiscover = true;
 bool fListen = true;
 uint64_t nLocalServices = NODE_NETWORK;
-CCriticalSection cs_mapLocalHost;
+RecursiveMutex cs_mapLocalHost;
 map <CNetAddr, LocalServiceInfo> mapLocalHost;
 //static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
@@ -90,23 +90,23 @@ bool fAddressesInitialized = false;
 std::string strSubVersion;
 
 vector<CNode *> vNodes;
-CCriticalSection cs_vNodes;
+RecursiveMutex cs_vNodes;
 map <CInv, CDataStream> mapRelay;
 deque <pair<int64_t, CInv>> vRelayExpiration;
-CCriticalSection cs_mapRelay;
+RecursiveMutex cs_mapRelay;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
 
 static deque <string> vOneShots;
-CCriticalSection cs_vOneShots;
+RecursiveMutex cs_vOneShots;
 
 set <CNetAddr> setservAddNodeAddresses;
-CCriticalSection cs_setservAddNodeAddresses;
+RecursiveMutex cs_setservAddNodeAddresses;
 
 vector <std::string> vAddedNodes;
-CCriticalSection cs_vAddedNodes;
+RecursiveMutex cs_vAddedNodes;
 
 NodeId nLastNodeId = 0;
-CCriticalSection cs_nLastNodeId;
+RecursiveMutex cs_nLastNodeId;
 
 static CSemaphore *semOutbound = NULL;
 boost::condition_variable messageHandlerCondition;
@@ -325,8 +325,8 @@ void AddressCurrentlyConnected(const CService &addr) {
 
 uint64_t CNode::nTotalBytesRecv = 0;
 uint64_t CNode::nTotalBytesSent = 0;
-CCriticalSection CNode::cs_totalBytesRecv;
-CCriticalSection CNode::cs_totalBytesSent;
+RecursiveMutex CNode::cs_totalBytesRecv;
+RecursiveMutex CNode::cs_totalBytesSent;
 
 CNode *FindNode(const CNetAddr &ip) {
     LOCK(cs_vNodes);
@@ -471,7 +471,7 @@ void CNode::PushVersion() {
 
 
 banmap_t CNode::setBanned;
-CCriticalSection CNode::cs_setBanned;
+RecursiveMutex CNode::cs_setBanned;
 bool CNode::setBannedIsDirty;
 
 void CNode::ClearBanned() {
@@ -613,7 +613,7 @@ void CNode::SetBannedSetDirty(bool dirty) {
 }
 
 std::vector <CSubNet> CNode::vWhitelistedRange;
-CCriticalSection CNode::cs_vWhitelistedRange;
+RecursiveMutex CNode::cs_vWhitelistedRange;
 
 bool CNode::IsWhitelistedRange(const CNetAddr &addr) {
     LOCK(cs_vWhitelistedRange);

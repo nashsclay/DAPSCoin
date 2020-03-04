@@ -63,7 +63,7 @@ private:
     Ui::MasternodeList* ui;
     ClientModel* clientModel;
     WalletModel* walletModel;
-    CCriticalSection cs_mnlistupdate;
+    RecursiveMutex cs_mnlistupdate;
     QString strCurrentFilter;
     virtual void resizeEvent(QResizeEvent* event);
 

@@ -17,7 +17,7 @@
 #include <QErrorMessage>
 #include <QTimer>
 
-CCriticalSection cs_masternodes;
+RecursiveMutex cs_masternodes;
 
 MasternodeList::MasternodeList(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
                                                   ui(new Ui::MasternodeList),
