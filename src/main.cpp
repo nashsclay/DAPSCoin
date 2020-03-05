@@ -90,7 +90,6 @@ unsigned int nCoinCacheSize = 5000;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 
 unsigned int nStakeMinAge = 60 * 60;
-int64_t nReserveBalance = 0;
 
 const int MIN_RING_SIZE = 11;
 const int MAX_RING_SIZE = 15;

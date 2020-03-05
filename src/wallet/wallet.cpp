@@ -51,7 +51,8 @@ bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
 bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
-int64_t nStartupTime = GetTime(); //!< Client startup time for use with automint
+int64_t nStartupTime = GetTime();
+int64_t nReserveBalance = 0;
 
 #include "uint256.h"
 
