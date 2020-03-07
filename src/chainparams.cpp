@@ -167,7 +167,6 @@ public:
         pchMessageStart[1] = 0xb7;
         pchMessageStart[2] = 0x79;
         pchMessageStart[3] = 0x84;
-        vAlertPubKey = ParseHex("049def8e22e7f78b624dc62007c66c06066d032310b3507642306b143326a8295e03576ffab7469c552e1a68655598d78d501eb10cc27408bfd7876dbadb08b0ee");
         nDefaultPort = 53572;
         bnProofOfWorkLimit = ~uint256(0) >> 1; // DAPScoin starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 210000;
@@ -314,7 +313,6 @@ public:
         pchMessageStart[1] = 0xb8;
         pchMessageStart[2] = 0x7a;
         pchMessageStart[3] = 0x85;
-        vAlertPubKey = ParseHex("04b6c4c72f1ef439a603ab52aa2ca7c73c59c5cfb0ebdae305f7fd2928bb90b41293dc746753f59fea3a6fb2cc546bbebf4387a368bdf1a3755d4545fe28ba449e");
         nDefaultPort = 53574;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
