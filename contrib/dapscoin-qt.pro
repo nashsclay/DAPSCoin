@@ -57,7 +57,6 @@ INCLUDEPATH += . \
 # Input
 HEADERS += src/activemasternode.h \
            src/addrman.h \
-           src/alert.h \
            src/allocators.h \
            src/amount.h \
            src/arith_uint256.h \
@@ -381,7 +380,6 @@ FORMS += src/qt/forms/addressbookpage.ui \
          src/qt/forms/transactiondescdialog.ui \
 SOURCES += src/activemasternode.cpp \
            src/addrman.cpp \
-           src/alert.cpp \
            src/allocators.cpp \
            src/amount.cpp \
            src/arith_uint256.cpp \
