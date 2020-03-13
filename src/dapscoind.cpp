@@ -148,6 +148,8 @@ bool AppInit(int argc, char* argv[])
         }
 #endif
         SoftSetBoolArg("-server", true);
+
+        InitParameterInteraction();
         fRet = AppInit2(true);
     } catch (std::exception& e) {
         PrintExceptionContinue(&e, "AppInit()");

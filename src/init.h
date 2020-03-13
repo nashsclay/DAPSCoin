@@ -24,6 +24,8 @@ bool ShutdownRequested();
 void Interrupt();
 void Shutdown();
 void PrepareShutdown();
+//!Parameter interaction: change current parameters depending on various rules
+void InitParameterInteraction();
 bool AppInit2(bool isDaemon);
 
 /** Initialize DAPS: Basic context setup.
