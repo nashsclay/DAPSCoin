@@ -420,6 +420,7 @@ void BitcoinApplication::startThread()
 
 void BitcoinApplication::parameterSetup()
 {
+    InitLogging();
     InitParameterInteraction();
 }
 
