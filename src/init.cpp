@@ -809,34 +809,22 @@ bool AppInitBasicSetup()
     return true;
 }
 
-/** Initialize daps.
- *  @pre Parameters should be parsed and config file should be read.
- */
-bool AppInit2(bool isDaemon)
+// Parameter interaction based on rules
+void InitParameterInteraction()
 {
-    // ********************************************************* Step 1: setup
-    if (!AppInitBasicSetup())
-        return false;
-
-    // ********************************************************* Step 2: parameter interactions
-    // Set this early so that parameter interactions go to console
-    fPrintToConsole = GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = GetBoolArg("-logtimestamps", true);
-    fLogIPs = GetBoolArg("-logips", false);
-
     if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
         if (SoftSetBoolArg("-listen", true))
-            LogPrintf("AppInit2 : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
+            LogPrintf("%s : parameter interaction: -bind or -whitebind set -> setting -listen=1\n", __func__);
     }
 
     if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
         if (SoftSetBoolArg("-dnsseed", false))
-            LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -dnsseed=0\n");
+            LogPrintf("%s : parameter interaction: -connect set -> setting -dnsseed=0\n", __func__);
         if (SoftSetBoolArg("-listen", false))
-            LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -listen=0\n");
+            LogPrintf("%s : parameter interaction: -connect set -> setting -listen=0\n", __func__);
     }
 
     if (mapArgs.count("-proxy")) {
@@ -849,42 +837,63 @@ bool AppInit2(bool isDaemon)
             LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
         // to protect privacy, do not discover addresses by default
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -proxy set -> setting -discover=0\n");
+            LogPrintf("%s : parameter interaction: -proxy set -> setting -discover=0\n", __func__);
     }
 
     if (!GetBoolArg("-listen", true)) {
         // do not map ports or try to retrieve public IP when not listening (pointless)
         if (SoftSetBoolArg("-upnp", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -upnp=0\n");
+            LogPrintf("%s : parameter interaction: -listen=0 -> setting -upnp=0\n", __func__);
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -discover=0\n");
+            LogPrintf("%s : parameter interaction: -listen=0 -> setting -discover=0\n", __func__);
         if (SoftSetBoolArg("-listenonion", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -listenonion=0\n");
+            LogPrintf("%s : parameter interaction: -listen=0 -> setting -listenonion=0\n", __func__);
     }
 
     if (mapArgs.count("-externalip")) {
         // if an explicit public IP is specified, do not try to find others
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -externalip set -> setting -discover=0\n");
+            LogPrintf("%s : parameter interaction: -externalip set -> setting -discover=0\n", __func__);
     }
 
     if (GetBoolArg("-salvagewallet", false)) {
         // Rewrite just private keys: rescan to find transactions
         if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("AppInit2 : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
+            LogPrintf("%s : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n", __func__);
     }
 
     // -zapwallettx implies a rescan
     if (GetBoolArg("-zapwallettxes", false)) {
         if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("AppInit2 : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
+            LogPrintf("%s : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n", __func__);
     }
 
     if (!GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
         if (SoftSetArg("-swifttxdepth", "0"))
-            LogPrintf("AppInit2 : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
+            LogPrintf("%s : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n", __func__);
     }
+}
 
+void InitLogging()
+{
+    fPrintToConsole = GetBoolArg("-printtoconsole", false);
+    fLogTimestamps = GetBoolArg("-logtimestamps", true);
+    fLogIPs = GetBoolArg("-logips", false);
+
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("DAPS version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+}
+
+/** Initialize daps.
+ *  @pre Parameters should be parsed and config file should be read.
+ */
+bool AppInit2(bool isDaemon)
+{
+    // ********************************************************* Step 1: setup
+    if (!AppInitBasicSetup())
+        return false;
+
+    // ********************************************************* Step 2: parameter interactions
 #ifdef ENABLE_WALLET
     if (mapArgs.count("-reservebalance")) {
         if (!ParseMoney(mapArgs["-reservebalance"], nReserveBalance)) {
@@ -947,7 +956,7 @@ bool AppInit2(bool isDaemon)
     if (fDisableWallet) {
 #endif
         if (SoftSetBoolArg("-staking", false))
-            LogPrintf("AppInit2 : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
+            LogPrintf("%s : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
 #ifdef ENABLE_WALLET
     }
 #endif
@@ -1046,8 +1055,7 @@ bool AppInit2(bool isDaemon)
 #endif
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("DAPS version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
     LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
@@ -1157,7 +1165,7 @@ bool AppInit2(bool isDaemon)
             // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
             filesystem::path blocksDir = GetDataDir() / "blocks";
             filesystem::path chainstateDir = GetDataDir() / "chainstate";
-            
+
             // We delete in 4 individual steps in case one of the folder is missing already
             try {
                 if (filesystem::exists(blocksDir)){
@@ -1491,7 +1499,7 @@ bool AppInit2(bool isDaemon)
 
                     filesystem::path blocksDir = GetDataDir() / "blocks";
                     filesystem::path chainstateDir = GetDataDir() / "chainstate";
-                    
+
                     // We delete in 4 individual steps in case one of the folder is missing already
                     try {
                         if (filesystem::exists(blocksDir)){
@@ -1503,13 +1511,13 @@ bool AppInit2(bool isDaemon)
                             boost::filesystem::remove_all(chainstateDir);
                             LogPrintf("-resync: folder deleted: %s\n", chainstateDir.string().c_str());
                         }
-                        
+
                         boost::filesystem::create_directories(blocksDir);
                         boost::filesystem::create_directories(chainstateDir);
                     } catch (boost::filesystem::filesystem_error& error) {
                         LogPrintf("Failed to delete blockchain folders %s\n", error.what());
                     }
-                    
+
                 } else {
                     LogPrintf("Aborted block database rebuild. Exiting.\n");
                     return false;
@@ -1604,7 +1612,7 @@ bool AppInit2(bool isDaemon)
                 if (!isDaemon) {
                     uiInterface.ShowRecoveryDialog();
                 }
-                
+
                 if (!pwalletMain->IsHDEnabled()) {
                     // generate a new master key
                     pwalletMain->GenerateNewHDChain();
@@ -1908,7 +1916,7 @@ bool AppInit2(bool isDaemon)
 
         // Run a thread to flush wallet periodically
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
-		
+
         storedStakingStatus = pwalletMain->ReadStakingStatus();
         if (GetBoolArg("-staking", false) || storedStakingStatus) {
             fGenerateDapscoins = true;

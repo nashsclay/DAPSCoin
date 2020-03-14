@@ -206,6 +206,8 @@ public:
     /// Create payment server
     void createPaymentServer();
 #endif
+    /// parameter interaction/setup based on rules
+    void parameterSetup();
     /// Create options model
     void createOptionsModel();
     /// Create main window
@@ -414,6 +416,12 @@ void BitcoinApplication::startThread()
     connect(this, SIGNAL(stopThread()), coreThread, SLOT(quit()));
 
     coreThread->start();
+}
+
+void BitcoinApplication::parameterSetup()
+{
+    InitLogging();
+    InitParameterInteraction();
 }
 
 void BitcoinApplication::requestInitialize()
@@ -697,6 +705,8 @@ int main(int argc, char* argv[])
 #endif
     // Install qDebug() message handler to route to debug.log
     qInstallMessageHandler(DebugMessageHandler);
+    // Allow parameter interaction before we create the options model
+    app.parameterSetup();
     // Load GUI settings from QSettings
     app.createOptionsModel();
 
