@@ -1676,8 +1676,10 @@ void StartNode(boost::thread_group &threadGroup, CScheduler &scheduler) {
         CAddrDB adb;
         if (adb.Read(addrman))
             LogPrintf("Loaded %i addresses from peers.dat  %dms\n", addrman.size(), GetTimeMillis() - nStart);
-        else
+        else {
+            addrman.Clear(); // Addrman can be in an inconsistent state after failure, reset it
             LogPrintf("Invalid or missing peers.dat; recreating\n");
+        }
     }
 
     uiInterface.InitMessage(_("Loading banlist..."));
@@ -1983,6 +1985,11 @@ bool CAddrDB::Read(CAddrMan &addr) {
     if (hashIn != hashTmp)
         return error("%s : Checksum mismatch, data corrupted", __func__);
 
+    return Read(addr, ssPeers);
+}
+
+bool CAddrDB::Read(CAddrMan& addr, CDataStream& ssPeers)
+{
     unsigned char pchMsgTmp[4];
     try {
         // de-serialize file header (network specific magic number) and ..
@@ -1995,6 +2002,8 @@ bool CAddrDB::Read(CAddrMan &addr) {
         // de-serialize address data into one CAddrMan object
         ssPeers >> addr;
     } catch (std::exception &e) {
+        // de-serialization has failed, ensure addrman is left in a clean state
+        addr.Clear();
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 
