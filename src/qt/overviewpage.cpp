@@ -327,8 +327,14 @@ void OverviewPage::showBlockSync(bool fShow)
 
     isSyncingBlocks = fShow;
 
-    ui->labelBlockCurrent->setText(QString::number(clientModel->getNumBlocks()));
-    if (isSyncingBlocks){
+    int count = clientModel->getNumBlocks();
+    ui->labelBlockCurrent->setText(QString::number(count));
+
+    if (count == 0 & isSyncingBlocks){
+        ui->labelBlockStatus->setText("(loading)");
+        ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
+        ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
+    } else if (isSyncingBlocks){
         ui->labelBlockStatus->setText("(syncing)");
         ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
