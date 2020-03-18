@@ -156,7 +156,7 @@
            <item>
             <widget class="QLabel" name="labelBlockStatus">
              <property name="text">
-              <string notr="true">(syncing)</string>
+              <string notr="true">(loading)</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignHCenter|Qt::AlignTop</set>
