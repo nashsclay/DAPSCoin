@@ -21,7 +21,7 @@ public:
     void setTxPrivKey(QString strPrivKey);
     void setTxFee(CAmount fee);
 
-private slots:
+private Q_SLOTS:
     void on_buttonBox_accepted();
     void copyID();
     void copyAddress();

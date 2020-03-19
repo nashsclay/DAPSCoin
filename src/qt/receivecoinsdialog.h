@@ -48,7 +48,7 @@ public:
     void setModel(WalletModel* model);
     void loadAccount();
 
-public slots:
+public Q_SLOTS:
     void clear();
     void reject();
     void accept();
@@ -66,7 +66,7 @@ private:
     virtual void resizeEvent(QResizeEvent* event);
     CAmount getValidatedAmount();
 
-private slots:
+private Q_SLOTS:
     void on_receiveButton_clicked();
     void updateDisplayUnit();
 

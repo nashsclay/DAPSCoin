@@ -16,7 +16,7 @@ public:
     explicit TwoFADialog(QWidget *parent = 0);
     ~TwoFADialog();
 
-private slots:
+private Q_SLOTS:
     void on_acceptCode();
     void codeChanged(const QString & txt);
 

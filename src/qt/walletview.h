@@ -75,7 +75,7 @@ private:
     QProgressDialog* progressDialog;
     QLabel* transactionSum;
 
-public slots:
+public Q_SLOTS:
     /** Switch to overview (home) page */
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
@@ -118,7 +118,7 @@ public slots:
     /** Show used receiving addresses */
     void usedReceivingAddresses();
 
-    /** Re-emit encryption status signal */
+    /** Re-Q_EMIT encryption status signal */
     void updateEncryptionStatus();
 
     /** Show progress dialog e.g. for rescan */
@@ -128,7 +128,7 @@ public slots:
     void trxAmount(QString amount);
     void stakingStatus(bool);
 
-signals:
+Q_SIGNALS:
     /** Signal that we want to show the main window */
     void showNormalIfMinimized();
     /**  Fired when a message should be reported to the user */

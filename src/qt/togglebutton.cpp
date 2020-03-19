@@ -93,7 +93,7 @@ void ToggleButton::setState(bool value)
 void ToggleButton::toggle()
 {
     state=!state;
-    emit stateChanged(this);
+    Q_EMIT stateChanged(this);
     update();
 }
 

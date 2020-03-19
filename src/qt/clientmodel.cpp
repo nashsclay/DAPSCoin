@@ -135,7 +135,7 @@ void ClientModel::updateTimer()
     // Get required lock upfront. This avoids the GUI from getting stuck on
     // periodical polls if the core is holding the locks for a longer time -
     // for example, during a wallet rescan.
-    emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
+    Q_EMIT bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
 }
 
 void ClientModel::updateMnTimer()
@@ -151,18 +151,18 @@ void ClientModel::updateMnTimer()
     if (cachedMasternodeCountString != newMasternodeCountString) {
         cachedMasternodeCountString = newMasternodeCountString;
 
-        emit strMasternodesChanged(cachedMasternodeCountString);
+        Q_EMIT strMasternodesChanged(cachedMasternodeCountString);
     }
 }
 
 void ClientModel::updateNumConnections(int numConnections)
 {
-    emit numConnectionsChanged(numConnections);
+    Q_EMIT numConnectionsChanged(numConnections);
 }
 
 void ClientModel::updateAlert()
 {
-    emit alertsChanged(getStatusBarWarnings());
+    Q_EMIT alertsChanged(getStatusBarWarnings());
 }
 
 bool ClientModel::inInitialBlockDownload() const

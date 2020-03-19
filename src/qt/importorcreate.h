@@ -18,7 +18,7 @@ public:
     explicit ImportOrCreate(QWidget *parent = 0);
     ~ImportOrCreate();
     bool willRecover = false;
-private slots:
+private Q_SLOTS:
     void on_next();
 
 private:

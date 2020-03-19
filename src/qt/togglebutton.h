@@ -30,12 +30,12 @@ protected:
     void resizeEvent(QResizeEvent * event);
     void paintEvent(QPaintEvent *);
 
-public slots:
+public Q_SLOTS:
     void toggle();
 
-signals:
+Q_SIGNALS:
     void stateChanged(ToggleButton* widget);
-private slots:
+private Q_SLOTS:
 
 private:
     Ui::ToggleButton* ui;

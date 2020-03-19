@@ -126,7 +126,7 @@ void WalletModel::updateStatus()
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
 
     if (cachedEncryptionStatus != newEncryptionStatus)
-        emit encryptionStatusChanged(newEncryptionStatus);
+        Q_EMIT encryptionStatusChanged(newEncryptionStatus);
 }
 
 bool IsImportingOrReindexing() {
@@ -136,7 +136,7 @@ bool IsImportingOrReindexing() {
 void WalletModel::pollBalanceChanged()
 {
 	if (wallet->walletUnlockCountStatus == 1) {
-		emit WalletUnlocked();
+		Q_EMIT WalletUnlocked();
 		wallet->walletUnlockCountStatus++;
 	}
 
@@ -181,7 +181,7 @@ void WalletModel::emitBalanceChanged()
     if (cachedBalance == 0 && !checkBalanceChanged())
         return;
     
-    emit balanceChanged(cachedBalance, cachedUnconfirmedBalance, cachedImmatureBalance,
+    Q_EMIT balanceChanged(cachedBalance, cachedUnconfirmedBalance, cachedImmatureBalance,
         cachedWatchOnlyBalance, cachedWatchUnconfBalance, cachedWatchImmatureBalance);
 }
 
@@ -226,7 +226,7 @@ bool WalletModel::checkBalanceChanged()
         cachedWatchImmatureBalance = newWatchImmatureBalance;
         stkEnabled = (nLastCoinStakeSearchInterval > 0);
         walletLocked = pwalletMain->IsLocked();
-        emit balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance,
+        Q_EMIT balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance,
             newWatchOnlyBalance, newWatchUnconfBalance, newWatchImmatureBalance);
         return true;
     }
@@ -255,13 +255,13 @@ void WalletModel::updateAddressBook(const QString& pubCoin, const QString& isUse
 void WalletModel::updateWatchOnlyFlag(bool fHaveWatchonly)
 {
     fHaveWatchOnly = fHaveWatchonly;
-    emit notifyWatchonlyChanged(fHaveWatchonly);
+    Q_EMIT notifyWatchonlyChanged(fHaveWatchonly);
 }
 
 void WalletModel::updateMultiSigFlag(bool fHaveMultiSig)
 {
     this->fHaveMultiSig = fHaveMultiSig;
-    emit notifyMultiSigChanged(fHaveMultiSig);
+    Q_EMIT notifyMultiSigChanged(fHaveMultiSig);
 }
 
 bool WalletModel::validateAddress(const QString& address)
@@ -289,7 +289,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     int nAddresses = 0;
 
     // Pre-check input data for validity
-    foreach (const SendCoinsRecipient& rcp, recipients) {
+   Q_FOREACH (const SendCoinsRecipient& rcp, recipients) {
         if (rcp.paymentRequest.IsInitialized()) { // PaymentRequest...
             CAmount subtotal = 0;
             const payments::PaymentDetails& details = rcp.paymentRequest.getDetails();
@@ -348,7 +348,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             if ((total + nFeeRequired) > nBalance) {
                 return SendCoinsReturn(AmountWithFeeExceedsBalance);
             }
-            emit message(tr("Send Coins"), QString::fromStdString(strFailReason),
+            Q_EMIT message(tr("Send Coins"), QString::fromStdString(strFailReason),
                 CClientUIInterface::MSG_ERROR);
             return TransactionCreationFailed;
         }
@@ -557,7 +557,7 @@ WalletModel::UnlockContext WalletModel::requestUnlock(AskPassphraseDialog::Conte
 
     if (was_locked) {
         // Request UI to unlock wallet
-        emit requireUnlock(context);
+        Q_EMIT requireUnlock(context);
     }
     // If wallet is still locked, unlock was failed or cancelled, mark context as invalid
     bool valid = getEncryptionStatus() != Locked;

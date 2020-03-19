@@ -43,7 +43,7 @@ public:
     ~HistoryPage();
     void setModel(WalletModel* model);
 
-public slots:
+public Q_SLOTS:
     void updateFilter();
     void syncTime(QDateTimeEdit* calendar, QTimeEdit* clock);
 
@@ -67,7 +67,7 @@ private:
     void updateTableData(CWallet *wallet);
     void updateAddressBookData(CWallet *wallet);
 
-public slots:
+public Q_SLOTS:
     void on_cellClicked(int row, int column);
     void updateTableData();
 };

@@ -44,7 +44,7 @@ public:
     QTimer* animTicker;
     QElapsedTimer* animClock;
 
-public slots:
+public Q_SLOTS:
     void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, 
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
     void hideOrphans(bool fHide);
@@ -57,7 +57,7 @@ public slots:
     void showBlockCurrentHeight(int count);
     void updateBalance();
 
-signals:
+Q_SIGNALS:
     void transactionClicked(const QModelIndex& index);
 
 private:
@@ -90,7 +90,7 @@ private:
     void moveSyncCircle(QWidget* anchor, QWidget* animated, int deltaRadius, float degreesPerSecond, float angleOffset=0);
     QRect getCircleGeometry(QWidget* parent, float ratioToParent);
 
-private slots:
+private Q_SLOTS:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex& index);
     void updateAlerts(const QString& warnings);

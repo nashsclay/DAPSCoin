@@ -23,7 +23,7 @@ public:
 private:
     void update();
 
-private slots:
+private Q_SLOTS:
     void on_btnCopyURI_clicked();
 
 

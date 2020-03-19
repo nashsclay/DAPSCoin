@@ -120,7 +120,7 @@ void SendCoinsEntry::clear()
 
 void SendCoinsEntry::deleteClicked()
 {
-    emit removeEntry(this);
+    Q_EMIT removeEntry(this);
 }
 
 static inline int64_t roundint64(double d)

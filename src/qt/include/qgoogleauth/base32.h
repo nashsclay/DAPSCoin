@@ -10,9 +10,9 @@ public:
     explicit Base32(QObject *parent = 0);
     static int base32_decode(const quint8 *encoded, quint8 *result, int bufSize);
     
-signals:
+Q_SIGNALS:
     
-public slots:
+public Q_SLOTS:
     
 };
 

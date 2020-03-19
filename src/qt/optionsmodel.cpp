@@ -313,12 +313,12 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
         case HideOrphans:
             fHideOrphans = value.toBool();
             settings.setValue("fHideOrphans", fHideOrphans);
-            emit hideOrphansChanged(fHideOrphans);
+            Q_EMIT hideOrphansChanged(fHideOrphans);
             break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();
             settings.setValue("fCoinControlFeatures", fCoinControlFeatures);
-            emit coinControlFeaturesChanged(fCoinControlFeatures);
+            Q_EMIT coinControlFeaturesChanged(fCoinControlFeatures);
             break;
         case DatabaseCache:
             if (settings.value("nDatabaseCache") != value) {
@@ -343,7 +343,7 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
         }
     }
 
-    emit dataChanged(index, index);
+    Q_EMIT dataChanged(index, index);
 
     return successful;
 }
@@ -355,7 +355,7 @@ void OptionsModel::setDisplayUnit(const QVariant& value)
         QSettings settings;
         nDisplayUnit = value.toInt();
         settings.setValue("nDisplayUnit", nDisplayUnit);
-        emit displayUnitChanged(nDisplayUnit);
+        Q_EMIT displayUnitChanged(nDisplayUnit);
     }
 }
 

@@ -70,7 +70,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
             stkStatus = false;
             pwalletMain->walletStakingInProgress = false;
             pwalletMain->WriteStakingStatus(false);
-            //emit model->stakingStatusChanged(false);
+            //Q_EMIT model->stakingStatusChanged(false);
         } else {
             QString error;
             StakingStatusError stt = model->getStakingStatusError(error);
@@ -78,7 +78,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
                 stkStatus = false;
                 pwalletMain->walletStakingInProgress = false;
                 pwalletMain->WriteStakingStatus(false);
-                //emit model->stakingStatusChanged(false);
+                //Q_EMIT model->stakingStatusChanged(false);
             }
         }
     }
@@ -221,7 +221,7 @@ void OptionsPage::on_pushButtonSave_clicked() {
     CWalletDB walletdb(pwalletMain->strWalletFile);
     walletdb.WriteReserveAmount(nReserveBalance / COIN);
 
-    emit model->stakingStatusChanged(nLastCoinStakeSearchInterval);
+    Q_EMIT model->stakingStatusChanged(nLastCoinStakeSearchInterval);
     ui->lineEditWithhold->setStyleSheet(GUIUtil::loadStyleSheet());
 	
     QString reserveBalance = ui->lineEditWithhold->text().trimmed();
@@ -239,7 +239,7 @@ void OptionsPage::on_pushButtonDisable_clicked() {
     CWalletDB walletdb(pwalletMain->strWalletFile);
     walletdb.WriteReserveAmount(0);
 
-    emit model->stakingStatusChanged(nLastCoinStakeSearchInterval);
+    Q_EMIT model->stakingStatusChanged(nLastCoinStakeSearchInterval);
     QMessageBox msgBox;
     msgBox.setWindowTitle("Reserve Balance Disabled");
     msgBox.setText("Reserve balance disabled.");
@@ -479,13 +479,13 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         	msgBox.exec();
         	widget->setState(false);
         	nLastCoinStakeSearchInterval = 0;
-        	emit model->stakingStatusChanged(false);
+        	Q_EMIT model->stakingStatusChanged(false);
         	pwalletMain->WriteStakingStatus(false);   
             return; 
         } 
         if (stt == StakingStatusError::STAKING_OK) {
             pwalletMain->WriteStakingStatus(true);
-            emit model->stakingStatusChanged(true);
+            Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
             pwalletMain->fCombineDust = true;
             pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
@@ -502,7 +502,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         reply = QMessageBox::question(this, "Staking Needs Consolidation", QString::fromStdString(errorMessage), QMessageBox::Yes|QMessageBox::No);
 		if (reply == QMessageBox::Yes) { 
             pwalletMain->WriteStakingStatus(true);
-            emit model->stakingStatusChanged(true);
+            Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
             pwalletMain->fCombineDust = true;
             pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
@@ -532,14 +532,14 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             pwalletMain->stakingMode = StakingMode::STOPPED;
             nLastCoinStakeSearchInterval = 0;
             model->generateCoins(false, 0);
-            emit model->stakingStatusChanged(false);
+            Q_EMIT model->stakingStatusChanged(false);
             pwalletMain->walletStakingInProgress = false;
             pwalletMain->WriteStakingStatus(false);
             return;
         }
         /* if (!error.length()) {
             pwalletMain->WriteStakingStatus(true);
-            emit model->stakingStatusChanged(true);
+            Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
         } else {
         	if (stt != StakingStatusError::UTXO_UNDER_THRESHOLD) {
@@ -552,7 +552,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         		msgBox.exec();
         		widget->setState(false);
         		nLastCoinStakeSearchInterval = 0;
-        		emit model->stakingStatusChanged(false);
+        		Q_EMIT model->stakingStatusChanged(false);
         		pwalletMain->WriteStakingStatus(false);
         	} else {
         		QMessageBox::StandardButton reply;
@@ -603,7 +603,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         		} else {
         			widget->setState(false);
         			nLastCoinStakeSearchInterval = 0;
-        			emit model->stakingStatusChanged(false);
+        			Q_EMIT model->stakingStatusChanged(false);
         			pwalletMain->WriteStakingStatus(false);
         		}
         	}
@@ -612,7 +612,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         pwalletMain->stakingMode = StakingMode::STOPPED;
         nLastCoinStakeSearchInterval = 0;
         model->generateCoins(false, 0);
-        emit model->stakingStatusChanged(false);
+        Q_EMIT model->stakingStatusChanged(false);
         pwalletMain->walletStakingInProgress = false;
         pwalletMain->WriteStakingStatus(false);
     }
