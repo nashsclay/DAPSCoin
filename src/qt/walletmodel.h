@@ -258,7 +258,7 @@ private:
     void unsubscribeFromCoreSignals();
     bool checkBalanceChanged();
 
-signals:
+Q_SIGNALS:
     // Signal that balance in wallet changed
     void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
     void stakingStatusChanged(bool isStaking);
@@ -288,7 +288,7 @@ signals:
     void RefreshRecent();
     void WalletUnlocked();
 
-public slots:
+public Q_SLOTS:
     /* Wallet status might have changed */
     void updateStatus();
     /* New transaction, or transaction changed status */
@@ -300,7 +300,7 @@ public slots:
     void updateWatchOnlyFlag(bool fHaveWatchonly);
     /* MultiSig added */
     void updateMultiSigFlag(bool fHaveMultiSig);
-    /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
+    /* Current, immature or unconfirmed balance might have changed - Q_EMIT 'balanceChanged' if so */
     void pollBalanceChanged();
 };
 

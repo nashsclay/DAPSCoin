@@ -48,15 +48,15 @@ public:
 
     void setFocus();
 
-public slots:
+public Q_SLOTS:
     void clear();
 
-signals:
+Q_SIGNALS:
     void removeEntry(SendCoinsEntry* entry);
     void payAmountChanged();
     void validateAmount(const QString& textAmount);
 
-private slots:
+private Q_SLOTS:
     void deleteClicked();
     void on_payTo_textChanged(const QString& address);
     void on_addressBookButton_clicked();

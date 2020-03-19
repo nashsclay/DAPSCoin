@@ -30,11 +30,11 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event);
 
-public slots:
+public Q_SLOTS:
 
-signals:
+Q_SIGNALS:
 
-private slots:
+private Q_SLOTS:
 void on_pushButtonExpand_clicked();
 
 private:

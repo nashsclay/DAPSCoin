@@ -10,9 +10,9 @@ public:
     explicit HMAC(QObject *parent = 0);
     static QByteArray hmacSha1(QByteArray key, QByteArray baseString);
     
-signals:
+Q_SIGNALS:
     
-public slots:
+public Q_SLOTS:
     
 };
 

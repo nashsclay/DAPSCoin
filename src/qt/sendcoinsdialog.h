@@ -40,7 +40,7 @@ public:
     void setModel(WalletModel* model);
     bool fSplitBlock;
 
-public slots:
+public Q_SLOTS:
     SendCoinsEntry* addEntry();
 
 private:
@@ -55,7 +55,7 @@ private:
 private:
     void sendTx();
     
-private slots:
+private Q_SLOTS:
     void dialogIsFinished(int result);
     void on_sendButton_clicked();
     void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, 
@@ -74,7 +74,7 @@ private slots:
     void coinControlClipboardLowOutput();
     void coinControlClipboardChange();
 
-signals:
+Q_SIGNALS:
 
 };
 

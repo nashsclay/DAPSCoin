@@ -19,7 +19,7 @@ public:
     void setModel(WalletModel* model);
     bool matchNewPasswords();
 
-private slots:
+private Q_SLOTS:
 	void on_btnCancel();
 	void on_acceptPassphrase();
 	void validateNewPass();
