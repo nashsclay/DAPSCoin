@@ -103,11 +103,17 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                         const CWalletTx& prev = (*mi).second;
                         if (allDecoys[i].n < prev.vout.size()) {
                             if (pwalletMain->IsMine(prev.vout[allDecoys[i].n])) {
-                                CAmount decodedAmount;
-                                CKey blind;
-                                pwalletMain->RevealTxOutAmount(prev, prev.vout[allDecoys[i].n], decodedAmount, blind);
-                                decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
-                                decoy.push_back(Pair("isMine", true));
+                                std::string outString = allDecoys[i].hash.GetHex() + std::to_string(allDecoys[i].n);
+                                if (pwalletMain->outpointToKeyImages.count(outString) == 1) {
+                                    CKeyImage ki = pwalletMain->outpointToKeyImages[outString];
+                                    if (ki == txin.keyImage) {
+                                        CAmount decodedAmount;
+                                        CKey blind;
+                                        pwalletMain->RevealTxOutAmount(prev, prev.vout[allDecoys[i].n], decodedAmount, blind);
+                                        decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+                                        decoy.push_back(Pair("isMine", true));
+                                    }
+                                }
                             } else {
                                 decoy.push_back(Pair("isMine", false));
                             }
