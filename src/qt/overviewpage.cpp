@@ -454,9 +454,6 @@ void OverviewPage::updateRecentTransactions(){
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
         QLayoutItem* item;
-        QSettings settings;
-        QVariant theme = settings.value("theme");
-        QString themeName = QString(theme.toString());
 
         while ( ( item = ui->verticalLayoutRecent->takeAt( 0 ) ) != NULL )
         {
