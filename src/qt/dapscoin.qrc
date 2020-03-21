@@ -74,6 +74,7 @@
         <file alias="steemit">res/icons/steemit.png</file>
         <file alias="telegram">res/icons/telegram.png</file>
         <file alias="twitter">res/icons/twitter.png</file>
+        <file alias="onion">res/icons/onion.png</file>
     </qresource>
     <qresource prefix="/css">
         <file alias="light">res/css/Light.css</file>

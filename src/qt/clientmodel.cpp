@@ -304,3 +304,21 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.BannedListChanged.disconnect(boost::bind(BannedListChanged, this));
     uiInterface.NotifyBlockTip.disconnect(boost::bind(BlockTipChanged, this, _1, _2));
 }
+
+bool ClientModel::getTorInfo(std::string& ip_port) const
+{
+    proxyType onion;
+    if (GetProxy((Network) 3, onion) && IsReachable((Network) 3)) {
+        {
+            LOCK(cs_mapLocalHost);
+            for (const std::pair<CNetAddr, LocalServiceInfo> &item : mapLocalHost) {
+                if (item.first.IsTor()) {
+                     CService addrOnion = CService(item.first.ToString(), item.second.nPort);
+                     ip_port = addrOnion.ToStringIPPort();
+                     return true;
+                }
+            }
+        }
+    }
+    return false;
+}

@@ -82,6 +82,8 @@ public:
     QString formatClientStartupTime() const;
     QString dataDir() const;
 
+    bool getTorInfo(std::string& ip_port) const;
+
     void setCacheTip(const CBlockIndex* const tip) { cacheTip = tip; };
     void setCacheReindexing(bool reindex) { cachedReindexing = reindex; };
     void setCacheImporting(bool import) { cachedImporting = import; };
