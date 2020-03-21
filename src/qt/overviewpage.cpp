@@ -193,7 +193,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     font.setBold(true);
     ui->labelBalance_2->setFont(font);   
 
-    refreshRecentTransactions();
+    updateRecentTransactions();
 }
 
 // show/hide watch-only labels
@@ -449,7 +449,7 @@ int OverviewPage::tryNetworkBlockCount(){
     return -1;
 }
 
-void OverviewPage::updateRecentTransactions(){
+void OverviewPage::updateRecentTransactions() {
     if (!pwalletMain) return;
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -514,10 +514,6 @@ void OverviewPage::updateRecentTransactions(){
             LogPrintf("pwalletMain has not been initialized\n");
         }
     }
-}
-
-void OverviewPage::refreshRecentTransactions() {
-	updateRecentTransactions();
 }
 
 void OverviewPage::on_lockUnlock() {
