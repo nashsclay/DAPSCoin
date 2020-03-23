@@ -357,7 +357,8 @@ void OverviewPage::initSyncCircle(float ratioToParent)
     animTicker->setInterval(17); //17 mSecs or ~60 fps
     animClock = new QElapsedTimer();
     connect(animTicker, SIGNAL(timeout()), this, SLOT(onAnimTick()));
-    animTicker->start(); animClock->start();
+    animTicker->start();
+    animClock->start();
 
     blockAnimSyncCircle = new QWidget(ui->widgetSyncBlocks);
     blockAnimSyncCircle->setStyleSheet("image:url(':/images/syncb')");//"background-image: ./image.png");
