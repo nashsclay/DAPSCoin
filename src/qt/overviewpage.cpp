@@ -193,7 +193,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     font.setBold(true);
     ui->labelBalance_2->setFont(font);   
 
-    refreshRecentTransactions();
+    updateRecentTransactions();
 }
 
 // show/hide watch-only labels
@@ -330,7 +330,8 @@ void OverviewPage::showBlockSync(bool fShow)
     int count = clientModel->getNumBlocks();
     ui->labelBlockCurrent->setText(QString::number(count));
 
-    if (count == 0 & isSyncingBlocks){
+    if (count == 0 && isSyncingBlocks){
+        ui->labelBlockCurrent->setText("???");
         ui->labelBlockStatus->setText("(loading)");
         ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
@@ -347,9 +348,6 @@ void OverviewPage::showBlockSync(bool fShow)
 
 void OverviewPage::showBlockCurrentHeight(int count)
 {
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain)
-        return;
     ui->labelBlockCurrent->setText(QString::number(count));
 }
 
@@ -359,7 +357,8 @@ void OverviewPage::initSyncCircle(float ratioToParent)
     animTicker->setInterval(17); //17 mSecs or ~60 fps
     animClock = new QElapsedTimer();
     connect(animTicker, SIGNAL(timeout()), this, SLOT(onAnimTick()));
-    animTicker->start(); animClock->start();
+    animTicker->start();
+    animClock->start();
 
     blockAnimSyncCircle = new QWidget(ui->widgetSyncBlocks);
     blockAnimSyncCircle->setStyleSheet("image:url(':/images/syncb')");//"background-image: ./image.png");
@@ -449,14 +448,11 @@ int OverviewPage::tryNetworkBlockCount(){
     return -1;
 }
 
-void OverviewPage::updateRecentTransactions(){
+void OverviewPage::updateRecentTransactions() {
     if (!pwalletMain) return;
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
         QLayoutItem* item;
-        QSettings settings;
-        QVariant theme = settings.value("theme");
-        QString themeName = QString(theme.toString());
 
         while ( ( item = ui->verticalLayoutRecent->takeAt( 0 ) ) != NULL )
         {
@@ -517,10 +513,6 @@ void OverviewPage::updateRecentTransactions(){
             LogPrintf("pwalletMain has not been initialized\n");
         }
     }
-}
-
-void OverviewPage::refreshRecentTransactions() {
-	updateRecentTransactions();
 }
 
 void OverviewPage::on_lockUnlock() {
