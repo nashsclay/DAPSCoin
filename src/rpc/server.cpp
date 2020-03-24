@@ -203,7 +203,7 @@ string CRPCTable::help(string strCommand) const {
             rpcfn_type pfn = pcmd->actor;
             if (setDone.insert(pfn).second)
                 (*pfn)(params, true);
-        } catch (std::exception &e) {
+        } catch (std::exception& e) {
             // Help text is returned in an exception
             string strHelp = string(e.what());
             if (strCommand == "") {
@@ -563,7 +563,7 @@ UniValue CRPCTable::execute(const std::string &strMethod, const UniValue &params
 
     try {
         return pcmd->actor(params, false);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         throw JSONRPCError(RPC_MISC_ERROR, e.what());
     }
 

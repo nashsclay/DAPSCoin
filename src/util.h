@@ -81,7 +81,7 @@ template<typename... Args> std::string FormatStringFromLogArgs(const char *fmt, 
     std::string _log_msg_; /* Unlikely name to avoid shadowing variables */                     \
     try {                                                                                       \
         _log_msg_ = tfm::format(format, TINYFORMAT_PASSARGS(n));                                \
-    } catch (std::runtime_error &e) {                                                           \
+    } catch (std::runtime_error& e) {                                                           \
         _log_msg_ = "Error \"" + std::string(e.what()) + "\" while formatting log message: " + FormatStringFromLogArgs(format, TINYFORMAT_PASSARGS(n));\
     }                                                                                           \
     return LogPrintStr(_log_msg_);                                                              \
@@ -93,7 +93,7 @@ template<typename... Args> std::string FormatStringFromLogArgs(const char *fmt, 
     std::string _log_msg_; /* Unlikely name to avoid shadowing variables */                     \
     try {                                                                                       \
         _log_msg_ = tfm::format(format, TINYFORMAT_PASSARGS(n));                                \
-    } catch (std::runtime_error &e) {                                                           \
+    } catch (std::runtime_error& e) {                                                           \
         _log_msg_ = "Error \"" + std::string(e.what()) + "\" while formatting log message: " + FormatStringFromLogArgs(format, TINYFORMAT_PASSARGS(n));\
     }                                                                                           \
     LogPrintStr(std::string("ERROR: ") + _log_msg_ + "\n");                                     \
@@ -227,7 +227,7 @@ void TraceThread(const char* name, Callable func)
         LogPrintf("%s thread start\n", name);
         func();
         LogPrintf("%s thread exit\n", name);
-    } catch (boost::thread_interrupted) {
+    } catch (boost::thread_interrupted&) {
         LogPrintf("%s thread interrupt\n", name);
         throw;
     } catch (std::exception& e) {
