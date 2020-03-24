@@ -1139,7 +1139,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
             if (!IsLocked()) {
                 try {
                     CWalletDB(strWalletFile).WriteScannedBlockHeight(mapBlockIndex[pblock->GetHash()]->nHeight);
-                } catch (std::exception& e) {
+                } catch (const std::exception& e) {
                     LogPrintf("Cannot open data base or wallet is locked\n");
                 }
             }

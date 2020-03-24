@@ -840,7 +840,7 @@ void static ThreadBitcoinMiner(void* parg)
             BitcoinMiner(pwallet, false);
         }
         boost::this_thread::interruption_point();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         LogPrintf("ThreadBitcoinMiner() exception\n");
     } catch (...) {
         LogPrintf("ThreadBitcoinMiner() exception\n");
@@ -859,7 +859,7 @@ void static ThreadDapscoinMiner(void* parg)
     		//TODO: call CreateNewPoABlock function to create PoA blocks
     	}
         boost::this_thread::interruption_point();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         LogPrintf("ThreadBitcoinMiner() exception\n");
     } catch (...) {
         LogPrintf("ThreadBitcoinMiner() exception\n");
@@ -917,7 +917,7 @@ void ThreadStakeMinter() {
     try {
         BitcoinMiner(pwallet, true);
         boost::this_thread::interruption_point();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         LogPrintf("ThreadStakeMinter() exception \n");
     } catch (...) {
         LogPrintf("ThreadStakeMinter() error \n");
