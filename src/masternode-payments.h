@@ -214,7 +214,7 @@ public:
 
     std::string ToString()
     {
-    	std::string s(payee.begin(), payee.end());
+        std::string s(payee.begin(), payee.end());
         std::string ret = "";
         ret += vinMasternode.ToString();
         ret += ", " + std::to_string(nBlockHeight);

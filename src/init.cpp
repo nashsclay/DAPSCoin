@@ -1643,7 +1643,7 @@ bool AppInit2(bool isDaemon)
         LogPrintf("Wallet completed loading in %15dms\n", GetTimeMillis() - nWalletStartTime);
 
         RegisterValidationInterface(pwalletMain);
-    	int height = -1;
+        int height = -1;
         CBlockIndex* pindexRescan = chainActive.Tip();
         if (GetBoolArg("-rescan", false)) {
             pindexRescan = chainActive.Genesis();
@@ -1654,13 +1654,13 @@ bool AppInit2(bool isDaemon)
                 pindexRescan = FindForkInGlobalIndex(chainActive, locator);
             } else {
                 if (!walletdb.ReadScannedBlockHeight(height)) {
-                	if (height > chainActive.Height()) {
-                		pindexRescan = chainActive.Genesis();
-                	} else {
-                		pindexRescan = chainActive[height];
-                	}
+                    if (height > chainActive.Height()) {
+                        pindexRescan = chainActive.Genesis();
+                    } else {
+                        pindexRescan = chainActive[height];
+                    }
                 } else
-                	pindexRescan = chainActive.Genesis();
+                    pindexRescan = chainActive.Genesis();
             }
         }
         if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {

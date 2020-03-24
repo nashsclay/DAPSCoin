@@ -274,9 +274,9 @@ void OverviewPage::setWalletModel(WalletModel* model)
 
 void OverviewPage::updateBalance()
 {
-	WalletModel* model = this->walletModel;
-	setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
-			model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
+    WalletModel* model = this->walletModel;
+    setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
+            model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
 }
 
 void OverviewPage::updateDisplayUnit()

@@ -34,22 +34,22 @@ RevealTxDialog::~RevealTxDialog()
 
 void RevealTxDialog::setTxID(QString strId) 
 {
-	ui->lblTxID->setText(strId);
+    ui->lblTxID->setText(strId);
 }
 
 void RevealTxDialog::setTxAddress(QString strAddr) 
 {
-	ui->lblAddress->setText(strAddr);
+    ui->lblAddress->setText(strAddr);
 }
 
 void RevealTxDialog::setTxPrivKey(QString strPrivKey) 
 {
-	ui->lblPrivateKey->setText(strPrivKey);
+    ui->lblPrivateKey->setText(strPrivKey);
 }
 
 void RevealTxDialog::setTxFee(CAmount fee)
 {
-	ui->lblTxFee->setText(BitcoinUnits::floorHtmlWithUnit(BitcoinUnits::DAPS, fee, false, BitcoinUnits::separatorAlways));
+    ui->lblTxFee->setText(BitcoinUnits::floorHtmlWithUnit(BitcoinUnits::DAPS, fee, false, BitcoinUnits::separatorAlways));
 }
 
 void RevealTxDialog::on_buttonBox_accepted()

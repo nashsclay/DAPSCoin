@@ -301,11 +301,11 @@ bool CWalletDB::ReadStakingStatus() {
 
 bool CWalletDB::WriteScannedBlockHeight(int height)
 {
-	return Write(std::string("scannedblockheight"), height);
+    return Write(std::string("scannedblockheight"), height);
 }
 bool CWalletDB::ReadScannedBlockHeight(int& height)
 {
-	return Read(std::string("scannedblockheight"), height);
+    return Read(std::string("scannedblockheight"), height);
 }
 
 bool CWalletDB::Write2FA(bool status)
@@ -1175,21 +1175,21 @@ bool CWalletDB::WriteDestData(const std::string& address, const std::string& key
 
 bool CWalletDB::WriteTxPrivateKey(const std::string& outpointKey, const std::string& k)
 {
-	return Write(std::make_pair(std::string("txpriv"), outpointKey), k);
+    return Write(std::make_pair(std::string("txpriv"), outpointKey), k);
 }
 
 bool CWalletDB::ReadTxPrivateKey(const std::string& outpointKey, std::string& k)
 {
-	return Read(std::make_pair(std::string("txpriv"), outpointKey), k);
+    return Read(std::make_pair(std::string("txpriv"), outpointKey), k);
 }
 
 bool CWalletDB::WriteKeyImage(const std::string& outpointKey, const CKeyImage& k)
 {
-	return Write(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
+    return Write(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
 }
 bool CWalletDB::ReadKeyImage(const std::string& outpointKey, CKeyImage& k)
 {
-	return Read(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
+    return Read(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
 }
 
 

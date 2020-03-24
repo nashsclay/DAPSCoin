@@ -5400,54 +5400,54 @@ bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee)
     //finding all spendable UTXOs < MIN_STAKING
     CAmount total = 0;
     std::vector<COutput> vCoins, underStakingThresholdCoins;
-	{
-		LOCK2(cs_main, cs_wallet);
-		{
-			for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
-				const uint256& wtxid = it->first;
-				const CWalletTx* pcoin = &(*it).second;
+    {
+        LOCK2(cs_main, cs_wallet);
+        {
+            for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
+                const uint256& wtxid = it->first;
+                const CWalletTx* pcoin = &(*it).second;
 
-				int nDepth = pcoin->GetDepthInMainChain(false);
-				if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
-					continue;
-				if (nDepth == 0 && !pcoin->InMempool())
-					continue;
-				for(size_t i = 0; i < pcoin->vout.size(); i++) {
-					if (pcoin->vout[i].IsEmpty()) continue;
-					isminetype mine = IsMine(pcoin->vout[i]);
-					if (mine == ISMINE_NO)
-						continue;
-					if (mine == ISMINE_WATCH_ONLY)
-						continue;
-					CAmount decodedAmount;
-					CKey decodedBlind;
-					RevealTxOutAmount(*pcoin, pcoin->vout[i], decodedAmount, decodedBlind);
+                int nDepth = pcoin->GetDepthInMainChain(false);
+                if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
+                    continue;
+                if (nDepth == 0 && !pcoin->InMempool())
+                    continue;
+                for(size_t i = 0; i < pcoin->vout.size(); i++) {
+                    if (pcoin->vout[i].IsEmpty()) continue;
+                    isminetype mine = IsMine(pcoin->vout[i]);
+                    if (mine == ISMINE_NO)
+                        continue;
+                    if (mine == ISMINE_WATCH_ONLY)
+                        continue;
+                    CAmount decodedAmount;
+                    CKey decodedBlind;
+                    RevealTxOutAmount(*pcoin, pcoin->vout[i], decodedAmount, decodedBlind);
 
-					std::vector<unsigned char> commitment;
-					if (!decodedBlind.IsValid()) {
-						unsigned char blind[32];
-						CreateCommitmentWithZeroBlind(decodedAmount, blind, commitment);
-					} else {
-						CreateCommitment(decodedBlind.begin(), decodedAmount, commitment);
-					}
-					if (pcoin->vout[i].commitment != commitment) {
+                    std::vector<unsigned char> commitment;
+                    if (!decodedBlind.IsValid()) {
+                        unsigned char blind[32];
+                        CreateCommitmentWithZeroBlind(decodedAmount, blind, commitment);
+                    } else {
+                        CreateCommitment(decodedBlind.begin(), decodedAmount, commitment);
+                    }
+                    if (pcoin->vout[i].commitment != commitment) {
                         LogPrintf("%s: Commitment not match hash = %s, i = %d, commitment = %s, recomputed = %s, revealed mask = %s\n", __func__, pcoin->GetHash().GetHex(), i, HexStr(&pcoin->vout[i].commitment[0], &pcoin->vout[i].commitment[0] + 33), HexStr(&commitment[0], &commitment[0] + 33), HexStr(decodedBlind.begin(), decodedBlind.begin() + 32));
-						continue;
-					}
+                        continue;
+                    }
 
-					if (IsSpent(wtxid, i)) continue;
+                    if (IsSpent(wtxid, i)) continue;
 
-					{
-						COutPoint outpoint(wtxid, i);
-						if (inSpendQueueOutpoints.count(outpoint)) {
-							continue;
-						}
-					}
-					vCoins.push_back(COutput(pcoin, i, nDepth, true));
-					total += decodedAmount;
+                    {
+                        COutPoint outpoint(wtxid, i);
+                        if (inSpendQueueOutpoints.count(outpoint)) {
+                            continue;
+                        }
+                    }
+                    vCoins.push_back(COutput(pcoin, i, nDepth, true));
+                    total += decodedAmount;
                     if (decodedAmount < MINIMUM_STAKE_AMOUNT) underStakingThresholdCoins.push_back(COutput(pcoin, i, nDepth, true));
-				}
-			}
+                }
+            }
         }
     }
 

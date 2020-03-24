@@ -741,8 +741,8 @@ bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 }
 
 bool CMasternodePing::VerifySignature(CPubKey& pubKeyMasternode, int &nDos) {
-	HEX_DATA_STREAM_PROTOCOL(PROTOCOL_VERSION) << vin.ToString() << blockHash.ToString() << sigTime;
-	std::string strMessage = HEX_STR(ser);
+    HEX_DATA_STREAM_PROTOCOL(PROTOCOL_VERSION) << vin.ToString() << blockHash.ToString() << sigTime;
+    std::string strMessage = HEX_STR(ser);
     std::string errorMessage = "";
 
     if(!obfuScationSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)){

@@ -253,7 +253,7 @@ bool LogAcceptCategory(const char* category)
 
 std::string FilterInjection(const std::string& str) 
 {
-	//std::cout << "filtering" << std::endl;
+    //std::cout << "filtering" << std::endl;
     int n = str.length(); 
     char char_array[n + 1];
     strcpy(char_array, str.c_str());

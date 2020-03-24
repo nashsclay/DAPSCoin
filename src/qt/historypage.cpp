@@ -119,37 +119,37 @@ void HistoryPage::on_cellClicked(int row, int column)
         bool privkeyFound = false;
         std::string txHash = pwalletMain->addrToTxHashMap[stdAddress];
         if (IsHex(txHash)) {
-        	uint256 hash;
-        	hash.SetHex(txHash);
+            uint256 hash;
+            hash.SetHex(txHash);
 
-        	if (pwalletMain && pwalletMain->mapWallet.count(hash) == 1) {
-        		CWalletTx tx = pwalletMain->mapWallet[hash];
-        		for (size_t i = 0; i < tx.vout.size(); i++) {
-        			txnouttype type;
-        			vector<CTxDestination> addresses;
-        			int nRequired;
+            if (pwalletMain && pwalletMain->mapWallet.count(hash) == 1) {
+                CWalletTx tx = pwalletMain->mapWallet[hash];
+                for (size_t i = 0; i < tx.vout.size(); i++) {
+                    txnouttype type;
+                    vector<CTxDestination> addresses;
+                    int nRequired;
 
-        			if (ExtractDestinations(tx.vout[i].scriptPubKey, type, addresses, nRequired)) {
-        				std::string parseddAddress = CBitcoinAddress(addresses[0]).ToString();
-        				if (stdAddress == parseddAddress) {
-        					if (tx.IsCoinStake() && !tx.vout[i].txPriv.empty()) {
-        						CKey txPriv;
-        						txPriv.Set(tx.vout[i].txPriv.begin(), tx.vout[i].txPriv.end(), true);
-        						txdlg.setTxPrivKey(CBitcoinSecret(txPriv).ToString().c_str());
-    							privkeyFound = true;
-        					} else {
-        						std::string key = txHash + std::to_string(i);
-        						std::string secret;
-        						if (CWalletDB(pwalletMain->strWalletFile).ReadTxPrivateKey(key, secret)) {
-        							txdlg.setTxPrivKey(secret.c_str());
-        							privkeyFound = true;
-        						}
-        					}
-        				}
-        			}
-        		}
+                    if (ExtractDestinations(tx.vout[i].scriptPubKey, type, addresses, nRequired)) {
+                        std::string parseddAddress = CBitcoinAddress(addresses[0]).ToString();
+                        if (stdAddress == parseddAddress) {
+                            if (tx.IsCoinStake() && !tx.vout[i].txPriv.empty()) {
+                                CKey txPriv;
+                                txPriv.Set(tx.vout[i].txPriv.begin(), tx.vout[i].txPriv.end(), true);
+                                txdlg.setTxPrivKey(CBitcoinSecret(txPriv).ToString().c_str());
+                                privkeyFound = true;
+                            } else {
+                                std::string key = txHash + std::to_string(i);
+                                std::string secret;
+                                if (CWalletDB(pwalletMain->strWalletFile).ReadTxPrivateKey(key, secret)) {
+                                    txdlg.setTxPrivKey(secret.c_str());
+                                    privkeyFound = true;
+                                }
+                            }
+                        }
+                    }
+                }
                 txdlg.setTxFee(tx.nTxFee);
-        	}
+            }
         }
         std::string txdlgMsg = "Request from Sender (if applicable)";
         if (stdType == "Minted") {
@@ -181,9 +181,9 @@ void HistoryPage::keyPressEvent(QKeyEvent* event)
 
 void HistoryPage::updateTableData()
 {
-	if (pwalletMain) {
-		updateTableData(pwalletMain);
-	}
+    if (pwalletMain) {
+        updateTableData(pwalletMain);
+    }
 }
 
 void HistoryPage::updateTableData(CWallet* wallet)
@@ -316,7 +316,7 @@ void HistoryPage::syncTime(QDateTimeEdit* calendar, QTimeEdit* clock)
 
 void HistoryPage::setModel(WalletModel* model)
 {
-	this->model = model;
-	connect(model, SIGNAL(WalletUnlocked()), this,
-	                                         SLOT(updateTableData()));
+    this->model = model;
+    connect(model, SIGNAL(WalletUnlocked()), this,
+                                             SLOT(updateTableData()));
 }

@@ -1706,8 +1706,8 @@ bool CBudgetVote::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 bool CBudgetVote::SignatureValid(bool fSignatureCheck)
 {
     std::string errorMessage;
-	HEX_DATA_STREAM << vin.prevout << nProposalHash << nVote << nTime;
-	std::string strMessage = HEX_STR(ser);
+    HEX_DATA_STREAM << vin.prevout << nProposalHash << nVote << nTime;
+    std::string strMessage = HEX_STR(ser);
 
     CMasternode* pmn = mnodeman.Find(vin);
 

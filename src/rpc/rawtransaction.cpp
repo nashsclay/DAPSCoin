@@ -88,7 +88,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
         else {
             {
                 //decoys
-            	UniValue decoys(UniValue::VARR);
+                UniValue decoys(UniValue::VARR);
                 std::vector<COutPoint> allDecoys = txin.decoys;
                 srand (time(NULL));
                 allDecoys.insert(allDecoys.begin(), txin.prevout);
@@ -159,9 +159,9 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
             const unsigned char* pBlind;
             pwalletMain->RevealTxOutAmount(tx, txout, decodedAmount, blind);
             if (txout.nValue >0) {
-            	pBlind = zeroBlind;
+                pBlind = zeroBlind;
             } else {
-            	pBlind = blind.begin();
+                pBlind = blind.begin();
             }
             out.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
             out.push_back(Pair("isMine", true));

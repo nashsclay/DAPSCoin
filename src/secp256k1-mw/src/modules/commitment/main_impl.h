@@ -173,55 +173,55 @@ int secp256k1_pedersen_verify_tally(const secp256k1_context2* ctx, const secp256
 }
 
 int secp256k1_pedersen_commitment_sum(
-		const secp256k1_context2* ctx,
-		const secp256k1_pedersen_commitment * const* pos,
-		size_t n_pos,
-		const secp256k1_pedersen_commitment * const* neg,
-		size_t n_neg,
-		secp256k1_pedersen_commitment* out) {
-	secp256k1_gej accj;
-	secp256k1_ge add;
-	secp256k1_ge outGe;
-	size_t i;
-	VERIFY_CHECK(ctx != NULL);
-	ARG_CHECK(!n_pos || (pos != NULL));
-	ARG_CHECK(!n_neg || (neg != NULL));
-	(void) ctx;
-	secp256k1_gej_set_infinity(&accj);
-	for (i = 0; i < n_neg; i++) {
-		secp256k1_pedersen_commitment_load(&add, neg[i]);
-		secp256k1_gej_add_ge_var(&accj, &accj, &add, NULL);
-	}
-	secp256k1_gej_neg(&accj, &accj);
-	for (i = 0; i < n_pos; i++) {
-		secp256k1_pedersen_commitment_load(&add, pos[i]);
-		secp256k1_gej_add_ge_var(&accj, &accj, &add, NULL);
-	}
-	secp256k1_ge_set_gej(&outGe, &accj);
-	secp256k1_pedersen_commitment_save(out, &outGe);
-	return 1;
+        const secp256k1_context2* ctx,
+        const secp256k1_pedersen_commitment * const* pos,
+        size_t n_pos,
+        const secp256k1_pedersen_commitment * const* neg,
+        size_t n_neg,
+        secp256k1_pedersen_commitment* out) {
+    secp256k1_gej accj;
+    secp256k1_ge add;
+    secp256k1_ge outGe;
+    size_t i;
+    VERIFY_CHECK(ctx != NULL);
+    ARG_CHECK(!n_pos || (pos != NULL));
+    ARG_CHECK(!n_neg || (neg != NULL));
+    (void) ctx;
+    secp256k1_gej_set_infinity(&accj);
+    for (i = 0; i < n_neg; i++) {
+        secp256k1_pedersen_commitment_load(&add, neg[i]);
+        secp256k1_gej_add_ge_var(&accj, &accj, &add, NULL);
+    }
+    secp256k1_gej_neg(&accj, &accj);
+    for (i = 0; i < n_pos; i++) {
+        secp256k1_pedersen_commitment_load(&add, pos[i]);
+        secp256k1_gej_add_ge_var(&accj, &accj, &add, NULL);
+    }
+    secp256k1_ge_set_gej(&outGe, &accj);
+    secp256k1_pedersen_commitment_save(out, &outGe);
+    return 1;
 }
 
 int secp256k1_pedersen_commitment_sum_pos(
-		const secp256k1_context2* ctx,
-		const secp256k1_pedersen_commitment * const* pos,
-		size_t n_pos,
-		secp256k1_pedersen_commitment* out) {
-	secp256k1_gej accj;
-	secp256k1_ge add;
-	secp256k1_ge outGe;
-	size_t i;
-	VERIFY_CHECK(ctx != NULL);
-	ARG_CHECK(!n_pos || (pos != NULL));
-	(void) ctx;
-	secp256k1_gej_set_infinity(&accj);
-	for (i = 0; i < n_pos; i++) {
-		secp256k1_pedersen_commitment_load(&add, pos[i]);
-		secp256k1_gej_add_ge_var(&accj, &accj, &add, NULL);
-	}
-	secp256k1_ge_set_gej(&outGe, &accj);
-	secp256k1_pedersen_commitment_save(out, &outGe);
-	return 1;
+        const secp256k1_context2* ctx,
+        const secp256k1_pedersen_commitment * const* pos,
+        size_t n_pos,
+        secp256k1_pedersen_commitment* out) {
+    secp256k1_gej accj;
+    secp256k1_ge add;
+    secp256k1_ge outGe;
+    size_t i;
+    VERIFY_CHECK(ctx != NULL);
+    ARG_CHECK(!n_pos || (pos != NULL));
+    (void) ctx;
+    secp256k1_gej_set_infinity(&accj);
+    for (i = 0; i < n_pos; i++) {
+        secp256k1_pedersen_commitment_load(&add, pos[i]);
+        secp256k1_gej_add_ge_var(&accj, &accj, &add, NULL);
+    }
+    secp256k1_ge_set_gej(&outGe, &accj);
+    secp256k1_pedersen_commitment_save(out, &outGe);
+    return 1;
 }
 
 int secp256k1_pedersen_blind_generator_blind_sum(const secp256k1_context2* ctx, const uint64_t *value, const unsigned char* const* generator_blind, unsigned char* const* blinding_factor, size_t n_total, size_t n_inputs) {

@@ -242,20 +242,20 @@ double GetPriority(const CTransaction& tx, int nHeight)
         return 0.0;
     double dResult = 0.0;
     /*for (const CTxIn& txin:  tx.vin) {
-    	std::vector<COutPoint> alldecoys = txin.decoys;
-    	alldecoys.push_back(txin.prevout);
-    	for (size_t j = 0; j < alldecoys.size(); j++) {
-    		CTransaction prev;
-    		uint256 bh;
-    		if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
-    			return false;
-    		}
+        std::vector<COutPoint> alldecoys = txin.decoys;
+        alldecoys.push_back(txin.prevout);
+        for (size_t j = 0; j < alldecoys.size(); j++) {
+            CTransaction prev;
+            uint256 bh;
+            if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
+                return false;
+            }
 
-    		if (mapBlockIndex.count(bh) < 1) continue;
-    		if (mapBlockIndex[bh]->nHeight < nHeight) {
-    			dResult += 1000 * COIN * (nHeight - mapBlockIndex[bh]->nHeight);
-    		}
-    	}
+            if (mapBlockIndex.count(bh) < 1) continue;
+            if (mapBlockIndex[bh]->nHeight < nHeight) {
+                dResult += 1000 * COIN * (nHeight - mapBlockIndex[bh]->nHeight);
+            }
+        }
     }*/
     return 1000000000 + tx.ComputePriority(dResult);
 }
@@ -1590,15 +1590,15 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                 //TODO-NOTE: 07/06/2019 Remove this condition as colateral will be cheated as a normal tx
                 //UTXO with 1M DAPS can only be consumed in a transaction with that single UTXO
                 /*if (decoysSize > 1 && prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
-					return false;
-				}
+                    return false;
+                }
 
-				if (prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
-					if (!VerifyKeyImages(tx)) {
-						LogPrintf("Failed to verify correctness of key image of collateralization spend\n");
-						return false;
-					}
-				}*/
+                if (prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
+                    if (!VerifyKeyImages(tx)) {
+                        LogPrintf("Failed to verify correctness of key image of collateralization spend\n");
+                        return false;
+                    }
+                }*/
 
                 if (mapBlockIndex.count(bh) < 1) return false;
                 if (prev.IsCoinStake() || prev.IsCoinAudit() || prev.IsCoinBase()) {
@@ -1647,7 +1647,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     if (pfMissingInputs)
         *pfMissingInputs = false;
 
-	// Check transaction
+    // Check transaction
     if (!CheckTransaction(tx, false, true, state))
         return state.DoS(100, error("%s : CheckTransaction failed", __func__), REJECT_INVALID, "bad-tx");
 
@@ -2207,9 +2207,9 @@ int64_t GetBlockValue(const CBlockIndex* ptip)
         //zero rewards when total supply reach 70B DAPS
         return 0;
     }
-	if (pForkTip->nHeight < Params().LAST_POW_BLOCK()) {
-		nSubsidy = 120000000 * COIN;
-	} else {
+    if (pForkTip->nHeight < Params().LAST_POW_BLOCK()) {
+        nSubsidy = 120000000 * COIN;
+    } else {
         nSubsidy = PoSBlockReward();
         nSubsidy += TeamRewards(pForkTip);
     }
@@ -4073,11 +4073,11 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     set<CKeyImage> keyimages;
     for(size_t i = 0; i < block.vtx.size(); i++) {
         for (const CTxIn& txin : block.vtx[i].vin) {
-        	if (!txin.keyImage.IsValid()) continue;
-        	if (keyimages.count(txin.keyImage)) {
-        		return state.DoS(100, error("CheckBlock() : duplicate inputs"),
-        				REJECT_INVALID, "bad-txns-inputs-duplicate");
-        	}
+            if (!txin.keyImage.IsValid()) continue;
+            if (keyimages.count(txin.keyImage)) {
+                return state.DoS(100, error("CheckBlock() : duplicate inputs"),
+                        REJECT_INVALID, "bad-txns-inputs-duplicate");
+            }
             keyimages.insert(txin.keyImage);
         }
     }
