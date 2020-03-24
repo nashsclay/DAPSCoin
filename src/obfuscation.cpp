@@ -532,21 +532,21 @@ bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey)
     CTransaction txVin;
     uint256 hash;
     if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
-    	if (vin.prevout.n >= txVin.vout.size()) return false;
-    	CTxOut out = txVin.vout[vin.prevout.n];
-    	CAmount amount;
-    	CKey decodedMask;
-    	CPubKey sharedSec(vin.encryptionKey.begin(), vin.encryptionKey.end());
-    	ECDHInfo::Decode(out.maskValue.mask.begin(), out.maskValue.amount.begin(), sharedSec, decodedMask, amount);
+        if (vin.prevout.n >= txVin.vout.size()) return false;
+        CTxOut out = txVin.vout[vin.prevout.n];
+        CAmount amount;
+        CKey decodedMask;
+        CPubKey sharedSec(vin.encryptionKey.begin(), vin.encryptionKey.end());
+        ECDHInfo::Decode(out.maskValue.mask.begin(), out.maskValue.amount.begin(), sharedSec, decodedMask, amount);
         std::vector<unsigned char> commitment;
-    	CWallet::CreateCommitment(decodedMask.begin(), amount, commitment);
-    	if (commitment != out.commitment) {
-    		return false;
-    	}
+        CWallet::CreateCommitment(decodedMask.begin(), amount, commitment);
+        if (commitment != out.commitment) {
+            return false;
+        }
 
-    	if (amount == 1000000 * COIN) {
-    		if (out.scriptPubKey == payee2) return true;
-    	}
+        if (amount == 1000000 * COIN) {
+            if (out.scriptPubKey == payee2) return true;
+        }
     }
 
     return false;

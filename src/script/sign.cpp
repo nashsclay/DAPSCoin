@@ -129,7 +129,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript &fromPubKey, CMutabl
     if (VerifyScript(txin.scriptSig, fromPubKey, STANDARD_SCRIPT_VERIFY_FLAGS,
                         MutableTransactionSignatureChecker(&txTo, nIn))) {
         LogPrintf("%s: successfully verified scriptSig=%s, fromPubKey=%s, txTo=%s\n", __func__, txin.scriptSig.ToString(), fromPubKey.ToString(), txTo.GetHash().GetHex());
-    	return true;
+        return true;
     }
     return false;
 }

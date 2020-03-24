@@ -242,20 +242,20 @@ double GetPriority(const CTransaction& tx, int nHeight)
         return 0.0;
     double dResult = 0.0;
     /*for (const CTxIn& txin:  tx.vin) {
-    	std::vector<COutPoint> alldecoys = txin.decoys;
-    	alldecoys.push_back(txin.prevout);
-    	for (size_t j = 0; j < alldecoys.size(); j++) {
-    		CTransaction prev;
-    		uint256 bh;
-    		if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
-    			return false;
-    		}
+        std::vector<COutPoint> alldecoys = txin.decoys;
+        alldecoys.push_back(txin.prevout);
+        for (size_t j = 0; j < alldecoys.size(); j++) {
+            CTransaction prev;
+            uint256 bh;
+            if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
+                return false;
+            }
 
-    		if (mapBlockIndex.count(bh) < 1) continue;
-    		if (mapBlockIndex[bh]->nHeight < nHeight) {
-    			dResult += 1000 * COIN * (nHeight - mapBlockIndex[bh]->nHeight);
-    		}
-    	}
+            if (mapBlockIndex.count(bh) < 1) continue;
+            if (mapBlockIndex[bh]->nHeight < nHeight) {
+                dResult += 1000 * COIN * (nHeight - mapBlockIndex[bh]->nHeight);
+            }
+        }
     }*/
     return 1000000000 + tx.ComputePriority(dResult);
 }
@@ -1590,15 +1590,15 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                 //TODO-NOTE: 07/06/2019 Remove this condition as colateral will be cheated as a normal tx
                 //UTXO with 1M DAPS can only be consumed in a transaction with that single UTXO
                 /*if (decoysSize > 1 && prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
-					return false;
-				}
+                    return false;
+                }
 
-				if (prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
-					if (!VerifyKeyImages(tx)) {
-						LogPrintf("Failed to verify correctness of key image of collateralization spend\n");
-						return false;
-					}
-				}*/
+                if (prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
+                    if (!VerifyKeyImages(tx)) {
+                        LogPrintf("Failed to verify correctness of key image of collateralization spend\n");
+                        return false;
+                    }
+                }*/
 
                 if (mapBlockIndex.count(bh) < 1) return false;
                 if (prev.IsCoinStake() || prev.IsCoinAudit() || prev.IsCoinBase()) {
@@ -1647,7 +1647,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     if (pfMissingInputs)
         *pfMissingInputs = false;
 
-	// Check transaction
+    // Check transaction
     if (!CheckTransaction(tx, false, true, state))
         return state.DoS(100, error("%s : CheckTransaction failed", __func__), REJECT_INVALID, "bad-tx");
 
@@ -2032,7 +2032,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
                     file >> header;
                     fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
                     file >> txOut;
-                } catch (std::exception& e) {
+                } catch (const std::exception& e) {
                     return error("%s : Deserialize or I/O error - %s", __func__, e.what());
                 }
                 hashBlock = header.GetHash();
@@ -2113,7 +2113,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
     // Read block
     try {
         filein >> block;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 
@@ -2207,9 +2207,9 @@ int64_t GetBlockValue(const CBlockIndex* ptip)
         //zero rewards when total supply reach 70B DAPS
         return 0;
     }
-	if (pForkTip->nHeight < Params().LAST_POW_BLOCK()) {
-		nSubsidy = 120000000 * COIN;
-	} else {
+    if (pForkTip->nHeight < Params().LAST_POW_BLOCK()) {
+        nSubsidy = 120000000 * COIN;
+    } else {
         nSubsidy = PoSBlockReward();
         nSubsidy += TeamRewards(pForkTip);
     }
@@ -4073,11 +4073,11 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     set<CKeyImage> keyimages;
     for(size_t i = 0; i < block.vtx.size(); i++) {
         for (const CTxIn& txin : block.vtx[i].vin) {
-        	if (!txin.keyImage.IsValid()) continue;
-        	if (keyimages.count(txin.keyImage)) {
-        		return state.DoS(100, error("CheckBlock() : duplicate inputs"),
-        				REJECT_INVALID, "bad-txns-inputs-duplicate");
-        	}
+            if (!txin.keyImage.IsValid()) continue;
+            if (keyimages.count(txin.keyImage)) {
+                return state.DoS(100, error("CheckBlock() : duplicate inputs"),
+                        REJECT_INVALID, "bad-txns-inputs-duplicate");
+            }
             keyimages.insert(txin.keyImage);
         }
     }
@@ -4477,7 +4477,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 return state.Abort("Failed to write block");
         if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
             return error("AcceptBlock() : ReceivedBlockTransactions failed");
-    } catch (std::runtime_error& e) {
+    } catch (const std::runtime_error& e) {
         return state.Abort(std::string("System error: ") + e.what());
     }
 
@@ -5079,7 +5079,7 @@ bool InitBlockIndex()
                 return error("LoadBlockIndex() : genesis block not accepted");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
-        } catch (std::runtime_error& e) {
+        } catch (const std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }
     }
@@ -5180,11 +5180,11 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
                         mapBlocksUnknownParent.erase(it);
                     }
                 }
-            } catch (std::exception& e) {
+            } catch (const std::exception& e) {
                 LogPrintf("%s : Deserialize or I/O error - %s", __func__, e.what());
             }
         }
-    } catch (std::runtime_error& e) {
+    } catch (const std::runtime_error& e) {
         AbortNode(std::string("System error: ") + e.what());
     }
     if (nLoaded > 0)
@@ -6457,7 +6457,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     ss << ": hash " << hash.ToString();
                 }
                 LogPrint("net", "Reject %s\n", SanitizeString(ss.str()));
-            } catch (std::ios_base::failure& e) {
+            } catch (const std::ios_base::failure& e) {
                 // Avoid feedback loops by preventing reject messages from triggering a new reject message.
                 LogPrint("net", "Unparseable reject message received\n");
             }
@@ -6551,7 +6551,7 @@ bool ProcessMessages(CNode* pfrom)
         try {
             fRet = ProcessMessage(pfrom, strCommand, vRecv, msg.nTime);
             boost::this_thread::interruption_point();
-        } catch (std::ios_base::failure& e) {
+        } catch (const std::ios_base::failure& e) {
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
             if (strstr(e.what(), "end of data")) {
                 // Allow exceptions from under-length message on vRecv
@@ -6565,9 +6565,9 @@ bool ProcessMessages(CNode* pfrom)
             } else {
                 PrintExceptionContinue(&e, "ProcessMessages()");
             }
-        } catch (boost::thread_interrupted) {
+        } catch (const boost::thread_interrupted&) {
             throw;
-        } catch (std::exception& e) {
+        } catch (const std::exception& e) {
             PrintExceptionContinue(&e, "ProcessMessages()");
         } catch (...) {
             PrintExceptionContinue(NULL, "ProcessMessages()");
@@ -6856,7 +6856,7 @@ bool CBlockUndo::ReadFromDisk(const CDiskBlockPos& pos, const uint256& hashBlock
     try {
         filein >> *this;
         filein >> hashChecksum;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 

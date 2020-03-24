@@ -114,7 +114,7 @@ void EncryptDialog::on_acceptPassphrase() {
             msgBox.setIcon(QMessageBox::Information);
             msgBox.exec();
             accept();
-		}
+        }
     } else {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Wallet Encryption Failed");

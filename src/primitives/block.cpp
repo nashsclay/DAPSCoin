@@ -220,7 +220,7 @@ std::vector<uint256> CBlock::GetPoAMerkleBranch(int nIndex) const
 uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMerkleBranch, int nIndex)
 {
     if (nIndex == -1)
-		return uint256();
+        return uint256();
     for (std::vector<uint256>::const_iterator it(vMerkleBranch.begin()); it != vMerkleBranch.end(); ++it)
     {
         if (nIndex & 1)
@@ -235,7 +235,7 @@ uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMer
 uint256 CBlock::CheckPoAMerkleBranch(uint256 mhash, const std::vector<uint256>& poaMerkleBranch, int nIndex)
 {
     if (nIndex == -1)
-		return uint256();
+        return uint256();
     for (std::vector<uint256>::const_iterator it(poaMerkleBranch.begin()); it != poaMerkleBranch.end(); ++it)
     {
         if (nIndex & 1)

@@ -133,8 +133,8 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
                 }
                 CTxDestination address;
                 if (ExtractDestination(wtx.vout[0].scriptPubKey, address)) {
-                	// Sent to DAPS Address
-                	sub.address = CBitcoinAddress(address).ToString();
+                    // Sent to DAPS Address
+                    sub.address = CBitcoinAddress(address).ToString();
             }
 
             //a sendtoself transaction has second output as change

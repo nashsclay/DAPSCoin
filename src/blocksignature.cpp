@@ -70,10 +70,10 @@ bool CheckBlockSignature(const CBlock& block)
     std::vector<valtype> vSolutions;
     const CTxOut& txout = block.vtx[1].vout[1];
     if (!Solver(txout.scriptPubKey, whichType, vSolutions))
-    	return false;
+        return false;
     if (whichType == TX_PUBKEY || whichType == TX_PUBKEYHASH) {
-    	valtype& vchPubKey = vSolutions[0];
-    	pubkey = CPubKey(vchPubKey);
+        valtype& vchPubKey = vSolutions[0];
+        pubkey = CPubKey(vchPubKey);
     }
 
     if (!pubkey.IsValid())

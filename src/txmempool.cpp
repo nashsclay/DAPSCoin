@@ -38,7 +38,7 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other)
 double
 CTxMemPoolEntry::GetPriority(unsigned int currentHeight) const
 {
-	return ::GetPriority(tx, currentHeight);
+    return ::GetPriority(tx, currentHeight);
 }
 
 /**
@@ -410,10 +410,10 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
         mapTx[hash] = entry;
         const CTransaction& tx = mapTx[hash].GetTx();
         {
-        	if (tx.IsCoinStake()) {
-        		for (unsigned int i = 0; i < tx.vin.size(); i++)
-        			mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
-        	}
+            if (tx.IsCoinStake()) {
+                for (unsigned int i = 0; i < tx.vin.size(); i++)
+                    mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
+            }
         }
         nTransactionsUpdated++;
         totalTxSize += entry.GetTxSize();

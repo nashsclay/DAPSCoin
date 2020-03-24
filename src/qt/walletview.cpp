@@ -120,7 +120,7 @@ void WalletView::setBitcoinGUI(BitcoinGUI* gui)
 
 void WalletView::stakingStatus(bool stt)
 {
-	Q_EMIT stakingStatusChanged(stt);
+    Q_EMIT stakingStatusChanged(stt);
 }
 
 void WalletView::setClientModel(ClientModel* clientModel)

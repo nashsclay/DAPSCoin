@@ -156,7 +156,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
 
 void OptionsPage::setStakingToggle()
 {
-	ui->toggleStaking->setState(fGenerateDapscoins);
+    ui->toggleStaking->setState(fGenerateDapscoins);
 }
 
 void OptionsPage::setModel(WalletModel* model)
@@ -186,7 +186,7 @@ CAmount OptionsPage::getValidatedAmount() {
 
 OptionsPage::~OptionsPage()
 {
-	delete timerStakingToggleSync;
+    delete timerStakingToggleSync;
     delete ui;
 }
 
@@ -223,7 +223,7 @@ void OptionsPage::on_pushButtonSave_clicked() {
 
     Q_EMIT model->stakingStatusChanged(nLastCoinStakeSearchInterval);
     ui->lineEditWithhold->setStyleSheet(GUIUtil::loadStyleSheet());
-	
+    
     QString reserveBalance = ui->lineEditWithhold->text().trimmed();
     QMessageBox msgBox;
     msgBox.setWindowTitle("Reserve Balance Set");
@@ -318,14 +318,14 @@ void OptionsPage::on_pushButtonPassword_clicked()
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
         }
-    	else if (model->changePassphrase(oldPass, newPass)) {
+        else if (model->changePassphrase(oldPass, newPass)) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Passphrase Change Successful");
             msgBox.setText("Wallet passphrase was successfully changed.\nPlease remember your passphrase as there is no way to recover it.");
             msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
             msgBox.setIcon(QMessageBox::Information);
             msgBox.exec();
-    		success = true;
+            success = true;
         }
     } else {
             QMessageBox msgBox;
@@ -436,7 +436,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
     }
 
     if (chainActive.Height() < Params().LAST_POW_BLOCK()) {
-    	if (widget->getState()) {
+        if (widget->getState()) {
             QString msg;
             msg.sprintf("PoW blocks are still being mined.\nPlease wait until Block %d.", Params().LAST_POW_BLOCK());
             QMessageBox msgBox;
@@ -445,13 +445,13 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             msgBox.setText(msg);
             msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
             msgBox.exec();
-    	}
-    	widget->setState(false);
-    	pwalletMain->WriteStakingStatus(false);
-    	pwalletMain->walletStakingInProgress = false;
+        }
+        widget->setState(false);
+        pwalletMain->WriteStakingStatus(false);
+        pwalletMain->walletStakingInProgress = false;
         return;
     }
-	if (widget->getState()){
+    if (widget->getState()){
         QString error;
         CAmount minFee, maxFee;
         StakingStatusError stt = pwalletMain->StakingCoinStatus(minFee, maxFee);
@@ -471,16 +471,16 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                 CAmount totalFee = maxFee + pwalletMain->ComputeFee(1, 2, MAX_RING_SIZE);
                 errorMessage = "Your stakeable balance is under the threshold of 400 000 DAPS. This is due to your reserve balance of " + FormatMoney(nReserveBalance) + " DAPS being too high. The wallet software has tried to consolidate your funds with the reserve balance but without success because of a consolidation fee of " + FormatMoney(totalFee) + " DAPS. Please wait around 10 minutes for the wallet to resolve the reserve to enable staking.";
             }
-        	QString msg = QString::fromStdString(errorMessage);
-        	msgBox.setWindowTitle("Warning: Staking Issue");
-    		msgBox.setIcon(QMessageBox::Warning);
-    		msgBox.setText(msg);
+            QString msg = QString::fromStdString(errorMessage);
+            msgBox.setWindowTitle("Warning: Staking Issue");
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(msg);
             msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        	msgBox.exec();
-        	widget->setState(false);
-        	nLastCoinStakeSearchInterval = 0;
-        	Q_EMIT model->stakingStatusChanged(false);
-        	pwalletMain->WriteStakingStatus(false);   
+            msgBox.exec();
+            widget->setState(false);
+            nLastCoinStakeSearchInterval = 0;
+            Q_EMIT model->stakingStatusChanged(false);
+            pwalletMain->WriteStakingStatus(false);   
             return; 
         } 
         if (stt == StakingStatusError::STAKING_OK) {
@@ -500,7 +500,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             errorMessage = "In order to enable staking with 100% of your current balance except the reserve balance, your previous DAPS deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " DAPS.\n\nWould you like to do this?";
         }
         reply = QMessageBox::question(this, "Staking Needs Consolidation", QString::fromStdString(errorMessage), QMessageBox::Yes|QMessageBox::No);
-		if (reply == QMessageBox::Yes) { 
+        if (reply == QMessageBox::Yes) { 
             pwalletMain->WriteStakingStatus(true);
             Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
@@ -508,12 +508,12 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
             saveConsolidationSettingTime(ui->addNewFunds->isChecked());
             bool success = false;
-        	try {
+            try {
                 uint32_t nTime = pwalletMain->ReadAutoConsolidateSettingTime();
                 nTime = (nTime == 0)? GetAdjustedTime() : nTime;
-        		success = model->getCWallet()->CreateSweepingTransaction(
-								CWallet::MINIMUM_STAKE_AMOUNT,
-								CWallet::MINIMUM_STAKE_AMOUNT, nTime);
+                success = model->getCWallet()->CreateSweepingTransaction(
+                                CWallet::MINIMUM_STAKE_AMOUNT,
+                                CWallet::MINIMUM_STAKE_AMOUNT, nTime);
                 if (success) {
                     //nConsolidationTime = 1800;
                     QString msg = "Consolidation transaction created!";
@@ -526,7 +526,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                 }
             } catch (const std::exception& err) {
                 LogPrintf("Sweeping failed, will be done automatically when coins become mature");
-        	}            
+            }            
             return;
         } else {
             pwalletMain->stakingMode = StakingMode::STOPPED;
@@ -542,35 +542,35 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
         } else {
-        	if (stt != StakingStatusError::UTXO_UNDER_THRESHOLD) {
-        		QMessageBox msgBox;
-        		QString msg(error);
-        		msgBox.setWindowTitle("Warning: Staking Issue");
-        		msgBox.setIcon(QMessageBox::Warning);
-        		msgBox.setText(msg);
-        		msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        		msgBox.exec();
-        		widget->setState(false);
-        		nLastCoinStakeSearchInterval = 0;
-        		Q_EMIT model->stakingStatusChanged(false);
-        		pwalletMain->WriteStakingStatus(false);
-        	} else {
-        		QMessageBox::StandardButton reply;
-        		reply = QMessageBox::question(this, "Create Stakable Transaction?", error, QMessageBox::Yes|QMessageBox::No);
-        		if (reply == QMessageBox::Yes) {
-        			//ask yes or no
-        			//send to this self wallet MIN staking amount
-        			std::string masterAddr;
-        			model->getCWallet()->ComputeStealthPublicAddress("masteraccount", masterAddr);
-        			CWalletTx resultTx;
-        			bool success = false;
-        			try {
-        				success = model->getCWallet()->SendToStealthAddress(
-        						masterAddr,
-								CWallet::MINIMUM_STAKE_AMOUNT,
-								resultTx,
-								false
-        				);
+            if (stt != StakingStatusError::UTXO_UNDER_THRESHOLD) {
+                QMessageBox msgBox;
+                QString msg(error);
+                msgBox.setWindowTitle("Warning: Staking Issue");
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setText(msg);
+                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+                msgBox.exec();
+                widget->setState(false);
+                nLastCoinStakeSearchInterval = 0;
+                Q_EMIT model->stakingStatusChanged(false);
+                pwalletMain->WriteStakingStatus(false);
+            } else {
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::question(this, "Create Stakable Transaction?", error, QMessageBox::Yes|QMessageBox::No);
+                if (reply == QMessageBox::Yes) {
+                    //ask yes or no
+                    //send to this self wallet MIN staking amount
+                    std::string masterAddr;
+                    model->getCWallet()->ComputeStealthPublicAddress("masteraccount", masterAddr);
+                    CWalletTx resultTx;
+                    bool success = false;
+                    try {
+                        success = model->getCWallet()->SendToStealthAddress(
+                                masterAddr,
+                                CWallet::MINIMUM_STAKE_AMOUNT,
+                                resultTx,
+                                false
+                        );
                     } catch (const std::exception& err)
                     {
                         QMessageBox msgBox;
@@ -579,10 +579,10 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                         msgBox.setText(QString(err.what()));
                         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
                         msgBox.exec();
-        				return;
-        			}
+                        return;
+                    }
 
-        			if (success){
+                    if (success){
                         WalletUtil::getTx(pwalletMain, resultTx.GetHash());
                         QString txhash = resultTx.GetHash().GetHex().c_str();
                         QMessageBox msgBox;
@@ -599,14 +599,14 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                         //Copy txhash to clipboard
                         GUIUtil::setClipboard(txhash);
                         }
-        			}
-        		} else {
-        			widget->setState(false);
-        			nLastCoinStakeSearchInterval = 0;
-        			Q_EMIT model->stakingStatusChanged(false);
-        			pwalletMain->WriteStakingStatus(false);
-        		}
-        	}
+                    }
+                } else {
+                    widget->setState(false);
+                    nLastCoinStakeSearchInterval = 0;
+                    Q_EMIT model->stakingStatusChanged(false);
+                    pwalletMain->WriteStakingStatus(false);
+                }
+            }
         }*/
     } else {
         pwalletMain->stakingMode = StakingMode::STOPPED;
@@ -689,7 +689,7 @@ void OptionsPage::changeTheme(ToggleButton* widget)
     if (widget->getState())
         settings.setValue("theme", "dark");
     else settings.setValue("theme", "light");
-    	GUIUtil::refreshStyleSheet();
+        GUIUtil::refreshStyleSheet();
 }
 
 void OptionsPage::disable2FA() {
@@ -857,7 +857,7 @@ void OptionsPage::onShowMnemonic() {
             return;
         }
     }
-	
+    
     CHDChain hdChainCurrent;
     if (!pwalletMain->GetDecryptedHDChain(hdChainCurrent))
         return;

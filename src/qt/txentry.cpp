@@ -52,7 +52,7 @@ void TxEntry::resizeEvent(QResizeEvent* event)
 
 void TxEntry::setData(int64_t Date, QString Address, QString Amount, QString ID, QString Type)
 {
-	QDateTime dateTime = QDateTime::fromTime_t((qint32)Date);
+    QDateTime dateTime = QDateTime::fromTime_t((qint32)Date);
     
     ui->labelTxAmount->setText(Amount);
     ui->labelDate->setText(dateTime.date().toString("MMMM dd yyyy") + QString("\n") + dateTime.toString("hh:mm:ss"));

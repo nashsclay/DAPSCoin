@@ -121,92 +121,92 @@ static void test1() {
 }
 
 void build_proof(const uint64_t* value, int size, unsigned char* proof, size_t* plen, secp256k1_pedersen_commitment* pcommit) {
-	secp256k1_context2 *both = secp256k1_context_create2(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
-	secp256k1_scratch *scratch = secp256k1_scratch_space_create(both, 1024 * 1024);
-	secp256k1_bulletproof_generators *gens;
-	const unsigned char *proof_ptr = proof;
-	const unsigned char blind[32] = "   i am not a blinding factor   ";
-	plen = 2000;
-	uint64_t min_value[4] = { 0, 0, 0, 5000 } ;
-	const unsigned char *blind_ptr[4];
-	blind_ptr[0] = blind;
-	blind_ptr[1] = blind;
-	blind_ptr[2] = blind;
-	blind_ptr[3] = blind;
+    secp256k1_context2 *both = secp256k1_context_create2(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+    secp256k1_scratch *scratch = secp256k1_scratch_space_create(both, 1024 * 1024);
+    secp256k1_bulletproof_generators *gens;
+    const unsigned char *proof_ptr = proof;
+    const unsigned char blind[32] = "   i am not a blinding factor   ";
+    plen = 2000;
+    uint64_t min_value[4] = { 0, 0, 0, 5000 } ;
+    const unsigned char *blind_ptr[4];
+    blind_ptr[0] = blind;
+    blind_ptr[1] = blind;
+    blind_ptr[2] = blind;
+    blind_ptr[3] = blind;
 
-	int32_t ecount = 0;
+    int32_t ecount = 0;
 
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[0], blind, value[0], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[1], blind, value[1], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[2], blind, value[2], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[3], blind, value[3], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[0], blind, value[0], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[1], blind, value[1], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[2], blind, value[2], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[3], blind, value[3], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
 
-	/* generators
-	//	gens = secp256k1_bulletproof_generators_create(none, NULL, 256);
-	//	CHECK(gens == NULL && ecount == 1);*/
-	gens = secp256k1_bulletproof_generators_create(both, &secp256k1_generator_const_h, 256);
-	CHECK(gens != NULL);
+    /* generators
+    //	gens = secp256k1_bulletproof_generators_create(none, NULL, 256);
+    //	CHECK(gens == NULL && ecount == 1);*/
+    gens = secp256k1_bulletproof_generators_create(both, &secp256k1_generator_const_h, 256);
+    CHECK(gens != NULL);
 
-	CHECK(secp256k1_bulletproof_rangeproof_prove(both, scratch, gens, proof, &plen, value, min_value, blind_ptr, 1, &secp256k1_generator_const_g, 64, blind, NULL, 0) == 1);
+    CHECK(secp256k1_bulletproof_rangeproof_prove(both, scratch, gens, proof, &plen, value, min_value, blind_ptr, 1, &secp256k1_generator_const_g, 64, blind, NULL, 0) == 1);
 }
 
 void verify_proof(unsigned char* proof, size_t plen, secp256k1_pedersen_commitment* pcommit) {
-	secp256k1_context2 *both = secp256k1_context_create2(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
-	secp256k1_scratch *scratch = secp256k1_scratch_space_create(both, 1024 * 1024);
-	secp256k1_bulletproof_generators *gens;
-	const unsigned char *proof_ptr = proof;
-	const unsigned char blind[32] = "   i am not a blinding factor   ";
-	uint64_t min_value[4] = { 0, 0, 0, 5000 } ;
-	gens = secp256k1_bulletproof_generators_create(both, &secp256k1_generator_const_h, 256);
-	CHECK(gens != NULL);
-	/* rangeproof_verify */
-	CHECK(secp256k1_bulletproof_rangeproof_verify(both, scratch, gens, proof, plen, min_value, pcommit, 1, 64, &secp256k1_generator_const_g, NULL, 0) == 1);
+    secp256k1_context2 *both = secp256k1_context_create2(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+    secp256k1_scratch *scratch = secp256k1_scratch_space_create(both, 1024 * 1024);
+    secp256k1_bulletproof_generators *gens;
+    const unsigned char *proof_ptr = proof;
+    const unsigned char blind[32] = "   i am not a blinding factor   ";
+    uint64_t min_value[4] = { 0, 0, 0, 5000 } ;
+    gens = secp256k1_bulletproof_generators_create(both, &secp256k1_generator_const_h, 256);
+    CHECK(gens != NULL);
+    /* rangeproof_verify */
+    CHECK(secp256k1_bulletproof_rangeproof_verify(both, scratch, gens, proof, plen, min_value, pcommit, 1, 64, &secp256k1_generator_const_g, NULL, 0) == 1);
 }
 
 static void test_build_verify() {
-	secp256k1_context2 *both = secp256k1_context_create2(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
-	secp256k1_scratch *scratch = secp256k1_scratch_space_create(both, 1024 * 1024);
-	secp256k1_generator value_gen;
-	secp256k1_bulletproof_generators *gens;
-	secp256k1_pedersen_commitment pcommit[4];
-	const secp256k1_pedersen_commitment *pcommit_arr[1];
-	unsigned char proof[2000];
-	const unsigned char *proof_ptr = proof;
-	const unsigned char blind[32] = "   i am not a blinding factor   ";
-	const unsigned char *blind_ptr[4];
-	size_t blindlen = sizeof(blind);
-	size_t plen = sizeof(proof);
-	uint64_t value[4] = { 1234, 4567, 8910, 1112 } ;
-	uint64_t min_value[4] = { 0, 0, 0, 5000 } ;
-	const uint64_t *mv_ptr = min_value;
-	unsigned char rewind_blind[32];
-	size_t rewind_v;
+    secp256k1_context2 *both = secp256k1_context_create2(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+    secp256k1_scratch *scratch = secp256k1_scratch_space_create(both, 1024 * 1024);
+    secp256k1_generator value_gen;
+    secp256k1_bulletproof_generators *gens;
+    secp256k1_pedersen_commitment pcommit[4];
+    const secp256k1_pedersen_commitment *pcommit_arr[1];
+    unsigned char proof[2000];
+    const unsigned char *proof_ptr = proof;
+    const unsigned char blind[32] = "   i am not a blinding factor   ";
+    const unsigned char *blind_ptr[4];
+    size_t blindlen = sizeof(blind);
+    size_t plen = sizeof(proof);
+    uint64_t value[4] = { 1234, 4567, 8910, 1112 } ;
+    uint64_t min_value[4] = { 0, 0, 0, 5000 } ;
+    const uint64_t *mv_ptr = min_value;
+    unsigned char rewind_blind[32];
+    size_t rewind_v;
 
-	int32_t ecount = 0;
+    int32_t ecount = 0;
 
-	blind_ptr[0] = blind;
-	blind_ptr[1] = blind;
-	blind_ptr[2] = blind;
-	blind_ptr[3] = blind;
-	pcommit_arr[0] = pcommit;
+    blind_ptr[0] = blind;
+    blind_ptr[1] = blind;
+    blind_ptr[2] = blind;
+    blind_ptr[3] = blind;
+    pcommit_arr[0] = pcommit;
 
-	/*CHECK(secp256k1_generator_generate(both, &value_gen, blind) != 0);*/
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[0], blind, value[0], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[1], blind, value[1], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[2], blind, value[2], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
-	CHECK(secp256k1_pedersen_commit(both, &pcommit[3], blind, value[3], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    /*CHECK(secp256k1_generator_generate(both, &value_gen, blind) != 0);*/
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[0], blind, value[0], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[1], blind, value[1], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[2], blind, value[2], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
+    CHECK(secp256k1_pedersen_commit(both, &pcommit[3], blind, value[3], &secp256k1_generator_const_g, &secp256k1_generator_const_h) != 0);
 
-	/* generators
+    /* generators
 //	gens = secp256k1_bulletproof_generators_create(none, NULL, 256);
 //	CHECK(gens == NULL && ecount == 1);*/
-	gens = secp256k1_bulletproof_generators_create(both, &secp256k1_generator_const_h, 256);
-	CHECK(gens != NULL);
+    gens = secp256k1_bulletproof_generators_create(both, &secp256k1_generator_const_h, 256);
+    CHECK(gens != NULL);
 
-	CHECK(secp256k1_bulletproof_rangeproof_prove(both, scratch, gens, proof, &plen, value, min_value, blind_ptr, 2, &secp256k1_generator_const_g, 64, blind, NULL, 0) == 1);
+    CHECK(secp256k1_bulletproof_rangeproof_prove(both, scratch, gens, proof, &plen, value, min_value, blind_ptr, 2, &secp256k1_generator_const_g, 64, blind, NULL, 0) == 1);
 
-	/* rangeproof_verify */
-	ecount = 0;
-	CHECK(secp256k1_bulletproof_rangeproof_verify(both, scratch, gens, proof, plen, min_value, pcommit, 2, 64, &secp256k1_generator_const_g, NULL, 0) == 1);
+    /* rangeproof_verify */
+    ecount = 0;
+    CHECK(secp256k1_bulletproof_rangeproof_verify(both, scratch, gens, proof, plen, min_value, pcommit, 2, 64, &secp256k1_generator_const_g, NULL, 0) == 1);
 }
 
 static void test_bulletproof_api(void) {
@@ -226,7 +226,7 @@ static void test_bulletproof_api(void) {
     size_t blindlen = sizeof(blind);
     size_t plen = sizeof(proof);
     uint64_t value[4] = { 1234, 4567, 8910, 1112 } ;
-	uint64_t min_value[4] = { 1000, 4567, 0, 5000 } ;
+    uint64_t min_value[4] = { 1000, 4567, 0, 5000 } ;
     const uint64_t *mv_ptr = min_value;
     unsigned char rewind_blind[32];
     size_t rewind_v;

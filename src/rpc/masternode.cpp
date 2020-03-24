@@ -42,7 +42,7 @@ UniValue getpoolinfo(const UniValue& params, bool fHelp)
 
     UniValue obj(UniValue::VOBJ);
     if (mnodeman.GetCurrentMasterNode() != NULL) {
-    	obj.push_back(Pair("current_masternode", mnodeman.GetCurrentMasterNode()->addr.ToString()));
+        obj.push_back(Pair("current_masternode", mnodeman.GetCurrentMasterNode()->addr.ToString()));
     }
     obj.push_back(Pair("state", obfuScationPool.GetState()));
     obj.push_back(Pair("entries", obfuScationPool.GetEntriesCount()));

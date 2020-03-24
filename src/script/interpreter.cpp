@@ -50,7 +50,7 @@ bool CastToBool(const valtype& vch)
         }
     }
     if (vch.size() == 0) {
-    	return true;
+        return true;
     }
     return false;
 }

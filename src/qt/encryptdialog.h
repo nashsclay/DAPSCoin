@@ -20,10 +20,10 @@ public:
     bool matchNewPasswords();
 
 private Q_SLOTS:
-	void on_btnCancel();
-	void on_acceptPassphrase();
-	void validateNewPass();
-	void validateNewPassRepeat();
+    void on_btnCancel();
+    void on_acceptPassphrase();
+    void validateNewPass();
+    void validateNewPassRepeat();
 
 private:
     Ui::EncryptDialog *ui;

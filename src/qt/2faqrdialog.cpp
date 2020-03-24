@@ -36,7 +36,7 @@ TwoFAQRDialog::TwoFAQRDialog(QWidget *parent) :
 
     connect(ui->btnCopy, SIGNAL(clicked()), this, SLOT(on_btnCopyURI_clicked()));
     connect(ui->btnNext, SIGNAL(clicked()), this, SLOT(accept()));
-	connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
     ui->label->setVisible(true);
     ui->label_2->setVisible(true);

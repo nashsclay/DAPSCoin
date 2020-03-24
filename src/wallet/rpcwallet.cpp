@@ -138,7 +138,7 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
 
     // Generate a new key
     if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed) {
-    	EnsureWalletIsUnlocked();
+        EnsureWalletIsUnlocked();
         if (!pwalletMain->GetKeyFromPool(account.vchPubKey))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
@@ -2495,7 +2495,7 @@ UniValue createprivacyaccount(const UniValue& params, bool fHelp)
 
         std::string stealthAddr;
         if (pwalletMain->EncodeStealthPublicAddress(viewAccount.vchPubKey, spendAccount.vchPubKey, stealthAddr)) {
-        	ret.push_back(Pair("stealthaddress", stealthAddr));
+            ret.push_back(Pair("stealthaddress", stealthAddr));
         }
         break;
     }
@@ -2693,7 +2693,7 @@ UniValue createprivacysubaddress(const UniValue& params, bool fHelp)
 
     std::string stealthAddr;
     if (pwalletMain->EncodeStealthPublicAddress(account.viewAccount.vchPubKey, account.spendAccount.vchPubKey, stealthAddr)) {
-    	ret.push_back(Pair("stealthaddress", stealthAddr));
+        ret.push_back(Pair("stealthaddress", stealthAddr));
     }
     return ret;
 }
@@ -2925,11 +2925,11 @@ UniValue showtxprivatekeys(const UniValue& params, bool fHelp) {
     UniValue ret(UniValue::VOBJ);
     CWalletDB db(pwalletMain->strWalletFile);
     for(int i = 0; i < 10; i++) {
-    	std::string key = params[0].get_str() + std::to_string(i);
-    	std::string secret;
-    	if (db.ReadTxPrivateKey(key, secret)) {
-    		ret.push_back(Pair(std::to_string(i), secret));
-    	} else break;
+        std::string key = params[0].get_str() + std::to_string(i);
+        std::string secret;
+        if (db.ReadTxPrivateKey(key, secret)) {
+            ret.push_back(Pair(std::to_string(i), secret));
+        } else break;
     }
     return ret;
 }
@@ -2984,10 +2984,10 @@ UniValue rescanwallettransactions(const UniValue& params, bool fHelp) {
 
     int nHeight = 0;
     if (params.size() == 1) {
-    	nHeight = params[0].get_int();
+        nHeight = params[0].get_int();
     }
     if (!pwalletMain->RescanAfterUnlock(nHeight)) {
-    	return "Failed to rescan";
+        return "Failed to rescan";
     }
     return "Done";
 }

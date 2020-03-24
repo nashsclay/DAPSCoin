@@ -132,9 +132,9 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     result.push_back(Pair("moneysupply",ValueFromAmount(blockindex->nMoneySupply)));
     std::string minetype = "PoW";
     if (blockindex->IsProofOfStake()) {
-    	minetype = "PoS";
+        minetype = "PoS";
     } else if (blockindex->IsProofOfAudit()) {
-    	minetype = "PoA";
+        minetype = "PoA";
     }
 
     result.push_back(Pair("minetype", minetype));
@@ -142,13 +142,13 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     if (blockindex->IsProofOfAudit()) {
         //This is a PoA block
         //Read information of PoS blocks audited by this PoA block
-    	result.push_back(Pair("previouspoahash", block.hashPrevPoABlock.GetHex()));
+        result.push_back(Pair("previouspoahash", block.hashPrevPoABlock.GetHex()));
         UniValue posBlockInfos(UniValue::VARR);
         bool auditResult = true;
         for (int i = 0; i < block.posBlocksAudited.size(); i++) {
             UniValue objPoSBlockInfo(UniValue::VOBJ);
             PoSBlockInfoToJSON(block.posBlocksAudited[i].hash,
-                        		block.posBlocksAudited[i].nTime, block.posBlocksAudited[i].height, objPoSBlockInfo);
+                                block.posBlocksAudited[i].nTime, block.posBlocksAudited[i].height, objPoSBlockInfo);
             posBlockInfos.push_back(objPoSBlockInfo);
             auditResult = auditResult & (block.posBlocksAudited[i].nTime > 0);
         }
