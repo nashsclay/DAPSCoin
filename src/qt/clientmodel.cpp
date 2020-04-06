@@ -120,15 +120,6 @@ QString ClientModel::getLastBlockHash() const
     return QString::fromStdString(nHash.GetHex());
 }
 
-int ClientModel::getChainHeight() const
-{
-    LOCK(cs_main);
-    if (chainActive.Tip())
-        return chainActive.Tip()->nHeight;
-    else 
-        return 0;
-}
-
 double ClientModel::getVerificationProgress() const
 {
     return Checkpoints::GuessVerificationProgress(cacheTip);

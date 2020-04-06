@@ -62,7 +62,6 @@ public:
     int getNumBlocks();
     QDateTime getLastBlockDate() const;
     QString getLastBlockHash() const;
-    int getChainHeight() const;
     double getVerificationProgress() const;
 
     quint64 getTotalBytesRecv() const;
