@@ -7,8 +7,6 @@
 
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
-#include "unlockdialog.h"
-#include "lockdialog.h"
 #include "bitcoinunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -77,13 +75,9 @@ public:
             iconWatchonly.paint(painter, watchonlyRect);
         }
 
-        if (amount < 0) {
+        if (amount < 0)
             foreground = COLOR_NEGATIVE;
-        } else if (!confirmed) {
-            foreground = COLOR_UNCONFIRMED;
-        } else {
-            foreground = COLOR_BLACK;
-        }
+
         painter->setPen(foreground);
         QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true, BitcoinUnits::separatorAlways);
         if (!confirmed) {
@@ -125,15 +119,10 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
 
     pingNetworkInterval = new QTimer(this);
     connect(pingNetworkInterval, SIGNAL(timeout()), this, SLOT(tryNetworkBlockCount()));
-    pingNetworkInterval->setInterval(3000); pingNetworkInterval->start(); 
-    
-    pingNetworkInterval = new QTimer();
+    pingNetworkInterval->setInterval(3000);
+    pingNetworkInterval->start();
 
     initSyncCircle(.8);
-
-    QTimer* timerBlockHeightLabel = new QTimer(this);
-    connect(timerBlockHeightLabel, SIGNAL(timeout()), this, SLOT(showBlockCurrentHeight()));
-    timerBlockHeightLabel->start(60000);
 
     connect(ui->btnLockUnlock, SIGNAL(clicked()), this, SLOT(on_lockUnlock()));
 }
@@ -141,7 +130,7 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
 void OverviewPage::handleTransactionClicked(const QModelIndex& index)
 {
     if (filter)
-        emit transactionClicked(filter->mapToSource(index));
+        Q_EMIT transactionClicked(filter->mapToSource(index));
 }
 
 OverviewPage::~OverviewPage()
@@ -204,7 +193,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     font.setBold(true);
     ui->labelBalance_2->setFont(font);   
 
-    refreshRecentTransactions();
+    updateRecentTransactions();
 }
 
 // show/hide watch-only labels
@@ -221,6 +210,8 @@ void OverviewPage::setClientModel(ClientModel* model)
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
         updateAlerts(model->getStatusBarWarnings());
+        connect(model, SIGNAL(numBlocksChanged(int)), this, SLOT(showBlockCurrentHeight(int)));
+        showBlockCurrentHeight(clientModel->getNumBlocks());
     }
 }
 
@@ -283,9 +274,9 @@ void OverviewPage::setWalletModel(WalletModel* model)
 
 void OverviewPage::updateBalance()
 {
-	WalletModel* model = this->walletModel;
-	setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
-			model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
+    WalletModel* model = this->walletModel;
+    setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
+            model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
 }
 
 void OverviewPage::updateDisplayUnit()
@@ -319,32 +310,40 @@ void OverviewPage::showBalanceSync(bool fShow){
         ui->labelUnconfirmed->setVisible(true);
         ui->labelBalanceText->setVisible(true);
         isSyncingBalance = fShow;
+        if (isSyncingBalance){
+            QString tooltip = "The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.";
+            ui->labelUnconfirmed->setToolTip(tooltip);
+            ui->labelBalance->setToolTip(tooltip);
+        } else {
+            ui->labelUnconfirmed->setToolTip("Your pending balance");
+            ui->labelBalance->setToolTip("Your current balance");
+        }
 }
 
 void OverviewPage::showBlockSync(bool fShow)
 {
-    ui->labelBlockStatus->setVisible(true);
     ui->labelBlockOf->setVisible(fShow);
     ui->labelBlocksTotal->setVisible(fShow);
 
     isSyncingBlocks = fShow;
 
-    ui->labelBlockCurrent->setText(QString::number(clientModel->getNumBlocks()));
+    int count = clientModel->getNumBlocks();
+    ui->labelBlockCurrent->setText(QString::number(count));
+
     if (isSyncingBlocks){
         ui->labelBlockStatus->setText("(syncing)");
+        ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
     } else {
         ui->labelBlockStatus->setText("(synced)");
+        ui->labelBlockStatus->setToolTip("Your wallet is fully synchronized with the DAPS network.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignHCenter|Qt::AlignVCenter));
     }
 }
 
-void OverviewPage::showBlockCurrentHeight()
+void OverviewPage::showBlockCurrentHeight(int count)
 {
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain)
-        return;
-	ui->labelBlockCurrent->setText(QString::number(chainActive.Height()));
+    ui->labelBlockCurrent->setText(QString::number(count));
 }
 
 void OverviewPage::initSyncCircle(float ratioToParent)
@@ -353,7 +352,8 @@ void OverviewPage::initSyncCircle(float ratioToParent)
     animTicker->setInterval(17); //17 mSecs or ~60 fps
     animClock = new QElapsedTimer();
     connect(animTicker, SIGNAL(timeout()), this, SLOT(onAnimTick()));
-    animTicker->start(); animClock->start();
+    animTicker->start();
+    animClock->start();
 
     blockAnimSyncCircle = new QWidget(ui->widgetSyncBlocks);
     blockAnimSyncCircle->setStyleSheet("image:url(':/images/syncb')");//"background-image: ./image.png");
@@ -443,14 +443,11 @@ int OverviewPage::tryNetworkBlockCount(){
     return -1;
 }
 
-void OverviewPage::updateRecentTransactions(){
+void OverviewPage::updateRecentTransactions() {
     if (!pwalletMain) return;
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
         QLayoutItem* item;
-        QSettings settings;
-        QVariant theme = settings.value("theme");
-        QString themeName = QString(theme.toString());
 
         while ( ( item = ui->verticalLayoutRecent->takeAt( 0 ) ) != NULL )
         {
@@ -483,10 +480,10 @@ void OverviewPage::updateRecentTransactions(){
 
                 for (int i = 0; i < (int)latestTxes.size(); i++) {
                     txs.push_back(WalletUtil::getTx(pwalletMain, latestTxes[i]));
-                    if (txs.size() >= 5) break;
+                    if (txs.size() >= NUM_ITEMS) break;
                 }
 
-                int length = (txs.size()>5)? 5:txs.size();
+                int length = (txs.size()>NUM_ITEMS)? NUM_ITEMS:txs.size();
                 for (int i = 0; i< length; i++){
                     uint256 txHash;
                     txHash.SetHex(txs[i]["id"].toStdString());
@@ -513,47 +510,28 @@ void OverviewPage::updateRecentTransactions(){
     }
 }
 
-void OverviewPage::refreshRecentTransactions() {
-	updateRecentTransactions();
-}
-
 void OverviewPage::on_lockUnlock() {
     if (walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForAnonymizationOnly) {
-        UnlockDialog unlockdlg;
-        unlockdlg.setWindowTitle("Unlock Keychain Wallet");
-        unlockdlg.setModel(walletModel);
-        unlockdlg.setStyleSheet(GUIUtil::loadStyleSheet());
-        connect(&unlockdlg, SIGNAL(finished (int)), this, SLOT(unlockDialogIsFinished(int)));
-        unlockdlg.exec();
+        WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
+        if (ctx.isValid()) {
+            ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
+            ui->labelBalance_2->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getBalance(), false, BitcoinUnits::separatorAlways));
+            ui->labelBalance->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
+            ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
+            pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
+        }
     }
     else {
-        LockDialog lockdlg;
-        lockdlg.setWindowTitle("Lock Keychain Wallet");
-        lockdlg.setModel(walletModel);
-        lockdlg.setStyleSheet(GUIUtil::loadStyleSheet());
-        connect(&lockdlg, SIGNAL(finished (int)), this, SLOT(lockDialogIsFinished(int)));
-        lockdlg.exec();   
-    }
-}
-
-
-void OverviewPage::unlockDialogIsFinished(int result) {
-    if(result == QDialog::Accepted){
-        ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
-        ui->labelBalance_2->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getBalance(), false, BitcoinUnits::separatorAlways));
-        ui->labelBalance->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
-        ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
-        pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
-    }
-}
-
-void OverviewPage::lockDialogIsFinished(int result) {
-    if(result == QDialog::Accepted){
-        ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
-        ui->labelBalance_2->setText("Locked; Hidden");
-        ui->labelBalance->setText("Locked; Hidden");
-        ui->labelUnconfirmed->setText("Locked; Hidden");
-        pwalletMain->stakingMode = StakingMode::STOPPED;
+        QMessageBox::StandardButton msgReply;
+        msgReply = QMessageBox::question(this, "Lock Keychain Wallet", "Would you like to lock your keychain wallet now?\n\n(Staking will also be stopped)", QMessageBox::Yes|QMessageBox::No);
+        if (msgReply == QMessageBox::Yes) {
+            walletModel->setWalletLocked(true);
+            ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
+            ui->labelBalance_2->setText("Locked; Hidden");
+            ui->labelBalance->setText("Locked; Hidden");
+            ui->labelUnconfirmed->setText("Locked; Hidden");
+            pwalletMain->stakingMode = StakingMode::STOPPED;
+        }
     }
 }
 

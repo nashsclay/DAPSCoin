@@ -55,7 +55,7 @@ public:
     bool matchNewPasswords();
     StakingStatusError getStakingStatusError(QString&);
 
-public slots:
+public Q_SLOTS:
     void on_EnableStaking(ToggleButton*);
 
 protected:
@@ -77,7 +77,7 @@ private:
     QTimer* timerStakingToggleSync;
     void saveConsolidationSettingTime(bool);
 
-private slots:
+private Q_SLOTS:
     void validateNewPass();
     void validateNewPassRepeat();
     void onOldPassChanged();

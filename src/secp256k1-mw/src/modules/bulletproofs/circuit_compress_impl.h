@@ -232,7 +232,7 @@ void secp256k1_bulletproof_pf_compress_circuit(secp256k1_bulletproof_pf_compress
         /* Compute l1 */
         if (i < assn->n_gates) {
             secp256k1_scalar_add(&ret->l1[i], &wr, &assn->al[i]);
-	}
+    }
         /* Compute r0 */
         secp256k1_scalar_negate(&ret->r0[i], &yn);
         secp256k1_scalar_add(&ret->r0[i], &ret->r0[i], &wo);

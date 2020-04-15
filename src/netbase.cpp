@@ -40,7 +40,7 @@ using namespace std;
 // Settings
 static proxyType proxyInfo[NET_MAX];
 static proxyType nameProxy;
-static CCriticalSection cs_proxyInfos;
+static RecursiveMutex cs_proxyInfos;
 int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 bool fNameLookup = false;
 
@@ -239,6 +239,14 @@ struct timeval MillisToTimeval(int64_t nTimeout)
     return timeout;
 }
 
+enum class IntrRecvError {
+    OK,
+    Timeout,
+    Disconnected,
+    NetworkError,
+    Interrupted
+};
+
 /**
  * Read bytes from socket. This will either read the full number of bytes requested
  * or return False on error or timeout.
@@ -250,7 +258,7 @@ struct timeval MillisToTimeval(int64_t nTimeout)
  *
  * @note This function requires that hSocket is in non-blocking mode.
  */
-bool static InterruptibleRecv(char* data, size_t len, int timeout, SOCKET& hSocket)
+static IntrRecvError InterruptibleRecv(char* data, size_t len, int timeout, SOCKET& hSocket)
 {
     int64_t curTime = GetTimeMillis();
     int64_t endTime = curTime + timeout;
@@ -263,12 +271,12 @@ bool static InterruptibleRecv(char* data, size_t len, int timeout, SOCKET& hSock
             len -= ret;
             data += ret;
         } else if (ret == 0) { // Unexpected disconnection
-            return false;
+            return IntrRecvError::Disconnected;
         } else { // Other error or blocking
             int nErr = WSAGetLastError();
             if (nErr == WSAEINPROGRESS || nErr == WSAEWOULDBLOCK || nErr == WSAEINVAL) {
                 if (!IsSelectableSocket(hSocket)) {
-                    return false;
+                    return IntrRecvError::NetworkError;
                 }
                 struct timeval tval = MillisToTimeval(std::min(endTime - curTime, maxWait));
                 fd_set fdset;
@@ -276,16 +284,16 @@ bool static InterruptibleRecv(char* data, size_t len, int timeout, SOCKET& hSock
                 FD_SET(hSocket, &fdset);
                 int nRet = select(hSocket + 1, &fdset, NULL, NULL, &tval);
                 if (nRet == SOCKET_ERROR) {
-                    return false;
+                    return IntrRecvError::NetworkError;
                 }
             } else {
-                return false;
+                return IntrRecvError::NetworkError;
             }
         }
         boost::this_thread::interruption_point();
         curTime = GetTimeMillis();
     }
-    return len == 0;
+    return len == 0 ? IntrRecvError::OK : IntrRecvError::Timeout;
 }
 
 struct ProxyCredentials
@@ -297,6 +305,7 @@ struct ProxyCredentials
 /** Connect using SOCKS5 (as described in RFC1928) */
 bool static Socks5(string strDest, int port, const ProxyCredentials *auth, SOCKET& hSocket)
 {
+    IntrRecvError recvr;
     LogPrintf("SOCKS5 connecting %s\n", strDest);
     if (strDest.size() > 255) {
         CloseSocket(hSocket);
@@ -319,7 +328,7 @@ bool static Socks5(string strDest, int port, const ProxyCredentials *auth, SOCKE
         return error("Error sending to proxy");
     }
     char pchRet1[2];
-    if (!InterruptibleRecv(pchRet1, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
+    if ((recvr = InterruptibleRecv(pchRet1, 2, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
         CloseSocket(hSocket);
         return error("Error reading proxy response");
     }
@@ -344,7 +353,7 @@ bool static Socks5(string strDest, int port, const ProxyCredentials *auth, SOCKE
         }
         LogPrint("proxy", "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
         char pchRetA[2];
-        if (!InterruptibleRecv(pchRetA, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
+        if ((recvr = InterruptibleRecv(pchRetA, 2, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
             CloseSocket(hSocket);
             return error("Error reading proxy authentication response");
         }
@@ -373,9 +382,16 @@ bool static Socks5(string strDest, int port, const ProxyCredentials *auth, SOCKE
         return error("Error sending to proxy");
     }
     char pchRet2[4];
-    if (!InterruptibleRecv(pchRet2, 4, SOCKS5_RECV_TIMEOUT, hSocket)) {
+    if ((recvr = InterruptibleRecv(pchRet2, 4, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
         CloseSocket(hSocket);
-        return error("Error reading proxy response");
+        if (recvr == IntrRecvError::Timeout) {
+            /* If a timeout happens here, this effectively means we timed out while connecting
+             * to the remote node. This is very common for Tor, so do not print an
+             * error message. */
+            return false;
+        } else {
+            return error("Error while reading proxy response");
+        }
     }
     if (pchRet2[0] != 0x05) {
         CloseSocket(hSocket);
@@ -411,30 +427,30 @@ bool static Socks5(string strDest, int port, const ProxyCredentials *auth, SOCKE
     char pchRet3[256];
     switch (pchRet2[3]) {
     case 0x01:
-        ret = InterruptibleRecv(pchRet3, 4, SOCKS5_RECV_TIMEOUT, hSocket);
+        recvr = InterruptibleRecv(pchRet3, 4, SOCKS5_RECV_TIMEOUT, hSocket);
         break;
     case 0x04:
-        ret = InterruptibleRecv(pchRet3, 16, SOCKS5_RECV_TIMEOUT, hSocket);
+        recvr = InterruptibleRecv(pchRet3, 16, SOCKS5_RECV_TIMEOUT, hSocket);
         break;
     case 0x03: {
-        ret = InterruptibleRecv(pchRet3, 1, SOCKS5_RECV_TIMEOUT, hSocket);
-        if (!ret) {
+        recvr = InterruptibleRecv(pchRet3, 1, SOCKS5_RECV_TIMEOUT, hSocket);
+        if (recvr != IntrRecvError::OK) {
             CloseSocket(hSocket);
             return error("Error reading from proxy");
         }
         int nRecv = pchRet3[0];
-        ret = InterruptibleRecv(pchRet3, nRecv, SOCKS5_RECV_TIMEOUT, hSocket);
+        recvr = InterruptibleRecv(pchRet3, nRecv, SOCKS5_RECV_TIMEOUT, hSocket);
         break;
     }
     default:
         CloseSocket(hSocket);
         return error("Error: malformed proxy response");
     }
-    if (!ret) {
+    if (recvr != IntrRecvError::OK) {
         CloseSocket(hSocket);
         return error("Error reading from proxy");
     }
-    if (!InterruptibleRecv(pchRet3, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
+    if ((recvr = InterruptibleRecv(pchRet3, 2, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
         CloseSocket(hSocket);
         return error("Error reading from proxy");
     }
@@ -623,10 +639,12 @@ bool ConnectSocketByName(CService& addr, SOCKET& hSocketRet, const char* pszDest
     proxyType nameProxy;
     GetNameProxy(nameProxy);
 
-    CService addrResolved(CNetAddr(strDest, fNameLookup && !HaveNameProxy()), port);
-    if (addrResolved.IsValid()) {
-        addr = addrResolved;
-        return ConnectSocket(addr, hSocketRet, nTimeout);
+    CService addrResolved;
+    if (Lookup(strDest.c_str(), addrResolved, port, fNameLookup && !HaveNameProxy())) {
+        if (addrResolved.IsValid()) {
+            addr = addrResolved;
+            return ConnectSocket(addr, hSocketRet, nTimeout);
+        }
     }
 
     addr = CService("0.0.0.0:0");
@@ -692,19 +710,19 @@ CNetAddr::CNetAddr(const struct in6_addr& ipv6Addr)
     SetRaw(NET_IPV6, (const uint8_t*)&ipv6Addr);
 }
 
-CNetAddr::CNetAddr(const char* pszIp, bool fAllowLookup)
+CNetAddr::CNetAddr(const char* pszIp)
 {
     Init();
     std::vector<CNetAddr> vIP;
-    if (LookupHost(pszIp, vIP, 1, fAllowLookup))
+    if (LookupHost(pszIp, vIP, 1, false))
         *this = vIP[0];
 }
 
-CNetAddr::CNetAddr(const std::string& strIp, bool fAllowLookup)
+CNetAddr::CNetAddr(const std::string& strIp)
 {
     Init();
     std::vector<CNetAddr> vIP;
-    if (LookupHost(strIp.c_str(), vIP, 1, fAllowLookup))
+    if (LookupHost(strIp.c_str(), vIP, 1, false))
         *this = vIP[0];
 }
 
@@ -1134,35 +1152,35 @@ bool CService::SetSockAddr(const struct sockaddr* paddr)
     }
 }
 
-CService::CService(const char* pszIpPort, bool fAllowLookup)
+CService::CService(const char* pszIpPort)
 {
     Init();
     CService ip;
-    if (Lookup(pszIpPort, ip, 0, fAllowLookup))
+    if (Lookup(pszIpPort, ip, 0, false))
         *this = ip;
 }
 
-CService::CService(const char* pszIpPort, int portDefault, bool fAllowLookup)
+CService::CService(const char* pszIpPort, int portDefault)
 {
     Init();
     CService ip;
-    if (Lookup(pszIpPort, ip, portDefault, fAllowLookup))
+    if (Lookup(pszIpPort, ip, portDefault, false))
         *this = ip;
 }
 
-CService::CService(const std::string& strIpPort, bool fAllowLookup)
+CService::CService(const std::string& strIpPort)
 {
     Init();
     CService ip;
-    if (Lookup(strIpPort.c_str(), ip, 0, fAllowLookup))
+    if (Lookup(strIpPort.c_str(), ip, 0, false))
         *this = ip;
 }
 
-CService::CService(const std::string& strIpPort, int portDefault, bool fAllowLookup)
+CService::CService(const std::string& strIpPort, int portDefault)
 {
     Init();
     CService ip;
-    if (Lookup(strIpPort.c_str(), ip, portDefault, fAllowLookup))
+    if (Lookup(strIpPort.c_str(), ip, portDefault, false))
         *this = ip;
 }
 
@@ -1254,7 +1272,7 @@ CSubNet::CSubNet() : valid(false)
     memset(netmask, 0, sizeof(netmask));
 }
 
-CSubNet::CSubNet(const std::string& strSubnet, bool fAllowLookup)
+CSubNet::CSubNet(const std::string& strSubnet)
 {
     size_t slash = strSubnet.find_last_of('/');
     std::vector<CNetAddr> vIP;
@@ -1264,7 +1282,8 @@ CSubNet::CSubNet(const std::string& strSubnet, bool fAllowLookup)
     memset(netmask, 255, sizeof(netmask));
 
     std::string strAddress = strSubnet.substr(0, slash);
-    if (LookupHost(strAddress.c_str(), vIP, 1, fAllowLookup)) {
+    if (LookupHost(strAddress.c_str(), vIP, 1, false))
+    {
         network = vIP[0];
         if (slash != strSubnet.npos) {
             std::string strNetmask = strSubnet.substr(slash + 1);

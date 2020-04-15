@@ -19,11 +19,11 @@ public:
     void setModel(WalletModel* model);
     bool matchNewPasswords();
 
-private slots:
-	void on_btnCancel();
-	void on_acceptPassphrase();
-	void validateNewPass();
-	void validateNewPassRepeat();
+private Q_SLOTS:
+    void on_btnCancel();
+    void on_acceptPassphrase();
+    void validateNewPass();
+    void validateNewPassRepeat();
 
 private:
     Ui::EncryptDialog *ui;

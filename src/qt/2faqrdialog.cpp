@@ -13,9 +13,6 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPixmap>
-#if QT_VERSION < 0x050000
-#include <QUrl>
-#endif
 
 // #define USE_QRCODE
 
@@ -39,7 +36,7 @@ TwoFAQRDialog::TwoFAQRDialog(QWidget *parent) :
 
     connect(ui->btnCopy, SIGNAL(clicked()), this, SLOT(on_btnCopyURI_clicked()));
     connect(ui->btnNext, SIGNAL(clicked()), this, SLOT(accept()));
-	connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
     ui->label->setVisible(true);
     ui->label_2->setVisible(true);

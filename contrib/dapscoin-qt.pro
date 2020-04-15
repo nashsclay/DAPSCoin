@@ -57,7 +57,6 @@ INCLUDEPATH += . \
 # Input
 HEADERS += src/activemasternode.h \
            src/addrman.h \
-           src/alert.h \
            src/allocators.h \
            src/amount.h \
            src/arith_uint256.h \
@@ -197,7 +196,6 @@ HEADERS += src/activemasternode.h \
            src/qt/historypage.h \
            src/qt/importorcreate.h \
            src/qt/intro.h \
-           src/qt/lockdialog.h \
            src/qt/macdockiconhandler.h \
            src/qt/macnotificationhandler.h \
            src/qt/masternodelist.h \
@@ -235,7 +233,6 @@ HEADERS += src/activemasternode.h \
            src/qt/transactiontablemodel.h \
            src/qt/transactionview.h \
            src/qt/txentry.h \
-           src/qt/unlockdialog.h \
            src/qt/utilitydialog.h \
            src/qt/walletframe.h \
            src/qt/walletmodel.h \
@@ -383,7 +380,6 @@ FORMS += src/qt/forms/addressbookpage.ui \
          src/qt/forms/transactiondescdialog.ui \
 SOURCES += src/activemasternode.cpp \
            src/addrman.cpp \
-           src/alert.cpp \
            src/allocators.cpp \
            src/amount.cpp \
            src/arith_uint256.cpp \
@@ -523,7 +519,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/historypage.cpp \
            src/qt/importorcreate.cpp \
            src/qt/intro.cpp \
-           src/qt/lockdialog.cpp \
            src/qt/masternodelist.cpp \
            src/qt/multisenddialog.cpp \
            src/qt/multisigdialog.cpp \
@@ -559,7 +554,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/transactiontablemodel.cpp \
            src/qt/transactionview.cpp \
            src/qt/txentry.cpp \
-           src/qt/unlockdialog.cpp \
            src/qt/utilitydialog.cpp \
            src/qt/walletframe.cpp \
            src/qt/walletmodel.cpp \

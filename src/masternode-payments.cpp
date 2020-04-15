@@ -18,9 +18,9 @@
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
 
-CCriticalSection cs_vecPayments;
-CCriticalSection cs_mapMasternodeBlocks;
-CCriticalSection cs_mapMasternodePayeeVotes;
+RecursiveMutex cs_vecPayments;
+RecursiveMutex cs_mapMasternodeBlocks;
+RecursiveMutex cs_mapMasternodePayeeVotes;
 
 //
 // CMasternodePaymentDB
@@ -53,7 +53,7 @@ bool CMasternodePaymentDB::Write(const CMasternodePayments& objToSave)
     // Write and commit header, data
     try {
         fileout << ssObj;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         return error("%s : Serialize or I/O error - %s", __func__, e.what());
     }
     fileout.fclose();
@@ -88,7 +88,7 @@ CMasternodePaymentDB::ReadResult CMasternodePaymentDB::Read(CMasternodePayments&
     try {
         filein.read((char*)&vchData[0], dataSize);
         filein >> hashIn;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         error("%s : Deserialize or I/O error - %s", __func__, e.what());
         return HashReadError;
     }
@@ -127,7 +127,7 @@ CMasternodePaymentDB::ReadResult CMasternodePaymentDB::Read(CMasternodePayments&
 
         // de-serialize data into CMasternodePayments object
         ssObj >> objToLoad;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         objToLoad.Clear();
         error("%s : Deserialize or I/O error - %s", __func__, e.what());
         return IncorrectFormat;
@@ -261,15 +261,15 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
     masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payeeAddr);
     if (payeeAddr.size() != 0) {
-    	bool isNotSpent = false;
-    	std::vector <CMasternode> mns = mnodeman.GetFullMasternodeVector();
-    	for (CMasternode& mn : mns) {
-    		if (mn.vin.masternodeStealthAddress == payeeAddr && mn.IsEnabled()) {
-    			isNotSpent = true;
-    			break;
-    		}
-    	}
-    	if (!isNotSpent) payeeAddr.clear();
+        bool isNotSpent = false;
+        std::vector <CMasternode> mns = mnodeman.GetFullMasternodeVector();
+        for (CMasternode& mn : mns) {
+            if (mn.vin.masternodeStealthAddress == payeeAddr && mn.IsEnabled()) {
+                isNotSpent = true;
+                break;
+            }
+        }
+        if (!isNotSpent) payeeAddr.clear();
     }
     if (payeeAddr.size() == 0) {
         //no masternode detected
@@ -280,34 +280,34 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
         }
 
         if (payeeAddr.size() != 0) {
-        	bool isNotSpent = false;
-        	std::vector <CMasternode> mns = mnodeman.GetFullMasternodeVector();
+            bool isNotSpent = false;
+            std::vector <CMasternode> mns = mnodeman.GetFullMasternodeVector();
             for (CMasternode& mn : mns) {
-        		if (mn.vin.masternodeStealthAddress == payeeAddr && mn.IsEnabled()) {
-        			isNotSpent = true;
-        			break;
-        		}
-        	}
-        	if (!isNotSpent) payeeAddr.clear();
+                if (mn.vin.masternodeStealthAddress == payeeAddr && mn.IsEnabled()) {
+                    isNotSpent = true;
+                    break;
+                }
+            }
+            if (!isNotSpent) payeeAddr.clear();
         }
     }
     /*std::string mnaddress = "41im5B4oiZ6WxMrQfXivfpZ5sMsPwbqhSSpDkvxxATq2QMvBa5nppNCYcESvLhGyEiZoEXyc8F5AJE3LymkrX24i17JicpNRAq8";
     std::vector<unsigned char> temp(mnaddress.begin(), mnaddress.end());
     payeeAddr = temp;*/
     if (payeeAddr.size() != 0) {
-    	std::string mnsa(payeeAddr.begin(), payeeAddr.end());
-    	
-    	//Parse stealth address
-    	CPubKey pubViewKey, pubSpendKey, des;
-    	bool hasPaymentID;
-    	uint64_t paymentID;
-    	if (!CWallet::DecodeStealthAddress(mnsa, pubViewKey, pubSpendKey, hasPaymentID, paymentID)) {
-    		throw runtime_error("Stealth address mal-formatted");
-    	}
-    	if (CWallet::ComputeStealthDestination(mnPaymentPrivTx, pubViewKey, pubSpendKey, des))
-    		payee = GetScriptForDestination(des);
+        std::string mnsa(payeeAddr.begin(), payeeAddr.end());
+        
+        //Parse stealth address
+        CPubKey pubViewKey, pubSpendKey, des;
+        bool hasPaymentID;
+        uint64_t paymentID;
+        if (!CWallet::DecodeStealthAddress(mnsa, pubViewKey, pubSpendKey, hasPaymentID, paymentID)) {
+            throw runtime_error("Stealth address mal-formatted");
+        }
+        if (CWallet::ComputeStealthDestination(mnPaymentPrivTx, pubViewKey, pubSpendKey, des))
+            payee = GetScriptForDestination(des);
     } else {
-    	hasPayment = false;
+        hasPayment = false;
     }
 
     CAmount posBlockReward = PoSBlockReward();
@@ -547,29 +547,29 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED) return true;
 
     for (CMasternodePayee& payee : vecPayments) {
-    	bool found = false;
-    	for (CTxOut out : txNew.vout) {
-    		if (payee.masternodeStealthAddress == out.masternodeStealthAddress) {
-    			if(out.nValue >= requiredMasternodePayment)
-    				found = true;
-    			else
-    				LogPrint("masternode","Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue).c_str(), FormatMoney(requiredMasternodePayment).c_str());
-    		}
-    	}
+        bool found = false;
+        for (CTxOut out : txNew.vout) {
+            if (payee.masternodeStealthAddress == out.masternodeStealthAddress) {
+                if(out.nValue >= requiredMasternodePayment)
+                    found = true;
+                else
+                    LogPrint("masternode","Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue).c_str(), FormatMoney(requiredMasternodePayment).c_str());
+            }
+        }
 
-    	if (payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED) {
-    		if (found) return true;
+        if (payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED) {
+            if (found) return true;
 
-    		std::string address2(payee.masternodeStealthAddress.begin(), payee.masternodeStealthAddress.end());
+            std::string address2(payee.masternodeStealthAddress.begin(), payee.masternodeStealthAddress.end());
 
-    		if (strPayeesPossible == "") {
-    			strPayeesPossible += address2;
-    		} else {
-    			strPayeesPossible += "," + address2;
-    		}
-    	}
+            if (strPayeesPossible == "") {
+                strPayeesPossible += address2;
+            } else {
+                strPayeesPossible += "," + address2;
+            }
+        }
     }
-	LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment).c_str(), strPayeesPossible.c_str());
+    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment).c_str(), strPayeesPossible.c_str());
     return false;
 }
 

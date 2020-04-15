@@ -259,6 +259,12 @@ bool CWalletDB::WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold
     return Write(std::string("autocombinesettings"), pSettings, true);
 }
 
+bool CWalletDB::WriteDefaultKey(const CPubKey& vchPubKey)
+{
+    nWalletDBUpdated++;
+    return Write(std::string("defaultkey"), vchPubKey);
+}
+
 bool CWalletDB::ReadPool(int64_t nPool, CKeyPool& keypool)
 {
     return Read(std::make_pair(std::string("pool"), nPool), keypool);
@@ -295,11 +301,11 @@ bool CWalletDB::ReadStakingStatus() {
 
 bool CWalletDB::WriteScannedBlockHeight(int height)
 {
-	return Write(std::string("scannedblockheight"), height);
+    return Write(std::string("scannedblockheight"), height);
 }
 bool CWalletDB::ReadScannedBlockHeight(int& height)
 {
-	return Read(std::string("scannedblockheight"), height);
+    return Read(std::string("scannedblockheight"), height);
 }
 
 bool CWalletDB::Write2FA(bool status)
@@ -694,14 +700,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 (keyMeta.nCreateTime < pwallet->nTimeFirstKey))
                 pwallet->nTimeFirstKey = keyMeta.nCreateTime;
         } else if (strType == "defaultkey") {
-            // We don't want or need the default key, but if there is one set,
-            // we want to make sure that it is valid so that we can detect corruption
-            CPubKey vchPubKey;
-            ssValue >> vchPubKey;
-            if (!vchPubKey.IsValid()) {
-                strErr = "Error reading wallet database: Default Key corrupt";
-                return false;
-            }
+            ssValue >> pwallet->vchDefaultKey;
         } else if (strType == "pool") {
             int64_t nIndex;
             ssKey >> nIndex;
@@ -820,6 +819,7 @@ static bool IsKeyType(string strType)
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
 {
+    pwallet->vchDefaultKey = CPubKey();
     CWalletScanState wss;
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;
@@ -857,7 +857,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
             if (!ReadKeyValue(pwallet, ssKey, ssValue, wss, strType, strErr)) {
                 // losing keys is considered a catastrophic error, anything else
                 // we assume the user can live with:
-                if (IsKeyType(strType) || strType == "defaultkey")
+                if (IsKeyType(strType))
                     result = DB_CORRUPT;
                 else {
                     // Leave other errors alone, if we try to fix them we might make things worse.
@@ -871,7 +871,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
                 LogPrintf("%s\n", strErr);
         }
         pcursor->close();
-    } catch (boost::thread_interrupted) {
+    } catch (const boost::thread_interrupted&) {
         throw;
     } catch (...) {
         result = DB_CORRUPT;
@@ -918,6 +918,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
 
 DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vector<CWalletTx>& vWtx)
 {
+    pwallet->vchDefaultKey = CPubKey();
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;
 
@@ -963,7 +964,7 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
             }
         }
         pcursor->close();
-    } catch (boost::thread_interrupted) {
+    } catch (const boost::thread_interrupted&) {
         throw;
     } catch (...) {
         result = DB_CORRUPT;
@@ -995,7 +996,7 @@ DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, vector<CWalletTx>& vWtx)
 void ThreadFlushWalletDB(const string& strFile)
 {
     // Make this thread recognisable as the wallet flushing thread
-    RenameThread("dapscoin-wallet");
+    util::ThreadRename("dapscoin-wallet");
 
     static bool fOneThread;
     if (fOneThread)
@@ -1174,21 +1175,21 @@ bool CWalletDB::WriteDestData(const std::string& address, const std::string& key
 
 bool CWalletDB::WriteTxPrivateKey(const std::string& outpointKey, const std::string& k)
 {
-	return Write(std::make_pair(std::string("txpriv"), outpointKey), k);
+    return Write(std::make_pair(std::string("txpriv"), outpointKey), k);
 }
 
 bool CWalletDB::ReadTxPrivateKey(const std::string& outpointKey, std::string& k)
 {
-	return Read(std::make_pair(std::string("txpriv"), outpointKey), k);
+    return Read(std::make_pair(std::string("txpriv"), outpointKey), k);
 }
 
 bool CWalletDB::WriteKeyImage(const std::string& outpointKey, const CKeyImage& k)
 {
-	return Write(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
+    return Write(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
 }
 bool CWalletDB::ReadKeyImage(const std::string& outpointKey, CKeyImage& k)
 {
-	return Read(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
+    return Read(std::make_pair(std::string("outpointkeyimage"), outpointKey), k);
 }
 
 

@@ -68,8 +68,6 @@ QT_FORMS_UI = \
   qt/forms/togglebutton.ui \
   qt/forms/transactiondescdialog.ui \
   qt/forms/txentry.ui \
-  qt/forms/unlockdialog.ui \
-  qt/forms/lockdialog.ui \
   qt/forms/importorcreate.ui \
   qt/forms/entermnemonics.ui
   
@@ -132,8 +130,6 @@ QT_MOC_CPP = \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp \
-  qt/moc_unlockdialog.cpp \
-  qt/moc_lockdialog.cpp \
   qt/moc_importorcreate.cpp \
   qt/moc_entermnemonics.cpp
 
@@ -224,8 +220,6 @@ BITCOIN_QT_H = \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
   qt/winshutdownmonitor.h \
-  qt/unlockdialog.h \
-  qt/lockdialog.h \
   qt/importorcreate.h \
   qt/entermnemonics.h
 
@@ -266,6 +260,7 @@ RES_ICONS = \
   qt/res/icons/lock_closed.png \
   qt/res/icons/lock_open.png \
   qt/res/icons/masternodes.png \
+  qt/res/icons/onion.png \
   qt/res/icons/overview.png \
   qt/res/icons/qrcode.png \
   qt/res/icons/qr-code.png \
@@ -368,8 +363,6 @@ BITCOIN_QT_CPP += \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \
   qt/walletview.cpp \
-  qt/unlockdialog.cpp \
-  qt/lockdialog.cpp \
   qt/importorcreate.cpp \
   qt/entermnemonics.cpp
 
@@ -403,7 +396,7 @@ RES_MOVIES = $(wildcard $(srcdir)/qt/res/movies/spinner-*.png)
 BITCOIN_RC = qt/res/dapscoin-qt-res.rc
 
 BITCOIN_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
-  -I$(builddir)/qt/forms
+  -I$(builddir)/qt/forms -DQT_NO_KEYWORDS
 
 qt_libbitcoinqt_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)

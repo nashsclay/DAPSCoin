@@ -441,9 +441,9 @@ public:
     {
         hashPrev = (pprev ? pprev->GetBlockHash() : uint256(0));
         if (IsProofOfAudit()) {
-			hashPoAMerkleRoot = pindex->hashPoAMerkleRoot;
-			minedHash = pindex->minedHash;
-			hashPrevPoABlock = pindex->hashPrevPoABlock;
+            hashPoAMerkleRoot = pindex->hashPoAMerkleRoot;
+            minedHash = pindex->minedHash;
+            hashPrevPoABlock = pindex->hashPrevPoABlock;
         }
     }
 

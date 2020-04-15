@@ -15,6 +15,7 @@
 class CBasicKeyStore;
 class CWallet;
 class uint256;
+class CBlockIndex;
 
 /** General change type (added, updated, removed). */
 enum ChangeType {
@@ -90,11 +91,8 @@ public:
     /** Number of network connections changed. */
     boost::signals2::signal<void(int newNumConnections)> NotifyNumConnectionsChanged;
 
-    /**
-     * New, updated or cancelled alert.
-     * @note called with lock cs_mapAlerts held.
-     */
-    boost::signals2::signal<void(const uint256& hash, ChangeType status)> NotifyAlertChanged;
+    /** New, updated or cancelled alert. */
+    boost::signals2::signal<void()> NotifyAlertChanged;
 
     /** A wallet has been loaded. */
     boost::signals2::signal<void(CWallet* wallet)> LoadWallet;
@@ -103,7 +101,10 @@ public:
     boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
 
     /** New block has been accepted */
-    boost::signals2::signal<void(const uint256& hash)> NotifyBlockTip;
+    boost::signals2::signal<void(bool fInitialDownload, const CBlockIndex* newTip)> NotifyBlockTip;
+
+    /** New block has been accepted and is over a certain size */
+    boost::signals2::signal<void(int size, const uint256& hash)> NotifyBlockSize;
 
     /** Banlist did change. */
     boost::signals2::signal<void (void)> BannedListChanged;

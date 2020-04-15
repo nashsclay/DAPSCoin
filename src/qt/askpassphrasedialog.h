@@ -21,7 +21,7 @@ class AskPassphraseDialog : public QDialog
     Q_OBJECT
 
 public:
-    enum Mode {
+    enum class Mode {
         Encrypt,         /**< Ask passphrase twice and encrypt */
         UnlockAnonymize, /**< Ask passphrase and unlock only for anonymization */
         Unlock,          /**< Ask passphrase and unlock */
@@ -29,7 +29,21 @@ public:
         Decrypt          /**< Ask passphrase and decrypt wallet */
     };
 
-    explicit AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel* model);
+     // Context from where / for what the passphrase dialog was called to set the status of the checkbox
+     // Partly redundant to Mode above, but offers more flexibility for future enhancements
+     enum class Context {
+         Unlock_Menu,    /** Unlock wallet from menu     */
+         Unlock_Full,    /** Wallet needs to be fully unlocked */
+         Encrypt,        /** Encrypt unencrypted wallet */
+         ToggleLock,     /** Toggle wallet lock state */
+         ChangePass,     /** Change passphrase */
+         Send,           /** Send DAPS */
+         BIP_38,         /** BIP38 menu */
+         Multi_Sig,      /** Multi-Signature dialog */
+         Sign_Message    /** Sign/verify message dialog */
+     };
+
+     explicit AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel* model, Context context);
     ~AskPassphraseDialog();
 
     void accept();
@@ -38,9 +52,10 @@ private:
     Ui::AskPassphraseDialog* ui;
     Mode mode;
     WalletModel* model;
+    Context context;
     bool fCapsLock;
 
-private slots:
+private Q_SLOTS:
     void textChanged();
 
 protected:

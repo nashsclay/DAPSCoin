@@ -94,7 +94,6 @@ endif
 BITCOIN_CORE_H = \
   activemasternode.h \
   addrman.h \
-  alert.h \
   allocators.h \
   amount.h \
   base58.h \
@@ -176,6 +175,8 @@ BITCOIN_CORE_H = \
   uint256.h \
   undo.h \
   util.h \
+  util/macros.h \
+  util/threadnames.h \
   utilstrencodings.h \
   utilmoneystr.h \
   utiltime.h \
@@ -200,7 +201,6 @@ libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
-  alert.cpp \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
@@ -370,6 +370,7 @@ libbitcoin_util_a_SOURCES = \
   uint256.cpp \
   util.cpp \
   utilstrencodings.cpp \
+  util/threadnames.cpp \
   utilmoneystr.cpp \
   utiltime.cpp \
   $(BITCOIN_CORE_H)

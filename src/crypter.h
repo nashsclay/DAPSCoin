@@ -121,6 +121,7 @@ bool DecryptAES256(const SecureString& sKey, const std::string& sCiphertext, con
 class CCryptoKeyStore : public CBasicKeyStore
 {
 private:
+    CryptedKeyMap mapCryptedKeys;
     CHDChain cryptedHDChain;
 
     CKeyingMaterial vMasterKey;
@@ -144,8 +145,6 @@ protected:
     bool GetHDChain(CHDChain& hdChainRet) const;
 
     bool Unlock(const CKeyingMaterial& vMasterKeyIn);
-
-    CryptedKeyMap mapCryptedKeys;
 
 public:
     CCryptoKeyStore() : fUseCrypto(false), fDecryptionThoroughlyChecked(false)

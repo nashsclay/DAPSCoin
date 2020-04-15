@@ -173,7 +173,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     // will call relock
     WalletModel::EncryptionStatus encStatus = model->getEncryptionStatus();
     if (encStatus == model->Locked || encStatus == model->UnlockedForAnonymizationOnly) {
-        WalletModel::UnlockContext ctx(model->requestUnlock(true));
+        WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Send, true));
         if (!ctx.isValid()) {
             // Unlock wallet was cancelled
             return;
@@ -309,9 +309,13 @@ void SendCoinsDialog::sendTx() {
                 return;
             }
         } else {
+            QString msg = err.what();
+            if (msg == "") {
+                msg = "Unable to create transaction. Please try again later.";
+            }
             QMessageBox msgBox;
             msgBox.setWindowTitle("Transaction Creation Error");
-            msgBox.setText(QString(err.what()));
+            msgBox.setText(msg);
             msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
@@ -324,6 +328,7 @@ void SendCoinsDialog::sendTx() {
         QString txhash = resultTx.GetHash().GetHex().c_str();
         QMessageBox msgBox;
         QPushButton *copyButton = msgBox.addButton(tr("Copy"), QMessageBox::ActionRole);
+        QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
         copyButton->setStyleSheet("background:transparent;");
         copyButton->setIcon(QIcon(":/icons/editcopy"));
         msgBox.setWindowTitle("Transaction Initialized");

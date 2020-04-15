@@ -88,7 +88,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
         else {
             {
                 //decoys
-            	UniValue decoys(UniValue::VARR);
+                UniValue decoys(UniValue::VARR);
                 std::vector<COutPoint> allDecoys = txin.decoys;
                 srand (time(NULL));
                 allDecoys.insert(allDecoys.begin(), txin.prevout);
@@ -103,11 +103,17 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                         const CWalletTx& prev = (*mi).second;
                         if (allDecoys[i].n < prev.vout.size()) {
                             if (pwalletMain->IsMine(prev.vout[allDecoys[i].n])) {
-                                CAmount decodedAmount;
-                                CKey blind;
-                                pwalletMain->RevealTxOutAmount(prev, prev.vout[allDecoys[i].n], decodedAmount, blind);
-                                decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
-                                decoy.push_back(Pair("isMine", true));
+                                std::string outString = allDecoys[i].hash.GetHex() + std::to_string(allDecoys[i].n);
+                                if (pwalletMain->outpointToKeyImages.count(outString) == 1) {
+                                    CKeyImage ki = pwalletMain->outpointToKeyImages[outString];
+                                    if (ki == txin.keyImage) {
+                                        CAmount decodedAmount;
+                                        CKey blind;
+                                        pwalletMain->RevealTxOutAmount(prev, prev.vout[allDecoys[i].n], decodedAmount, blind);
+                                        decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+                                        decoy.push_back(Pair("isMine", true));
+                                    }
+                                }
                             } else {
                                 decoy.push_back(Pair("isMine", false));
                             }
@@ -153,9 +159,9 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
             const unsigned char* pBlind;
             pwalletMain->RevealTxOutAmount(tx, txout, decodedAmount, blind);
             if (txout.nValue >0) {
-            	pBlind = zeroBlind;
+                pBlind = zeroBlind;
             } else {
-            	pBlind = blind.begin();
+                pBlind = blind.begin();
             }
             out.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
             out.push_back(Pair("isMine", true));
@@ -873,7 +879,6 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp)
             "\nSend the transaction (signed hex)\n" + HelpExampleCli("sendrawtransaction", "\"signedhex\"") +
             "\nAs a json rpc call\n" + HelpExampleRpc("sendrawtransaction", "\"signedhex\""));
 
-    LOCK(cs_main);
     RPCTypeCheck(params, boost::assign::list_of(UniValue::VSTR)(UniValue::VBOOL));
 
     // parse hex string from parameter
@@ -886,6 +891,7 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp)
     if (params.size() > 1)
         fOverrideFees = params[1].get_bool();
 
+    AssertLockNotHeld(cs_main);
     CCoinsViewCache& view = *pcoinsTip;
     const CCoins* existingCoins = view.AccessCoins(hashTx);
     bool fHaveMempool = mempool.exists(hashTx);

@@ -20,6 +20,7 @@
 #include "compat.h"
 #include "tinyformat.h"
 #include "utiltime.h"
+#include "util/threadnames.h"
 
 #include <exception>
 #include <map>
@@ -80,7 +81,7 @@ template<typename... Args> std::string FormatStringFromLogArgs(const char *fmt, 
     std::string _log_msg_; /* Unlikely name to avoid shadowing variables */                     \
     try {                                                                                       \
         _log_msg_ = tfm::format(format, TINYFORMAT_PASSARGS(n));                                \
-    } catch (std::runtime_error &e) {                                                           \
+    } catch (const std::runtime_error& e) {                                                           \
         _log_msg_ = "Error \"" + std::string(e.what()) + "\" while formatting log message: " + FormatStringFromLogArgs(format, TINYFORMAT_PASSARGS(n));\
     }                                                                                           \
     return LogPrintStr(_log_msg_);                                                              \
@@ -92,7 +93,7 @@ template<typename... Args> std::string FormatStringFromLogArgs(const char *fmt, 
     std::string _log_msg_; /* Unlikely name to avoid shadowing variables */                     \
     try {                                                                                       \
         _log_msg_ = tfm::format(format, TINYFORMAT_PASSARGS(n));                                \
-    } catch (std::runtime_error &e) {                                                           \
+    } catch (const std::runtime_error& e) {                                                           \
         _log_msg_ = "Error \"" + std::string(e.what()) + "\" while formatting log message: " + FormatStringFromLogArgs(format, TINYFORMAT_PASSARGS(n));\
     }                                                                                           \
     LogPrintStr(std::string("ERROR: ") + _log_msg_ + "\n");                                     \
@@ -116,7 +117,7 @@ static inline bool error(const char* format)
     return false;
 }
 
-void PrintExceptionContinue(std::exception* pex, const char* pszThread);
+void PrintExceptionContinue(const std::exception* pex, const char* pszThread);
 void ParseParameters(int argc, const char* const argv[]);
 void FileCommit(FILE* fileout);
 bool TruncateFile(FILE* file, unsigned int length);
@@ -212,7 +213,6 @@ std::string HelpMessageGroup(const std::string& message);
 std::string HelpMessageOpt(const std::string& option, const std::string& message);
 
 void SetThreadPriority(int nPriority);
-void RenameThread(const char* name);
 
 
 /**
@@ -222,15 +222,15 @@ template <typename Callable>
 void TraceThread(const char* name, Callable func)
 {
     std::string s = strprintf("dapscoin-%s", name);
-    RenameThread(s.c_str());
+    util::ThreadRename(s.c_str());
     try {
         LogPrintf("%s thread start\n", name);
         func();
         LogPrintf("%s thread exit\n", name);
-    } catch (boost::thread_interrupted) {
+    } catch (const boost::thread_interrupted&) {
         LogPrintf("%s thread interrupt\n", name);
         throw;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         PrintExceptionContinue(&e, name);
         throw;
     } catch (...) {

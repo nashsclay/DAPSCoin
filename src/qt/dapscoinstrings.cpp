@@ -9,9 +9,6 @@
 #define UNUSED
 #endif
 static const char UNUSED *dapscoin_strings[] = {
-QT_TRANSLATE_NOOP("dapscoin-core", " mints deleted\n"),
-QT_TRANSLATE_NOOP("dapscoin-core", " mints updated, "),
-QT_TRANSLATE_NOOP("dapscoin-core", " unconfirmed transactions removed\n"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "(1 = keep tx meta data e.g. account owner and payment request information, 2 "
 "= drop tx meta data)"),
@@ -19,9 +16,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Allow JSON-RPC connections from specified source. Valid for <ip> are a "
 "single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or "
 "a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times"),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"An error occurred while setting up the RPC address %s port %u for listening: "
-"%s"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Bind to given address and always listen on it. Use [host]:port notation for "
 "IPv6"),
@@ -33,10 +27,7 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "notation for IPv6. This option can be specified multiple times (default: "
 "bind to all interfaces)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Calculated accumulator checkpoint is not what is recorded by block index"),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Cannot obtain a lock on data directory %s. DAPS is probably already "
-"running."),
+"Cannot obtain a lock on data directory %s. DAPS is probably already running."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Change automatic finalized budget voting behavior. mode=auto: Vote for only "
 "exact finalized budget match to my generated budget. (string, default: auto)"),
@@ -49,9 +40,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Delete all wallet transactions and only recover those parts of the "
 "blockchain through -rescan on startup"),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Disable all DAPS specific functionality (Masternodes, SwiftX, "
-"Budgeting) (0-1, default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Distributed under the MIT software license, see the accompanying file "
 "COPYING or <http://www.opensource.org/licenses/mit-license.php>."),
@@ -67,11 +55,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "in your wallet were already spent, such as if you used a copy of wallet.dat "
 "and coins were spent in the copy but not marked as spent here."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Error: This transaction requires a transaction fee of at least %s because of "
-"its amount, complexity, or use of recently received funds!"),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Error: Unsupported argument -checklevel found. Checklevel must be level 4."),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Error: Unsupported argument -socks found. Setting SOCKS version isn't "
 "possible anymore, only SOCKS5 proxies are supported."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
@@ -84,6 +67,9 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Execute command when the best block changes (%s in cmd is replaced by block "
 "hash)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
+"Execute command when the best block changes and its size is over (%s in cmd "
+"is replaced by block hash, %d with the block size)"),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Fees (in DAPS/Kb) smaller than this are considered zero fee for relaying "
 "(default: %s)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
@@ -93,22 +79,19 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Flush database activity from memory pool to disk log every <n> megabytes "
 "(default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Found unconfirmed denominated outputs, will wait till they confirm to "
-"continue."),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
 "If paytxfee is not set, include enough fee so transactions begin "
 "confirmation on average within n blocks (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "In this mode -genproclimit controls how many blocks are generated "
 "immediately."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Insufficient or insufficient confirmed funds, you might need to wait a few "
-"minutes and try again."),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay "
 "fee of %s to prevent stuck transactions)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Keep the specified amount available for spending at all times (default: 0)"),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
+"Loading... Please do not interrupt this process as it could lead to a "
+"corrupt wallet."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Log transaction priority and fee per kB when mining blocks (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
@@ -123,13 +106,7 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Number of seconds to keep misbehaving peers from reconnecting (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Obfuscation uses exact denominated amounts to send funds, you might simply "
-"need to anonymize some more coins."),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Output debugging information (default: %u, supplying <category> is optional)"),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Preferred Denomination"
-"(1/5/10/50/100/500/1000/5000), 0 for no preference. default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Query for peer addresses via DNS lookup, if low on addresses (default: 1 "
 "unless -connect)"),
@@ -138,6 +115,9 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "isolation (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Require high priority for relaying free or low-fee transactions (default:%u)"),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
+"Rescanning... Please do not interrupt this process as it could lead to a "
+"corrupt wallet."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Send trace/debug info to console instead of debug.log file (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
@@ -154,8 +134,13 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Support filtering of blocks and transaction with bloom filters (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"SwiftX requires inputs with at least 6 confirmations, you might need to wait "
-"a few minutes and try again."),
+"The block database contains a block which appears to be from the future. "
+"This may be due to your computer's date and time being set incorrectly. Only "
+"rebuild the block database if you are sure that your computer's date and "
+"time are correct"),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
+"There is an internal error in generating bulletproofs. Please try again "
+"later."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "This is a pre-release test build - use at your own risk - do not use for "
 "staking or merchant applications!"),
@@ -164,25 +149,10 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "the OpenSSL Toolkit <https://www.openssl.org/> and cryptographic software "
 "written by Eric Young and UPnP software written by Thomas Bernard."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"To use dapscoind, or the -server option to dapscoin-qt, you must set an rpcpassword "
-"in the configuration file:\n"
-"%s\n"
-"It is recommended you use the following random password:\n"
-"rpcuser=dapscoinrpc\n"
-"rpcpassword=%s\n"
-"(you do not need to remember this password)\n"
-"The username and password MUST NOT be the same.\n"
-"If the file does not exist, create it with owner-readable-only file "
-"permissions.\n"
-"It is also recommended to set alertnotify so you are notified of problems;\n"
-"for example: alertnotify=echo %%s | mail -s \"DAPS Alert\" admin@foo.com\n"),
+"Total length of network version string (%i) exceeds maximum length (%i). "
+"Reduce the number or size of uacomments."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Unable to bind to %s on this computer. DAPS is probably already running."),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Unable to locate enough Obfuscation denominated funds for this transaction."),
-QT_TRANSLATE_NOOP("dapscoin-core", ""
-"Unable to locate enough Obfuscation non-denominated funds for this "
-"transaction that are not equal 10000 DAPS."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Unable to locate enough funds for this transaction that are not equal 10000 "
 "DAPS."),
@@ -218,6 +188,16 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Whitelisted peers cannot be DoS banned and their transactions are always "
 "relayed, even if they are already in the mempool, useful e.g. for a gateway"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
+"You have attempted to send a total value that is comprised of more than 50 "
+"smaller deposits. This is a rare occurrence, and lowering the total value "
+"sent, or sending the same total value in two separate transactions will "
+"usually work around this limitation."),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
+"You have attempted to send more than 50 UTXOs in a single transaction. This "
+"is a rare occurrence, and to work around this limitation, please either "
+"lower the total amount of the transaction, or send two separate transactions "
+"with 50% of your total desired amount."),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
 "You must specify a masternodeprivkey in the configuration. Please see "
 "documentation for help."),
 QT_TRANSLATE_NOOP("dapscoin-core", "(53572 could be used only on mainnet)"),
@@ -228,25 +208,26 @@ QT_TRANSLATE_NOOP("dapscoin-core", "<category> can be:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Accept command line and JSON-RPC commands"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Accept connections from outside (default: 1 if no -proxy or -connect)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Accept public REST requests (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Acceptable ciphers (default: %s)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Add a node to connect to and attempt to keep the connection open"),
+QT_TRANSLATE_NOOP("dapscoin-core", "All inputs should have the same number of decoys"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Allow DNS lookups for -addnode, -seednode and -connect"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Already have that input."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Always query for peer addresses via DNS lookup (default: %u)"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Append comment to the user agent string"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Attempt to force blockchain corruption recovery"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Attempt to recover private keys from a corrupt wallet.dat"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Automatically create Tor hidden service (default: %d)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Block creation options:"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Calculating missing accumulators..."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Can't denominate: no compatible inputs left."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Can't find random Masternode."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Can't mix while sync in progress."),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot compute LIJ for ring signature in secp256k1_ec_pubkey_tweak_add"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot compute LIJ for ring signature in secp256k1_ec_pubkey_tweak_mul"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot compute RIJ for ring signature in secp256k1_ec_pubkey_tweak_mul"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot compute two elements and serialize it to pubkey"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Cannot downgrade wallet"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Cannot resolve -bind address: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Cannot resolve -externalip address: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Cannot resolve -whitebind address: '%s'"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot extract public key from script pubkey"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot find corresponding private key"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot parse the commitment for inputs"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot parse the commitment for transaction fee"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Cannot resolve -%s address: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Cannot write default address"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Collateral not valid."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Connect only to the specified node(s)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Connect through SOCKS5 proxy"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Connect to a node to retrieve peer addresses, and disconnect"),
@@ -256,8 +237,8 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Copyright (C) 2014-%i The Dash Core Develope
 QT_TRANSLATE_NOOP("dapscoin-core", "Copyright (C) 2015-%i The PIVX Core Developers"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Copyright (C) 2018-%i The DAPS Project developers"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Corrupted block database detected"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Could not parse -rpcbind value %s as network address"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Could not parse masternode.conf"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Currently the Number of supported recipients must be 1"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Debugging/Testing options:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Delete blockchain folders and resync from scratch"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Disable OS notifications for incoming transactions (default: %u)"),
@@ -276,8 +257,8 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Enable publish raw transaction (locked via S
 QT_TRANSLATE_NOOP("dapscoin-core", "Enable publish raw transaction in <address>"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Enable staking functionality (0-1, default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Enable the client to act as a masternode (0-1, default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Entries are full."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Error connecting to Masternode."),
+QT_TRANSLATE_NOOP("dapscoin-core", "Error in CreateTransaction. Please try again."),
+QT_TRANSLATE_NOOP("dapscoin-core", "Error in CreateTransactionBulletProof. Please try again."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error initializing block database"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error initializing wallet database environment %s!"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error loading block database"),
@@ -289,87 +270,57 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Error reading from database, shutting down."
 QT_TRANSLATE_NOOP("dapscoin-core", "Error recovering public key."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error: A fatal internal error occured, see debug.log for details"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Error: Can't select current denominated inputs"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Error: A fatal internal error occurred, see debug.log for details"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error: Disk space is low!"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Error: Unsupported argument -tor found, use -onion."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Error: Wallet locked, unable to create transaction!"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Error: You already have pending entries in the Obfuscation pool"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Failed to calculate accumulator checkpoint"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Failed to generate RingCT for Sweeping transaction"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Failed to generate bulletproof for Sweeping transaction"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Failed to generate bulletproof"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Failed to listen on any port. Use -listen=0 if you want this."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Failed to read block index"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Failed to parse host:port string"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Failed to read block"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Failed to write block index"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Fee (in DAPS/kB) to add to transactions you send (default: %s)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Finalizing transaction."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Force safe mode (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Found enough users, signing ( waiting %s )"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Found enough users, signing ..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Generate coins (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "How many blocks to check at startup (default: %u, 0 = all)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "If <category> is not supplied, output all debugging information."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Importing..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Imports blocks from external blk000??.dat file"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Include IP addresses in debug output (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Incompatible mode."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Incompatible version."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Incorrect or no genesis block found. Wrong datadir for network?"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Information"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Initialization sanity check failed. DAPS is shutting down."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Input is not valid."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Insufficient funds"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Input commitments are not correct"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Insufficient funds."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid -onion address or hostname: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid -proxy address or hostname: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -maxtxfee=<amount>: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -minrelaytxfee=<amount>: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -mintxfee=<amount>: '%s'"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -%s=<amount>: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -paytxfee=<amount>: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount for -reservebalance=<amount>"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid amount"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid masternodeprivkey. Please see documenation."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid netmask specified in -whitelist: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid port detected in masternode.conf"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Invalid private key."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Invalid script detected."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Last Obfuscation was too recent."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Last successful Obfuscation action was too recent."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Limit size of signature cache to <n> entries (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Line: %d"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Listen for JSON-RPC connections on <port> (default: %u or testnet: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Listen for connections on <port> (default: %u or testnet: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Loading addresses..."),
+QT_TRANSLATE_NOOP("dapscoin-core", "Loading banlist..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Loading block index..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Loading budget cache..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Loading masternode cache..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Loading masternode payment cache..."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Loading wallet... (%3.2f %%)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Loading wallet..."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Lock is already in place."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Lock masternodes from masternode configuration file (default: %u)"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Lookup(): Invalid -proxy address or hostname: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Maintain at most <n> connections to peers (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Masternode options:"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Masternode queue is full."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Masternode:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Maximum per-connection receive buffer, <n>*1000 bytes (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Maximum per-connection send buffer, <n>*1000 bytes (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Missing input transaction information."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Mixing in progress..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Need to specify a port with -whitebind: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "No Masternodes detected."),
-QT_TRANSLATE_NOOP("dapscoin-core", "No compatible Masternode found."),
-QT_TRANSLATE_NOOP("dapscoin-core", "No funds detected in need of denominating."),
-QT_TRANSLATE_NOOP("dapscoin-core", "No matching denominations found for mixing."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Node relay options:"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Non-standard public key detected."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Not compatible with existing transactions."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Not enough file descriptors available."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Not in the Masternode list."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Number of automatic wallet backups (default: 10)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Obfuscation is idle."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Obfuscation request complete:"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Obfuscation request incomplete:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Only accept block chain matching built-in checkpoints (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Only connect to nodes in network <net> (ipv4, ipv6 or onion)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Options:"),
@@ -377,15 +328,12 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Password for JSON-RPC connections"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Preparing for resync..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Prepend debug output with timestamp (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Print version and exit"),
-QT_TRANSLATE_NOOP("dapscoin-core", "RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "RPC server options:"),
-QT_TRANSLATE_NOOP("dapscoin-core", "RPC support for HTTP persistent connections (default: %d)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Randomly drop 1 of every <n> network messages"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Randomly fuzz 1 of every <n> network messages"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Rebuild block chain index from current blk000??.dat files"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Recalculating coin supply may take 30-60 minutes..."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Recalculating supply statistics may take 30-60 minutes..."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Receive and display P2P network alerts (default: %u)"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Recalculating DAPS supply..."),
+QT_TRANSLATE_NOOP("dapscoin-core", "Reindex the DAPS money supply statistics"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Reindex the accumulator database"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Relay and mine data carrier transactions (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Relay non-P2SH multisig (default: %u)"),
@@ -394,9 +342,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Rescanning..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Run a thread to flush wallet periodically (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Run in the background as a daemon and accept commands"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Send transactions as zero-fee transactions if possible (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Server certificate file (default: %s)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Server private key (default: %s)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Session not complete!"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Session timed out."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Set database cache size in megabytes (%d to %d, default: %d)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Set external address:port to get to this masternode (example: %s)"),
@@ -422,9 +367,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Specify your own public address"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Spend unconfirmed change when sending transactions (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Staking options:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Stop running after importing blocks from disk (default: %u)"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Submitted following entries to masternode: %u / %d"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Submitted to masternode, waiting for more entries ( %u / %d ) %s"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Submitted to masternode, waiting in queue %s"),
 QT_TRANSLATE_NOOP("dapscoin-core", "SwiftX options:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Synchronization failed"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Synchronization finished"),
@@ -435,33 +377,27 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Synchronizing masternodes..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "This help message"),
 QT_TRANSLATE_NOOP("dapscoin-core", "This is experimental software."),
 QT_TRANSLATE_NOOP("dapscoin-core", "This is intended for regression testing tools and app development."),
-QT_TRANSLATE_NOOP("dapscoin-core", "This is not a Masternode."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Threshold for disconnecting misbehaving peers (default: %u)"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Too many decoys"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Tor control port password (default: empty)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Tor control port to use if onion listening enabled (default: %s)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Transaction amount too small"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Transaction amounts must be positive"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Transaction created successfully."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Transaction fees are too high."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Transaction not valid."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Transaction too large for fee policy"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Transaction too large"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Transmitting final transaction."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Unable to bind to %s on this computer (bind returned error %s)"),
+QT_TRANSLATE_NOOP("dapscoin-core", "Unable to start HTTP server. See debug log for details."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Unknown network specified in -onlynet: '%s'"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Unknown state: id = %u"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Upgrade wallet to latest format"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Use OpenSSL (https) for JSON-RPC connections"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Use UPnP to map the listening port (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Use UPnP to map the listening port (default: 1 when listening)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Use a custom max chain reorganization depth (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Use the test network"),
+QT_TRANSLATE_NOOP("dapscoin-core", "User Agent comment (%s) contains unsafe characters."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Username for JSON-RPC connections"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Value more than Obfuscation pool maximum allows."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Verifying blocks..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Verifying wallet..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Wallet %s resides outside data directory %s"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Wallet is locked."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Wallet needed to be rewritten: restart DAPS to complete"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Wallet options:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Wallet window title"),
@@ -469,12 +405,10 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Warning"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Warning: This version is obsolete, upgrade required!"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Warning: Unsupported argument -benchmark ignored, use -debug=bench."),
 QT_TRANSLATE_NOOP("dapscoin-core", "Warning: Unsupported argument -debugnet ignored, use -debug=net."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Will retry..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "You need to rebuild the database using -reindex to change -txindex"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Your entries added successfully."),
-QT_TRANSLATE_NOOP("dapscoin-core", "Your transaction was accepted into the pool!"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Zapping all transactions from wallet..."),
 QT_TRANSLATE_NOOP("dapscoin-core", "ZeroMQ notification options:"),
+QT_TRANSLATE_NOOP("dapscoin-core", "isValid(): Invalid -proxy address or hostname: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "on startup"),
 QT_TRANSLATE_NOOP("dapscoin-core", "wallet.dat corrupt, salvage failed"),
 };

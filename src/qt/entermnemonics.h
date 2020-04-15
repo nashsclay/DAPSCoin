@@ -17,7 +17,7 @@ class EnterMnemonics : public QDialog
 public:
     explicit EnterMnemonics(QWidget *parent = 0);
     ~EnterMnemonics();
-private slots:
+private Q_SLOTS:
     void on_next();
 
 private:

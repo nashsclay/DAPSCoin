@@ -72,7 +72,7 @@ bool CMasternodeDB::Write(const CMasternodeMan& mnodemanToSave)
     // Write and commit header, data
     try {
         fileout << ssMasternodes;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         return error("%s : Serialize or I/O error - %s", __func__, e.what());
     }
 
@@ -109,7 +109,7 @@ CMasternodeDB::ReadResult CMasternodeDB::Read(CMasternodeMan& mnodemanToLoad, bo
     try {
         filein.read((char*)&vchData[0], dataSize);
         filein >> hashIn;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         error("%s : Deserialize or I/O error - %s", __func__, e.what());
         return HashReadError;
     }
@@ -147,7 +147,7 @@ CMasternodeDB::ReadResult CMasternodeDB::Read(CMasternodeMan& mnodemanToLoad, bo
         }
         // de-serialize data into CMasternodeMan object
         ssMasternodes >> mnodemanToLoad;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         mnodemanToLoad.Clear();
         error("%s : Deserialize or I/O error - %s", __func__, e.what());
         return IncorrectFormat;
@@ -393,7 +393,7 @@ void CMasternodeMan::CountNetworks(int protocolVersion, int& ipv4, int& ipv6, in
         std::string strHost;
         int port;
         SplitHostPort(mn.addr.ToString(), port, strHost);
-        CNetAddr node = CNetAddr(strHost, false);
+        CNetAddr node = CNetAddr(strHost);
         int nNetwork = node.GetNetwork();
         switch (nNetwork) {
             case 1 :
@@ -875,7 +875,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         uint256 bh;
         if (!GetTransaction(prevout.hash, prev, bh, true)) {
             LogPrint("masternode","dsee - failed to read transaction hash %s\n", vin.prevout.hash.ToString());
-        	return;
+            return;
         }
 
         CTxOut out = prev.vout[prevout.n];
@@ -887,13 +887,13 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         std::vector<unsigned char> commitment;
         CWallet::CreateCommitment(mask.begin(), amount, commitment);
         if (commitment != out.commitment) {
-        	LogPrint("masternode","dsee - decoded masternode collateralization not match %s\n", vin.prevout.hash.ToString());
-        	return;
+            LogPrint("masternode","dsee - decoded masternode collateralization not match %s\n", vin.prevout.hash.ToString());
+            return;
         }
 
         if (amount != 1000000 * COIN) {
-        	LogPrint("masternode","dsee - masternode collateralization not equal to 1M %s\n", vin.prevout.hash.ToString());
-        	return;
+            LogPrint("masternode","dsee - masternode collateralization not equal to 1M %s\n", vin.prevout.hash.ToString());
+            return;
         }
 
         std::string vchPubKey(pubkey.begin(), pubkey.end());
@@ -902,10 +902,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         CDataStream ser(SER_NETWORK, protocolVersion);
         ser << ss << sigTime << pubkey << pubkey2 << protocolVersion;
         /*strMessage = Hash(BEGIN(ss), END(ss),
-        				BEGIN(sigTime), END(sigTime),
-						pubkey.begin(), pubkey.end(),
-						pubkey2.begin(), pubkey2.end(),
-						BEGIN(protocolVersion), END(protocolVersion)).GetHex();*/
+                        BEGIN(sigTime), END(sigTime),
+                        pubkey.begin(), pubkey.end(),
+                        pubkey2.begin(), pubkey2.end(),
+                        BEGIN(protocolVersion), END(protocolVersion)).GetHex();*/
         strMessage = HexStr(ser.begin(), ser.end());
 
         if (protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) {
@@ -1066,7 +1066,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
         if (!VerifyShnorrKeyImageTxIn(vin, GetTxInSignatureHash(vin))) {
             LogPrintf("dsee - Shnorr Signature rejected: %s\n", vin.prevout.hash.ToString());
-        	return;
+            return;
         }
 
         if (sigTime > GetAdjustedTime() + 60 * 60) {
@@ -1092,7 +1092,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         if (pmn != NULL && pmn->protocolVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
             // take this only if it's newer
             if (sigTime - pmn->nLastDseep > MASTERNODE_MIN_MNP_SECONDS) {
-            	std::string ss = pmn->addr.ToString();
+                std::string ss = pmn->addr.ToString();
                 HEX_DATA_STREAM_PROTOCOL(PROTOCOL_VERSION) << pmn->addr.ToString() << sigTime << stop;
                 std::string strMessage = HEX_STR(ser);
 

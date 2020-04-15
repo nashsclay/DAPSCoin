@@ -44,7 +44,7 @@ public:
     QTimer* animTicker;
     QElapsedTimer* animClock;
 
-public slots:
+public Q_SLOTS:
     void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, 
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
     void hideOrphans(bool fHide);
@@ -52,12 +52,11 @@ public slots:
     void updateTotalBlocksLabel();
     int tryNetworkBlockCount();
     void updateRecentTransactions();
-    void refreshRecentTransactions();
     void setSpendableBalance(bool isStaking);
-    void showBlockCurrentHeight();
+    void showBlockCurrentHeight(int count);
     void updateBalance();
 
-signals:
+Q_SIGNALS:
     void transactionClicked(const QModelIndex& index);
 
 private:
@@ -90,14 +89,12 @@ private:
     void moveSyncCircle(QWidget* anchor, QWidget* animated, int deltaRadius, float degreesPerSecond, float angleOffset=0);
     QRect getCircleGeometry(QWidget* parent, float ratioToParent);
 
-private slots:
+private Q_SLOTS:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex& index);
     void updateAlerts(const QString& warnings);
     void updateWatchOnlyLabels(bool showWatchOnly);
     void on_lockUnlock();
-    void unlockDialogIsFinished(int result);
-    void lockDialogIsFinished(int result);
     void updateLockStatus(int status);
 };
 

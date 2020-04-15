@@ -141,15 +141,15 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_pedersen_commitment_sum
 ) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(2) SECP256K1_ARG_NONNULL(4);
 
 SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_pedersen_commitment_to_serialized_pubkey(
-		secp256k1_pedersen_commitment* commit,
-		unsigned char* pubkey,
-		size_t* length
+        secp256k1_pedersen_commitment* commit,
+        unsigned char* pubkey,
+        size_t* length
 ) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(2) SECP256K1_ARG_NONNULL(3);
 
 SECP256K1_API void secp256k1_pedersen_serialized_pubkey_to_commitment(
-		const unsigned char* pubkey,
-		size_t length,
-		secp256k1_pedersen_commitment* commit
+        const unsigned char* pubkey,
+        size_t length,
+        secp256k1_pedersen_commitment* commit
 ) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(3);
 
 /** Sets the final Pedersen blinding factor correctly when the generators themselves

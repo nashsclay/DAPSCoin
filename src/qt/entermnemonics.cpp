@@ -35,7 +35,7 @@ void EnterMnemonics::on_next()
         pwalletMain->SetBestChain(loc);
         CWalletDB(pwalletMain->strWalletFile).WriteScannedBlockHeight(0); //reschedule to rescan entire chain to recover all funds and history        
         accept();
-    } catch (std::exception& ex) {
+    } catch (const std::exception& ex) {
        QMessageBox::warning(this, "Recovery Phrase Invalid", "Recovery phrase is invalid. Please try again and double check all words.", QMessageBox::Ok);
     }
 }

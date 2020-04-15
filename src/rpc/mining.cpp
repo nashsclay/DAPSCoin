@@ -229,43 +229,43 @@ UniValue generatepoa(const UniValue& params, bool fHelp)
     }
 
     // don't return until a poa block is successfully generated and added to the chain
-	int nHeightStart = 0;
-	int nHeightEnd = 0;
-	int nHeight = 0;
-	int nGenerate = 1;
-	CReserveKey reservekey(pwalletMain);
+    int nHeightStart = 0;
+    int nHeightEnd = 0;
+    int nHeight = 0;
+    int nGenerate = 1;
+    CReserveKey reservekey(pwalletMain);
 
-	{ // Don't keep cs_main locked
-		LOCK(cs_main);
-		nHeightStart = chainActive.Height();
-		nHeight = nHeightStart;
-		nHeightEnd = nHeightStart + nGenerate;
-	}
+    { // Don't keep cs_main locked
+        LOCK(cs_main);
+        nHeightStart = chainActive.Height();
+        nHeight = nHeightStart;
+        nHeightEnd = nHeightStart + nGenerate;
+    }
 
-	unsigned int nExtraNonce = 0;
+    unsigned int nExtraNonce = 0;
 
-	UniValue blockHashes(UniValue::VARR);
+    UniValue blockHashes(UniValue::VARR);
 
-	bool createPoABlock = false;
-	if (nHeight >= Params().LAST_POW_BLOCK()) {
-		createPoABlock = true;
-	}
+    bool createPoABlock = false;
+    if (nHeight >= Params().LAST_POW_BLOCK()) {
+        createPoABlock = true;
+    }
 
-	if (!createPoABlock) {
-		return NullUniValue;
-	}
+    if (!createPoABlock) {
+        return NullUniValue;
+    }
 
-	unique_ptr<CBlockTemplate> pblocktemplate(CreateNewPoABlockWithKey(reservekey, pwalletMain));
-	if (!pblocktemplate.get())
-		throw JSONRPCError(RPC_INTERNAL_ERROR, "Wallet keypool empty");
-	CBlock* pblock = &pblocktemplate->block;
+    unique_ptr<CBlockTemplate> pblocktemplate(CreateNewPoABlockWithKey(reservekey, pwalletMain));
+    if (!pblocktemplate.get())
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Wallet keypool empty");
+    CBlock* pblock = &pblocktemplate->block;
 
-	CValidationState state;
-	if (!ProcessNewBlock(state, NULL, pblock))
-		throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
-	++nHeight;
-	blockHashes.push_back(pblock->GetHash().GetHex());
-	return blockHashes;
+    CValidationState state;
+    if (!ProcessNewBlock(state, NULL, pblock))
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
+    ++nHeight;
+    blockHashes.push_back(pblock->GetHash().GetHex());
+    return blockHashes;
 }
 
 UniValue gethashespersec(const UniValue& params, bool fHelp)
@@ -508,7 +508,7 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
     if (!lpval.isNull()) {
         // Wait to respond until either the best block changes, OR a minute has passed and there are more transactions
         uint256 hashWatchedChain;
-        boost::system_time checktxtime;
+        std::chrono::steady_clock::time_point checktxtime;
         unsigned int nTransactionsUpdatedLastLP;
 
         if (lpval.isStr()) {
@@ -526,15 +526,16 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
         // Release the wallet and main lock while waiting
         LEAVE_CRITICAL_SECTION(cs_main);
         {
-            checktxtime = boost::get_system_time() + boost::posix_time::minutes(1);
+            checktxtime = std::chrono::steady_clock::now() + std::chrono::minutes(1);
 
-            boost::unique_lock<boost::mutex> lock(csBestBlock);
-            while (chainActive.Tip()->GetBlockHash() == hashWatchedChain && IsRPCRunning()) {
-                if (!cvBlockChange.timed_wait(lock, checktxtime)) {
+            WAIT_LOCK(g_best_block_mutex, lock);
+            while (g_best_block == hashWatchedChain && IsRPCRunning()) {
+                if (g_best_block_cv.wait_until(lock, checktxtime) == std::cv_status::timeout)
+                {
                     // Timeout: Check transactions for update
                     if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLastLP)
                         break;
-                    checktxtime += boost::posix_time::seconds(10);
+                    checktxtime += std::chrono::seconds(10);
                 }
             }
         }
@@ -567,7 +568,7 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
         CPubKey des, txPub;
         CKey txPriv;
         if (!pwalletMain->GenerateAddress(des, txPub, txPriv)) {
-        	throw runtime_error("Wallet is locked, please unlock it");
+            throw runtime_error("Wallet is locked, please unlock it");
         }
         CScript scriptDummy = CScript() << OP_TRUE;
         pblocktemplate = CreateNewBlock(scriptDummy, txPub, txPriv, pwalletMain, false);

@@ -76,6 +76,11 @@ QDialog {
   font-style: italic;
   padding-left: 52px;
 }
+#blockCount {
+  font-size: 11px;
+  font-style: italic;
+  padding-left: 68px;
+}
 
 QDialog .QTabWidget QTabBar::tab {
   background-color:#FFFFFF;

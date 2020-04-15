@@ -33,7 +33,7 @@ struct TestingSetup {
         SetupEnvironment();
         fPrintToDebugLog = true; // don't want to write to debug.log file
         fCheckBlockIndex = false;
-        SelectParams(CBaseChainParams::UNITTEST);
+        SelectParams(CBaseChainParams::MAIN);
         noui_connect();
 #ifdef ENABLE_WALLET
         bitdb.MakeMock();

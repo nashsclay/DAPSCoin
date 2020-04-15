@@ -359,7 +359,7 @@ BOOST_AUTO_TEST_CASE(test_StealthSend)
     printf("Balance = %f, ReserveBalance = %f\n", pwalletMain->GetBalance() * 1.0f / COIN, nReserveBalance * 1.0f / COIN);
     try {
         ret = pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx);
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         ret = false;
     }
     BOOST_CHECK_MESSAGE(!ret, "Sending to stealth address have to be failed on 0 balance wallet");
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE(test_StealthSend)
     printf("Balance = %f, ReserveBalance = %f\n", pwalletMain->GetBalance() * 1.0f / COIN, nReserveBalance * 1.0f / COIN);
     try {
         ret = pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx);
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         ret = false;
     }
     BOOST_CHECK_MESSAGE(ret, "Sending to stealth address have to be success with reservebalance wallet");
@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE(test_StealthSend)
     printf("Balance = %f, ReserveBalance = %f\n", pwalletMain->GetBalance() * 1.0f / COIN, nReserveBalance * 1.0f / COIN);
     try {
         ret = pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx);
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         ret = false;
     }
     BOOST_CHECK_MESSAGE(ret, "Sending to stealth address have to be success on enough balance wallet");
@@ -388,6 +388,6 @@ BOOST_AUTO_TEST_CASE(test_StealthSend)
     printf("%llu/%llu/%llu/%llu\n", pwalletMain->GetSpendableBalance(), pwalletMain->GetBalance(), pwalletMain->GetUnlockedCoins(), pwalletMain->GetLockedCoins());
 
     // check stealth sending on not enough balance wallet
-    SelectParams(CBaseChainParams::UNITTEST);
+    SelectParams(CBaseChainParams::MAIN);
 }
 BOOST_AUTO_TEST_SUITE_END()
