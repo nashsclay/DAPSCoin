@@ -79,7 +79,7 @@ CPrivKey CKey::GetPrivKey() const
 
 CPubKey CKey::GetPubKey() const
 {
-    assert(fValid);
+    //assert(fValid);
     CPubKey result;
     int clen = 65;
     int ret = secp256k1_ec_pubkey_create((unsigned char*)result.begin(), &clen, begin(), fCompressed);
