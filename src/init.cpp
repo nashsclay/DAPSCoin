@@ -968,7 +968,7 @@ bool AppInit2(bool isDaemon)
     if (fDisableWallet) {
 #endif
         if (SoftSetBoolArg("-staking", false))
-            LogPrintf("%s : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
+            LogPrintf("%s : parameter interaction: wallet functionality not enabled -> setting -staking=0\n", __func__);
 #ifdef ENABLE_WALLET
     }
 #endif
