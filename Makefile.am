@@ -228,3 +228,4 @@ CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
 
 clean-local:
 	rm -rf test_dapscoin.coverage/ total.coverage/ $(OSX_APP)
+	rm -rf osx_volname dist/ dpi36.background.tiff dpi72.background.tiff
