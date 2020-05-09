@@ -293,6 +293,13 @@ void SendCoinsDialog::sendTx() {
                         msgBox.setText(msg);
                         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
                         msgBox.exec();
+                    } else {
+                        QMessageBox msgBox;
+                        msgBox.setWindowTitle("Sweeping Transaction Creation Error");
+                        msgBox.setText(QString("Sweeping transaction creation failed due to an internal error. Please try again later."));
+                        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+                        msgBox.setIcon(QMessageBox::Critical);
+                        msgBox.exec();
                     }
                 } catch (const std::exception& err1) {
                     nReserveBalance = backupReserve;
