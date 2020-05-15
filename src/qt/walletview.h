@@ -92,8 +92,6 @@ public Q_SLOTS:
     void gotoSendCoinsPage(QString addr = "");
     /** Show MultiSend Dialog */
     void gotoMultiSendDialog();
-    /** Show a multisig tab **/
-    void gotoMultisigDialog(int index);
 
     /** Show incoming transaction notification for new transactions.
 

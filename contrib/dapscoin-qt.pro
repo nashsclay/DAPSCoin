@@ -200,7 +200,6 @@ HEADERS += src/activemasternode.h \
            src/qt/macnotificationhandler.h \
            src/qt/masternodelist.h \
            src/qt/multisenddialog.h \
-           src/qt/multisigdialog.h \
            src/qt/networkstyle.h \
            src/qt/notificator.h \
            src/qt/openuridialog.h \
@@ -521,7 +520,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/intro.cpp \
            src/qt/masternodelist.cpp \
            src/qt/multisenddialog.cpp \
-           src/qt/multisigdialog.cpp \
            src/qt/networkstyle.cpp \
            src/qt/notificator.cpp \
            src/qt/openuridialog.cpp \
