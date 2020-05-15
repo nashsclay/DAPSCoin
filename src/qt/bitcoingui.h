@@ -98,9 +98,6 @@ private:
     QAction* sendCoinsAction;
     QAction* usedSendingAddressesAction;
     QAction* usedReceivingAddressesAction;
-    QAction* multisigCreateAction;
-    QAction* multisigSpendAction;
-    QAction* multisigSignAction;
     QAction* aboutAction;
     QAction* receiveCoinsAction;
     QAction* optionsAction;
@@ -244,10 +241,6 @@ private Q_SLOTS:
     void gotoSendCoinsPage(QString addr = "");
     /** Show MultiSend Dialog */
     void gotoMultiSendDialog();
-    /** Show MultiSig Dialog */
-    void gotoMultisigCreate();
-    void gotoMultisigSpend();
-    void gotoMultisigSign();
     /** Show open dialog */
     void openClicked();
 

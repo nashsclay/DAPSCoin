@@ -19,7 +19,6 @@
 #include "main.h"
 #include "obfuscation.h"
 #include "wallet/wallet.h"
-#include "multisigdialog.h"
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 
@@ -516,9 +515,6 @@ void CoinControlDialog::updateDialogLabels()
         // Amount
         nAmount += model->getCWallet()->getCTxOutValue(*out.tx, out.tx->vout[out.i]);
     }
-    MultisigDialog* multisigDialog = (MultisigDialog*)this->parentWidget();
-
-    multisigDialog->updateCoinControl(nAmount, nQuantity);
 }
 
 void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)
