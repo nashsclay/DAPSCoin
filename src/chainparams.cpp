@@ -383,7 +383,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.push_back(CDNSSeedData("192.168.2.202", "192.168.2.202"));
+        vSeeds.push_back(CDNSSeedData("testnet.dapscoin-seeds.com", "testnet.dapscoin-seeds.com"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 139); // Testnet dapscoin addresses start with 'x' or 'y'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet dapscoin script addresses start with '8' or '9'
