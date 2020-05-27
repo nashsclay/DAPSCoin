@@ -42,6 +42,8 @@ SECP256K1_API secp256k1_bulletproof_generators *secp256k1_bulletproof_generators
     size_t n
 ) SECP256K1_ARG_NONNULL(1);
 
+SECP256K1_API secp256k1_bulletproof_generators *secp256k1_bulletproof_generators_create_with_pregenerated(const secp256k1_context2 *ctx) SECP256K1_ARG_NONNULL(1);
+
 /** Destroys a list of NUMS generators, freeing allocated memory
  *  Args:   ctx: pointer to a context object (cannot be NULL)
  *          gen: pointer to the generator set to be destroyed
