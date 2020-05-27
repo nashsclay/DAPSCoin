@@ -116,6 +116,9 @@ qrc_*.cpp
 # Mac specific
 .DS_Store
 build
+osx_volname
+dist/
+*.background.tiff
 
 #lcov
 *.gcno

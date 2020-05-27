@@ -19,7 +19,6 @@
 #include "main.h"
 #include "obfuscation.h"
 #include "wallet/wallet.h"
-#include "multisigdialog.h"
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 
@@ -187,20 +186,21 @@ void CoinControlDialog::buttonBoxClicked(QAbstractButton* button)
 // (un)select all
 void CoinControlDialog::buttonSelectAllClicked()
 {
-    Qt::CheckState state = Qt::Checked;
-    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++) {
-        if (ui->treeWidget->topLevelItem(i)->checkState(COLUMN_CHECKBOX) != Qt::Unchecked) {
-            state = Qt::Unchecked;
-            break;
-        }
-    }
+    // "Select all": if some entry is unchecked, then check it
+    // "Unselect all": if some entry is checked, then uncheck it
+    Qt::CheckState wantedState = fSelectAllToggled ? Qt::Checked : Qt::Unchecked;
     ui->treeWidget->setEnabled(false);
     for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        if (ui->treeWidget->topLevelItem(i)->checkState(COLUMN_CHECKBOX) != state)
-            ui->treeWidget->topLevelItem(i)->setCheckState(COLUMN_CHECKBOX, state);
+        if (ui->treeWidget->topLevelItem(i)->checkState(COLUMN_CHECKBOX) != wantedState)
+            ui->treeWidget->topLevelItem(i)->setCheckState(COLUMN_CHECKBOX, wantedState);
     ui->treeWidget->setEnabled(true);
-    if (state == Qt::Unchecked)
+    if (!fSelectAllToggled) {
         coinControl->UnSelectAll(); // just to be sure
+        ui->pushButtonSelectAll->setText(tr("Select all"));
+    } else {
+        ui->pushButtonSelectAll->setText(tr("Unselect all"));
+    }
+    fSelectAllToggled = !fSelectAllToggled;
     CoinControlDialog::updateLabels(model, this);
     updateDialogLabels();
 }
@@ -515,9 +515,6 @@ void CoinControlDialog::updateDialogLabels()
         // Amount
         nAmount += model->getCWallet()->getCTxOutValue(*out.tx, out.tx->vout[out.i]);
     }
-    MultisigDialog* multisigDialog = (MultisigDialog*)this->parentWidget();
-
-    multisigDialog->updateCoinControl(nAmount, nQuantity);
 }
 
 void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)

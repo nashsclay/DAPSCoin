@@ -2904,33 +2904,33 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // Check it again in case a previous version let a bad block in
     if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
-    //move this code from checkBlock to ConnectBlock functions to check for forks
+
     //Check PoA block time
     if (block.IsPoABlockByVersion() && !CheckPoAblockTime(block)) {
-        return state.Invalid(error("CheckBlock() : Time elapsed between two PoA blocks is too short"),
+        return state.Invalid(error("ConnectBlock(): Time elapsed between two PoA blocks is too short"),
             REJECT_INVALID, "time-too-new");
     }
     //Check PoA block not auditing PoS blocks audited by its previous PoA block
     if (block.IsPoABlockByVersion() && !CheckPoABlockNotAuditingOverlap(block)) {
-        return state.Invalid(error("CheckBlock() : PoA block auditing PoS blocks previously audited by its parent"),
+        return state.Invalid(error("ConnectBlock(): PoA block auditing PoS blocks previously audited by its parent"),
             REJECT_INVALID, "overlap-audit");
     }
 
     /**
-     * @todo Audit checkblock
+     * @Audit ConnectBlock
      */
     if (block.IsProofOfAudit()) {
         //Check PoA consensus rules
         if (!CheckPoAContainRecentHash(block)) {
-            return state.DoS(100, error("CheckBlock() : PoA block should contain only non-audited recent PoS blocks"));
+            return state.DoS(100, error("ConnectBlock(): PoA block should contain only non-audited recent PoS blocks"));
         }
 
         if (!CheckNumberOfAuditedPoSBlocks(block)) {
-            return state.DoS(100, error("CheckBlock() : A PoA block should audit at least 59 PoS blocks"));
+            return state.DoS(100, error("ConnectBlock(): A PoA block should audit at least 59 PoS blocks"));
         }
 
         if (!CheckPoABlockNotContainingPoABlockInfo(block)) {
-            return state.DoS(100, error("CheckBlock() : A PoA block should not audit any existing PoA blocks"));
+            return state.DoS(100, error("ConnectBlock(): A PoA block should not audit any existing PoA blocks"));
         }
     }
 
@@ -4193,7 +4193,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         // but issue an initial reject message.
         // The case also exists that the sending peer could not have enough data to see
         // that this block is invalid, so don't issue an outright ban.
-        if (nHeight != 0 && !IsInitialBlockDownload()) {
+        if (block.IsProofOfStake() && nHeight != 0 && !IsInitialBlockDownload()) {
             if (!IsBlockPayeeValid(block, nHeight)) {
                 mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
                 return state.DoS(0, error("CheckBlock() : Couldn't find masternode/budget payment"),

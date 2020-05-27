@@ -61,8 +61,6 @@ public Q_SLOTS:
     void gotoBlockExplorerPage();
     /** Show MultiSend Dialog **/
     void gotoMultiSendDialog();
-    /** show a multisig tab **/
-    void gotoMultisigDialog(int index);
     /** Encrypt the wallet */
     void encryptWallet(bool status);
     /** Backup the wallet */

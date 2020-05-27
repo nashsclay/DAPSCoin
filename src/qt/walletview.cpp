@@ -13,7 +13,6 @@
 #include "historypage.h"
 #include "masternodeconfig.h"
 #include "multisenddialog.h"
-#include "multisigdialog.h"
 #include "optionsmodel.h"
 #include "overviewpage.h"
 #include "optionspage.h"
@@ -232,13 +231,6 @@ void WalletView::gotoMultiSendDialog()
     MultiSendDialog* multiSendDialog = new MultiSendDialog(this);
     multiSendDialog->setModel(walletModel);
     multiSendDialog->show();
-}
-
-void WalletView::gotoMultisigDialog(int index)
-{
-    MultisigDialog* multisig = new MultisigDialog(this);
-    multisig->setModel(walletModel);
-    multisig->showTab(index);
 }
 
 void WalletView::showSyncStatus(bool fShow)
