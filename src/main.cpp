@@ -1686,11 +1686,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 return false;
             }
 
-            // are the actual inputs available?
-            if (!view.HaveInputs(tx))
-                return state.Invalid(error("%s: inputs already spent",
-                        __func__), REJECT_DUPLICATE, "bad-txns-inputs-spent");
-
             if (!tx.IsCoinStake() && !tx.IsCoinBase() && !tx.IsCoinAudit()) {
                 if (!tx.IsCoinAudit()) {
                     if (!VerifyRingSignatureWithTxFee(tx, chainActive.Tip()))
