@@ -1904,9 +1904,9 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             }
 
             // are the actual inputs available?
-            if (!view.HaveInputs(tx))
-                return state.Invalid(error("%s : inputs already spent",
-                        __func__), REJECT_DUPLICATE, "bad-txns-inputs-spent");
+            if (!CheckHaveInputs(view, tx))
+                return state.Invalid(error("AcceptableInputs : inputs already spent"),
+                    REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
             // Bring the best block into scope
             view.GetBestBlock();
