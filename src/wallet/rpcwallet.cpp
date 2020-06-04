@@ -2768,7 +2768,7 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
                 "1. \"dapsstealthaddress\"  (string, required) The dapscoin stealth address to send to.\n"
-                "2. \"amount\"      (numeric, required) The amount in btc to send. eg 0.1\n"
+                "2. \"amount\"      (numeric, required) The amount in DAPS to send. eg 0.1\n"
                 "\nResult:\n"
                 "\"transactionid\"  (string) The transaction id.\n"
                 "\nExamples:\n" +
