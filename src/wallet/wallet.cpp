@@ -5088,6 +5088,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
     if (GetSpendableBalance() < 5 * COIN) {
         return false;
     }
+    LogPrintf("Attempting to create a sweeping transaction\n");
     CAmount total = 0;
     std::vector<COutput> vCoins;
     COutput lowestLarger(NULL, 0, 0, false);
@@ -5360,7 +5361,6 @@ void CWallet::AutoCombineDust()
         }
         return;
     }
-    LogPrintf("Creating a sweeping transaction\n");
     CreateSweepingTransaction(nAutoCombineThreshold, nAutoCombineThreshold, GetAdjustedTime());
 }
 
