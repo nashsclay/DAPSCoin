@@ -226,7 +226,7 @@ protected:
     bool Add_(const CAddress& addr, const CNetAddr& source, int64_t nTimePenalty);
 
     //! Mark an entry as attempted to connect.
-    void Attempt_(const CService& addr, int64_t nTime);
+    void Attempt_(const CService& addr, bool fCountFailure, int64_t nTime);
 
     //! Select an address to connect to.
     //! nUnkBias determines how much to favor new addresses over tried ones (min=0, max=100)
@@ -518,12 +518,12 @@ public:
     }
 
     //! Mark an entry as connection attempted to.
-    void Attempt(const CService& addr, int64_t nTime = GetAdjustedTime())
+    void Attempt(const CService& addr, bool fCountFailure, int64_t nTime = GetAdjustedTime())
     {
         {
             LOCK(cs);
             Check();
-            Attempt_(addr, nTime);
+            Attempt_(addr, fCountFailure, nTime);
             Check();
         }
     }
