@@ -14,6 +14,7 @@
 #include "coincontroldialog.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
+#include "masternode-sync.h"
 #include "sendcoinsentry.h"
 #include "walletmodel.h"
 
@@ -133,6 +134,15 @@ SendCoinsDialog::~SendCoinsDialog(){
 }
 
 void SendCoinsDialog::on_sendButton_clicked(){
+    if (!masternodeSync.IsBlockchainSynced()) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Send Disabled - Syncing");
+        msgBox.setText("Sending DAPS is disabled when you are still syncing the wallet. Please allow the wallet to fully sync before attempting to send a transaction.");
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
     if (!ui->entries->count())
         return;
 
