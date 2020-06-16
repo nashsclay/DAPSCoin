@@ -2773,7 +2773,7 @@ bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey&
                                 strFailReason = "Insufficient reserved funds! Your wallet is staking with a reserve balance of " + ValueFromAmountToString(nReserveBalance) + " less than the sending amount " + ValueFromAmountToString(nTotalValue);
                         } else if (setCoins.size() > MAX_TX_INPUTS) {
                             //max inputs
-                            strFailReason = _("You have attempted to send more than 50 UTXOs in a single transaction. This is a rare occurrence, and to work around this limitation, please either lower the total amount of the transaction, or send two separate transactions with 50% of your total desired amount.");
+                            strFailReason = _("You have attempted to send more than 50 UTXOs in a single transaction. To work around this limitation, please either lower the total amount of the transaction or send two separate transactions with 50% of your total desired amount.");
                         } else {
                             //other
                             strFailReason = _("Error in CreateTransactionBulletProof. Please try again.");
@@ -5088,6 +5088,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
     if (GetSpendableBalance() < 5 * COIN) {
         return false;
     }
+    LogPrintf("Attempting to create a sweeping transaction\n");
     CAmount total = 0;
     std::vector<COutput> vCoins;
     COutput lowestLarger(NULL, 0, 0, false);
@@ -5360,7 +5361,6 @@ void CWallet::AutoCombineDust()
         }
         return;
     }
-    LogPrintf("Creating a sweeping transaction\n");
     CreateSweepingTransaction(nAutoCombineThreshold, nAutoCombineThreshold, GetAdjustedTime());
 }
 
