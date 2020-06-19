@@ -160,6 +160,21 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     return result;
 }
 
+UniValue getsupply(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getsupply\n"
+            "\nReturns the current supply.\n"
+            "\nResult:\n"
+            "n    (numeric) The current supply\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getsupply", "") + HelpExampleRpc("getsupply", ""));
+
+    LOCK(cs_main);
+    return ValueFromAmount(chainActive.Tip()->nMoneySupply);
+}
+
 UniValue getblockcount(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
