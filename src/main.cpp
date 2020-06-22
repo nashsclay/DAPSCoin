@@ -2914,7 +2914,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     /**
      * @Audit ConnectBlock
      */
-    if (block.IsProofOfAudit()) {
+    if (!fVerifyingBlocks && block.IsProofOfAudit()) {
         //Check PoA consensus rules
         if (!CheckPoAContainRecentHash(block)) {
             return state.DoS(100, error("ConnectBlock(): PoA block should contain only non-audited recent PoS blocks"));
