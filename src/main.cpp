@@ -342,7 +342,7 @@ secp256k1_scratch_space2* GetScratch()
 secp256k1_bulletproof_generators* GetGenerator()
 {
     static secp256k1_bulletproof_generators* generator;
-    if (!generator) generator = secp256k1_bulletproof_generators_create(GetContext(), &secp256k1_generator_const_g, 64 * 1024);
+    if (!generator) generator = secp256k1_bulletproof_generators_create_with_pregenerated(GetContext());
     return generator;
 }
 
@@ -1686,11 +1686,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 return false;
             }
 
-            // are the actual inputs available?
-            if (!view.HaveInputs(tx))
-                return state.Invalid(error("%s: inputs already spent",
-                        __func__), REJECT_DUPLICATE, "bad-txns-inputs-spent");
-
             if (!tx.IsCoinStake() && !tx.IsCoinBase() && !tx.IsCoinAudit()) {
                 if (!tx.IsCoinAudit()) {
                     if (!VerifyRingSignatureWithTxFee(tx, chainActive.Tip()))
@@ -1909,9 +1904,9 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             }
 
             // are the actual inputs available?
-            if (!view.HaveInputs(tx))
-                return state.Invalid(error("%s : inputs already spent",
-                        __func__), REJECT_DUPLICATE, "bad-txns-inputs-spent");
+            if (!CheckHaveInputs(view, tx))
+                return state.Invalid(error("AcceptableInputs : inputs already spent"),
+                    REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
             // Bring the best block into scope
             view.GetBestBlock();
@@ -2919,7 +2914,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     /**
      * @Audit ConnectBlock
      */
-    if (block.IsProofOfAudit()) {
+    if (!fVerifyingBlocks && block.IsProofOfAudit()) {
         //Check PoA consensus rules
         if (!CheckPoAContainRecentHash(block)) {
             return state.DoS(100, error("ConnectBlock(): PoA block should contain only non-audited recent PoS blocks"));
@@ -4428,8 +4423,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
-            //If this "invalid" block is an exact match from the checkpoints, then reconsider it
-            if (Checkpoints::CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true)) {
+            //If this "invalid" block is an exact match from the checkpoints or if it is a PoA block rejected previously due not synced with other nodes before, then reconsider it
+            if (Checkpoints::CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true) || (pindexPrev->IsProofOfAudit() && chainActive.Height() - pindexPrev->nHeight < Params().MaxReorganizationDepth())) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash().GetHex(),
                     pindexPrev->nHeight);
                 CValidationState statePrev;
@@ -5727,7 +5722,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             vRecv >> LIMITED_STRING(pfrom->strSubVer, MAX_SUBVERSION_LENGTH);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
-        if (pfrom->strSubVer == "/DAPScoin:0.27.5.1/" || pfrom->strSubVer == "/DAPScoin:1.0.0/" || pfrom->strSubVer == "/DAPScoin:1.0.1/" || pfrom->strSubVer == "/DAPS:1.0.1.3/" || pfrom->strSubVer == "/DAPS:1.0.2/" || pfrom->strSubVer == "/DAPS:1.0.3.4/") {
+        if (pfrom->strSubVer == "/DAPScoin:0.27.5.1/" || pfrom->strSubVer == "/DAPScoin:1.0.0/" || pfrom->strSubVer == "/DAPScoin:1.0.1/" || pfrom->strSubVer == "/DAPS:1.0.1.3/" || pfrom->strSubVer == "/DAPS:1.0.2/" || pfrom->strSubVer == "/DAPS:1.0.3.4/" || pfrom->strSubVer == "/DAPS:1.0.4.6/") {
                 // disconnect from peers other than these sub versions
                 LogPrintf("partner %s using obsolete version %s; banning and disconnecting\n", pfrom->addr.ToString().c_str(), pfrom->strSubVer.c_str());
                 state->fShouldBan = true;

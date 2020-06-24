@@ -160,6 +160,21 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     return result;
 }
 
+UniValue getsupply(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getsupply\n"
+            "\nReturns the current supply.\n"
+            "\nResult:\n"
+            "n    (numeric) The current supply\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getsupply", "") + HelpExampleRpc("getsupply", ""));
+
+    LOCK(cs_main);
+    return ValueFromAmount(chainActive.Tip()->nMoneySupply);
+}
+
 UniValue getblockcount(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -406,7 +421,7 @@ UniValue getrawmempool(const UniValue& params, bool fHelp)
                 "{                           (json object)\n"
                 "  \"transactionid\" : {       (json object)\n"
                 "    \"size\" : n,             (numeric) transaction size in bytes\n"
-                "    \"fee\" : n,              (numeric) transaction fee in pivx\n"
+                "    \"fee\" : n,              (numeric) transaction fee in DAPS\n"
                 "    \"time\" : n,             (numeric) local time transaction entered pool in seconds since 1 Jan 1970 GMT\n"
                 "    \"height\" : n,           (numeric) block height when transaction entered pool\n"
                 "    \"startingpriority\" : n, (numeric) priority when transaction entered pool\n"
@@ -617,7 +632,7 @@ UniValue gettxout(const UniValue& params, bool fHelp)
             "{\n"
             "  \"bestblock\" : \"hash\",    (string) the block hash\n"
             "  \"confirmations\" : n,       (numeric) The number of confirmations\n"
-            "  \"value\" : x.xxx,           (numeric) The transaction value in btc\n"
+            "  \"value\" : x.xxx,           (numeric) The transaction value in DAPS\n"
             "  \"scriptPubKey\" : {         (json object)\n"
             "     \"asm\" : \"code\",       (string) \n"
             "     \"hex\" : \"hex\",        (string) \n"

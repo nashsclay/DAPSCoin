@@ -14,6 +14,7 @@
 #include "coincontroldialog.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
+#include "masternode-sync.h"
 #include "sendcoinsentry.h"
 #include "walletmodel.h"
 
@@ -133,6 +134,15 @@ SendCoinsDialog::~SendCoinsDialog(){
 }
 
 void SendCoinsDialog::on_sendButton_clicked(){
+    if (!masternodeSync.IsBlockchainSynced()) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Send Disabled - Syncing");
+        msgBox.setText("Sending DAPS is disabled when you are still syncing the wallet. Please allow the wallet to fully sync before attempting to send a transaction.");
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
     if (!ui->entries->count())
         return;
 
@@ -275,7 +285,7 @@ void SendCoinsDialog::sendTx() {
         std::string errMes(err.what());
         if (errMes.find("You have attempted to send more than 50 UTXOs in a single transaction") != std::string::npos) {
             QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, "Transaction Size Too Large", QString(err.what()) + QString("\n Do you want to combine small UTXOs into a larger one?"), QMessageBox::Yes|QMessageBox::No);
+            reply = QMessageBox::question(this, "Transaction Size Too Large", QString(err.what()) + QString("\n\nDo you want to combine small UTXOs into a larger one?"), QMessageBox::Yes|QMessageBox::No);
             if (reply == QMessageBox::Yes) {
                 CAmount backupReserve = nReserveBalance;
                 try {
@@ -293,13 +303,20 @@ void SendCoinsDialog::sendTx() {
                         msgBox.setText(msg);
                         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
                         msgBox.exec();
+                    } else {
+                        QMessageBox msgBox;
+                        msgBox.setWindowTitle("Sweeping Transaction Creation Error");
+                        msgBox.setText(QString("Sweeping transaction creation failed due to an internal error. Please try again later."));
+                        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+                        msgBox.setIcon(QMessageBox::Critical);
+                        msgBox.exec();
                     }
                 } catch (const std::exception& err1) {
                     nReserveBalance = backupReserve;
                     QMessageBox msgBox;
                     LogPrintf("ERROR:%s: %s\n", __func__, err1.what());
                     msgBox.setWindowTitle("Sweeping Transaction Creation Error");
-                    msgBox.setText(QString("Sweeping transaction failed due to an internal error! Please try again later!"));
+                    msgBox.setText(QString("Sweeping transaction creation failed due to an internal error. Please try again later."));
                     msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
                     msgBox.setIcon(QMessageBox::Critical);
                     msgBox.exec();

@@ -168,6 +168,11 @@ uint256 GetBlockProof(const CBlockIndex& block)
     return (~bnTarget / (bnTarget + 1)) + 1;
 }
 
+CBlockIndex* FindPrevPoSBlock(CBlockIndex* p) {
+    if (!p || !p->pprev) return NULL;
+    return p->pprev->IsProofOfStake()?p->pprev:FindPrevPoSBlock(p->pprev);
+}
+
 //If blockheight = -1, the to-be-checked block is not included yet in the chain, otherwise, that is the height of the poa block
 bool CheckPoAContainRecentHash(const CBlock& block)
 {
@@ -219,60 +224,64 @@ bool CheckPoAContainRecentHash(const CBlock& block)
             if (mapBlockIndex.count(lastAuditedPoSHash) < 1) {
                 return error("CheckPoAContainRecentHash() : Audited blocks not found");
             }
-            CBlockIndex* piterator = mapBlockIndex[lastAuditedPoSHash]->pnext;
-            uint32_t idxOfPoSInfo = 0;
-            if (!piterator) {
-                //check whether chainActive has
-                if (mapBlockIndex[lastAuditedPoSHash]->nHeight + 1 > chainActive.Height()) {
-                    return error("CheckPoAContainRecentHash() : PoS block %s not found", lastAuditedPoSHash.GetHex());
-                }
-                piterator = chainActive[mapBlockIndex[lastAuditedPoSHash]->nHeight + 1];
-                if (!piterator)
-                    return error("CheckPoAContainRecentHash() : PoS block %s not found", lastAuditedPoSHash.GetHex());
-                if (piterator->pprev == NULL || piterator->pprev->GetBlockHash() != lastAuditedPoSHash) {
-                    return error("CheckPoAContainRecentHash() : PoS block %s not found", lastAuditedPoSHash.GetHex());
-                }
+
+            uint256 currentFirstPoSAuditedHash = block.posBlocksAudited[0].hash;
+            uint256 currentLastPoSAuditedHash = block.posBlocksAudited.back().hash;
+            if (mapBlockIndex.count(currentFirstPoSAuditedHash) < 1 || mapBlockIndex.count(currentLastPoSAuditedHash) < 1) {
+                return error("CheckPoAContainRecentHash() : Being audited blocks not found");
             }
-            while (piterator->nHeight <= (uint32_t)currentTip->nHeight && idxOfPoSInfo < block.posBlocksAudited.size()) {
-                if (!piterator->GetBlockHeader().IsPoABlockByVersion() && piterator->nHeight > Params().LAST_POW_BLOCK()) {
-                    PoSBlockSummary pos = block.posBlocksAudited[idxOfPoSInfo];
-                    CBlockIndex* posAudited = piterator;
-                    if (pos.hash == *(posAudited->phashBlock) && pos.height == (uint32_t)posAudited->nHeight && pos.nTime == posAudited->GetBlockTime()) {
-                        idxOfPoSInfo++;
-                    } else {
-                        //The PoA block is not satisfied the constraint
+            CBlockIndex* pCurrentFirstPoSAuditedIndex = mapBlockIndex[currentFirstPoSAuditedHash];
+            CBlockIndex* pCurrentLastPoSAuditedIndex = mapBlockIndex[currentLastPoSAuditedHash];
+
+            //check lastAuditedPoSHash and currentFirstPoSAuditedHash must be on the same fork
+            //that lastAuditedPoSHash must be parent block of currentFirstPoSAuditedHash
+            if (pCurrentFirstPoSAuditedIndex->GetAncestor(lastAuditedPoSBlockInfo.height)->GetBlockHash() != lastAuditedPoSHash) {
+                return error("CheckPoAContainRecentHash() : PoA block is not on the same fork with the previous poa block");
+            }
+
+            //check there is no pos block between lastAuditedPoSHash and currentFirstPoSAuditedHash
+            CBlockIndex* pIndexLoop = pCurrentFirstPoSAuditedIndex->pprev;
+            while(pIndexLoop && !pIndexLoop->IsProofOfStake()) {
+                pIndexLoop = pIndexLoop->pprev;
+            }
+            if (!pIndexLoop || pIndexLoop->GetBlockHash() != lastAuditedPoSHash) {
+                return error("CheckPoAContainRecentHash() : Some PoS block between %s and %s is not audited\n", lastAuditedPoSHash.GetHex(), currentFirstPoSAuditedHash.GetHex());
+            }
+
+            //alright, check all pos blocks audited in the block is conseutive in the chain
+            for(size_t i = block.posBlocksAudited.size() - 1; i > 0; i--) {
+                uint256 thisPoSAduditedHash = block.posBlocksAudited[i].hash;
+                if (mapBlockIndex.count(thisPoSAduditedHash) < 1) {
+                    return error("CheckPoAContainRecentHash() : PoS block %s not found\n", thisPoSAduditedHash.GetHex());
+                }
+                CBlockIndex* thisPoSAuditedIndex = mapBlockIndex[thisPoSAduditedHash];
+                CBlockIndex* previousPoSIndex = FindPrevPoSBlock(thisPoSAuditedIndex);
+                if (!previousPoSIndex) {
+                    return error("CheckPoAContainRecentHash() : Failed to find previous PoS block for block %s\n", thisPoSAduditedHash.GetHex());
+                }
+                PoSBlockSummary previousSummary = block.posBlocksAudited[i - 1];
+                if (previousPoSIndex->GetBlockHash() != previousSummary.hash ||
+                    (uint32_t)previousPoSIndex->nHeight != previousSummary.height ||
+                    previousPoSIndex->GetBlockTime() != previousSummary.nTime) {
+                    return error("CheckPoAContainRecentHash() : PoS block info not matched for %s\n", thisPoSAduditedHash.GetHex());
+                }
+                bool auditResult = ReVerifyPoSBlock(thisPoSAuditedIndex);
+                if (!auditResult) {
+                    if (previousSummary.nTime) {
                         ret = false;
+                        LogPrintf("%s: Failed to reverify block %s\n", __func__, previousSummary.hash.GetHex());
                         break;
                     }
-
-                    CBlockIndex* p = mapBlockIndex[pos.hash];
-                    bool auditResult = ReVerifyPoSBlock(p);
-                    if (!auditResult) {
-                        if (pos.nTime) {
-                            ret = false;
-                            break;
-                        }
-                    }
-                }
-                uint256 h = piterator->GetBlockHash();
-                piterator = piterator->pnext;
-
-                if (!piterator) {
-                    if (mapBlockIndex[h]->nHeight + 1 > chainActive.Height()) {
-                        return error("CheckPoAContainRecentHash() : PoS block %s not found", lastAuditedPoSHash.GetHex());
-                    }
-                    piterator = chainActive[mapBlockIndex[h]->nHeight + 1];
-                    if (!piterator)
-                        return error("CheckPoAContainRecentHash() : PoS block %s not found", h.GetHex());
-                    if (piterator->pprev == NULL || piterator->pprev->GetBlockHash() != h) {
-                        return error("CheckPoAContainRecentHash() : PoS block %s not found", h.GetHex());
-                    }
                 }
             }
-
-            if (idxOfPoSInfo != block.posBlocksAudited.size()) {
-                //Not all PoS Blocks in PoA block have been checked, not satisfied
-                ret = false;
+            if (ret) {
+                bool auditResult = ReVerifyPoSBlock(pCurrentFirstPoSAuditedIndex);
+                if (!auditResult) {
+                    if (block.posBlocksAudited[0].nTime) {
+                        ret = false;
+                        LogPrintf("%s: Failed to reverify block %s\n", __func__, block.posBlocksAudited[0].hash.GetHex());
+                    }
+                }
             }
         } else {
             ret = block.hashPrevPoABlock.IsNull();

@@ -936,7 +936,7 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
     reply->deleteLater();
     if(reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
-        if (data != currentVersion) {
+        if (data.trimmed() != currentVersion) {
             QMessageBox::StandardButton msgReply;
             msgReply = QMessageBox::question(this, "Wallet Update Available!", "Wallet update available.\n\nWould you like to go to the GitHub Releases page to download v" + data.trimmed() + "?", QMessageBox::Yes|QMessageBox::No);
             if (msgReply == QMessageBox::Yes) {

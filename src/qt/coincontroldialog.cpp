@@ -44,12 +44,11 @@ bool CCoinControlWidgetItem::operator<(const QTreeWidgetItem &other) const {
     return QTreeWidgetItem::operator<(other);
 }
 
-CoinControlDialog::CoinControlDialog(QWidget* parent, bool fMultisigEnabled) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+CoinControlDialog::CoinControlDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
                                                         ui(new Ui::CoinControlDialog),
                                                         model(0)
 {
     ui->setupUi(this);
-    this->fMultisigEnabled = fMultisigEnabled;
 
     /* Open CSS when configured */
     this->setStyleSheet(GUIUtil::loadStyleSheet());
@@ -764,10 +763,6 @@ void CoinControlDialog::updateView()
         int nInputSum = 0;
         for(const COutput& out: coins.second) {
             isminetype mine = pwalletMain->IsMine(out.tx->vout[out.i]);
-            bool fMultiSigUTXO = (mine & ISMINE_MULTISIG);
-            // when multisig is enabled, it will only display outputs from multisig addresses
-            if (fMultisigEnabled && !fMultiSigUTXO)
-                continue;
             int nInputSize = 0;
             nSum += model->getCWallet()->getCTxOutValue(*out.tx, out.tx->vout[out.i]);
             nChildren++;
@@ -779,20 +774,6 @@ void CoinControlDialog::updateView()
                 itemOutput = new CCoinControlWidgetItem(ui->treeWidget);
             itemOutput->setFlags(flgCheckbox);
             itemOutput->setCheckState(COLUMN_CHECKBOX, Qt::Unchecked);
-
-            //MultiSig
-            if (fMultiSigUTXO) {
-                itemOutput->setText(COLUMN_TYPE, "MultiSig");
-
-                if (!fMultisigEnabled) {
-                    COutPoint outpt(out.tx->GetHash(), out.i);
-                    coinControl->UnSelect(outpt); // just to be sure
-                    itemOutput->setDisabled(true);
-                    itemOutput->setIcon(COLUMN_CHECKBOX, QIcon(":/icons/lock_closed"));
-                }
-            } else {
-                itemOutput->setText(COLUMN_TYPE, "Personal");
-            }
 
             // address
             CTxDestination outputAddress;
