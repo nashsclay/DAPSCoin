@@ -138,7 +138,7 @@ qa/pull-tester/test.*/*
 
 !src/leveldb*/Makefile
 !depends/Makefile
-!depends/patches/*/*.patch
+!depends/patches/**/*.patch
 
 .cproject
 .project
