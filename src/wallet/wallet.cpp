@@ -6753,6 +6753,9 @@ bool CWallet::findCorrespondingPrivateKey(const CTxOut& txout, CKey& key) const
 
 bool CWallet::generateKeyImage(const CScript& scriptPubKey, CKeyImage& img) const
 {
+    if (IsLocked()) {
+        return false;
+    }
     std::set<CKeyID> keyIDs;
     GetKeys(keyIDs);
     CKey key;
