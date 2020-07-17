@@ -635,6 +635,7 @@ void CNode::AddWhitelistedRange(const CSubNet &subnet) {
 void CNode::copyStats(CNodeStats &stats) {
     stats.nodeid = this->GetId();
     X(nServices);
+    X(addr);
     X(nLastSend);
     X(nLastRecv);
     X(nTimeConnected);

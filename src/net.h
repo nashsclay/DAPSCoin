@@ -179,6 +179,7 @@ public:
     double dPingTime;
     double dPingWait;
     std::string addrLocal;
+    CAddress addr;
 };
 
 
