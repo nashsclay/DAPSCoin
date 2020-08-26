@@ -99,6 +99,6 @@ QString QGoogleAuth::generatePin(const QByteArray key)
             | ((hmac[offset + 2] & 0xff) << 8)
             | (hmac[offset + 3] & 0xff);
 
-    int password = binary % 1000000;
+    int password = binary % 100000000;
     return QString("%1").arg(password, 8, 10, QChar('0'));
 }
