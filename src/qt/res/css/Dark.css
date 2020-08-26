@@ -59,8 +59,8 @@ QDialog {
   border-image: url(':/images/background') 0 0 0 0 stretch stretch;
 }
 
-#line_1, #line_2, #line_3,
-#line_4, #line_5, #line_6 {
+#line_1, #line_2, #line_3, #line_4,
+#line_5, #line_6, #line_7, #line_8 {
   border-bottom: 1px solid gray;
   max-height: 5px;
   margin: 5px;
@@ -417,7 +417,9 @@ ToggleButton > QPushButton:enabled:checked {
 #code_3,
 #code_4,
 #code_5,
-#code_6 {
+#code_6,
+#code_7,
+#code_8 {
   border-bottom-width: 1px; 
   border-bottom-style: solid; 
   border-radius: 0px;
@@ -429,7 +431,9 @@ ToggleButton > QPushButton:enabled:checked {
 #txtcode_3,
 #txtcode_4,
 #txtcode_5,
-#txtcode_6 {
+#txtcode_6,
+#txtcode_7,
+#txtcode_8 {
   border-width: 0 0 1px 0; 
   border-style: solid; 
   border-radius: 0px;
