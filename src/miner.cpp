@@ -142,8 +142,8 @@ uint32_t GetListOfPoSInfo(uint32_t currentHeight, std::vector<PoSBlockSummary>& 
                     pos.height = nextAuditHeight;
                     audits.push_back(pos);
                 }
-                //The current number of PoS blocks audited in a PoA block is changed from 59 to 61
-                if (audits.size() == 61) {
+                //The current number of PoS blocks audited in a PoA block is changed from 59 to MAX
+                if (audits.size() == (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED()) {
                     break;
                 }
                 nextAuditHeight++;

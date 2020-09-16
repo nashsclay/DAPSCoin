@@ -198,6 +198,7 @@ public:
         nModifierUpdateBlock = 615800;
         nPoABlockTime = 60 * 60; //a PoA block every 30 minutes
         nMinNumPoSBlocks = 59;
+        nMaxNumPoSBlocks = 120;
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot

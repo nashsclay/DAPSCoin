@@ -95,6 +95,7 @@ const int MIN_RING_SIZE = 11;
 const int MAX_RING_SIZE = 15;
 const int MAX_TX_INPUTS = 50;
 const int MIN_TX_INPUTS_FOR_SWEEPING = 25;
+const int HF_POA_REWARD = 665000;
 
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
@@ -1587,19 +1588,6 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                     return false;
                 }
 
-                //TODO-NOTE: 07/06/2019 Remove this condition as colateral will be cheated as a normal tx
-                //UTXO with 1M DAPS can only be consumed in a transaction with that single UTXO
-                /*if (decoysSize > 1 && prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
-                    return false;
-                }
-
-                if (prev.vout[alldecoys[j].n].nValue == 1000000 * COIN) {
-                    if (!VerifyKeyImages(tx)) {
-                        LogPrintf("Failed to verify correctness of key image of collateralization spend\n");
-                        return false;
-                    }
-                }*/
-
                 if (mapBlockIndex.count(bh) < 1) return false;
                 if (prev.IsCoinStake() || prev.IsCoinAudit() || prev.IsCoinBase()) {
                     if (nSpendHeight - mapBlockIndex[bh]->nHeight < Params().COINBASE_MATURITY()) return false;
@@ -1619,6 +1607,15 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                     if (ancestor != atTheblock) {
                         LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", alldecoys[j].hash.GetHex(), tip->GetBlockHash().GetHex());
                         return false;
+                    }
+
+                    if (atTheblock->IsProofOfAudit() && chainActive.Height() >= HF_POA_REWARD) {
+                        CBlock b;
+                        ReadBlockFromDisk(b, atTheblock);
+                        if (!CheckPoABlockRewardAmount(b, atTheblock)) {
+                            LogPrintf("Reject poa transaction %s\n");
+                            return false;
+                        }
                     }
                 }
             }
@@ -2927,6 +2924,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!CheckPoABlockNotContainingPoABlockInfo(block)) {
             return state.DoS(100, error("ConnectBlock(): A PoA block should not audit any existing PoA blocks"));
         }
+
+        if (!CheckPoABlockRewardAmount(block, pindex)) {
+            return state.DoS(100, error("ConnectBlock(): This PoA block reward does not match the value it should."));
+        }
+        //if (block.GetBlockTime() >= GetAdjustedTime()) {
+            //return state.DoS(100, error("ConnectBlock(): A PoA block should not be in the future."));
+        //}
     }
 
     // verify that the view's current state corresponds to the previous block
@@ -4459,6 +4463,41 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
+    if (pindex->nHeight >= HF_POA_REWARD) {
+            for(size_t i = 0; i < block.vtx.size(); i++) {
+                const CTransaction& tx = block.vtx[i];
+                for (unsigned int i = 0; i < tx.vin.size(); i++) {
+                    if (tx.IsCoinBase()) continue;
+                    //check output and decoys
+                    std::vector<COutPoint> alldecoys = tx.vin[i].decoys;
+
+                    alldecoys.push_back(tx.vin[i].prevout);
+                    for (size_t j = 0; j < alldecoys.size(); j++) {
+                        CTransaction prev;
+                        uint256 bh;
+                        if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
+                            return false;
+                        }
+
+                        if (mapBlockIndex.count(bh) < 1) return false;
+                        CBlockIndex* atTheblock = mapBlockIndex[bh];
+                        if (!atTheblock) {
+                            //LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", alldecoys[j].hash.GetHex(), tip->GetBlockHash().GetHex());
+                            return false;
+                        } else {
+                            CBlock bhBlock;
+                            ReadBlockFromDisk(bhBlock, atTheblock);
+                            if (atTheblock->IsProofOfAudit()) {
+                                if (prev.vout[alldecoys[j].n].nValue > 50000 * COIN || prev.vout[alldecoys[j].n].nValue != bhBlock.posBlocksAudited.size() * 100 * COIN) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     // Write block to history file
     try {
         unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
@@ -4685,22 +4724,23 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
                         coinbaseIdx = 1;
                     }
                     CTransaction& coinbase = b.vtx[coinbaseIdx];
-
-                    for (int i = 0; i < (int)coinbase.vout.size(); i++) {
-                        if (!coinbase.vout[i].IsNull() && !coinbase.vout[i].commitment.empty() && coinbase.vout[i].nValue > 0 && !coinbase.vout[i].IsEmpty()) {
-                            if ((secp256k1_rand32() % 100) <= CWallet::PROBABILITY_NEW_COIN_SELECTED) {
-                                COutPoint newOutPoint(coinbase.GetHash(), i);
-                                if (pwalletMain->coinbaseDecoysPool.count(newOutPoint) == 1) {
-                                    continue;
-                                }
-                                //add new coinbase transaction to the pool
-                                if ((int)pwalletMain->coinbaseDecoysPool.size() >= CWallet::MAX_DECOY_POOL) {
-                                    int selected = secp256k1_rand32() % CWallet::MAX_DECOY_POOL;
-                                    map<COutPoint, uint256>::const_iterator it = std::next(pwalletMain->coinbaseDecoysPool.begin(), selected);
-                                    pwalletMain->coinbaseDecoysPool.erase(it->first);
-                                    pwalletMain->coinbaseDecoysPool[newOutPoint] = pblock->GetHash();
-                                } else {
-                                    pwalletMain->coinbaseDecoysPool[newOutPoint] = pblock->GetHash();
+                    if (b.posBlocksAudited.size() == 0) {
+                        for (int i = 0; i < (int)coinbase.vout.size(); i++) {
+                            if (!coinbase.vout[i].IsNull() && !coinbase.vout[i].commitment.empty() && coinbase.vout[i].nValue > 0 && !coinbase.vout[i].IsEmpty()) {
+                                if ((secp256k1_rand32() % 100) <= CWallet::PROBABILITY_NEW_COIN_SELECTED) {
+                                    COutPoint newOutPoint(coinbase.GetHash(), i);
+                                    if (pwalletMain->coinbaseDecoysPool.count(newOutPoint) == 1) {
+                                        continue;
+                                    }
+                                    //add new coinbase transaction to the pool
+                                    if ((int)pwalletMain->coinbaseDecoysPool.size() >= CWallet::MAX_DECOY_POOL) {
+                                        int selected = secp256k1_rand32() % CWallet::MAX_DECOY_POOL;
+                                        map<COutPoint, uint256>::const_iterator it = std::next(pwalletMain->coinbaseDecoysPool.begin(), selected);
+                                        pwalletMain->coinbaseDecoysPool.erase(it->first);
+                                        pwalletMain->coinbaseDecoysPool[newOutPoint] = pblock->GetHash();
+                                    } else {
+                                        pwalletMain->coinbaseDecoysPool[newOutPoint] = pblock->GetHash();
+                                    }
                                 }
                             }
                         }
