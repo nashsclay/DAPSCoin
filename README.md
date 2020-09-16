@@ -22,10 +22,6 @@ DAPS is a non-ICO community driven project. The project has funded itself to del
 DAPS Team
 The team consists of a total of 20 members located worldwide.
 
-## How we Compare to Other Privacy Projects
-
-![Privacy Coin Chart](https://officialdapscoin.com/wp-content/uploads/2020/01/DAPS-Privacy-coin-chart-2020.jpg)
-
 ## How to Contribute to DAPS
 
 We have an extensive [Contributing.md](https://github.com/DAPSCoin/DAPSCoin/blob/master/CONTRIBUTING.md) guide on how to contribute to DAPS source code.
