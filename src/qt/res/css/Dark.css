@@ -30,7 +30,7 @@ QDialog {
   background: qlineargradient(
     x1: 0 y1: 0,
     x2: 1 y2: 1,
-    stop: 0 #5e0057,
+    stop: 0 #1e1824,
     stop: 1 #1f192a
   );
 }
@@ -271,7 +271,7 @@ QComboBox::indicator {
 QPushButton {
   height: 25px;
   border-radius: 10px;
-  background-color: #470143;
+  background-color: #1e1824;
   font-size: 20px;
   font-weight: 400;
   padding: 5px 5px;
