@@ -642,7 +642,7 @@ void BitcoinGUI::createToolBars()
         bottomToolbar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         toolbar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         QLabel* dapsico = new QLabel;
-        dapsico->setPixmap(QIcon(":icons/bitcoin").pixmap(130, 107));
+        dapsico->setPixmap(QIcon(":icons/dapsico").pixmap(130, 130));
         dapsico->setObjectName("dapsico");
 
         navLayout->addWidget(dapsico);
