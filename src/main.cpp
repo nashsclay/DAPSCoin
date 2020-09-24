@@ -95,7 +95,6 @@ const int MIN_RING_SIZE = 11;
 const int MAX_RING_SIZE = 15;
 const int MAX_TX_INPUTS = 50;
 const int MIN_TX_INPUTS_FOR_SWEEPING = 25;
-const int HF_POA_REWARD = 665000;
 
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
@@ -1609,7 +1608,7 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                         return false;
                     }
 
-                    if (atTheblock->IsProofOfAudit() && chainActive.Height() >= HF_POA_REWARD) {
+                    if (atTheblock->IsProofOfAudit() && chainActive.Height() >= Params().HardFork()) {
                         CBlock b;
                         ReadBlockFromDisk(b, atTheblock);
                         if (!CheckPoABlockRewardAmount(b, atTheblock)) {
@@ -4463,7 +4462,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
-    if (pindex->nHeight >= HF_POA_REWARD) {
+    if (pindex->nHeight >= Params().HardFork()) {
             for(size_t i = 0; i < block.vtx.size(); i++) {
                 const CTransaction& tx = block.vtx[i];
                 for (unsigned int i = 0; i < tx.vin.size(); i++) {

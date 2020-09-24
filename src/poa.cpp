@@ -22,7 +22,7 @@ unsigned int N_BITS_SF = 0x1e050000;
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
     if (N_BITS != 0 && pblock->IsPoABlockByVersion()) {
-        if (pindexLast->nHeight < 125000) {
+        if (pindexLast->nHeight < Params().SoftFork()) {
             return N_BITS;
         }
         return N_BITS_SF;
@@ -63,7 +63,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         // ppcoin: target change every block
         // ppcoin: retarget with exponential moving toward target spacing
         uint256 bnNew;
-        if (pindexLast->nHeight < 125000) {
+        if (pindexLast->nHeight < Params().SoftFork()) {
             bnNew.SetCompact(pindexLast->nBits);
         } else {
             if (pindexLast->IsProofOfStake()) {
@@ -450,7 +450,7 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
 bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 {
     bool ret = true;
-    if (pindex->nHeight >= HF_POA_REWARD) {
+    if (pindex->nHeight >= Params().HardFork()) {
         ret = block.vtx.size() == 1;
         ret = ret && block.vtx[0].vout.size() == 1;
         ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * 100 * COIN;
