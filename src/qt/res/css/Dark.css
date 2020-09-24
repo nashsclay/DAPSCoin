@@ -107,8 +107,16 @@ QDialog .QTabWidget QTabBar::tab:selected, QDialog .QTabWidget QTabBar::tab:hove
   background: qlineargradient(
     x1: 0 y1: 0,
     x2: 1 y2: 1,
-    stop: 0 #5e0057,
-    stop: 1 #1f192a
+    stop: 0.1 #24474b,
+    stop: 0.2 #1d424d,
+    stop: 0.3 #1c3d4d,
+    stop: 0.4 #1f374c,
+    stop: 0.5 #263049,
+    stop: 0.6 #292c45,
+    stop: 0.7 #2b2840,
+    stop: 0.8 #2c243b,
+    stop: 0.9 #292237,
+    stop: 1 #262133
   );
   padding: 3px;
 }
