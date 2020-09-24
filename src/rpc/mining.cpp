@@ -222,6 +222,8 @@ UniValue generatepoa(const UniValue& params, bool fHelp)
     if (pwalletMain == NULL)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
 
+    // We need this here as CreateNewPoABlockWithKey requires unlocked wallet to GenerateAddress
+    EnsureWalletIsUnlocked();
 
     int period = 60;//default value
     if (params.size() > 1) {
@@ -703,6 +705,10 @@ UniValue getpoablocktemplate(const UniValue& params, bool fHelp)
 
                 "\nExamples:\n" +
                 HelpExampleCli("getpoablocktemplate", "") + HelpExampleRpc("getpoablocktemplate", ""));
+
+    // We need this here as CreateNewPoABlockWithKey requires unlocked wallet to GenerateAddress
+    EnsureWalletIsUnlocked();
+
     LOCK(cs_main);
 
     {
