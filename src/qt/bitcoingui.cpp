@@ -859,7 +859,7 @@ void BitcoinGUI::telegramLoungeActionClicked()
 }
 void BitcoinGUI::mediumActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://medium.com/DAPScoin"));
+    QDesktopServices::openUrl(QUrl("https://medium.com/@DAPScoin"));
 }
 void BitcoinGUI::instagramActionClicked()
 {
