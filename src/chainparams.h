@@ -103,10 +103,13 @@ public:
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int START_POA_BLOCK() const { return nStartPOABlock; }
     int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
+    int SoftFork() const { return nSoftForkBlock;}
+    int HardFork() const { return nHardForkBlock;}
 
     //For PoA block time
     int POA_BLOCK_TIME() const { return nPoABlockTime; }
     int MIN_NUM_POS_BLOCKS_AUDITED() const {return nMinNumPoSBlocks;}
+    int MAX_NUM_POS_BLOCKS_AUDITED() const {return nMaxNumPoSBlocks;}
     int nLastPOWBlock;
     int TEAM_REWARD_FREQUENCY = 3; //every  TEAM_REWARD_FREQUENCY PoA blocks, reward the daps team
     double MAX_MONEY;
@@ -129,6 +132,8 @@ protected:
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nStartPOABlock;
+    int nSoftForkBlock;
+    int nHardForkBlock;
     int nMasternodeCountDrift;
     int nMaturity;
     int nModifierUpdateBlock;
@@ -162,6 +167,7 @@ protected:
     //For PoA blocks
     int nPoABlockTime;
     int nMinNumPoSBlocks;
+    int nMaxNumPoSBlocks;
 public:
     void ChangeMaxReorg(int num) const {
         nMaxReorganizationDepth = num;

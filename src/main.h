@@ -226,6 +226,7 @@ void UnloadBlockIndex();
 int ActiveProtocol();
 /** Process protocol messages received from a given node */
 bool ProcessMessages(CNode* pfrom);
+bool VerifyZeroBlindCommitment(const CTxOut& out);
 /**
  * Send queued protocol messages to be sent to a give node.
  *

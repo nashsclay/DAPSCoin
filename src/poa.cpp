@@ -22,7 +22,7 @@ unsigned int N_BITS_SF = 0x1e050000;
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
     if (N_BITS != 0 && pblock->IsPoABlockByVersion()) {
-        if (pindexLast->nHeight < 125000) {
+        if (pindexLast->nHeight < Params().SoftFork()) {
             return N_BITS;
         }
         return N_BITS_SF;
@@ -63,7 +63,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         // ppcoin: target change every block
         // ppcoin: retarget with exponential moving toward target spacing
         uint256 bnNew;
-        if (pindexLast->nHeight < 125000) {
+        if (pindexLast->nHeight < Params().SoftFork()) {
             bnNew.SetCompact(pindexLast->nBits);
         } else {
             if (pindexLast->IsProofOfStake()) {
@@ -292,7 +292,7 @@ bool CheckPoAContainRecentHash(const CBlock& block)
 
 bool CheckNumberOfAuditedPoSBlocks(const CBlock& block)
 {
-    if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED()) {
+    if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() || block.posBlocksAudited.size() > (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED() ) {
         return false;
     }
     return true;
@@ -393,17 +393,17 @@ bool CheckPoAblockTime(const CBlock& block)
     if (block.hashPrevPoABlock.IsNull()) {
         ret = true;
     } else {
-        LogPrint("debug", "%s: Previous PoA block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
+        LogPrint("poa", "%s: Previous PoA block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
         if (mapBlockIndex.count(block.hashPrevPoABlock) != 0) {
             CBlockIndex* pindex = mapBlockIndex[block.hashPrevPoABlock];
             uint32_t prevPoATime = pindex->nTime;
             if (block.nTime > prevPoATime && (block.nTime - pindex->nTime >= (uint32_t)Params().POA_BLOCK_TIME())) {
                 ret = true;
             }
-            LogPrint("debug", "%s: PoA Block time: %d, Previous: %d, Current: %d, Distance: %d\n", __func__,
+            LogPrint("poa", "%s: PoA Block time: %d, Previous: %d, Current: %d, Distance: %d\n", __func__,
                 Params().POA_BLOCK_TIME(), prevPoATime, block.nTime, block.nTime - pindex->nTime);
         } else {
-            LogPrint("debug", "%s: Cannot find block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
+            LogPrint("poa", "%s: Cannot find block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
         }
     }
     return ret;
@@ -415,7 +415,7 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
 
     if (block.hashPrevPoABlock.IsNull()) {
         //First PoA block
-        LogPrint("debug", "%s: First PoA Block Hash: %s\n", __func__, block.GetHash().GetHex());
+        LogPrint("poa", "%s: First PoA Block Hash: %s\n", __func__, block.GetHash().GetHex());
         ret = true;
     } else {
         if (mapBlockIndex.count(block.hashPrevPoABlock) != 0) {
@@ -429,7 +429,7 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
                 for (size_t j = 0; j < prevPoablock.posBlocksAudited.size(); j++) {
                     if (prevPoablock.posBlocksAudited[j].hash == block.posBlocksAudited[i].hash && prevPoablock.posBlocksAudited[j].nTime == block.posBlocksAudited[i].nTime && prevPoablock.posBlocksAudited[j].height == block.posBlocksAudited[i].height) {
                         isAlreadyAudited = true;
-                        LogPrint("debug", "%s: PoA Block Hash: %s, is already auditted by Block %s\n", __func__,
+                        LogPrint("poa", "%s: PoA Block Hash: %s, is already auditted by Block %s\n", __func__,
                             block.posBlocksAudited[i].hash.GetHex(),
                             prevPoablock.GetHash().GetHex());
                         break;
@@ -444,5 +444,17 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
         }
     }
 
+    return ret;
+}
+
+bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
+{
+    bool ret = true;
+    if (pindex->nHeight >= Params().HardFork()) {
+        ret = block.vtx.size() == 1;
+        ret = ret && block.vtx[0].vout.size() == 1;
+        ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * 100 * COIN;
+        ret = ret && VerifyZeroBlindCommitment(block.vtx[0].vout[0]);
+    }
     return ret;
 }

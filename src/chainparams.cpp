@@ -198,6 +198,9 @@ public:
         nModifierUpdateBlock = 615800;
         nPoABlockTime = 60 * 60; //a PoA block every 30 minutes
         nMinNumPoSBlocks = 59;
+        nMaxNumPoSBlocks = 120;
+        nSoftForkBlock = 125000; // Soft fork block for difficulty change
+        nHardForkBlock = 670000; // Hard fork block for PoA updates
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -345,6 +348,8 @@ public:
         nBlockFirstFraudulent = 9891737; //First block that bad serials emerged
         nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
+        nSoftForkBlock = 0; // Soft fork block for difficulty change - testnet started with it
+        nHardForkBlock = 92000; // Hard fork block for PoA updates
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1590109816;
