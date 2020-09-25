@@ -63,8 +63,6 @@ b'librt.so.1', # real-time (clock)
 b'ld-linux-x86-64.so.2', # 64-bit dynamic linker
 b'ld-linux.so.2', # 32-bit dynamic linker
 # bitcoin-qt only
-b'libX11-xcb.so.1', # part of X11
-b'libX11.so.6', # part of X11
 b'libxcb.so.1', # part of X11
 b'libfontconfig.so.1', # font support
 b'libfreetype.so.6', # font parsing
