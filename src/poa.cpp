@@ -290,12 +290,16 @@ bool CheckPoAContainRecentHash(const CBlock& block)
     return ret;
 }
 
-bool CheckNumberOfAuditedPoSBlocks(const CBlock& block)
+bool CheckNumberOfAuditedPoSBlocks(const CBlock& block, const CBlockIndex* pindex)
 {
+    bool ret = true;
     if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() || block.posBlocksAudited.size() > (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED() ) {
-        return false;
+        ret = false;
     }
-    return true;
+    if (pindex->nHeight <= Params().HardFork()) {
+        ret = true;
+    }
+    return ret;
 }
 
 //Check whether the block is successfully mined and the mined hash satisfy the difficulty

@@ -40,7 +40,7 @@ bool CheckPoAMerkleRoot(const CBlock& block, bool* fMutate = NULL);
 bool CheckPoABlockMinedHash(const CBlockHeader& block);
 
 bool CheckPoAContainRecentHash(const CBlock& block);
-bool CheckNumberOfAuditedPoSBlocks(const CBlock& block);
+bool CheckNumberOfAuditedPoSBlocks(const CBlock& block, const CBlockIndex* pindex);
 bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block);
 
 bool CheckPoAblockTime(const CBlock& block);
