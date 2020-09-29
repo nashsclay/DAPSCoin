@@ -613,7 +613,7 @@ void BitcoinGUI::createToolBars()
         }
         toolbar->setMovable(false); // remove unused icon in upper left corner
         overviewAction->setChecked(true);
-        toolbar->setStyleSheet("QToolBar{spacing:20px;}");
+        toolbar->setStyleSheet("QToolBar{spacing:18px;}");
 
         // Create NavBar
         QToolBar* bottomToolbar = new QToolBar(this);
@@ -642,7 +642,7 @@ void BitcoinGUI::createToolBars()
         bottomToolbar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         toolbar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         QLabel* dapsico = new QLabel;
-        dapsico->setPixmap(QIcon(":icons/dapsico").pixmap(130, 130));
+        dapsico->setPixmap(QIcon(":icons/dapsico").pixmap(117, 117));
         dapsico->setObjectName("dapsico");
 
         navLayout->addWidget(dapsico);
