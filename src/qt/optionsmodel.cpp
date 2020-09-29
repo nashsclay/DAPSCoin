@@ -128,7 +128,7 @@ void OptionsModel::Init()
     // Display
     if (!settings.contains("digits"))
         settings.setValue("digits", "2");
-    if (!settings.contains("theme"))
+    if (settings.value("theme") != "dark")
         settings.setValue("theme", "dark");
     if (!settings.contains("fCSSexternal"))
         settings.setValue("fCSSexternal", false);

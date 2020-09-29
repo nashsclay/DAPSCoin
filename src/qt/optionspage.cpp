@@ -46,9 +46,6 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
-    ui->toggleTheme->setState(settings.value("theme")!="light");
-    connect(ui->toggleTheme, SIGNAL(stateChanged(ToggleButton*)), this, SLOT(changeTheme(ToggleButton*)));
-
     connect(ui->lineEditNewPass, SIGNAL(textChanged(const QString &)), this, SLOT(validateNewPass()));
     connect(ui->lineEditNewPassRepeat, SIGNAL(textChanged(const QString &)), this, SLOT(validateNewPassRepeat()));
     connect(ui->lineEditOldPass, SIGNAL(textChanged(const QString &)), this, SLOT(onOldPassChanged()));
@@ -682,14 +679,6 @@ void OptionsPage::dialogIsFinished(int result) {
 
    if (result == QDialog::Rejected)
         ui->toggle2FA->setState(false);
-}
-
-void OptionsPage::changeTheme(ToggleButton* widget)
-{
-    if (widget->getState())
-        settings.setValue("theme", "dark");
-    else settings.setValue("theme", "light");
-        GUIUtil::refreshStyleSheet();
 }
 
 void OptionsPage::disable2FA() {
