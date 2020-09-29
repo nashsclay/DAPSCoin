@@ -189,7 +189,7 @@ QCheckBox::indicator {
 QCheckBox::indicator:checked {
   height: 20px;
   width: 20px;
-  background-color: #5e2059;
+  background-color: #272c42;
   border-style: solid;
   border-radius: 13px;
   border-color: whitesmoke;
@@ -286,10 +286,10 @@ QPushButton:hover {
 }
 
 QPushButton:pressed {
-  background-color: #5e0057;
+  background-color: #272c42;
   border-style: solid;
-  border-color: #272c42;
-  border-width: 10px;
+  border-color: #1e1824;
+  border-width: 2px;
 }
 
 QPushButton#btn_rescan{
