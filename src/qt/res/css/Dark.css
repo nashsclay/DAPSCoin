@@ -128,7 +128,7 @@ QToolBar > QToolButton {
 }
 QToolBar > QToolButton:checked {
   color: #83faff;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
 }
 #dapsico {
