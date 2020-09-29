@@ -26,6 +26,8 @@ bool NodeLessThan::operator()(const CNodeCombinedStats& left, const CNodeCombine
         std::swap(pLeft, pRight);
 
     switch (column) {
+    case PeerTableModel::NetNodeId:
+        return pLeft->nodeid < pRight->nodeid;
     case PeerTableModel::Address:
         return pLeft->addrName.compare(pRight->addrName) < 0;
     case PeerTableModel::Subversion:
@@ -111,7 +113,7 @@ PeerTableModel::PeerTableModel(ClientModel* parent) : QAbstractTableModel(parent
                                                       clientModel(parent),
                                                       timer(0)
 {
-    columns << tr("Address/Hostname") << tr("Version") << tr("Ping Time");
+    columns << tr("NodeId") << tr("Node/Service") << tr("User Agent") << tr("Ping Time");
     priv = new PeerTablePriv();
     // default to unsorted
     priv->sortColumn = -1;
@@ -161,6 +163,8 @@ QVariant PeerTableModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
+        case NetNodeId:
+            return rec->nodeStats.nodeid;
         case Address:
             // prepend to peer address down-arrow symbol for inbound connection and up-arrow for outbound connection
             return QString(rec->nodeStats.fInbound ? "↓ " : "↑ ") + QString::fromStdString(rec->nodeStats.addrName);

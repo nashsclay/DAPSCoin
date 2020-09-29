@@ -991,7 +991,7 @@ void RPCConsole::showBanTableContextMenu(const QPoint& point)
 void RPCConsole::disconnectSelectedNode()
 {
     // Get currently selected peer address
-    QString strNode = GUIUtil::getEntryData(ui->peerWidget, 0, PeerTableModel::Address);
+    QString strNode = GUIUtil::getEntryData(ui->peerWidget, 0, PeerTableModel::Address).toString();
     // Find the node, disconnect it and clear the selected node
     if (CNode *bannedNode = FindNode(strNode.toStdString())) {
         bannedNode->CloseSocketDisconnect();
@@ -1026,7 +1026,7 @@ void RPCConsole::unbanSelectedNode()
     if (!clientModel)
         return;
     // Get currently selected ban address
-    QString strNode = GUIUtil::getEntryData(ui->banlistWidget, 0, BanTableModel::Address);
+    QString strNode = GUIUtil::getEntryData(ui->banlistWidget, 0, BanTableModel::Address).toString();
     CSubNet possibleSubnet(strNode.toStdString());
     if (possibleSubnet.IsValid())
     {
