@@ -130,7 +130,6 @@ Q_SIGNALS:
     void handleRestart(QStringList args);
 
 private:
-    static QString FormatBytes(quint64 bytes);
     void startExecutor();
     void setTrafficGraphRange(int mins);
     /** Build parameter list for restart */
