@@ -168,7 +168,7 @@ QVariant PeerTableModel::data(const QModelIndex& index, int role) const
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
         case NetNodeId:
-            return rec->nodeStats.nodeid;
+            return (qint64)rec->nodeStats.nodeid;
         case Address:
             // prepend to peer address down-arrow symbol for inbound connection and up-arrow for outbound connection
             return QString(rec->nodeStats.fInbound ? "↓ " : "↑ ") + QString::fromStdString(rec->nodeStats.addrName);

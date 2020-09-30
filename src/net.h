@@ -87,7 +87,7 @@ void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler);
 bool StopNode();
 void SocketSendData(CNode* pnode);
 
-typedef int NodeId;
+typedef int64_t NodeId;
 
 // Signals for message handling
 struct CNodeSignals {
