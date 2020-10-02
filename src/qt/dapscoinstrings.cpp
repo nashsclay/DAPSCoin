@@ -13,6 +13,9 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "(1 = keep tx meta data e.g. account owner and payment request information, 2 "
 "= drop tx meta data)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
+"Accept connections from outside (default: 1 if no -proxy or -connect/-"
+"noconnect)"),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Allow JSON-RPC connections from specified source. Valid for <ip> are a "
 "single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or "
 "a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times"),
@@ -31,6 +34,9 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Change automatic finalized budget voting behavior. mode=auto: Vote for only "
 "exact finalized budget match to my generated budget. (string, default: auto)"),
+QT_TRANSLATE_NOOP("dapscoin-core", ""
+"Connect only to the specified node(s); -noconnect or -connect=0 alone to "
+"disable automatic connections"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Continuously rate-limit free transactions to <n>*1000 bytes per minute "
 "(default:%u)"),
@@ -109,7 +115,7 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Output debugging information (default: %u, supplying <category> is optional)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Query for peer addresses via DNS lookup, if low on addresses (default: 1 "
-"unless -connect)"),
+"unless -connect/-noconnect)"),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "Randomize credentials for every proxy connection. This enables Tor stream "
 "isolation (default: %u)"),
@@ -193,10 +199,10 @@ QT_TRANSLATE_NOOP("dapscoin-core", ""
 "sent, or sending the same total value in two separate transactions will "
 "usually work around this limitation."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
-"You have attempted to send more than 50 UTXOs in a single transaction. This "
-"is a rare occurrence, and to work around this limitation, please either "
-"lower the total amount of the transaction, or send two separate transactions "
-"with 50% of your total desired amount."),
+"You have attempted to send more than 50 UTXOs in a single transaction. To "
+"work around this limitation, please either lower the total amount of the "
+"transaction or send two separate transactions with 50% of your total desired "
+"amount."),
 QT_TRANSLATE_NOOP("dapscoin-core", ""
 "You must specify a masternodeprivkey in the configuration. Please see "
 "documentation for help."),
@@ -206,7 +212,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", "(default: 1)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "(must be 53572 for mainnet)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "<category> can be:"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Accept command line and JSON-RPC commands"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Accept connections from outside (default: 1 if no -proxy or -connect)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Accept public REST requests (default: %u)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Add a node to connect to and attempt to keep the connection open"),
 QT_TRANSLATE_NOOP("dapscoin-core", "All inputs should have the same number of decoys"),
@@ -228,7 +233,6 @@ QT_TRANSLATE_NOOP("dapscoin-core", "Cannot parse the commitment for inputs"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Cannot parse the commitment for transaction fee"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Cannot resolve -%s address: '%s'"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Cannot write default address"),
-QT_TRANSLATE_NOOP("dapscoin-core", "Connect only to the specified node(s)"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Connect through SOCKS5 proxy"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Connect to a node to retrieve peer addresses, and disconnect"),
 QT_TRANSLATE_NOOP("dapscoin-core", "Connection options:"),
