@@ -476,7 +476,7 @@
 <context>
     <name>BitcoinGUI</name>
     <message>
-        <location filename="../bitcoingui.cpp" line="+140"/>
+        <location filename="../bitcoingui.cpp" line="+137"/>
         <source>Node</source>
         <translation>Node</translation>
     </message>
@@ -657,41 +657,11 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>&amp;Multisignature creation...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Create a new multisignature address and add it to this wallet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Multisignature spending...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Spend from a multisignature address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Multisignature signing...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Sign with a multisignature address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Open &amp;URI...</source>
         <translation>Open &amp;URI...</translation>
     </message>
     <message numerus="yes">
-        <location line="+638"/>
+        <location line="+617"/>
         <source>%n Active Connections</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -738,12 +708,12 @@ Confirmations: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-830"/>
+        <location line="-812"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location line="-170"/>
+        <location line="-160"/>
         <source>&amp;Settings</source>
         <translation>&amp;Settings</translation>
     </message>
@@ -798,12 +768,12 @@ Confirmations: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+23"/>
         <source>&amp;Blockchain Explorer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+117"/>
         <source>&amp;Tools</source>
         <translation>&amp;Tools</translation>
     </message>
@@ -813,12 +783,12 @@ Confirmations: %5
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location line="+588"/>
+        <location line="+570"/>
         <source>DAPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-848"/>
+        <location line="-820"/>
         <source>&amp;Masternodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -863,7 +833,7 @@ Confirmations: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+14"/>
         <source>Open a DAPS: URI or payment request</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1043,17 +1013,17 @@ Confirmations: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+91"/>
         <source>Social</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+195"/>
         <source>DAPS client</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+328"/>
+        <location line="+313"/>
         <source>Up to date</source>
         <translation>Up to date</translation>
     </message>
@@ -1349,7 +1319,7 @@ Confirmations: %5
         <translation>Priority</translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="+59"/>
+        <location filename="../coincontroldialog.cpp" line="+57"/>
         <source>Copy address</source>
         <translation>Copy address</translation>
     </message>
@@ -1415,7 +1385,17 @@ Confirmations: %5
         <translation>Copy change</translation>
     </message>
     <message>
-        <location line="+147"/>
+        <location line="+107"/>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>Please switch to &quot;List mode&quot; to use this function.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1440,13 +1420,13 @@ Confirmations: %5
         <translation>medium-high</translation>
     </message>
     <message>
-        <location line="+238"/>
+        <location line="+235"/>
         <source>Can vary +/- %1 duff(s) per input.</source>
         <translation>Can vary +/- %1 duff(s) per input.</translation>
     </message>
     <message>
         <location filename="../forms/coincontroldialog.ui" line="-334"/>
-        <location filename="../coincontroldialog.cpp" line="-236"/>
+        <location filename="../coincontroldialog.cpp" line="-233"/>
         <source>medium</source>
         <translation>medium</translation>
     </message>
@@ -1476,7 +1456,7 @@ Confirmations: %5
         <translation>(%1 locked)</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+59"/>
         <source>none</source>
         <translation>none</translation>
     </message>
@@ -1524,7 +1504,7 @@ Confirmations: %5
     </message>
     <message>
         <location line="+54"/>
-        <location line="+81"/>
+        <location line="+63"/>
         <source>(no label)</source>
         <translation>(no label)</translation>
     </message>
@@ -2204,228 +2184,6 @@ Please check the address and try again.</source>
     </message>
 </context>
 <context>
-    <name>MultisigDialog</name>
-    <message>
-        <location filename="../forms/multisigdialog.ui" line="+20"/>
-        <source>Multisignature Address Interactions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Create MultiSignature &amp;Address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>How many people must sign to verify a transaction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Enter the minimum number of signatures required to sign transactions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Address Label:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Add another address that could sign to verify a transaction from the multisig address.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Add Address / Key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Local addresses or public keys that can sign:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>Create a new multisig address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>C&amp;reate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <location line="+345"/>
-        <location line="+183"/>
-        <source>Status:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-491"/>
-        <source>Use below to quickly import an address by its redeem. Don&apos;t forget to add a label before clicking import!
-Keep in mind, the wallet will rescan the blockchain to find transactions containing the new address.
-Please be patient after clicking import.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>&amp;Import Redeem</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+24"/>
-        <source>&amp;Create MultiSignature Tx</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Inputs:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Coin Control</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Quantity Selected:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+14"/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-7"/>
-        <source>Amount:</source>
-        <translation type="unfinished">Amount:</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Add an input to fund the outputs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Add a Raw Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+56"/>
-        <source>Address / Amount:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Add destinations to send DAPS to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Add &amp;Destination</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+81"/>
-        <source>Create a transaction object using the given inputs to the given outputs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Cr&amp;eate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+48"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Noto Sans&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>&amp;Sign MultiSignature Tx</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Transaction Hex:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Sign the transaction from this wallet or from provided private keys</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>S&amp;ign</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DISABLED until transaction has been signed enough times.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Co&amp;mmit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Add private keys to sign the transaction with</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Add Private &amp;Key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Sign with only private keys (Not Recommened)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../multisigdialog.cpp" line="+251"/>
-        <source>Invalid Tx Hash.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Vout position must be positive.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+535"/>
-        <source>Maximum possible addresses reached. (16)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+112"/>
-        <source>Vout Position: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+58"/>
-        <source>Amount: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Maximum (15)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>OpenURIDialog</name>
     <message>
         <location filename="../forms/openuridialog.ui" line="+14"/>
@@ -2774,24 +2532,24 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
     </message>
     <message>
         <location line="+6"/>
-        <location line="+144"/>
+        <location line="+93"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-141"/>
-        <location line="+144"/>
+        <location line="-90"/>
+        <location line="+93"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-166"/>
+        <location line="-115"/>
         <source>Staking Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+48"/>
-        <location filename="../optionspage.cpp" line="+357"/>
+        <location filename="../optionspage.cpp" line="+354"/>
         <source>Backup Wallet</source>
         <translation type="unfinished">Backup Wallet</translation>
     </message>
@@ -2801,27 +2559,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Theme Selection:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Switch between Dark and Light theme</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Dark</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Light</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+180"/>
+        <location line="+174"/>
         <source>Change current passphrase</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2940,6 +2678,11 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <source>Wallet Data (*.dat)</source>
         <translation type="unfinished">Wallet Data (*.dat)</translation>
     </message>
+    <message>
+        <location line="+506"/>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OverviewPage</name>
@@ -2965,7 +2708,12 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+31"/>
+        <source>(loading)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+54"/>
         <source>Balance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2990,7 +2738,12 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+19"/>
+        <source>(syncing)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+66"/>
         <location line="+3"/>
         <source>Recent Transactions</source>
         <translation type="unfinished"></translation>
@@ -3130,19 +2883,34 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
 <context>
     <name>PeerTableModel</name>
     <message>
-        <location filename="../peertablemodel.cpp" line="+114"/>
-        <source>Address/Hostname</source>
-        <translation>Address/Hostname</translation>
+        <location filename="../peertablemodel.cpp" line="+120"/>
+        <source>NodeId</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>Version</source>
-        <translation>Version</translation>
+        <source>Node/Service</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>Ping Time</source>
-        <translation>Ping Time</translation>
+        <source>Ping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Sent</source>
+        <translation type="unfinished">Sent</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Received</source>
+        <translation type="unfinished">Received</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>User Agent</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3202,6 +2970,26 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <location line="+0"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1 B</source>
+        <translation type="unfinished">%1 B</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 KB</source>
+        <translation type="unfinished">%1 KB</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 MB</source>
+        <translation type="unfinished">%1 MB</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 GB</source>
+        <translation type="unfinished">%1 GB</translation>
     </message>
 </context>
 <context>
@@ -3407,7 +3195,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
     <message>
         <location line="+59"/>
         <location filename="../rpcconsole.cpp" line="+304"/>
-        <location line="+735"/>
+        <location line="+737"/>
         <source>Select a peer to view detailed information.</source>
         <translation>Select a peer to view detailed information.</translation>
     </message>
@@ -3607,7 +3395,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation>Rebuild index</translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-379"/>
+        <location filename="../rpcconsole.cpp" line="-381"/>
         <source>In:</source>
         <translation>In:</translation>
     </message>
@@ -3700,27 +3488,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+143"/>
-        <source>%1 B</source>
-        <translation>%1 B</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>%1 KB</source>
-        <translation>%1 KB</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>%1 MB</source>
-        <translation>%1 MB</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>%1 GB</source>
-        <translation>%1 GB</translation>
-    </message>
-    <message>
-        <location line="+124"/>
+        <location line="+261"/>
         <source>(node id: %1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4140,7 +3908,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation>Balance:</translation>
     </message>
     <message>
-        <location filename="../sendcoinsdialog.cpp" line="+56"/>
+        <location filename="../sendcoinsdialog.cpp" line="+57"/>
         <source>Copy quantity</source>
         <translation type="unfinished">Copy quantity</translation>
     </message>
@@ -4180,7 +3948,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation type="unfinished">Copy change</translation>
     </message>
     <message>
-        <location line="+130"/>
+        <location line="+139"/>
         <source>Destination</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4205,7 +3973,7 @@ https://www.transifex.com/dapscoin-project/dapscoin-project-translations</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+126"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5365,7 +5133,7 @@ Please try again.</source>
 <context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+351"/>
+        <location filename="../walletmodel.cpp" line="+344"/>
         <source>Send Coins</source>
         <translation>Send Coins</translation>
     </message>
@@ -5373,7 +5141,7 @@ Please try again.</source>
 <context>
     <name>WalletView</name>
     <message>
-        <location filename="../walletview.cpp" line="+51"/>
+        <location filename="../walletview.cpp" line="+50"/>
         <source>&amp;Export</source>
         <translation>&amp;Export</translation>
     </message>
@@ -5388,7 +5156,7 @@ Please try again.</source>
         <translation>Selected amount:</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+204"/>
         <source>Backup Wallet</source>
         <translation>Backup Wallet</translation>
     </message>
@@ -5426,7 +5194,7 @@ Please try again.</source>
         <translation type="unfinished">(1 = keep tx meta data e.g. account owner and payment request information, 2 = drop tx meta data)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Allow JSON-RPC connections from specified source. Valid for &lt;ip&gt; are a single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times</source>
         <translation type="unfinished">Allow JSON-RPC connections from specified source. Valid for &lt;ip&gt; are a single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times</translation>
     </message>
@@ -5456,7 +5224,7 @@ Please try again.</source>
         <translation type="unfinished">Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Continuously rate-limit free transactions to &lt;n&gt;*1000 bytes per minute (default:%u)</source>
         <translation type="unfinished">Continuously rate-limit free transactions to &lt;n&gt;*1000 bytes per minute (default:%u)</translation>
     </message>
@@ -5581,12 +5349,7 @@ Please try again.</source>
         <translation type="unfinished">Output debugging information (default: %u, supplying &lt;category&gt; is optional)</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Query for peer addresses via DNS lookup, if low on addresses (default: 1 unless -connect)</source>
-        <translation type="unfinished">Query for peer addresses via DNS lookup, if low on addresses (default: 1 unless -connect)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Randomize credentials for every proxy connection. This enables Tor stream isolation (default: %u)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5711,12 +5474,7 @@ Please try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>You have attempted to send more than 50 UTXOs in a single transaction. This is a rare occurrence, and to work around this limitation, please either lower the total amount of the transaction, or send two separate transactions with 50% of your total desired amount.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>You must specify a masternodeprivkey in the configuration. Please see documentation for help.</source>
         <translation type="unfinished">You must specify a masternodeprivkey in the configuration. Please see documentation for help.</translation>
     </message>
@@ -5744,11 +5502,6 @@ Please try again.</source>
         <location line="+2"/>
         <source>Accept command line and JSON-RPC commands</source>
         <translation type="unfinished">Accept command line and JSON-RPC commands</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation type="unfinished">Accept connections from outside (default: 1 if no -proxy or -connect)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5794,11 +5547,6 @@ Please try again.</source>
         <location line="+6"/>
         <source>Cannot write default address</source>
         <translation type="unfinished">Cannot write default address</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Connect only to the specified node(s)</source>
-        <translation type="unfinished">Connect only to the specified node(s)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6061,12 +5809,22 @@ Please try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-224"/>
         <source>This is a pre-release test build - use at your own risk - do not use for staking or merchant applications!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-98"/>
+        <location line="-135"/>
+        <source>Accept connections from outside (default: 1 if no -proxy or -connect/-noconnect)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Connect only to the specified node(s); -noconnect or -connect=0 alone to disable automatic connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>Enable SwiftX, show confirmations for locked transactions (bool, default: %s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6076,17 +5834,27 @@ Please try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+57"/>
+        <source>Query for peer addresses via DNS lookup, if low on addresses (default: 1 unless -connect/-noconnect)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>Total length of network version string (%i) exceeds maximum length (%i). Reduce the number or size of uacomments.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+44"/>
+        <source>You have attempted to send more than 50 UTXOs in a single transaction. To work around this limitation, please either lower the total amount of the transaction or send two separate transactions with 50% of your total desired amount.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>&lt;category&gt; can be:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>All inputs should have the same number of decoys</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6146,7 +5914,7 @@ Please try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>Copyright (C) 2015-%i The PIVX Core Developers</source>
         <translation type="unfinished"></translation>
     </message>

@@ -26,12 +26,18 @@ bool NodeLessThan::operator()(const CNodeCombinedStats& left, const CNodeCombine
         std::swap(pLeft, pRight);
 
     switch (column) {
+    case PeerTableModel::NetNodeId:
+        return pLeft->nodeid < pRight->nodeid;
     case PeerTableModel::Address:
         return pLeft->addrName.compare(pRight->addrName) < 0;
     case PeerTableModel::Subversion:
         return pLeft->cleanSubVer.compare(pRight->cleanSubVer) < 0;
     case PeerTableModel::Ping:
         return pLeft->dPingTime < pRight->dPingTime;
+    case PeerTableModel::Sent:
+        return pLeft->nSendBytes < pRight->nSendBytes;
+    case PeerTableModel::Received:
+        return pLeft->nRecvBytes < pRight->nRecvBytes;
     }
 
     return false;
@@ -111,7 +117,7 @@ PeerTableModel::PeerTableModel(ClientModel* parent) : QAbstractTableModel(parent
                                                       clientModel(parent),
                                                       timer(0)
 {
-    columns << tr("Address/Hostname") << tr("Version") << tr("Ping Time");
+    columns << tr("NodeId") << tr("Node/Service") << tr("Ping") << tr("Sent") << tr("Received") << tr("User Agent");
     priv = new PeerTablePriv();
     // default to unsorted
     priv->sortColumn = -1;
@@ -161,6 +167,8 @@ QVariant PeerTableModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
+        case NetNodeId:
+            return (qint64)rec->nodeStats.nodeid;
         case Address:
             // prepend to peer address down-arrow symbol for inbound connection and up-arrow for outbound connection
             return QString(rec->nodeStats.fInbound ? "↓ " : "↑ ") + QString::fromStdString(rec->nodeStats.addrName);
@@ -168,10 +176,20 @@ QVariant PeerTableModel::data(const QModelIndex& index, int role) const
             return QString::fromStdString(rec->nodeStats.cleanSubVer);
         case Ping:
             return GUIUtil::formatPingTime(rec->nodeStats.dPingTime);
+        case Sent:
+            return GUIUtil::formatBytes(rec->nodeStats.nSendBytes);
+        case Received:
+            return GUIUtil::formatBytes(rec->nodeStats.nRecvBytes);
         }
     } else if (role == Qt::TextAlignmentRole) {
-        if (index.column() == Ping)
-            return (int)(Qt::AlignRight | Qt::AlignVCenter);
+        switch (index.column()) {
+            case Ping:
+            case Sent:
+            case Received:
+                return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+            default:
+                return QVariant();
+        }
     }
 
     return QVariant();

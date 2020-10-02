@@ -763,18 +763,6 @@ void RPCConsole::on_sldGraphRange_valueChanged(int value)
     setTrafficGraphRange(mins);
 }
 
-QString RPCConsole::FormatBytes(quint64 bytes)
-{
-    if (bytes < 1024)
-        return QString(tr("%1 B")).arg(bytes);
-    if (bytes < 1024 * 1024)
-        return QString(tr("%1 KB")).arg(bytes / 1024);
-    if (bytes < 1024 * 1024 * 1024)
-        return QString(tr("%1 MB")).arg(bytes / 1024 / 1024);
-
-    return QString(tr("%1 GB")).arg(bytes / 1024 / 1024 / 1024);
-}
-
 void RPCConsole::setTrafficGraphRange(int mins)
 {
     ui->trafficGraph->setGraphRangeMins(mins);
@@ -783,8 +771,8 @@ void RPCConsole::setTrafficGraphRange(int mins)
 
 void RPCConsole::updateTrafficStats(quint64 totalBytesIn, quint64 totalBytesOut)
 {
-    ui->lblBytesIn->setText(FormatBytes(totalBytesIn));
-    ui->lblBytesOut->setText(FormatBytes(totalBytesOut));
+    ui->lblBytesIn->setText(GUIUtil::formatBytes(totalBytesIn));
+    ui->lblBytesOut->setText(GUIUtil::formatBytes(totalBytesOut));
 }
 
 void RPCConsole::showInfo()
@@ -903,8 +891,8 @@ void RPCConsole::updateNodeDetail(const CNodeCombinedStats* stats)
     ui->peerServices->setText(GUIUtil::formatServicesStr(stats->nodeStats.nServices));
     ui->peerLastSend->setText(stats->nodeStats.nLastSend ? GUIUtil::formatDurationStr(GetTime() - stats->nodeStats.nLastSend) : tr("never"));
     ui->peerLastRecv->setText(stats->nodeStats.nLastRecv ? GUIUtil::formatDurationStr(GetTime() - stats->nodeStats.nLastRecv) : tr("never"));
-    ui->peerBytesSent->setText(FormatBytes(stats->nodeStats.nSendBytes));
-    ui->peerBytesRecv->setText(FormatBytes(stats->nodeStats.nRecvBytes));
+    ui->peerBytesSent->setText(GUIUtil::formatBytes(stats->nodeStats.nSendBytes));
+    ui->peerBytesRecv->setText(GUIUtil::formatBytes(stats->nodeStats.nRecvBytes));
     ui->peerConnTime->setText(GUIUtil::formatDurationStr(GetTime() - stats->nodeStats.nTimeConnected));
     ui->peerPingTime->setText(GUIUtil::formatPingTime(stats->nodeStats.dPingTime));
     ui->peerPingWait->setText(GUIUtil::formatPingTime(stats->nodeStats.dPingWait));
@@ -990,10 +978,20 @@ void RPCConsole::showBanTableContextMenu(const QPoint& point)
 
 void RPCConsole::disconnectSelectedNode()
 {
+    if (!clientModel)
+        return;
+
+    if(cachedNodeid == -1)
+        return;
+
     // Get currently selected peer address
-    QString strNode = GUIUtil::getEntryData(ui->peerWidget, 0, PeerTableModel::Address);
+    int detailNodeRow = clientModel->getPeerTableModel()->getRowByNodeId(cachedNodeid);
+    if(detailNodeRow < 0)
+        return;
+
+    const CNodeCombinedStats *stats = clientModel->getPeerTableModel()->getNodeStats(detailNodeRow);
     // Find the node, disconnect it and clear the selected node
-    if (CNode *bannedNode = FindNode(strNode.toStdString())) {
+    if (CNode *bannedNode = FindNode(stats->nodeStats.addr.ToString())) {
         bannedNode->CloseSocketDisconnect();
         clearSelectedNode();
     }
@@ -1026,7 +1024,7 @@ void RPCConsole::unbanSelectedNode()
     if (!clientModel)
         return;
     // Get currently selected ban address
-    QString strNode = GUIUtil::getEntryData(ui->banlistWidget, 0, BanTableModel::Address);
+    QString strNode = GUIUtil::getEntryData(ui->banlistWidget, 0, BanTableModel::Address).toString();
     CSubNet possibleSubnet(strNode.toStdString());
     if (possibleSubnet.IsValid())
     {

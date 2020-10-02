@@ -52,9 +52,12 @@ public:
     void stopAutoRefresh();
 
     enum ColumnIndex {
-        Address = 0,
-        Subversion = 1,
-        Ping = 2
+        NetNodeId = 0,
+        Address = 1,
+        Ping = 2,
+        Sent = 3,
+        Received = 4,
+        Subversion = 5
     };
 
     /** @name Methods overridden from QAbstractTableModel

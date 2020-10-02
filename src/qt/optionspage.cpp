@@ -46,9 +46,6 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
-    ui->toggleTheme->setState(settings.value("theme")!="light");
-    connect(ui->toggleTheme, SIGNAL(stateChanged(ToggleButton*)), this, SLOT(changeTheme(ToggleButton*)));
-
     connect(ui->lineEditNewPass, SIGNAL(textChanged(const QString &)), this, SLOT(validateNewPass()));
     connect(ui->lineEditNewPassRepeat, SIGNAL(textChanged(const QString &)), this, SLOT(validateNewPassRepeat()));
     connect(ui->lineEditOldPass, SIGNAL(textChanged(const QString &)), this, SLOT(onOldPassChanged()));
@@ -684,14 +681,6 @@ void OptionsPage::dialogIsFinished(int result) {
         ui->toggle2FA->setState(false);
 }
 
-void OptionsPage::changeTheme(ToggleButton* widget)
-{
-    if (widget->getState())
-        settings.setValue("theme", "dark");
-    else settings.setValue("theme", "light");
-        GUIUtil::refreshStyleSheet();
-}
-
 void OptionsPage::disable2FA() {
     ui->code_1->setText("");
     ui->code_2->setText("");
@@ -869,11 +858,20 @@ void OptionsPage::onShowMnemonic() {
 
     QString mPhrase = std::string(mnemonic.begin(), mnemonic.end()).c_str();
     QMessageBox msgBox;
+    QPushButton *copyButton = msgBox.addButton(tr("Copy"), QMessageBox::ActionRole);
+    QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
+    copyButton->setStyleSheet("background:transparent;");
+    copyButton->setIcon(QIcon(":/icons/editcopy"));
     msgBox.setWindowTitle("Mnemonic Recovery Phrase");
     msgBox.setText("Below is your Mnemonic Recovery Phrase, consisting of 24 seed words. Please copy/write these words down in order. We strongly recommend keeping multiple copies in different locations.");
     msgBox.setInformativeText("\n<b>" + mPhrase + "</b>");
     msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
     msgBox.exec();
+
+    if (msgBox.clickedButton() == copyButton) {
+    //Copy Mnemonic Recovery Phrase to clipboard
+    GUIUtil::setClipboard(std::string(mnemonic.begin(), mnemonic.end()).c_str());
+    }
 }
 
 void OptionsPage::setAutoConsolidate(int state) {

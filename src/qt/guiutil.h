@@ -75,7 +75,7 @@ void copyEntryData(QAbstractItemView* view, int column, int role = Qt::EditRole)
        @param[in] role    Data role to extract from the model
        @see  TransactionView::copyLabel, TransactionView::copyAmount, TransactionView::copyAddress
      */
-QString getEntryData(QAbstractItemView *view, int column, int role);
+QVariant getEntryData(QAbstractItemView *view, int column, int role);
 
 void setClipboard(const QString& str);
 
@@ -259,6 +259,8 @@ QString formatPingTime(double dPingTime);
 
 /* Format a CNodeCombinedStats.nTimeOffset into a user-readable string. */
 QString formatTimeOffset(int64_t nTimeOffset);
+
+QString formatBytes(uint64_t bytes);
 
 #if defined(Q_OS_MAC)
     // workaround for Qt OSX Bug:

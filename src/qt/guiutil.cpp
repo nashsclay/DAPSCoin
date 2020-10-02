@@ -245,16 +245,16 @@ void copyEntryData(QAbstractItemView* view, int column, int role)
     }
 }
 
-QString getEntryData(QAbstractItemView *view, int column, int role)
+QVariant getEntryData(QAbstractItemView *view, int column, int role)
 {
     if(!view || !view->selectionModel())
-        return QString();
+        return QVariant();
     QModelIndexList selection = view->selectionModel()->selectedRows(column);
     if(!selection.isEmpty()) {
         // Return first item
-        return (selection.at(0).data(role).toString());
+        return (selection.at(0).data(role));
     }
-    return QString();
+    return QVariant();
 }
 
 QString getSaveFileName(QWidget* parent, const QString& caption, const QString& dir, const QString& filter, QString* selectedSuffixOut)
@@ -967,5 +967,16 @@ QString formatTimeOffset(int64_t nTimeOffset)
     return QString(QObject::tr("%1 s")).arg(QString::number((int)nTimeOffset, 10));
 }
 
+QString formatBytes(uint64_t bytes)
+{
+    if(bytes < 1024)
+        return QString(QObject::tr("%1 B")).arg(bytes);
+    if(bytes < 1024 * 1024)
+        return QString(QObject::tr("%1 KB")).arg(bytes / 1024);
+    if(bytes < 1024 * 1024 * 1024)
+        return QString(QObject::tr("%1 MB")).arg(bytes / 1024 / 1024);
+
+    return QString(QObject::tr("%1 GB")).arg(bytes / 1024 / 1024 / 1024);
+}
 
 } // namespace GUIUtil
