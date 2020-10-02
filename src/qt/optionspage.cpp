@@ -859,6 +859,7 @@ void OptionsPage::onShowMnemonic() {
     QString mPhrase = std::string(mnemonic.begin(), mnemonic.end()).c_str();
     QMessageBox msgBox;
     QPushButton *copyButton = msgBox.addButton(tr("Copy"), QMessageBox::ActionRole);
+    QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
     copyButton->setStyleSheet("background:transparent;");
     copyButton->setIcon(QIcon(":/icons/editcopy"));
     msgBox.setWindowTitle("Mnemonic Recovery Phrase");
