@@ -554,6 +554,12 @@ std::string JSONRPCExecBatch(const UniValue &vReq) {
 }
 
 UniValue CRPCTable::execute(const std::string &strMethod, const UniValue &params) const {
+    // Return immediately if in warmup
+    std::string strWarmupStatus;
+    if (RPCIsInWarmup(&strWarmupStatus)) {
+        throw JSONRPCError(RPC_IN_WARMUP, "RPC in warm-up: " + strWarmupStatus);
+    }
+
     // Find method
     const CRPCCommand *pcmd = tableRPC[strMethod];
     if (!pcmd)
