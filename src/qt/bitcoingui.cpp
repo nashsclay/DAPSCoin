@@ -902,7 +902,7 @@ void BitcoinGUI::openBlockExplorerAPIClicked()
 
 void BitcoinGUI::openBootStrapClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://github.com/DAPSCoin/BootStrap/releases/tag/latest"));
+    QDesktopServices::openUrl(QUrl("https://bootstrap.dapscoin.com"));
 }
 
 void BitcoinGUI::openTGTechSupportClicked()
