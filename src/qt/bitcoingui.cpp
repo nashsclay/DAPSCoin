@@ -463,6 +463,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     // Help Links
     openFAQAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Frequently Asked Questions"), this);
     openFAQAction->setStatusTip(tr("Frequently Asked Questions"));
+    openGitWikiAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&GitHub Wiki"), this);
+    openGitWikiAction->setStatusTip(tr("GitHub Wiki"));
     openBlockExplorerAPIAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Blockhain Explorer API"), this);
     openBlockExplorerAPIAction->setStatusTip(tr("Blockhain Explorer API"));
     openBootStrapAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&BootStrap"), this);
@@ -483,6 +485,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(toggleHideAction, SIGNAL(triggered()), this, SLOT(toggleHidden()));
     connect(showHelpMessageAction, SIGNAL(triggered()), this, SLOT(showHelpMessageClicked()));
     connect(openFAQAction, SIGNAL(triggered()), this, SLOT(openFAQClicked()));
+    connect(openGitWikiAction, SIGNAL(triggered()), this, SLOT(openGitWikiClicked()));
     connect(openBlockExplorerAPIAction, SIGNAL(triggered()), this, SLOT(openBlockExplorerAPIClicked()));
     connect(openBootStrapAction, SIGNAL(triggered()), this, SLOT(openBootStrapClicked()));
     connect(openTGTechSupportAction, SIGNAL(triggered()), this, SLOT(openTGTechSupportClicked()));
@@ -580,6 +583,7 @@ void BitcoinGUI::createMenuBar()
     help->addAction(showHelpMessageAction);
     help->addSeparator();
     help->addAction(openFAQAction);
+    help->addAction(openGitWikiAction);
     help->addSeparator();
     help->addAction(openBlockExplorerAPIAction);
     help->addAction(openBootStrapAction);
@@ -893,6 +897,11 @@ void BitcoinGUI::showHelpMessageClicked()
 void BitcoinGUI::openFAQClicked()
 {
     QDesktopServices::openUrl(QUrl("https://officialdapscoin.com/faq"));
+}
+
+void BitcoinGUI::openGitWikiClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/DAPSCoin/DAPSCoin/wiki"));
 }
 
 void BitcoinGUI::openBlockExplorerAPIClicked()
