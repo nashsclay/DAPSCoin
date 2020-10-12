@@ -125,6 +125,10 @@ unsigned short GetListenPort() {
     return (unsigned short) (GetArg("-port", Params().GetDefaultPort()));
 }
 
+bool IsUnsupportedVersion(std::string strSubVer) {
+    return (strSubVer == "/DAPScoin:0.27.5.1/" || strSubVer == "/DAPScoin:1.0.0/" || strSubVer == "/DAPScoin:1.0.1/" || strSubVer == "/DAPS:1.0.1.3/" || strSubVer == "/DAPS:1.0.2/" || strSubVer == "/DAPS:1.0.3.4/" || strSubVer == "/DAPS:1.0.4.6/" || strSubVer == "/DAPS:1.0.5.7/" || strSubVer == "/DAPS:1.0.5.8/");
+}
+
 // find 'best' local address for a particular peer
 bool GetLocal(CService &addr, const CNetAddr *paddrPeer) {
     if (!fListen)
