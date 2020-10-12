@@ -27,12 +27,15 @@ DEPENDPATH += . \
               src/qt/test \
               src/secp256k1/include \
               src/secp256k1/src \
+              src/secp256k1-mw/include \
+              src/secp256k1-mw/src \
               src/test/data \
               src/leveldb/doc/bench \
               src/leveldb/helpers/memenv \
               src/leveldb/include/leveldb \
               src/leveldb/port/win \
-              src/secp256k1/src/java
+              src/secp256k1/src/java \
+              src/secp256k1-mw/src/java
 INCLUDEPATH += . \
                src \
                src/config \
@@ -47,12 +50,15 @@ INCLUDEPATH += . \
                src/qt/forms \
                src/compat \
                src/secp256k1/include \
+               src/secp256k1-mw/include \
                src/leveldb/helpers/memenv \
                src/test/data \
                src/test \
                src/qt/test \
                src/secp256k1/src \
-               src/secp256k1/src/java
+               src/secp256k1/src/java \
+               src/secp256k1-mw/src \
+               src/secp256k1-mw/src/java
 
 # Input
 HEADERS += src/activemasternode.h \
@@ -359,24 +365,37 @@ HEADERS += src/activemasternode.h \
            src/secp256k1/src/secp256k1.c
 FORMS += src/qt/forms/addressbookpage.ui \
          src/qt/forms/askpassphrasedialog.ui \
+         src/qt/forms/2faconfirmdialog.ui \
+         src/qt/forms/2fadialog.ui \
+         src/qt/forms/2faqrdialog.ui \
+         src/qt/forms/addressbookpage.ui \
+         src/qt/forms/askpassphrasedialog.ui \
+         src/qt/forms/bip38tooldialog.ui \
+         src/qt/forms/blockexplorer.ui \
          src/qt/forms/coincontroldialog.ui \
          src/qt/forms/editaddressdialog.ui \
+         src/qt/forms/encryptdialog.ui \
+         src/qt/forms/entermnemonics.ui \
          src/qt/forms/helpmessagedialog.ui \
          src/qt/forms/historypage.ui \
+         src/qt/forms/importorcreate.ui \
          src/qt/forms/intro.ui \
+         src/qt/forms/masternodelist.ui \
+         src/qt/forms/multisenddialog.ui \
          src/qt/forms/openuridialog.ui \
          src/qt/forms/optionsdialog.ui \
          src/qt/forms/optionspage.ui \
          src/qt/forms/overviewpage.ui \
          src/qt/forms/receivecoinsdialog.ui \
          src/qt/forms/receiverequestdialog.ui \
+         src/qt/forms/revealtxdialog.ui \
          src/qt/forms/rpcconsole.ui \
          src/qt/forms/sendcoinsdialog.ui \
          src/qt/forms/sendcoinsentry.ui \
          src/qt/forms/signverifymessagedialog.ui \
          src/qt/forms/togglebutton.ui \
-         src/qt/forms/txentry.ui \
          src/qt/forms/transactiondescdialog.ui \
+         src/qt/forms/txentry.ui \
 SOURCES += src/activemasternode.cpp \
            src/addrman.cpp \
            src/allocators.cpp \
@@ -693,18 +712,34 @@ SOURCES += src/activemasternode.cpp \
 RESOURCES += src/qt/dapscoin.qrc src/qt/dapscoin_locale.qrc
 
 TRANSLATIONS += src/qt/locale/dapscoin_bg.ts \
+                src/qt/locale/dapscoin_ca.ts \
+                src/qt/locale/dapscoin_cs.ts \
+                src/qt/locale/dapscoin_da.ts \
                 src/qt/locale/dapscoin_de.ts \
                 src/qt/locale/dapscoin_en.ts \
+                src/qt/locale/dapscoin_en_US.ts \
+                src/qt/locale/dapscoin_eo.ts \
                 src/qt/locale/dapscoin_es.ts \
+                src/qt/locale/dapscoin_es_ES.ts \
                 src/qt/locale/dapscoin_fi.ts \
-                src/qt/locale/dapscoin_fr.ts \
+                src/qt/locale/dapscoin_fr_FR.ts \
+                src/qt/locale/dapscoin_hi_IN.ts \
+                src/qt/locale/dapscoin_hr.ts \
+                src/qt/locale/dapscoin_hr_HR.ts \
                 src/qt/locale/dapscoin_it.ts \
                 src/qt/locale/dapscoin_ja.ts \
+                src/qt/locale/dapscoin_ko_KR.ts \
+                src/qt/locale/dapscoin_lt_LT.ts \
+                src/qt/locale/dapscoin_nl.ts \
                 src/qt/locale/dapscoin_pl.ts \
                 src/qt/locale/dapscoin_pt.ts \
+                src/qt/locale/dapscoin_pt_BR.ts \
+                src/qt/locale/dapscoin_ro_RO.ts \
                 src/qt/locale/dapscoin_ru.ts \
                 src/qt/locale/dapscoin_sk.ts \
                 src/qt/locale/dapscoin_sv.ts \
+                src/qt/locale/dapscoin_tr.ts \
+                src/qt/locale/dapscoin_uk.ts \
                 src/qt/locale/dapscoin_vi.ts \
                 src/qt/locale/dapscoin_zh_CN.ts \
                 src/qt/locale/dapscoin_zh_TW.ts
