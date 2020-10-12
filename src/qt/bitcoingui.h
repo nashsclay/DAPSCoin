@@ -132,6 +132,7 @@ private:
     QAction* redditAction;
     QAction* showHelpMessageAction;
     QAction* openFAQAction;
+    QAction* openGitWikiAction;
     QAction* openBlockExplorerAPIAction;
     QAction* openBootStrapAction;
     QAction* openTGTechSupportAction;
