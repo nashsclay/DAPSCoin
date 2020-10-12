@@ -2519,36 +2519,9 @@ UniValue showstealthaddress(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_PRIVACY_WALLET_EXISTED,
                            "Error: There is no privacy wallet, please use createprivacyaccount to create one.");
     }
-
-    CWalletDB walletdb(pwalletMain->strWalletFile);
-    UniValue ret(UniValue::VOBJ);
-    int i = 0;
-    while (i < 10) {
-        std::string viewAccountLabel = "viewaccount";
-        std::string spendAccountLabel = "spendaccount";
-
-        CAccount viewAccount;
-        walletdb.ReadAccount(viewAccountLabel, viewAccount);
-        if (!viewAccount.vchPubKey.IsValid()) {
-            std::string viewAccountAddress = GetHDAccountAddress(viewAccountLabel, 0).ToString();
-        }
-
-        CAccount spendAccount;
-        walletdb.ReadAccount(spendAccountLabel, spendAccount);
-        if (!spendAccount.vchPubKey.IsValid()) {
-            std::string spendAccountAddress = GetHDAccountAddress(spendAccountLabel, 1).ToString();
-        }
-        if (viewAccount.vchPubKey.GetHex() == "" || spendAccount.vchPubKey.GetHex() == "") {
-            i++;
-            continue;
-        }
-        std::string stealthAddr;
-        if (pwalletMain->EncodeStealthPublicAddress(viewAccount.vchPubKey, spendAccount.vchPubKey, stealthAddr)) {
-            ret.push_back(Pair("stealthaddress", stealthAddr));
-        }
-        break;
-    }
-    return ret;
+    std::string address;
+    pwalletMain->ComputeStealthPublicAddress("masteraccount", address);
+    return address;
 }
 
 UniValue generateintegratedaddress(const UniValue& params, bool fHelp)
