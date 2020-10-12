@@ -262,6 +262,7 @@ private Q_SLOTS:
     /** Show help message dialog */
     void showHelpMessageClicked();
     void openFAQClicked();
+    void openGitWikiClicked();
     void openBlockExplorerAPIClicked();
     void openBootStrapClicked();
     void openTGTechSupportClicked();
