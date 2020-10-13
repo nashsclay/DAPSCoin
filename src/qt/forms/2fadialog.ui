@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Transaction Details</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0">
    <property name="topMargin">
     <number>30</number>
    </property>
@@ -78,7 +78,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Please enter a six digit 2FA code:</string>
+        <string>Please enter an eight digit 2FA code:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -237,6 +237,62 @@
      </item>
      <item>
       <widget class="QLineEdit" name="txtcode_6">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
+      </widget>
+    </item>
+    <item>
+      <widget class="QLineEdit" name="txtcode_7">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
+      </widget>
+    </item>
+    <item>
+      <widget class="QLineEdit" name="txtcode_8">
        <property name="enabled">
         <bool>true</bool>
        </property>
