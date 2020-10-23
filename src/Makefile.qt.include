@@ -377,10 +377,7 @@ RES_IMAGES = \
   qt/res/images/rightArrow_small.png \
   qt/res/images/qtreeview_selected.png \
   qt/res/images/syncb.png \
-  qt/res/images/syncp.png \
-  qt/res/images/walletFrame.png \
-  qt/res/images/walletFrame_bg.png \
-  qt/res/images/walletFrame_bg.png
+  qt/res/images/syncp.png
 
 RES_CSS = \
   qt/res/css/Dark.css
