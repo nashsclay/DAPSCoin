@@ -1046,6 +1046,8 @@ bool AppInit2(bool isDaemon)
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
+    RandomInit();
+
     // Sanity check
     if (!InitSanityCheck())
         return InitError(_("Initialization sanity check failed. DAPS is shutting down."));
