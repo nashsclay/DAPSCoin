@@ -2035,7 +2035,7 @@ static CAmount ApproximateBestSubset(int numOut, int ringSize, vector<pair<CAmou
     nBest = nTotalLower;
     int estimateTxSize = 0;
     CAmount nFeeNeeded = 0;
-    seed_insecure_rand();
+    FastRandomContext insecure_rand;
 
     for (int nRep = 0; nRep < iterations && nBest != nTargetValue + nFeeNeeded; nRep++) {
         vfIncluded.assign(vValue.size(), false);
@@ -2050,7 +2050,7 @@ static CAmount ApproximateBestSubset(int numOut, int ringSize, vector<pair<CAmou
                 //that the rng is fast. We do not use a constant random sequence,
                 //because there may be some privacy improvement by making
                 //the selection random.
-                if (nPass == 0 ? insecure_rand() & 1 : !vfIncluded[i]) {
+                if (nPass == 0 ? insecure_rand.rand32() & 1 : !vfIncluded[i]) {
                     nTotal += vValue[i].first;
                     vfIncluded[i] = true;
                     numSelected++;

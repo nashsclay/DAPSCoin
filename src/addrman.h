@@ -200,6 +200,9 @@ private:
     int vvNew[ADDRMAN_NEW_BUCKET_COUNT][ADDRMAN_BUCKET_SIZE];
 
 protected:
+    //! Source of random numbers for randomization in inner loops
+    FastRandomContext insecure_rand;
+
     //! Find an entry.
     CAddrInfo* Find(const CNetAddr& addr, int* pnId = NULL);
 

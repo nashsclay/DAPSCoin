@@ -7,6 +7,7 @@
 #include "streams.h"
 #include "uint256.h"
 #include "version.h"
+#include "test_random.h"
 
 #include <vector>
 
