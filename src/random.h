@@ -49,4 +49,16 @@ static inline uint32_t insecure_rand(void)
     return (insecure_rand_Rw << 16) + insecure_rand_Rz;
 }
 
+/* Number of random bytes returned by GetOSRand.
+ * When changing this constant make sure to change all call sites, and make
+ * sure that the underlying OS APIs for all platforms support the number.
+ * (many cap out at 256 bytes).
+ */
+static const ssize_t NUM_OS_RANDOM_BYTES = 32;
+
+/** Get 32 bytes of system entropy. Do not use this in application code: use
+ * GetStrongRandBytes instead.
+ */
+void GetOSRand(unsigned char *ent32);
+
 #endif // BITCOIN_RANDOM_H
