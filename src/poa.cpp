@@ -215,6 +215,10 @@ bool CheckPoAContainRecentHash(const CBlock& block)
         }
     } else {
         if (pindex->nHeight >= Params().START_POA_BLOCK()) {
+            // Bypass bad block
+            if (pindex->nHeight == 719390) {
+                return true;
+            }
             CBlock prevPoablock;
             CBlockIndex* pblockindex = pindex;
             if (!ReadBlockFromDisk(prevPoablock, pblockindex))
@@ -372,8 +376,12 @@ bool CheckPoAMerkleRoot(const CBlock& block, bool* fMutate)
 }
 
 //A PoA block cannot contain information of any PoA block information (hash, height, timestamp)
-bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block)
+bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block, const CBlockIndex* pindex)
 {
+    // Bypass bad block
+    if (pindex->nHeight == 719456) {
+        return true;
+    }
     uint32_t numOfPoSBlocks = block.posBlocksAudited.size();
     for (uint32_t i = 0; i < numOfPoSBlocks; i++) {
         PoSBlockSummary pos = block.posBlocksAudited.at(i);
