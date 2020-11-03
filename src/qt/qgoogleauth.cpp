@@ -2,6 +2,7 @@
 #include <QtEndian>
 #include <QDateTime>
 #include <QCryptographicHash>
+#include <QSettings>
 
 QGoogleAuth::QGoogleAuth()
 {
@@ -98,7 +99,14 @@ QString QGoogleAuth::generatePin(const QByteArray key)
             | ((hmac[offset + 1] & 0xff) << 16)
             | ((hmac[offset + 2] & 0xff) << 8)
             | (hmac[offset + 3] & 0xff);
-
-    int password = binary % 100000000;
-    return QString("%1").arg(password, 8, 10, QChar('0'));
+    QSettings settings;
+    int digits = settings.value("2fadigits").toInt();
+    int password;
+    if (digits == 8) {
+        password = binary % 100000000;
+        return QString("%1").arg(password, 8, 10, QChar('0'));
+    } else if (digits == 6) {
+        password = binary % 1000000;
+        return QString("%1").arg(password, 6, 10, QChar('0'));
+    }
 }

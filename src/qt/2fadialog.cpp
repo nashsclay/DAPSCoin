@@ -11,6 +11,9 @@ TwoFADialog::TwoFADialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->txtcode_7->setVisible(false);
+    ui->txtcode_8->setVisible(false);
+
     QIntValidator *intVal_1 = new QIntValidator(0, 9, ui->txtcode_1);
     intVal_1->setLocale(QLocale::C);
     ui->txtcode_1->setValidator(intVal_1);
@@ -40,16 +43,23 @@ TwoFADialog::TwoFADialog(QWidget *parent) :
     intVal_6->setLocale(QLocale::C);
     ui->txtcode_6->setValidator(intVal_6);
     ui->txtcode_6->setAlignment(Qt::AlignCenter);
-	
-	QIntValidator *intVal_7 = new QIntValidator(0, 9, ui->txtcode_7);
-    intVal_7->setLocale(QLocale::C);
-    ui->txtcode_7->setValidator(intVal_7);
-    ui->txtcode_7->setAlignment(Qt::AlignCenter);
-	
-	QIntValidator *intVal_8 = new QIntValidator(0, 9, ui->txtcode_8);
-    intVal_8->setLocale(QLocale::C);
-    ui->txtcode_8->setValidator(intVal_8);
-    ui->txtcode_8->setAlignment(Qt::AlignCenter);
+
+    QSettings settings;
+    int digits = settings.value("2fadigits").toInt();
+    if (digits == 8) {
+        ui->label_3->setText("Please enter an eight digit 2FA code:");
+        ui->txtcode_7->setVisible(true);
+        ui->txtcode_8->setVisible(true);
+        QIntValidator *intVal_7 = new QIntValidator(0, 9, ui->txtcode_7);
+        intVal_7->setLocale(QLocale::C);
+        ui->txtcode_7->setValidator(intVal_7);
+        ui->txtcode_7->setAlignment(Qt::AlignCenter);
+
+        QIntValidator *intVal_8 = new QIntValidator(0, 9, ui->txtcode_8);
+        intVal_8->setLocale(QLocale::C);
+        ui->txtcode_8->setValidator(intVal_8);
+        ui->txtcode_8->setAlignment(Qt::AlignCenter);
+    }
 
     connect(ui->btnOK, SIGNAL(clicked()), this, SLOT(on_acceptCode()));
     connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -146,7 +156,13 @@ void TwoFADialog::on_acceptCode()
     chrlist = input.toUtf8().data();
     code8 = chrlist[0];
 
-    code.sprintf("%c%c%c%c%c%c%c%c", code1, code2, code3, code4, code5, code6, code7, code8);
+    QSettings settings;
+    int digits = settings.value("2fadigits").toInt();
+    if (digits == 8) {
+        code.sprintf("%c%c%c%c%c%c%c%c", code1, code2, code3, code4, code5, code6, code7, code8);
+    } else if (digits == 6) {
+        code.sprintf("%c%c%c%c%c%c", code1, code2, code3, code4, code5, code6);
+    }
 
     QString result = "";
     QString secret = QString::fromStdString(pwalletMain->Read2FASecret());

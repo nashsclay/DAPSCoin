@@ -138,6 +138,10 @@ void OptionsModel::Init()
         addOverriddenOption("-lang");
 
     language = settings.value("language").toString();
+
+    // 2FA Digits Setting
+    if (!settings.contains("2fadigits"))
+        settings.setValue("2fadigits", "6");
 }
 
 void OptionsModel::Reset()

@@ -117,7 +117,14 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
 
     ui->toggle2FA->setState(twoFAStatus);
     connect(ui->toggle2FA, SIGNAL(stateChanged(ToggleButton*)), this, SLOT(on_Enable2FA(ToggleButton*)));
-
+    QSettings settings;
+    int digits = settings.value("2fadigits").toInt();
+    if (digits == 8) {
+        ui->comboBox->setCurrentIndex(1);
+    } else if (digits == 6) {
+        ui->comboBox->setCurrentIndex(0);
+    }
+    connect(ui->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeDigits(int)));
     connect(ui->btn_day, SIGNAL(clicked()), this, SLOT(on_day()));
     connect(ui->btn_week, SIGNAL(clicked()), this, SLOT(on_week()));
     connect(ui->btn_month, SIGNAL(clicked()), this, SLOT(on_month()));
@@ -939,4 +946,44 @@ void OptionsPage::minimizeOnClose_clicked(int state)
     } else {
         settings.setValue("fMinimizeOnClose", false);
     }
+}
+
+void OptionsPage::changeDigits(int digit)
+{
+    int status = model->getEncryptionStatus();
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("2FA Digit Settings");
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setText("Please unlock the keychain wallet with your passphrase before attempting to change this setting.");
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.exec();
+        return;
+    }
+    bool twofastatus = pwalletMain->Read2FA();
+    if (twofastatus) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Are You Sure?", "2FA is currently activated. Are you sure you would like to change the number of digits anyway?\nThis is not recommended unless you know what you are doing.", QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            digit = ui->comboBox->currentText().toInt();
+            settings.setValue("2fadigits", digit);
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("2FA Digit Settings");
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText("2FA Digit Settings have been changed successfully.");
+            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+            msgBox.exec();
+            return;
+        } else {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("2FA Digit Settings");
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText("2FA Digit Settings have not been changed.");
+            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+            msgBox.exec();
+            return;
+        }
+    }
+    digit = ui->comboBox->currentText().toInt();
+    settings.setValue("2fadigits", digit);
 }
