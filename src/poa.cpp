@@ -236,10 +236,10 @@ bool CheckPoAContainRecentHash(const CBlock& block)
             }
             CBlockIndex* pCurrentFirstPoSAuditedIndex = mapBlockIndex[currentFirstPoSAuditedHash];
             CBlockIndex* pCurrentLastPoSAuditedIndex = mapBlockIndex[currentLastPoSAuditedHash];
-
+            uint256 fixedPoSAuditedHash = pCurrentFirstPoSAuditedIndex->GetAncestor(lastAuditedPoSBlockInfo.height)->GetBlockHash();
             //check lastAuditedPoSHash and currentFirstPoSAuditedHash must be on the same fork
             //that lastAuditedPoSHash must be parent block of currentFirstPoSAuditedHash
-            if (pCurrentFirstPoSAuditedIndex->GetAncestor(lastAuditedPoSBlockInfo.height)->GetBlockHash() != lastAuditedPoSHash) {
+            if (pCurrentFirstPoSAuditedIndex->GetAncestor(lastAuditedPoSBlockInfo.height)->GetBlockHash() != lastAuditedPoSHash && !IsFixedAudit(fixedPoSAuditedHash.GetHex())) {
                 return error("CheckPoAContainRecentHash(): PoA block is not on the same fork with the previous poa block");
             }
 
@@ -248,7 +248,7 @@ bool CheckPoAContainRecentHash(const CBlock& block)
             while(pIndexLoop && !pIndexLoop->IsProofOfStake()) {
                 pIndexLoop = pIndexLoop->pprev;
             }
-            if (!pIndexLoop || pIndexLoop->GetBlockHash() != lastAuditedPoSHash) {
+            if (!pIndexLoop || pIndexLoop->GetBlockHash() != lastAuditedPoSHash && !IsFixedAudit(fixedPoSAuditedHash.GetHex())) {
                 return error("CheckPoAContainRecentHash(): Some PoS block between %s and %s is not audited\n", lastAuditedPoSHash.GetHex(), currentFirstPoSAuditedHash.GetHex());
             }
 
@@ -469,4 +469,13 @@ bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
         ret = ret && VerifyZeroBlindCommitment(block.vtx[0].vout[0]);
     }
     return ret;
+}
+
+bool IsFixedAudit(std::string txid) {
+    std::time_t fixedTime = std::time(0);
+    if (fixedTime >= Params().PoAFixTime()) {
+        //Currently only one
+        return (txid == "ff67a6645a36a82a3885c989951680917c9e2de90f59665c8130701ccdcbb9f9");
+    }
+    return (txid == "");
 }

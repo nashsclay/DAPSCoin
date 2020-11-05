@@ -105,6 +105,7 @@ public:
     int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
     int SoftFork() const { return nSoftForkBlock;}
     int HardFork() const { return nHardForkBlock;}
+    int PoAFixTime() const { return nPoAFixTime;}
 
     //For PoA block time
     int POA_BLOCK_TIME() const { return nPoABlockTime; }
@@ -134,6 +135,7 @@ protected:
     int nStartPOABlock;
     int nSoftForkBlock;
     int nHardForkBlock;
+    int nPoAFixTime;
     int nMasternodeCountDrift;
     int nMaturity;
     int nModifierUpdateBlock;
