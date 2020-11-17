@@ -126,6 +126,10 @@ unsigned short GetListenPort() {
 }
 
 bool IsUnsupportedVersion(std::string strSubVer) {
+    std::time_t banningTime = std::time(0);  // t is an integer type
+    if (banningTime >= Params().PoAFixTime()) {
+        return (strSubVer == "/DAPScoin:0.27.5.1/" || strSubVer == "/DAPScoin:1.0.0/" || strSubVer == "/DAPScoin:1.0.1/" || strSubVer == "/DAPS:1.0.1.3/" || strSubVer == "/DAPS:1.0.2/" || strSubVer == "/DAPS:1.0.3.4/" || strSubVer == "/DAPS:1.0.4.6/" || strSubVer == "/DAPS:1.0.5.7/" || strSubVer == "/DAPS:1.0.5.8/" || strSubVer == "/DAPS:1.0.6.5/" || strSubVer == "/DAPS:1.0.6.6/" || strSubVer == "/DAPS:1.0.7.1/" || strSubVer == "/DAPS:1.0.8/" || strSubVer == "/DAPS:1.0.8.1/" || strSubVer == "/DAPS:1.0.8.2/");
+    }
     return (strSubVer == "/DAPScoin:0.27.5.1/" || strSubVer == "/DAPScoin:1.0.0/" || strSubVer == "/DAPScoin:1.0.1/" || strSubVer == "/DAPS:1.0.1.3/" || strSubVer == "/DAPS:1.0.2/" || strSubVer == "/DAPS:1.0.3.4/" || strSubVer == "/DAPS:1.0.4.6/" || strSubVer == "/DAPS:1.0.5.7/" || strSubVer == "/DAPS:1.0.5.8/" || strSubVer == "/DAPS:1.0.6.5/" || strSubVer == "/DAPS:1.0.6.6/" || strSubVer == "/DAPS:1.0.7.1/");
 }
 
