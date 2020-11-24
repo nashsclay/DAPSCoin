@@ -30,6 +30,12 @@
 
   <key>CFBundleExecutable</key>
   <string>DAPScoin-Qt</string>
+  
+  <key>CFBundleName</key>
+  <string>DAPScoin-Qt</string>
+
+  <key>LSHasLocalizedDisplayName</key>
+  <true/>
 
   <key>CFBundleIdentifier</key>
   <string>io.dapscoin.Dapscoin-Qt</string>
