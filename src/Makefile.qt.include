@@ -4,7 +4,6 @@
 
 bin_PROGRAMS += qt/dapscoin-qt
 EXTRA_LIBRARIES += qt/libbitcoinqt.a
-EXTRA_LIBRARIES += qt/lib/libqgoogleauth.a
 
 # dapscoin qt core #
 QT_TS = \
