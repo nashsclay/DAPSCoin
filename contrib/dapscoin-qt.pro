@@ -65,7 +65,6 @@ HEADERS += src/activemasternode.h \
            src/addrman.h \
            src/allocators.h \
            src/amount.h \
-           src/arith_uint256.h \
            src/base58.h \
            src/bignum.h \
            src/bip38.h \
@@ -111,7 +110,6 @@ HEADERS += src/activemasternode.h \
            src/masternodeman.h \
            src/merkleblock.h \
            src/miner.h \
-           src/mintpool.h \
            src/mruset.h \
            src/net.h \
            src/netbase.h \
@@ -126,7 +124,6 @@ HEADERS += src/activemasternode.h \
            src/reverse_iterate.h \
            src/scheduler.h \
            src/serialize.h \
-           src/stakeinput.h \
            src/streams.h \
            src/swifttx.h \
            src/sync.h \
@@ -137,7 +134,6 @@ HEADERS += src/activemasternode.h \
            src/txdb.h \
            src/txmempool.h \
            src/uint256.h \
-           src/uint512.h \
            src/undo.h \
            src/util.h \
            src/utilmoneystr.h \
@@ -400,7 +396,6 @@ SOURCES += src/activemasternode.cpp \
            src/addrman.cpp \
            src/allocators.cpp \
            src/amount.cpp \
-           src/arith_uint256.cpp \
            src/base58.cpp \
            src/bip38.cpp \
            src/bip39.cpp \
@@ -441,7 +436,6 @@ SOURCES += src/activemasternode.cpp \
            src/masternodeman.cpp \
            src/merkleblock.cpp \
            src/miner.cpp \
-           src/mintpool.cpp \
            src/net.cpp \
            src/netbase.cpp \
            src/noui.cpp \
@@ -453,7 +447,6 @@ SOURCES += src/activemasternode.cpp \
            src/random.cpp \
            src/rest.cpp \
            src/scheduler.cpp \
-           src/stakeinput.cpp \
            src/swifttx.cpp \
            src/sync.cpp \
            src/timedata.cpp \
