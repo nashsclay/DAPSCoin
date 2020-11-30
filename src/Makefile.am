@@ -85,9 +85,12 @@ BITCOIN_CORE_H = \
   allocators.h \
   amount.h \
   base58.h \
+  bignum.h \
   bip38.h \
   bip39.h \
   bip39_english.h \
+  ecdhutil.h \
+  enum.h \
   hdchain.h \
   bloom.h \
   chain.h \
@@ -115,6 +118,7 @@ BITCOIN_CORE_H = \
   httprpc.h \
   httpserver.h \
   init.h \
+  invalid.h \
   kernel.h \
   swifttx.h \
   key.h \
@@ -239,7 +243,20 @@ libbitcoin_zxcvbn_a_SOURCES = \
   zxcvbn/scoring.cpp \
   zxcvbn/time_estimates.cpp \
   zxcvbn/util.cpp \
-  zxcvbn/zxcvbn.cpp
+  zxcvbn/zxcvbn.cpp \
+  zxcvbn/adjacency_graphs.hpp \
+  zxcvbn/common.hpp \
+  zxcvbn/feedback.hpp \
+  zxcvbn/frequency_lists_common.hpp \
+  zxcvbn/_frequency_lists.hpp \
+  zxcvbn/frequency_lists.hpp \
+  zxcvbn/matching.hpp \
+  zxcvbn/optional.hpp \
+  zxcvbn/scoring.hpp \
+  zxcvbn/time_estimates.hpp \
+  zxcvbn/util.hpp \
+  zxcvbn/zxcvbn.hpp \
+  zxcvbn/zxcvbn.h
 
 
 # wallet: shared between dapscoind and dapscoin-qt, but only linked
