@@ -204,7 +204,7 @@ public:
         nMaxNumPoSBlocks = 120;
         nSoftForkBlock = 125000; // Soft fork block for difficulty change
         nHardForkBlock = 670000; // Hard fork block for PoA updates
-        nPoAFixTime = 1606780800; // Hard fork time for PoA fix - Tuesday, December 1, 2020 12:00:00 AM (GMT)
+        nPoAFixTime = 1607731200; // Hard fork time for PoA fix - Saturday, December 12, 2020 12:00:00 AM (GMT)
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
