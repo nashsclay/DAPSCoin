@@ -248,7 +248,7 @@ bool CheckPoAContainRecentHash(const CBlock& block)
             while(pIndexLoop && !pIndexLoop->IsProofOfStake()) {
                 pIndexLoop = pIndexLoop->pprev;
             }
-            if (!pIndexLoop || pIndexLoop->GetBlockHash() != lastAuditedPoSHash && !IsFixedAudit(fixedPoSAuditedHash.GetHex())) {
+            if (!pIndexLoop || (pIndexLoop->GetBlockHash() != lastAuditedPoSHash && !IsFixedAudit(fixedPoSAuditedHash.GetHex()))) {
                 return error("CheckPoAContainRecentHash(): Some PoS block between %s and %s is not audited\n", lastAuditedPoSHash.GetHex(), currentFirstPoSAuditedHash.GetHex());
             }
 
