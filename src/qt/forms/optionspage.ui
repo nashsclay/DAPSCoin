@@ -34,7 +34,7 @@
         <x>0</x>
         <y>0</y>
         <width>806</width>
-        <height>565</height>
+        <height>588</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -206,6 +206,13 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="alwaysRequest2FA">
+              <property name="text">
+               <string>Request authentication code before sending any transactions</string>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_3">
