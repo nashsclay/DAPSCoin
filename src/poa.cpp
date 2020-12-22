@@ -472,10 +472,5 @@ bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 }
 
 bool IsFixedAudit(std::string txid) {
-    std::time_t fixedTime = std::time(0);
-    if (fixedTime >= Params().PoAFixTime()) {
-        //Currently only one
-        return (txid == "ff67a6645a36a82a3885c989951680917c9e2de90f59665c8130701ccdcbb9f9");
-    }
-    return (txid == "");
+    return (txid == "ff67a6645a36a82a3885c989951680917c9e2de90f59665c8130701ccdcbb9f9");
 }
