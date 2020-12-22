@@ -99,6 +99,7 @@ private Q_SLOTS:
     void mapPortUpnp_clicked(int);
     void minimizeToTray_clicked(int);
     void minimizeOnClose_clicked(int);
+    void changeDigits(int);
 };
 
 #endif // BITCOIN_QT_OPTIONSPAGE_H

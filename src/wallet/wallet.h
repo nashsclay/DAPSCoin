@@ -276,6 +276,7 @@ public:
     bool WriteAutoConsolidateSettingTime(uint32_t settingTime);
     uint32_t ReadAutoConsolidateSettingTime();
     bool IsAutoConsolidateOn();
+    string GetUniqueWalletBackupName() const;
     /*
      * Main wallet lock.
      * This lock protects all the fields added by CWallet
@@ -592,6 +593,9 @@ public:
 
     /** Watch-only address added */
     boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+
+    /** notify wallet file backed up */
+    boost::signals2::signal<void (const bool& fSuccess, const std::string& filename)> NotifyWalletBacked;
 
     bool ComputeStealthPublicAddress(const std::string& accountName, std::string& pubAddress);
     bool ComputeIntegratedPublicAddress(const uint64_t paymentID, const std::string& accountName, std::string& pubAddress);

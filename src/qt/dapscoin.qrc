@@ -92,8 +92,6 @@
         <file alias="qtreeview_selected">res/images/qtreeview_selected.png</file>
         <file alias="syncb">res/images/syncb.png</file>
         <file alias="syncp">res/images/syncp.png</file>
-        <file alias="walletFrame_bg">res/images/walletFrame_bg.png</file>
-        <file alias="walletFrame">res/images/walletFrame.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
         <file alias="lock">res/images/lock.png</file>

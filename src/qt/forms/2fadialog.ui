@@ -78,7 +78,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Please enter an eight digit 2FA code:</string>
+        <string>Please enter a six digit 2FA code:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

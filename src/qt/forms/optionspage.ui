@@ -34,7 +34,7 @@
         <x>0</x>
         <y>0</y>
         <width>806</width>
-        <height>541</height>
+        <height>565</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -178,6 +178,34 @@
                </size>
               </property>
              </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QLabel" name="twoFADigits">
+                <property name="text">
+                 <string>Number of digits to use:</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignLeft">
+               <widget class="QComboBox" name="comboBox">
+                <property name="maxVisibleItems">
+                 <number>2</number>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>6</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>8</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="QLabel" name="label_3">

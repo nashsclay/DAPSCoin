@@ -41,11 +41,11 @@ bool CheckPoABlockMinedHash(const CBlockHeader& block);
 
 bool CheckPoAContainRecentHash(const CBlock& block);
 bool CheckNumberOfAuditedPoSBlocks(const CBlock& block, const CBlockIndex* pindex);
-bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block);
+bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block, const CBlockIndex* pindex);
 
 bool CheckPoAblockTime(const CBlock& block);
 bool CheckPoABlockNotAuditingOverlap(const CBlock& block);
 bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex);
-
+bool IsFixedAudit(std::string txid);
 
 #endif // BITCOIN_POA_H

@@ -35,6 +35,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "masternodeconfig.h"
 
 
@@ -5698,6 +5699,16 @@ bool CMerkleTx::IsTransactionLockTimedOut() const
     }
 
     return false;
+}
+
+string CWallet::GetUniqueWalletBackupName() const
+{
+    posix_time::ptime timeLocal = posix_time::second_clock::local_time();
+    stringstream ssDateTime;
+
+
+    ssDateTime << gregorian::to_iso_extended_string(timeLocal.date()) << "-" << timeLocal.time_of_day();
+    return strprintf("wallet%s.dat%s", "", DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime()));
 }
 
 CWallet::CWallet()
