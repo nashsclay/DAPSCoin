@@ -153,10 +153,12 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     ui->mapPortUpnp->setChecked(settings.value("fUseUPnP", false).toBool());
     ui->minimizeToTray->setChecked(settings.value("fMinimizeToTray", false).toBool());
     ui->minimizeOnClose->setChecked(settings.value("fMinimizeOnClose", false).toBool());
+    ui->alwaysRequest2FA->setChecked(settings.value("fAlwaysRequest2FA", false).toBool());
     connect(ui->addNewFunds, SIGNAL(stateChanged(int)), this, SLOT(setAutoConsolidate(int)));
     connect(ui->mapPortUpnp, SIGNAL(stateChanged(int)), this, SLOT(mapPortUpnp_clicked(int)));
     connect(ui->minimizeToTray, SIGNAL(stateChanged(int)), this, SLOT(minimizeToTray_clicked(int)));
     connect(ui->minimizeOnClose, SIGNAL(stateChanged(int)), this, SLOT(minimizeOnClose_clicked(int)));
+    connect(ui->alwaysRequest2FA, SIGNAL(stateChanged(int)), this, SLOT(alwaysRequest2FA_clicked(int)));
 }
 
 void OptionsPage::setStakingToggle()
@@ -986,4 +988,25 @@ void OptionsPage::changeDigits(int digit)
     }
     digit = ui->comboBox->currentText().toInt();
     settings.setValue("2fadigits", digit);
+}
+
+
+void OptionsPage::alwaysRequest2FA_clicked(int state)
+{
+    int status = model->getEncryptionStatus();
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("2FA Settings");
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setText("Please unlock the keychain wallet with your passphrase before attempting to change this setting.");
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.exec();
+        return;
+    }
+    bool twofastatus = pwalletMain->Read2FA();
+    if (twofastatus && ui->alwaysRequest2FA->isChecked()) {
+        settings.setValue("fAlwaysRequest2FA", true);
+    } else {
+        settings.setValue("fAlwaysRequest2FA", false);
+    }
 }

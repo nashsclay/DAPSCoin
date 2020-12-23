@@ -153,6 +153,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     send_amount = recipient.amount;
     bool isValidAddresss = (regex_match(address.toStdString(), regex("[a-zA-z0-9]+")))&&(address.length()==99||address.length()==110);
     bool isValidAmount = ((recipient.amount>0) && (recipient.amount<=model->getBalance()));
+    bool fAlwaysRequest2FA = settings.value("fAlwaysRequest2FA").toBool();
 
     form->errorAddress(isValidAddresss);
     form->errorAmount(isValidAmount);
@@ -214,8 +215,12 @@ void SendCoinsDialog::on_sendButton_clicked(){
     CAmount totalAmount = send_amount + txFee;
 
     // Show total amount + all alternative units
-    questionString.append(tr("<span class='h3'>Total Amount = <b>%1</b><br/><hr /></center>")
+    questionString.append(tr("<span class='h3'>Total Amount = <b>%1</b><br/></center>")
                               .arg(BitcoinUnits::formatHtmlWithUnit(model->getOptionsModel()->getDisplayUnit(), totalAmount)));
+
+    if (fAlwaysRequest2FA) {
+        questionString.append("<center><br/>Note: Request 2FA authentication code before sending any transactions is enabled.<br/>You will be asked for your 2FA code on the next screen.<br/><br/></center>");
+    }
 
     // Display message box
     QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm Send Coins"),
@@ -260,7 +265,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     uint period = pwalletMain->Read2FAPeriod();
     QDateTime current = QDateTime::currentDateTime();
     uint diffTime = current.toTime_t() - lastTime;
-    if (diffTime <= period * 24 * 60 * 60)
+    if (diffTime <= period * 24 * 60 * 60 || !fAlwaysRequest2FA)
         sendTx();
     else {
         TwoFAConfirmDialog codedlg;
