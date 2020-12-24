@@ -720,8 +720,14 @@ bool InitSanityCheck(void)
                   "information, visit https://en.bitcoin.it/wiki/OpenSSL_and_EC_Libraries");
         return false;
     }
+
     if (!glibc_sanity_test() || !glibcxx_sanity_test())
         return false;
+
+    if (!Random_SanityCheck()) {
+        InitError("OS cryptographic RNG sanity check failure. Aborting.");
+        return false;
+    }
 
     return true;
 }
@@ -1040,6 +1046,8 @@ bool AppInit2(bool isDaemon)
     nMaxTipAge = GetArg("-maxtipage", DEFAULT_MAX_TIP_AGE);
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
+
+    RandomInit();
 
     // Sanity check
     if (!InitSanityCheck())
@@ -1617,8 +1625,6 @@ bool AppInit2(bool isDaemon)
 
         if (fFirstRun) {
             // Create new keyUser and set as default key
-            RandAddSeedPerfmon();
-
             if (!pwalletMain->IsHDEnabled()) {
                 if (!isDaemon) {
                     uiInterface.ShowRecoveryDialog();
@@ -1897,8 +1903,6 @@ bool AppInit2(bool isDaemon)
 
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
-
-    RandAddSeedPerfmon();
 
     //// debug print
     LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());

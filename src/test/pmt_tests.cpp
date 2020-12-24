@@ -7,6 +7,7 @@
 #include "streams.h"
 #include "uint256.h"
 #include "version.h"
+#include "test_random.h"
 
 #include <vector>
 
@@ -19,8 +20,8 @@ class CPartialMerkleTreeTester : public CPartialMerkleTree
 public:
     // flip one bit in one of the hashes - this should break the authentication
     void Damage() {
-        unsigned int n = rand() % vHash.size();
-        int bit = rand() % 256;
+        unsigned int n = insecure_randrange(vHash.size());
+        int bit = insecure_randbits(8);
         uint256 &hash = vHash[n];
         hash ^= ((uint256)1 << bit);
     }
@@ -61,7 +62,7 @@ BOOST_AUTO_TEST_CASE(pmt_test1)
             std::vector<bool> vMatch(nTx, false);
             std::vector<uint256> vMatchTxid1;
             for (unsigned int j=0; j<nTx; j++) {
-                bool fInclude = (secp256k1_rand32() & ((1 << (att/2)) - 1)) == 0;
+                bool fInclude = insecure_randbits(att / 2) == 0;
                 vMatch[j] = fInclude;
                 if (fInclude)
                     vMatchTxid1.push_back(vTxid[j]);
