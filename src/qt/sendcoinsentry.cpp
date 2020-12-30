@@ -31,7 +31,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget* parent) : QStackedWidget(parent),
     ui->payToLayout_s->setSpacing(4);
 #endif
 
-    // normal dapscoin address field
+    // normal prcycoin address field
     GUIUtil::setupAddressWidget(ui->payTo, this);
 
     // Connect signals
@@ -133,7 +133,7 @@ CAmount SendCoinsEntry::getValidatedAmount() {
     if (dAmount < 0.0 || dAmount > Params().MAX_MONEY) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Invalid Amount");
-        msgBox.setText("Invalid amount entered. Please enter an amount less than 2.1B DAPS.");
+        msgBox.setText("Invalid amount entered. Please enter an amount less than 2.1B PRCY.");
         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();

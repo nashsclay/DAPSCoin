@@ -123,7 +123,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
             this
     );
 
-    QString windowTitle = tr("DAPS Coin") + " ";
+    QString windowTitle = tr("PRCY Coin") + " ";
     fLiteMode = GetBoolArg("-litemode", false);
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */
@@ -358,8 +358,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(networkStyle->getAppIcon(), tr("&About DAPS"), this);
-    aboutAction->setStatusTip(tr("Show information about DAPS"));
+    aboutAction = new QAction(networkStyle->getAppIcon(), tr("&About PRCY"), this);
+    aboutAction->setStatusTip(tr("Show information about PRCY"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/qt-project.org/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
@@ -421,8 +421,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openMNConfEditorAction = new QAction(QIcon(":/icons/edit"), tr("Open &Masternode Configuration File"), this);
     openMNConfEditorAction->setStatusTip(tr("Open Masternode configuration file"));
     openMNConfEditorAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
-    showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &DAPScoin Folder"), this);
-    showDataDirAction->setStatusTip(tr("Show the DAPScoin folder"));
+    showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &PRCYcoin Folder"), this);
+    showDataDirAction->setStatusTip(tr("Show the PRCYcoin folder"));
     showDataDirAction->setShortcut(Qt::Key_F2);
     showBackupsAction = new QAction(QIcon(":/icons/browse"), tr("Show Automatic &Backups"), this);
     showBackupsAction->setStatusTip(tr("Show automatically created wallet backups"));
@@ -433,32 +433,32 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
 
     openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
-    openAction->setStatusTip(tr("Open a DAPS: URI or payment request"));
+    openAction->setStatusTip(tr("Open a PRCY: URI or payment request"));
     openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain Explorer"), this);
     openBlockExplorerAction->setStatusTip(tr("Block explorer window"));
 
     facebookAction = new QAction(QIcon(":/icons/facebook"), tr("Facebook"), this);
-    facebookAction->setStatusTip(tr("DAPS Facebook"));
+    facebookAction->setStatusTip(tr("PRCY Facebook"));
     twitterAction = new QAction(QIcon(":/icons/twitter"), tr("Twitter"), this);
-    twitterAction->setStatusTip(tr("DAPS Twitter"));
+    twitterAction->setStatusTip(tr("PRCY Twitter"));
     discordAction = new QAction(QIcon(":/icons/discord"), tr("Discord"), this);
-    discordAction->setStatusTip(tr("DAPS Discord"));
+    discordAction->setStatusTip(tr("PRCY Discord"));
     telegramOfficialAction = new QAction(QIcon(":/icons/telegram"), tr("Telegram - Main"), this);
-    telegramOfficialAction->setStatusTip(tr("DAPS Telegram - Main"));
+    telegramOfficialAction->setStatusTip(tr("PRCY Telegram - Main"));
     telegramLoungeAction = new QAction(QIcon(":/icons/telegram"), tr("Telegram - Lounge"), this);
-    telegramLoungeAction->setStatusTip(tr("DAPS Telegram - Lounge"));
+    telegramLoungeAction->setStatusTip(tr("PRCY Telegram - Lounge"));
     mediumAction = new QAction(QIcon(":/icons/medium"), tr("Medium"), this);
-    mediumAction->setStatusTip(tr("DAPS Medium"));
+    mediumAction->setStatusTip(tr("PRCY Medium"));
     steemitAction = new QAction(QIcon(":/icons/steemit"), tr("Steemit"), this);
-    steemitAction->setStatusTip(tr("DAPS Steemit"));
+    steemitAction->setStatusTip(tr("PRCY Steemit"));
     instagramAction = new QAction(QIcon(":/icons/instagram"), tr("Instagram"), this);
-    instagramAction->setStatusTip(tr("DAPS Instagram"));
+    instagramAction->setStatusTip(tr("PRCY Instagram"));
     redditAction = new QAction(QIcon(":/icons/reddit"), tr("Reddit"), this);
-    redditAction->setStatusTip(tr("DAPS Reddit"));
+    redditAction->setStatusTip(tr("PRCY Reddit"));
 
     showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line Options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
-    showHelpMessageAction->setStatusTip(tr("Show the DAPS help message to get a list with possible DAPS command-line options"));
+    showHelpMessageAction->setStatusTip(tr("Show the PRCY help message to get a list with possible PRCY command-line options"));
 
     // Help Links
     openFAQAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Frequently Asked Questions"), this);
@@ -571,13 +571,13 @@ void BitcoinGUI::createMenuBar()
     QMenu* socials = appMenuBar->addMenu(tr("Social"));
     socials->addAction(facebookAction);
     socials->addAction(twitterAction);
-    socials->addAction(discordAction);
+    //socials->addAction(discordAction);
     socials->addAction(telegramOfficialAction);
     socials->addAction(telegramLoungeAction);
     socials->addAction(mediumAction);
-    socials->addAction(steemitAction);
+    //socials->addAction(steemitAction);
     socials->addAction(instagramAction);
-    socials->addAction(redditAction);
+    //socials->addAction(redditAction);
 
     QMenu* help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(showHelpMessageAction);
@@ -589,9 +589,9 @@ void BitcoinGUI::createMenuBar()
     help->addAction(openBootStrapAction);
     help->addSeparator();
     help->addAction(openTGTechSupportAction);
-    help->addAction(openTGMNSupportAction);
-    help->addSeparator();
-    help->addAction(openDiscordSupportAction);
+    //help->addAction(openTGMNSupportAction);
+    //help->addSeparator();
+    //help->addAction(openDiscordSupportAction);
     help->addSeparator();
     help->addAction(checkForUpdatesAction);
     help->addSeparator();
@@ -645,11 +645,11 @@ void BitcoinGUI::createToolBars()
 
         bottomToolbar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         toolbar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        QLabel* dapsico = new QLabel;
-        dapsico->setPixmap(QIcon(":icons/dapsico").pixmap(117, 117));
-        dapsico->setObjectName("dapsico");
+        QLabel* prcyico = new QLabel;
+        prcyico->setPixmap(QIcon(":icons/prcyico").pixmap(117, 117));
+        prcyico->setObjectName("prcyico");
 
-        navLayout->addWidget(dapsico);
+        navLayout->addWidget(prcyico);
         navLayout->addWidget(toolbar);
         navLayout->addWidget(bottomToolbar);
         navWidget->setLayout(navLayout);
@@ -764,7 +764,7 @@ void BitcoinGUI::createTrayIcon(const NetworkStyle* networkStyle)
 {
 #ifndef Q_OS_MAC
     trayIcon = new QSystemTrayIcon(this);
-    QString toolTip = tr("DAPS client") + " " + networkStyle->getTitleAddText();
+    QString toolTip = tr("PRCY client") + " " + networkStyle->getTitleAddText();
     trayIcon->setToolTip(toolTip);
     trayIcon->setIcon(networkStyle->getAppIcon());
     trayIcon->show();
@@ -843,39 +843,39 @@ void BitcoinGUI::optionsClicked()
 
 void BitcoinGUI::facebookActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://www.facebook.com/officialdapscoin/"));
+    QDesktopServices::openUrl(QUrl("https://www.facebook.com/Prcycoin-101534778505838"));
 }
 void BitcoinGUI::twitterActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://twitter.com/DAPScoin"));
+    QDesktopServices::openUrl(QUrl("https://twitter.com/PRCYcoin"));
 }
 void BitcoinGUI::discordActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://officialdapscoin.com/discord"));
+    QDesktopServices::openUrl(QUrl("https://prcycoin.com/discord"));
 }
 void BitcoinGUI::telegramOfficialActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://t.me/dapscoin"));
+    QDesktopServices::openUrl(QUrl("https://t.me/prcycoinofficial"));
 }
 void BitcoinGUI::telegramLoungeActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://t.me/DAPS_LOUNGE"));
+    QDesktopServices::openUrl(QUrl("https://t.me/prcylounge"));
 }
 void BitcoinGUI::mediumActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://medium.com/@DAPScoin"));
+    QDesktopServices::openUrl(QUrl("https://prcycoin.medium.com/"));
 }
 void BitcoinGUI::instagramActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://www.instagram.com/DAPSCoin/"));
+    QDesktopServices::openUrl(QUrl("https://www.instagram.com/PRCYCoin/"));
 }
 void BitcoinGUI::redditActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://www.reddit.com/r/DAPSCoin/"));
+    QDesktopServices::openUrl(QUrl("https://www.reddit.com/r/PRCYCoin/"));
 }
 void BitcoinGUI::steemitActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://steemit.com/@DAPSCoin/"));
+    QDesktopServices::openUrl(QUrl("https://steemit.com/@PRCYCoin/"));
 }
 
 void BitcoinGUI::aboutClicked()
@@ -896,32 +896,32 @@ void BitcoinGUI::showHelpMessageClicked()
 
 void BitcoinGUI::openFAQClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://officialdapscoin.com/faq"));
+    QDesktopServices::openUrl(QUrl("https://prcycoin.com/faq"));
 }
 
 void BitcoinGUI::openGitWikiClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://github.com/DAPSCoin/DAPSCoin/wiki"));
+    QDesktopServices::openUrl(QUrl("https://github.com/PRCYCoin/PRCYCoin/wiki"));
 }
 
 void BitcoinGUI::openBlockExplorerAPIClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://explorer.dapscoin.com/api/getblockcount"));
+    QDesktopServices::openUrl(QUrl("https://explorer.prcycoin.com/api/getblockcount"));
 }
 
 void BitcoinGUI::openBootStrapClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://bootstrap.dapscoin.com"));
+    QDesktopServices::openUrl(QUrl("https://bootstrap.prcycoin.com"));
 }
 
 void BitcoinGUI::openTGTechSupportClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://t.me/DAPSTechSupport"));
+    QDesktopServices::openUrl(QUrl("https://t.me/prcySupport"));
 }
 
 void BitcoinGUI::openTGMNSupportClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://t.me/DAPS_MN_Support"));
+    QDesktopServices::openUrl(QUrl("https://t.me/PRCY_MN_Support"));
 }
 
 void BitcoinGUI::openDiscordSupportClicked()
@@ -931,7 +931,7 @@ void BitcoinGUI::openDiscordSupportClicked()
 
 void BitcoinGUI::checkForUpdatesClicked()
 {
-    QUrl serviceUrl = QUrl("https://raw.githubusercontent.com/DAPSCoin/DAPSCoin/master/version.txt");
+    QUrl serviceUrl = QUrl("https://raw.githubusercontent.com/PRCYCoin/PRCYCoin/master/version.txt");
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(serviceRequestFinished(QNetworkReply*)));
     QNetworkRequest request;
@@ -949,7 +949,7 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
             QMessageBox::StandardButton msgReply;
             msgReply = QMessageBox::question(this, "Wallet Update Available!", "Wallet update available.\n\nWould you like to go to the GitHub Releases page to download v" + data.trimmed() + "?", QMessageBox::Yes|QMessageBox::No);
             if (msgReply == QMessageBox::Yes) {
-                QDesktopServices::openUrl(QUrl("https://github.com/DAPSCoin/DAPSCoin/releases/latest"));
+                QDesktopServices::openUrl(QUrl("https://github.com/PRCYCoin/PRCYCoin/releases/latest"));
             } else {
                 return;
             }
@@ -1155,7 +1155,7 @@ void BitcoinGUI::setNumBlocks(int count)
 
 void BitcoinGUI::message(const QString& title, const QString& message, unsigned int style, bool* ret)
 {
-    QString strTitle = tr("DAPS"); // default title
+    QString strTitle = tr("PRCY"); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -1180,7 +1180,7 @@ void BitcoinGUI::message(const QString& title, const QString& message, unsigned 
             break;
         }
     }
-    // Append title to "DAPS - "
+    // Append title to "PRCY - "
     if (!msgType.isEmpty())
         strTitle += " - " + msgType;
 

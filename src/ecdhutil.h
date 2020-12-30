@@ -2,11 +2,11 @@
 // Created by Akira Cam on 2019-01-15.
 //
 
-#ifndef DAPSCOIN_ECDHUTIL_H
-#define DAPSCOIN_ECDHUTIL_H
+#ifndef PRCYCOIN_ECDHUTIL_H
+#define PRCYCOIN_ECDHUTIL_H
 #include "key.h"
 #include "amount.h"
 
 
 
-#endif //DAPSCOIN_ECDHUTIL_H
+#endif //PRCYCOIN_ECDHUTIL_H

@@ -28,7 +28,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Enabling 2FA in your DAPS Desktop App</string>
+        <string>Enabling 2FA in your PRCY Desktop App</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

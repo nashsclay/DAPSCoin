@@ -1,10 +1,10 @@
 Sample configuration files for:
 
-SystemD: dapscoind.service
-Upstart: dapscoind.conf
-OpenRC:  dapscoind.openrc
-         dapscoind.openrcconf
-CentOS:  dapscoind.init
+SystemD: prcycoind.service
+Upstart: prcycoind.conf
+OpenRC:  prcycoind.openrc
+         prcycoind.openrcconf
+CentOS:  prcycoind.init
 
 have been made available to assist packagers in creating node packages here.
 

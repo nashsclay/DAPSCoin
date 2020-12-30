@@ -6,7 +6,7 @@
 #define BITCOIN_QT_BITCOINGUI_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/dapscoin-config.h"
+#include "config/prcycoin-config.h"
 #endif
 
 #include "amount.h"

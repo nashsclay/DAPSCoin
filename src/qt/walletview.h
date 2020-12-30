@@ -122,7 +122,7 @@ public Q_SLOTS:
     /** Show progress dialog e.g. for rescan */
     void showProgress(const QString& title, int nProgress);
 
-    /** Update selected DAPS amount from transactionview */
+    /** Update selected PRCY amount from transactionview */
     void trxAmount(QString amount);
     void stakingStatus(bool);
 

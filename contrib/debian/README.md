@@ -1,21 +1,21 @@
 
 Debian
 ====================
-This directory contains files used to package dapscoind/dapscoin-qt
-for Debian-based Linux systems. If you compile dapscoind/dapscoin-qt yourself, there are some useful files here.
+This directory contains files used to package prcycoind/prcycoin-qt
+for Debian-based Linux systems. If you compile prcycoind/prcycoin-qt yourself, there are some useful files here.
 
-## dapscoin: URI support ##
+## prcycoin: URI support ##
 
 
-dapscoin-qt.desktop  (Gnome / Open Desktop)
+prcycoin-qt.desktop  (Gnome / Open Desktop)
 To install:
 
-	sudo desktop-file-install dapscoin-qt.desktop
+	sudo desktop-file-install prcycoin-qt.desktop
 	sudo update-desktop-database
 
 If you build yourself, you will either need to modify the paths in
-the .desktop file or copy or symlink your dapscoinqt binary to `/usr/bin`
-and the `../../share/pixmaps/dapscoin128.png` to `/usr/share/pixmaps`
+the .desktop file or copy or symlink your prcycoinqt binary to `/usr/bin`
+and the `../../share/pixmaps/prcycoin128.png` to `/usr/share/pixmaps`
 
-dapscoin-qt.protocol (KDE)
+prcycoin-qt.protocol (KDE)
 

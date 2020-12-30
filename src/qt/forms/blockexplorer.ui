@@ -168,7 +168,7 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="../dapscoin.qrc"/>
+  <include location="../prcycoin.qrc"/>
  </resources>
  <connections/>
 </ui>

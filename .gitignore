@@ -6,12 +6,12 @@ reset-files.bash
 *.tar.gz
 
 *.exe
-src/dapscoin
-src/dapscoind
-src/dapscoin-cli
-src/dapscoin-tx
-src/test/test_dapscoin
-src/qt/test/test_dapscoin-qt
+src/prcycoin
+src/prcycoind
+src/prcycoin-cli
+src/prcycoin-tx
+src/test/test_prcycoin
+src/qt/test/test_prcycoin-qt
 
 # autoreconf
 Makefile.in
@@ -37,8 +37,8 @@ confdefs.h
 conftest.cpp
 conftest.err
 libtool
-src/config/dapscoin-config.h
-src/config/dapscoin-config.h.in
+src/config/prcycoin-config.h
+src/config/prcycoin-config.h.in
 src/config/stamp-h1
 src/secp256k1-mw/build-aux/compile
 src/secp256k1-mw/build-aux/config.guess
@@ -56,8 +56,8 @@ share/setup.nsi
 share/qt/Info.plist
 contrib/devtools/split-debug.sh
 
-src/qt/dapscoin-qt-multisig
-src/qt/test/test_dapscoin-qt-multisig
+src/qt/prcycoin-qt-multisig
+src/qt/test/test_prcycoin-qt-multisig
 src/univalue/gen
 
 src/qt/*.moc
@@ -79,7 +79,7 @@ src/qt/test/moc*.cpp
 *.o
 *.o-*
 *.patch
-.dapscoin
+.prcycoin
 *.a
 !libchilkat*.a
 *.pb.cc
@@ -99,12 +99,12 @@ src/qt/test/moc*.cpp
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-dapscoin-qt
-DAPScoin-Qt.app
+prcycoin-qt
+PRCYcoin-Qt.app
 
 # Unit-tests
 Makefile.test
-dapscoin-qt_test
+prcycoin-qt_test
 src/test/buildenv.py
 
 # Resources cpp
@@ -123,7 +123,7 @@ dist/
 #lcov
 *.gcno
 /*.info
-test_dapscoin.coverage/
+test_prcycoin.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -150,5 +150,5 @@ CMakeLists.txt
 cmake-build-debug
 .vscode/*
 BackupWallet*
-dapscoin-qt.pro
-!contrib/dapscoin-qt.pro
+prcycoin-qt.pro
+!contrib/prcycoin-qt.pro

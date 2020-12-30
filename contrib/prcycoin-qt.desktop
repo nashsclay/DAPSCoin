@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=PRCYcoin-qt
+Comment=PRCYcoin QT Wallet
+Exec=prcycoin-qt
+Icon=prcycoin
+Categories=Utility;

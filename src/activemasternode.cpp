@@ -12,7 +12,7 @@
 #include "protocol.h"
 
 //
-// Bootup the Masternode, look for a 1000000 DAPS input and register on the network
+// Bootup the Masternode, look for a 5000 PRCY input and register on the network
 //
 void CActiveMasternode::ManageStatus()
 {
@@ -454,8 +454,8 @@ bool CActiveMasternode::GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubke
         return false;
     }
 
-    if (amount != 1000000 * COIN) {
-        LogPrintf("dsee - masternode collateralization not equal to 1M %s\n", vin.prevout.hash.ToString());
+    if (amount != 5000 * COIN) {
+        LogPrintf("dsee - masternode collateralization not equal to 5K %s\n", vin.prevout.hash.ToString());
         return false;
     }
 
@@ -491,7 +491,7 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
     // Retrieve all possible outputs
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
-        pwalletMain->AvailableCoins(vCoins, true, NULL, false, AvailableCoinsType::ONLY_1000000);
+        pwalletMain->AvailableCoins(vCoins, true, NULL, false, AvailableCoinsType::ONLY_5000);
         // Lock MN coins from masternode.conf back if they where temporary unlocked
         if (!confLockedCoins.empty()) {
             for (COutPoint outpoint : confLockedCoins)
@@ -500,7 +500,7 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
 
         // Filter
         for (const COutput& out : vCoins) {
-            if (pwalletMain->getCTxOutValue(*out.tx, out.tx->vout[out.i]) == 1000000 * COIN) { //exactly
+            if (pwalletMain->getCTxOutValue(*out.tx, out.tx->vout[out.i]) == 5000 * COIN) { //exactly
                 filteredCoins.push_back(out);
             }
         }

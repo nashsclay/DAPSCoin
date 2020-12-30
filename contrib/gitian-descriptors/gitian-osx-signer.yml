@@ -1,5 +1,5 @@
 ---
-name: "dapscoin-dmg-signer"
+name: "prcycoin-dmg-signer"
 suites:
 - "trusty"
 architectures:
@@ -7,10 +7,10 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/dapscoin-project/dapscoin-detached-sigs.git"
+- "url": "https://github.com/prcycoin-project/prcycoin-detached-sigs.git"
   "dir": "signature"
 files:
-- "dapscoin-osx-unsigned.tar.gz"
+- "prcycoin-osx-unsigned.tar.gz"
 script: |
   WRAP_DIR=$HOME/wrapped
   mkdir -p ${WRAP_DIR}
@@ -27,11 +27,11 @@ script: |
     chmod +x ${WRAP_DIR}/${prog}
   done
 
-  UNSIGNED=dapscoin-osx-unsigned.tar.gz
-  SIGNED=dapscoin-osx-signed.dmg
+  UNSIGNED=prcycoin-osx-unsigned.tar.gz
+  SIGNED=prcycoin-osx-signed.dmg
 
   tar -xf ${UNSIGNED}
   OSX_VOLNAME="$(cat osx_volname)"
   ./detached-sig-apply.sh ${UNSIGNED} signature/osx
-  ${WRAP_DIR}/genisoimage -no-cache-inodes -D -l -probe -V "Dapscoin-Qt" -no-pad -r -dir-mode 0755 -apple -o uncompressed.dmg signed-app
+  ${WRAP_DIR}/genisoimage -no-cache-inodes -D -l -probe -V "Prcycoin-Qt" -no-pad -r -dir-mode 0755 -apple -o uncompressed.dmg signed-app
   ${WRAP_DIR}/dmg dmg uncompressed.dmg ${OUTDIR}/${SIGNED}

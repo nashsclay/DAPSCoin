@@ -410,7 +410,7 @@
        <item>
         <widget class="QGroupBox" name="reservegroupBox">
          <property name="title">
-          <string>Quantity of DAPS to keep as spendable (not staking)</string>
+          <string>Quantity of PRCY to keep as spendable (not staking)</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
@@ -426,7 +426,7 @@
               <item>
                <widget class="QCheckBox" name="addNewFunds">
                 <property name="toolTip">
-                 <string>Enabling this will incur a minimum 1 DAPS fee each time you receive a new deposit that needs to be consolidated for staking.</string>
+                 <string>Enabling this will incur a minimum 1 PRCY fee each time you receive a new deposit that needs to be consolidated for staking.</string>
                 </property>
                 <property name="text">
                  <string>Automatically add any new deposits received to your staked balance</string>
@@ -534,7 +534,7 @@
           <item>
            <widget class="QCheckBox" name="mapPortUpnp">
             <property name="toolTip">
-             <string>Automatically open the DAPS client port on the router. This only works when your router supports UPnP and it is enabled.</string>
+             <string>Automatically open the PRCY client port on the router. This only works when your router supports UPnP and it is enabled.</string>
             </property>
             <property name="text">
              <string>Map port using &amp;UPnP</string>

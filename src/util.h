@@ -14,7 +14,7 @@
 #define BITCOIN_UTIL_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/dapscoin-config.h"
+#include "config/prcycoin-config.h"
 #endif
 
 #include "compat.h"
@@ -32,7 +32,7 @@
 #include <boost/thread/exceptions.hpp>
 #include "pubkey.h"
 
-//DAPS only features
+//PRCY only features
 
 extern bool fMasterNode;
 extern bool fLiteMode;
@@ -221,7 +221,7 @@ void SetThreadPriority(int nPriority);
 template <typename Callable>
 void TraceThread(const char* name, Callable func)
 {
-    std::string s = strprintf("dapscoin-%s", name);
+    std::string s = strprintf("prcycoin-%s", name);
     util::ThreadRename(s.c_str());
     try {
         LogPrintf("%s thread start\n", name);

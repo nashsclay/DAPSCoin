@@ -7,7 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/dapscoin-config.h"
+#include "config/prcycoin-config.h"
 #endif
 
 #include "util.h"
@@ -108,7 +108,7 @@ std::string to_internal(const std::string&);
 
 using namespace std;
 
-// DAPS only features
+// PRCY only features
 // Masternode
 bool fMasterNode = false;
 string strMasterNodePrivKey = "";
@@ -231,8 +231,8 @@ bool LogAcceptCategory(const char* category)
             const vector<string>& categories = mapMultiArgs["-debug"];
             ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
-            // "dapscoin" is a composite category enabling all DAP-related debug output
-            if (ptrCategory->count(string("dapscoin"))) {
+            // "prcycoin" is a composite category enabling all DAP-related debug output
+            if (ptrCategory->count(string("prcycoin"))) {
                 ptrCategory->insert(string("obfuscation"));
                 ptrCategory->insert(string("swiftx"));
                 ptrCategory->insert(string("masternode"));
@@ -422,7 +422,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "dapscoin";
+    const char* pszModule = "prcycoin";
 #endif
     if (pex)
         return strprintf(
@@ -443,13 +443,13 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-// Windows < Vista: C:\Documents and Settings\Username\Application Data\DAPScoin
-// Windows >= Vista: C:\Users\Username\AppData\Roaming\DAPScoin
-// Mac: ~/Library/Application Support/DAPScoin
-// Unix: ~/.dapscoin
+// Windows < Vista: C:\Documents and Settings\Username\Application Data\PRCYcoin
+// Windows >= Vista: C:\Users\Username\AppData\Roaming\PRCYcoin
+// Mac: ~/Library/Application Support/PRCYcoin
+// Unix: ~/.prcycoin
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "DAPScoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "PRCYcoin";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -461,10 +461,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     TryCreateDirectory(pathRet);
-    return pathRet / "DAPScoin";
+    return pathRet / "PRCYcoin";
 #else
     // Unix
-    return pathRet / ".dapscoin";
+    return pathRet / ".prcycoin";
 #endif
 #endif
 }
@@ -511,7 +511,7 @@ void ClearDatadirCache()
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "dapscoin.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "prcycoin.conf"));
     if (!pathConfigFile.is_complete())
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
@@ -530,7 +530,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good()) {
-        // Create empty dapscoin.conf if it does not exist
+        // Create empty prcycoin.conf if it does not exist
         FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
         if (configFile != NULL)
             fclose(configFile);
@@ -541,7 +541,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
     setOptions.insert("*");
 
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
-        // Don't overwrite existing settings so command line settings override dapscoin.conf
+        // Don't overwrite existing settings so command line settings override prcycoin.conf
         string strKey = string("-") + it->string_key;
         string strValue = it->value[0];
         InterpretNegativeSetting(strKey, strValue);
@@ -556,12 +556,12 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "dapscoind.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "prcycoind.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
 
     if (boost::filesystem::is_directory(boost::filesystem::status(pathPidFile)) ||
         boost::filesystem::exists(boost::filesystem::status(pathPidFile)))
-        pathPidFile = GetDataDir() / boost::filesystem::path("dapscoind.pid");
+        pathPidFile = GetDataDir() / boost::filesystem::path("prcycoind.pid");
     
     return pathPidFile;
 }

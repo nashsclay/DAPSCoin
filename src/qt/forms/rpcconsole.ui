@@ -364,7 +364,7 @@
        <item row="18" column="0">
         <widget class="QPushButton" name="openDebugLogfileButton">
          <property name="toolTip">
-          <string>Open the DAPS debug log file from the current data directory. This can take a few seconds for large log files.</string>
+          <string>Open the PRCY debug log file from the current data directory. This can take a few seconds for large log files.</string>
          </property>
          <property name="text">
           <string>&amp;Open</string>
@@ -457,7 +457,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../dapscoin.qrc">
+            <iconset resource="../prcycoin.qrc">
              <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
            </property>
            <property name="shortcut">
@@ -1479,7 +1479,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../dapscoin.qrc"/>
+  <include location="../prcycoin.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -6,13 +6,13 @@ and tests weren't explicitly disabled.
 
 After configuring, they can be run with 'make check'.
 
-To run the dapscoind tests manually, launch src/test/test_dapscoin .
+To run the prcycoind tests manually, launch src/test/test_prcycoin .
 
-To add more dapscoind tests, add `BOOST_AUTO_TEST_CASE` functions to the existing
+To add more prcycoind tests, add `BOOST_AUTO_TEST_CASE` functions to the existing
 .cpp files in the test/ directory or add new .cpp files that
 implement new BOOST_AUTO_TEST_SUITE sections.
 
-To run the dapscoin-qt tests manually, launch src/qt/test/dapscoin-qt_test
+To run the prcycoin-qt tests manually, launch src/qt/test/prcycoin-qt_test
 
-To add more dapscoin-qt tests, add them to the `src/qt/test/` directory and
+To add more prcycoin-qt tests, add them to the `src/qt/test/` directory and
 the `src/qt/test/test_main.cpp` file.

@@ -1,4 +1,4 @@
-Source: dapscoin
+Source: prcycoin
 Section: utils
 Priority: optional
 Maintainer: Jonas Smedegaard <dr@jones.dk> ***TODO***
@@ -22,15 +22,15 @@ Build-Depends: debhelper,
  libqrencode-dev,
  libprotobuf-dev, protobuf-compiler
 Standards-Version: 3.9.2
-Homepage: http://www.dapscoin.org
-Vcs-Git: git://github.com/DAPScoin-Project/DAPScoin.git
-Vcs-Browser: http://github.com/DAPScoin-Project/DAPScoin
+Homepage: http://www.prcycoin.org
+Vcs-Git: git://github.com/PRCYcoin-Project/PRCYcoin.git
+Vcs-Browser: http://github.com/PRCYcoin-Project/PRCYcoin
 
-Package: dapscoind
+Package: prcycoind
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - daemon
- Dapscoin is a free open source peer-to-peer electronic cash system that
+ Prcycoin is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
@@ -39,14 +39,14 @@ Description: peer-to-peer network based digital currency - daemon
  Full transaction history is stored locally at each client.  This
  requires 1+ GB of space, slowly growing.
  .
- This package provides the daemon, dapscoind, and the CLI tool
- dapscoin-cli to interact with the daemon.
+ This package provides the daemon, prcycoind, and the CLI tool
+ prcycoin-cli to interact with the daemon.
 
-Package: dapscoin-qt
+Package: prcycoin-qt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - Qt GUI
- Dapscoin is a free open source peer-to-peer electronic cash system that
+ Prcycoin is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
@@ -55,4 +55,4 @@ Description: peer-to-peer network based digital currency - Qt GUI
  Full transaction history is stored locally at each client.  This
  requires 1+ GB of space, slowly growing.
  .
- This package provides Dapscoin-Qt, a GUI for Dapscoin based on Qt.
+ This package provides Prcycoin-Qt, a GUI for Prcycoin based on Qt.

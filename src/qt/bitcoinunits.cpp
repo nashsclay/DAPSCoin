@@ -20,18 +20,18 @@ BitcoinUnits::BitcoinUnits(QObject* parent) : QAbstractListModel(parent),
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(DAPS);
-    unitlist.append(mDAPS);
-    unitlist.append(uDAPS);
+    unitlist.append(PRCY);
+    unitlist.append(mPRCY);
+    unitlist.append(uPRCY);
     return unitlist;
 }
 
 bool BitcoinUnits::valid(int unit)
 {
     switch (unit) {
-    case DAPS:
-    case mDAPS:
-    case uDAPS:
+    case PRCY:
+    case mPRCY:
+    case uPRCY:
         return true;
     default:
         return false;
@@ -41,12 +41,12 @@ bool BitcoinUnits::valid(int unit)
 QString BitcoinUnits::id(int unit)
 {
     switch (unit) {
-    case DAPS:
-        return QString("dapscoin");
-    case mDAPS:
-        return QString("mdapscoin");
-    case uDAPS:
-        return QString::fromUtf8("udapscoin");
+    case PRCY:
+        return QString("prcycoin");
+    case mPRCY:
+        return QString("mprcycoin");
+    case uPRCY:
+        return QString::fromUtf8("uprcycoin");
     default:
         return QString("???");
     }
@@ -56,23 +56,23 @@ QString BitcoinUnits::name(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case DAPS:
-            return QString("DAPS");
-        case mDAPS:
-            return QString("mDAPS");
-        case uDAPS:
-            return QString::fromUtf8("μDAPS");
+        case PRCY:
+            return QString("PRCY");
+        case mPRCY:
+            return QString("mPRCY");
+        case uPRCY:
+            return QString::fromUtf8("μPRCY");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case DAPS:
-            return QString("tDAPS");
-        case mDAPS:
-            return QString("mtDAPS");
-        case uDAPS:
-            return QString::fromUtf8("μtDAPS");
+        case PRCY:
+            return QString("tPRCY");
+        case mPRCY:
+            return QString("mtPRCY");
+        case uPRCY:
+            return QString::fromUtf8("μtPRCY");
         default:
             return QString("???");
         }
@@ -83,23 +83,23 @@ QString BitcoinUnits::description(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case DAPS:
-            return QString("DAPS");
-        case mDAPS:
-            return QString("Milli-DAPS (1 / 1" THIN_SP_UTF8 "000)");
-        case uDAPS:
-            return QString("Micro-DAPS (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case PRCY:
+            return QString("PRCY");
+        case mPRCY:
+            return QString("Milli-PRCY (1 / 1" THIN_SP_UTF8 "000)");
+        case uPRCY:
+            return QString("Micro-PRCY (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case DAPS:
-            return QString("TestDAPSs");
-        case mDAPS:
-            return QString("Milli-TestDAPS (1 / 1" THIN_SP_UTF8 "000)");
-        case uDAPS:
-            return QString("Micro-TestDAPS (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case PRCY:
+            return QString("TestPRCYs");
+        case mPRCY:
+            return QString("Milli-TestPRCY (1 / 1" THIN_SP_UTF8 "000)");
+        case uPRCY:
+            return QString("Micro-TestPRCY (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
@@ -109,11 +109,11 @@ QString BitcoinUnits::description(int unit)
 qint64 BitcoinUnits::factor(int unit)
 {
     switch (unit) {
-    case DAPS:
+    case PRCY:
         return 100000000;
-    case mDAPS:
+    case mPRCY:
         return 100000;
-    case uDAPS:
+    case uPRCY:
         return 100;
     default:
         return 100000000;
@@ -123,11 +123,11 @@ qint64 BitcoinUnits::factor(int unit)
 int BitcoinUnits::decimals(int unit)
 {
     switch (unit) {
-    case DAPS:
+    case PRCY:
         return 8;
-    case mDAPS:
+    case mPRCY:
         return 5;
-    case uDAPS:
+    case uPRCY:
         return 2;
     default:
         return 0;

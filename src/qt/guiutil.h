@@ -31,7 +31,7 @@ class QUrl;
 class QWidget;
 QT_END_NAMESPACE
 
-/** Utility functions used by the DAPS Qt UI.
+/** Utility functions used by the PRCY Qt UI.
  */
 namespace GUIUtil
 {
@@ -39,7 +39,7 @@ namespace GUIUtil
 QString dateTimeStr(const QDateTime& datetime);
 QString dateTimeStr(qint64 nTime);
 
-// Render DAPS addresses in monospace font
+// Render PRCY addresses in monospace font
 QFont bitcoinAddressFont();
 
 void HideDisabledWidgets(QVector<QWidget*> widgets  );
@@ -49,7 +49,7 @@ void HideDisabledWidgets(QVector<QWidget*> widgets  );
 void setupAddressWidget(QValidatedLineEdit* widget, QWidget* parent);
 void setupAmountWidget(QLineEdit* widget, QWidget* parent);
 
-// Parse "dapscoin:" URI into recipient object, return true on successful parsing
+// Parse "prcycoin:" URI into recipient object, return true on successful parsing
 bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out);
 bool parseBitcoinURI(QString uri, SendCoinsRecipient* out);
 QString formatBitcoinURI(const SendCoinsRecipient& info);
@@ -115,7 +115,7 @@ bool isObscured(QWidget* w);
 // Open debug.log
 void openDebugLogfile();
 
-// Open dapscoin.conf
+// Open prcycoin.conf
 void openConfigfile();
 
 // Open masternode.conf

@@ -746,7 +746,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             std::pair<bool, CAmount> pSettings;
             ssValue >> pSettings;
             pwallet->fCombineDust = true;//pSettings.first;
-            pwallet->nAutoCombineThreshold = 540*COIN;//pSettings.second;
+            pwallet->nAutoCombineThreshold = 150 * COIN;//pSettings.second;
         } else if (strType == "destdata") {
             std::string strAddress, strKey, strValue;
             ssKey >> strAddress;
@@ -985,7 +985,7 @@ DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, vector<CWalletTx>& vWtx)
 void ThreadFlushWalletDB(const string& strFile)
 {
     // Make this thread recognisable as the wallet flushing thread
-    util::ThreadRename("dapscoin-wallet");
+    util::ThreadRename("prcycoin-wallet");
 
     static bool fOneThread;
     if (fOneThread)

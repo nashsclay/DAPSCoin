@@ -15,7 +15,7 @@
 - (NSString *)__bundleIdentifier
 {
     if (self == [NSBundle mainBundle]) {
-        return @"io.dapscoin.Dapscoin-Qt";
+        return @"io.prcycoin.Prcycoin-Qt";
     } else {
         return [self __bundleIdentifier];
     }

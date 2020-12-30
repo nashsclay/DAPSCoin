@@ -869,7 +869,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             return;
         }
 
-        //verify the value if 1M DAPS
+        //verify the value if 5K PRCY
         COutPoint prevout = vin.prevout;
         CTransaction prev;
         uint256 bh;
@@ -891,8 +891,8 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             return;
         }
 
-        if (amount != 1000000 * COIN) {
-            LogPrint("masternode","dsee - masternode collateralization not equal to 1M %s\n", vin.prevout.hash.ToString());
+        if (amount != 5000 * COIN) {
+            LogPrint("masternode","dsee - masternode collateralization not equal to 5K %s\n", vin.prevout.hash.ToString());
             return;
         }
 
@@ -946,8 +946,8 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (addr.GetPort() != 53572) return;
-        } else if (addr.GetPort() == 53572)
+            if (addr.GetPort() != 59682) return;
+        } else if (addr.GetPort() == 59682)
             return;
 
         //search existing Masternode list, this is where we update existing Masternodes with new dsee broadcasts

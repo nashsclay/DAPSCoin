@@ -202,7 +202,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Amount (DAPS)</string>
+         <string>Amount (PRCY)</string>
         </property>
        </column>
        <column>

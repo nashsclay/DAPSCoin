@@ -65,7 +65,7 @@
         <item>
          <widget class="QValidatedLineEdit" name="payTo">
           <property name="toolTip">
-           <string>DAPS Wallet Address to send to</string>
+           <string>PRCY Wallet Address to send to</string>
           </property>
           <property name="placeholderText">
            <string>Wallet Address</string>
@@ -84,7 +84,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../dapscoin.qrc">
+           <iconset resource="../prcycoin.qrc">
             <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
           </property>
          </widget>
@@ -160,10 +160,10 @@
         <item>
          <widget class="QLineEdit" name="payAmount">
           <property name="toolTip">
-           <string>Amount of DAPS to send to address above</string>
+           <string>Amount of PRCY to send to address above</string>
           </property>
           <property name="placeholderText">
-           <string>DAPS Amount</string>
+           <string>PRCY Amount</string>
           </property>
          </widget>
         </item>
@@ -208,7 +208,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../dapscoin.qrc">
+         <iconset resource="../prcycoin.qrc">
           <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
         </property>
        </widget>
@@ -293,7 +293,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../dapscoin.qrc">
+         <iconset resource="../prcycoin.qrc">
           <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
         </property>
        </widget>
@@ -360,7 +360,7 @@
   <tabstop>deleteButton_s</tabstop>
  </tabstops>
  <resources>
-  <include location="../dapscoin.qrc"/>
+  <include location="../prcycoin.qrc"/>
  </resources>
  <connections/>
 </ui>

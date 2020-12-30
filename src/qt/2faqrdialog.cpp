@@ -17,7 +17,7 @@
 // #define USE_QRCODE
 
 #if defined(HAVE_CONFIG_H)
-#include "config/dapscoin-config.h" /* for USE_QRCODE */
+#include "config/prcycoin-config.h" /* for USE_QRCODE */
 #endif
 
 #ifdef USE_QRCODE
@@ -73,9 +73,9 @@ void TwoFAQRDialog::update()
     QSettings settings;
     int digits = settings.value("2fadigits").toInt();
     if (digits == 8) {
-        uri.sprintf("otpauth://totp/DAPS:QT%20Wallet?secret=%s&issuer=dapscoin&algorithm=SHA1&digits=8&period=30", addr.c_str());
+        uri.sprintf("otpauth://totp/PRCY:QT%20Wallet?secret=%s&issuer=prcycoin&algorithm=SHA1&digits=8&period=30", addr.c_str());
     } else if (digits == 6) {
-        uri.sprintf("otpauth://totp/DAPS:QT%20Wallet?secret=%s&issuer=dapscoin&algorithm=SHA1&digits=6&period=30", addr.c_str());
+        uri.sprintf("otpauth://totp/PRCY:QT%20Wallet?secret=%s&issuer=prcycoin&algorithm=SHA1&digits=6&period=30", addr.c_str());
     }
 
     infoText = "Recovery Key: ";

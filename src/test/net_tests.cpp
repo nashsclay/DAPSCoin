@@ -9,7 +9,7 @@
 #include "serialize.h"
 #include "streams.h"
 
-#include "test/test_dapscoin.h"
+#include "test/test_prcycoin.h"
 
 #include <string>
 

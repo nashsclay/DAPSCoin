@@ -102,7 +102,7 @@ UniValue getgenerate(const UniValue& params, bool fHelp)
         throw runtime_error(
             "getgenerate\n"
             "\nReturn if the server is set to generate coins or not. The default is false.\n"
-            "It is set with the command line argument -gen (or dapscoin.conf setting gen)\n"
+            "It is set with the command line argument -gen (or prcycoin.conf setting gen)\n"
             "It can also be set with the setgenerate call.\n"
             "\nResult\n"
             "true|false      (boolean) If the server is set to generate coins or not\n"
@@ -194,7 +194,7 @@ UniValue setgenerate(const UniValue& params, bool fHelp)
         mapArgs["-gen"] = (fGenerate ? "1" : "0");
         mapArgs["-genproclimit"] = itostr(nGenProcLimit);
         pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
-        GenerateDapscoins(fGenerate, pwalletMain, nGenProcLimit);
+        GeneratePrcycoins(fGenerate, pwalletMain, nGenProcLimit);
     }
 
     return "Done";
@@ -499,10 +499,10 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "DAPS is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "PRCY is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "DAPS is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "PRCY is downloading blocks...");
 
     static unsigned int nTransactionsUpdatedLast;
 
@@ -719,10 +719,10 @@ UniValue getpoablocktemplate(const UniValue& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
         if (vNodes.empty())
-            throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "DAPS is not connected!");
+            throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "PRCY is not connected!");
 
         if (IsInitialBlockDownload())
-            throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "DAPS is downloading blocks...");
+            throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "PRCY is downloading blocks...");
 
         // Update block
         static CBlockIndex* pindexPrev;

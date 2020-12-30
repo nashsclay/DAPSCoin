@@ -1,64 +1,63 @@
-Welcome to DAPS
+![Github Actions CI for PRCY](https://github.com/PRCYcoin/PRCYCoin-dev/workflows/Github%20Actions%20CI%20for%20PRCY/badge.svg?branch=master)
+
+Welcome to PRCY
 =====================================
 
 
 ## Introduction
 
-DAPScoin is a cutting edge cryptocurrency, with many features not available in most other cryptocurrencies.
+PRCYcoin is a cutting edge cryptocurrency, with many features not available in most other cryptocurrencies.
 - Anonymized transactions using Stealth addresses, RingCT and Bulletproofs.
-- Masternode is secured with a collateral of 1,000,000 DAPS.
-DAPS is a cryptocurrency designed for corporate entities, traders, and individuals to have the autonomy to transactions business freely around the world safely and securely without the exposure to malicious actors that threaten financial transactions through traceability.
+- Masternode is secured with a collateral of 5,000 PRCY
+- Minimum Staking Amount is 2,500 PRCY
+PRCY is a cryptocurrency designed for corporate entities, traders, and individuals to have the autonomy to transactions business freely around the world safely and securely without the exposure to malicious actors that threaten financial transactions through traceability.
 
-DAPS is a privacy coin that aims to be the most private and secure privacy coin on the market in a hybrid chain of PoW, PoSv3 and PoA. We aim to set our protocol to become the new standard of privacy coins.
+PRCY is a privacy coin that aims to be the most private and secure privacy coin on the market in a hybrid chain of PoW, PoSv3 and PoA. We aim to set our protocol to become the new standard of privacy coins.
 
-What makes DAPS special is that DAPS is the first to solve the "trust problem" for fully private chains with our PoA (Proof of Audit) algorithm which audits the chain for any abnormalities without compromising the chain's anonymity features.
-
-DAPS is the world's first coin to implement Bulletproofs and RingCT & Ring Signatures in a staking chain. With DAPS it is possible to stake, run masternodes and mine PoA blocks. In 2019 DAPS completed two successful testnets, sponsored Consensus 2019 NYC and Futurist Conference in Canada, achieved and kept top 200 coin status, passed security audit by Red4Sec, launched mainnet and achieved over 3000 hosted masternodes in the first month, staying in the top 10.
+The team of PRCY solves the trust issue of privacy coins and their management as follows:
+- The community will get access to view the number of the PRCY project coins and their actions
+- Each quarter the team explains their actions and displays their project balance of coins
+- Upfront the allocation is published as a starting point
 
 ## About this Project
 
-DAPS is a non-ICO community driven project. The project has funded itself to deliver ground-breaking technology in the privacy coin industry.
+PRCY is a non-ICO community driven project. The project has funded itself to deliver ground-breaking technology in the privacy coin industry.
 
-DAPS Team
-The team consists of a total of 20 members located worldwide.
+PRCY Team
+The team consists of a total of 10 members located worldwide.
 
-## How we Compare to Other Privacy Projects
+## How to Contribute to PRCY
 
-![Privacy Coin Chart](https://officialdapscoin.com/daps-coin-comparison-chart-2020/)
-
-## How to Contribute to DAPS
-
-We have an extensive [Contributing.md](https://github.com/DAPSCoin/DAPSCoin/blob/master/CONTRIBUTING.md) guide on how to contribute to DAPS source code.
+We have an extensive [Contributing.md](https://github.com/PRCYCoin/PRCYCoin/blob/master/CONTRIBUTING.md) guide on how to contribute to PRCY source code.
 Please have a look at this first before deciding to contribute to our codebase.
 
 We welcome developers from all backgrounds to take a look at our code and welcome all suggestions and changes.
 
 ## Social
 
-Facebook - (https://www.facebook.com/officialDAPScoin/)
+Facebook - (https://www.facebook.com/Prcycoin-101534778505838)
 
-Twitter - (https://twitter.com/DAPScoin)
+Twitter - (https://twitter.com/PRCYcoin)
 
-LinkedIn - (https://www.linkedin.com/company/daps-coin/)
+Reddit - (https://www.reddit.com/r/PRCYCoin/)
 
-Reddit - (https://www.reddit.com/r/DAPSCoin/)
+Telegram - (https://t.me/prcycoinofficial) 
 
-Forum - (https://forum.officialdapscoin.com/)
+Telegram - Tech Support - (https://t.me/prycSupport)
 
-Telegram - (https://t.me/dapscoin) 
+Medium - (https://prcycoin.medium.com/)
 
-Discord - (https://discord.gg/hxfmWpR)
+Bitcointalk - (https://bitcointalk.org/index.php?topic=5301128)
 
-Bitcointalk - (https://bitcointalk.org/index.php?topic=5146718.0)
+Instagram - (https://www.instagram.com/prcycoin/)
 
-
-More information at [officialdapscoin.com](https://officialdapscoin.com) Visit our ANN thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=5146718)
+More information at [prcycoin.com](https://prcycoin.com) Visit our ANN thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=5301128)
 
 ### Coin Specs
 <table>
 <tr><td>Algo</td><td>PoW-PoA-PoS</td></tr>
 <tr><td>Block Time</td><td>60 Seconds</td></tr>
 <tr><td>Difficulty Retargeting</td><td>Every Block</td></tr>
-<tr><td>Max Coin Supply</td><td>70,000,000,000 DAPS</td></tr>
-<tr><td>Premine</td><td>60 000 000 000 DAPS</td></tr>
+<tr><td>Max Coin Supply</td><td>70,000,000 PRCY</td></tr>
+<tr><td>Premine</td><td>60,000,000 PRCY</td></tr>
 </table>

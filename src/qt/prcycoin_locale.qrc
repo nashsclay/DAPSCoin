@@ -1,0 +1,36 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/prcycoin_bg.qm</file>
+        <file alias="ca">locale/prcycoin_ca.qm</file>
+        <file alias="cs">locale/prcycoin_cs.qm</file>
+        <file alias="da">locale/prcycoin_da.qm</file>
+        <file alias="de">locale/prcycoin_de.qm</file>
+        <file alias="en">locale/prcycoin_en.qm</file>
+        <file alias="en_US">locale/prcycoin_en_US.qm</file>
+        <file alias="eo">locale/prcycoin_eo.qm</file>
+        <file alias="es">locale/prcycoin_es.qm</file>
+        <file alias="es_ES">locale/prcycoin_es_ES.qm</file>
+        <file alias="fi">locale/prcycoin_fi.qm</file>
+        <file alias="fr_FR">locale/prcycoin_fr_FR.qm</file>
+        <file alias="hi_IN">locale/prcycoin_hi_IN.qm</file>
+        <file alias="hr">locale/prcycoin_hr.qm</file>
+        <file alias="hr_HR">locale/prcycoin_hr_HR.qm</file>
+        <file alias="it">locale/prcycoin_it.qm</file>
+        <file alias="ja">locale/prcycoin_ja.qm</file>
+        <file alias="ko_KR">locale/prcycoin_ko_KR.qm</file>
+        <file alias="lt_LT">locale/prcycoin_lt_LT.qm</file>
+        <file alias="nl">locale/prcycoin_nl.qm</file>
+        <file alias="pl">locale/prcycoin_pl.qm</file>
+        <file alias="pt">locale/prcycoin_pt.qm</file>
+        <file alias="pt_BR">locale/prcycoin_pt_BR.qm</file>        
+        <file alias="ro_RO">locale/prcycoin_ro_RO.qm</file>
+        <file alias="ru">locale/prcycoin_ru.qm</file>
+        <file alias="sk">locale/prcycoin_sk.qm</file>
+        <file alias="sv">locale/prcycoin_sv.qm</file>
+        <file alias="tr">locale/prcycoin_tr.qm</file>
+        <file alias="uk">locale/prcycoin_uk.qm</file>
+        <file alias="vi">locale/prcycoin_vi.qm</file>
+        <file alias="zh_CN">locale/prcycoin_zh_CN.qm</file>
+        <file alias="zh_TW">locale/prcycoin_zh_TW.qm</file>
+    </qresource>
+</RCC>

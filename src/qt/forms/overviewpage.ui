@@ -236,7 +236,7 @@
             <string>Your current balance</string>
            </property>
            <property name="text">
-            <string notr="true">0.000 000 00 DAPS</string>
+            <string notr="true">0.000 000 00 PRCY</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -359,7 +359,7 @@
               <string>Your current spendable balance</string>
              </property>
              <property name="text">
-              <string notr="true">0.000 000 00 DAPS</string>
+              <string notr="true">0.000 000 00 PRCY</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -400,7 +400,7 @@
               <string>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</string>
              </property>
              <property name="text">
-              <string notr="true">0.000 000 00 DAPS</string>
+              <string notr="true">0.000 000 00 PRCY</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>

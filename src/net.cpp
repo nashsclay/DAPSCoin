@@ -7,7 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/dapscoin-config.h"
+#include "config/prcycoin-config.h"
 #endif
 
 #include "net.h"
@@ -126,7 +126,7 @@ unsigned short GetListenPort() {
 }
 
 bool IsUnsupportedVersion(std::string strSubVer) {
-    return (strSubVer == "/DAPScoin:0.27.5.1/" || strSubVer == "/DAPScoin:1.0.0/" || strSubVer == "/DAPScoin:1.0.1/" || strSubVer == "/DAPS:1.0.1.3/" || strSubVer == "/DAPS:1.0.2/" || strSubVer == "/DAPS:1.0.3.4/" || strSubVer == "/DAPS:1.0.4.6/" || strSubVer == "/DAPS:1.0.5.7/" || strSubVer == "/DAPS:1.0.5.8/" || strSubVer == "/DAPS:1.0.6.5/" || strSubVer == "/DAPS:1.0.6.6/" || strSubVer == "/DAPS:1.0.7.1/" || strSubVer == "/DAPS:1.0.8/" || strSubVer == "/DAPS:1.0.8.1/" || strSubVer == "/DAPS:1.0.8.2/");
+    return false;
 }
 
 // find 'best' local address for a particular peer
@@ -665,7 +665,7 @@ void CNode::copyStats(CNodeStats &stats) {
         nPingUsecWait = GetTimeMicros() - nPingUsecStart;
     }
 
-    // Raw ping time is in microseconds, but show it to user as whole seconds (DAPS users should be well used to small numbers with many decimal places by now :)
+    // Raw ping time is in microseconds, but show it to user as whole seconds (PRCY users should be well used to small numbers with many decimal places by now :)
     stats.dPingTime = (((double) nPingUsecTime) / 1e6);
     stats.dPingWait = (((double) nPingUsecWait) / 1e6);
 
@@ -1133,7 +1133,7 @@ void ThreadMapPort()
             }
         }
 
-        string strDesc = "DAPS " + FormatFullVersion();
+        string strDesc = "PRCY " + FormatFullVersion();
 
         try {
             while (true) {
@@ -1605,7 +1605,7 @@ bool BindListenPort(const CService &addrBind, string &strError, bool fWhiteliste
     if (::bind(hListenSocket, (struct sockaddr *) &sockaddr, len) == SOCKET_ERROR) {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. DAPS is probably already running."),
+            strError = strprintf(_("Unable to bind to %s on this computer. PRCY is probably already running."),
                                  addrBind.ToString());
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %s)"),

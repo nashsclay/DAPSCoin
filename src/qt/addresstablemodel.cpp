@@ -317,7 +317,7 @@ void AddressTableModel::updateEntry(const QString& address,
     const QString& purpose,
     int status)
 {
-    // Update address book model from Dapscoin core
+    // Update address book model from Prcycoin core
     priv->updateEntry(address, label, isMine, purpose, status);
 }
 

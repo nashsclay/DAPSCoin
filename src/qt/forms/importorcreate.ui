@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Welcome to DAPS Wallet Wizard</string>
+   <string>Welcome to PRCY Wallet Wizard</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
    <property name="topMargin">

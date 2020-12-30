@@ -20,9 +20,9 @@ class CWallet;
 struct CBlockTemplate;
 
 /** Run the miner threads */
-void GenerateDapscoins(bool fGenerate, CWallet* pwallet, int nThreads);
+void GeneratePrcycoins(bool fGenerate, CWallet* pwallet, int nThreads);
 /** Run the PoA miner threads */
-void GeneratePoADapscoin(CWallet* pwallet, int period);
+void GeneratePoAPrcycoin(CWallet* pwallet, int period);
 /** Generate a new block, without valid proof-of-work */
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txPub, const CKey& txPriv, CWallet* pwallet, bool fProofOfStake);
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake);

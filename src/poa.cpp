@@ -16,18 +16,14 @@
 
 #include <math.h>
 
-unsigned int N_BITS = 0x1e1ffff0;
-unsigned int N_BITS_SF = 0x1e050000;
+unsigned int N_BITS = 0x1e050000;
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
     if (N_BITS != 0 && pblock->IsPoABlockByVersion()) {
-        if (pindexLast->nHeight < Params().SoftFork()) {
-            return N_BITS;
-        }
-        return N_BITS_SF;
+        return N_BITS;
     }
-    /* current difficulty formula, dapscoin - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
+    /* current difficulty formula, prcycoin - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
     const CBlockIndex* BlockLastSolved = pindexLast;
     const CBlockIndex* BlockReading = pindexLast;
     int64_t nActualTimespan = 0;
@@ -63,15 +59,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         // ppcoin: target change every block
         // ppcoin: retarget with exponential moving toward target spacing
         uint256 bnNew;
-        if (pindexLast->nHeight < Params().SoftFork()) {
-            bnNew.SetCompact(pindexLast->nBits);
-        } else {
-            if (pindexLast->IsProofOfStake()) {
-                bnNew.SetCompact(pindexLast->nBits);    
-            } else {
-                bnNew.SetCompact(pLastPoS->nBits);
-            }
-        }
+        bnNew.SetCompact(pindexLast->nBits);
 
         int64_t nInterval = nTargetTimespan / nTargetSpacing;
         bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
@@ -215,10 +203,6 @@ bool CheckPoAContainRecentHash(const CBlock& block)
         }
     } else {
         if (pindex->nHeight >= Params().START_POA_BLOCK()) {
-            // Bypass bad block
-            if (pindex->nHeight == 719390) {
-                return true;
-            }
             CBlock prevPoablock;
             CBlockIndex* pblockindex = pindex;
             if (!ReadBlockFromDisk(prevPoablock, pblockindex))
@@ -300,9 +284,6 @@ bool CheckNumberOfAuditedPoSBlocks(const CBlock& block, const CBlockIndex* pinde
     if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() || block.posBlocksAudited.size() > (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED() ) {
         ret = false;
     }
-    if (pindex->nHeight <= Params().HardFork()) {
-        ret = true;
-    }
     return ret;
 }
 
@@ -378,10 +359,6 @@ bool CheckPoAMerkleRoot(const CBlock& block, bool* fMutate)
 //A PoA block cannot contain information of any PoA block information (hash, height, timestamp)
 bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block, const CBlockIndex* pindex)
 {
-    // Bypass bad block
-    if (pindex->nHeight == 719456) {
-        return true;
-    }
     uint32_t numOfPoSBlocks = block.posBlocksAudited.size();
     for (uint32_t i = 0; i < numOfPoSBlocks; i++) {
         PoSBlockSummary pos = block.posBlocksAudited.at(i);
@@ -461,16 +438,15 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
 
 bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 {
-    bool ret = true;
-    if (pindex->nHeight >= Params().HardFork()) {
-        ret = block.vtx.size() == 1;
-        ret = ret && block.vtx[0].vout.size() == 1;
-        ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * 100 * COIN;
-        ret = ret && VerifyZeroBlindCommitment(block.vtx[0].vout[0]);
-    }
+    bool ret = false;
+    ret = block.vtx.size() == 1;
+    ret = ret && block.vtx[0].vout.size() == 1;
+    ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * 0.5 * COIN;
+    ret = ret && VerifyZeroBlindCommitment(block.vtx[0].vout[0]);
+
     return ret;
 }
 
 bool IsFixedAudit(std::string txid) {
-    return (txid == "ff67a6645a36a82a3885c989951680917c9e2de90f59665c8130701ccdcbb9f9");
+    return (txid == "");
 }

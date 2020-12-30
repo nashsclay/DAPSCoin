@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=DAPScoin-qt
-Comment=DAPScoin QT Wallet
-Exec=dapscoin-qt
-Icon=dapscoin
-Categories=Utility;

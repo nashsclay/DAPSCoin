@@ -35,7 +35,7 @@ class TxViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 public:
-    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::DAPS)
+    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::PRCY)
     {
     }
 
@@ -140,13 +140,13 @@ OverviewPage::~OverviewPage()
     delete ui;
 }
 
-void OverviewPage::getPercentage(CAmount nUnlockedBalance, QString& sDAPSPercentage)
+void OverviewPage::getPercentage(CAmount nUnlockedBalance, QString& sPRCYPercentage)
 {
     int nPrecision = 2;
 
     double dPercentage = 100.0;
     
-    sDAPSPercentage = "(" + QLocale(QLocale::system()).toString(dPercentage, 'f', nPrecision) + " %)";
+    sPRCYPercentage = "(" + QLocale(QLocale::system()).toString(dPercentage, 'f', nPrecision) + " %)";
 }
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, 
                               const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance)
@@ -168,7 +168,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
         //if staking enabled
         nSpendableDisplayed = nSpendableDisplayed > nReserveBalance ? nReserveBalance:nSpendableDisplayed;
     }
-    // DAPS labels
+    // PRCY labels
     //TODO-NOTE: Remove immatureBalance from showing on qt wallet (as requested)
     if (walletStatus == WalletModel::Locked || walletStatus == WalletModel::UnlockedForAnonymizationOnly) {
         ui->labelBalance_2->setText("Locked; Hidden");
@@ -264,7 +264,7 @@ void OverviewPage::setWalletModel(WalletModel* model)
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
         updateLockStatus(walletModel->getEncryptionStatus());
     }
-    // update the display unit, to not use the default ("DAPS")
+    // update the display unit, to not use the default ("PRCY")
     updateDisplayUnit();
 
     // Hide orphans
@@ -311,7 +311,7 @@ void OverviewPage::showBalanceSync(bool fShow){
         ui->labelBalanceText->setVisible(true);
         isSyncingBalance = fShow;
         if (isSyncingBalance){
-            QString tooltip = "The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.";
+            QString tooltip = "The displayed information may be out of date. Your wallet automatically synchronizes with the PRCY network after a connection is established, but this process has not completed yet.";
             ui->labelUnconfirmed->setToolTip(tooltip);
             ui->labelBalance->setToolTip(tooltip);
         } else {
@@ -332,11 +332,11 @@ void OverviewPage::showBlockSync(bool fShow)
 
     if (isSyncingBlocks){
         ui->labelBlockStatus->setText("(syncing)");
-        ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the DAPS network after a connection is established, but this process has not completed yet.");
+        ui->labelBlockStatus->setToolTip("The displayed information may be out of date. Your wallet automatically synchronizes with the PRCY network after a connection is established, but this process has not completed yet.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignRight|Qt::AlignVCenter));
     } else {
         ui->labelBlockStatus->setText("(synced)");
-        ui->labelBlockStatus->setToolTip("Your wallet is fully synchronized with the DAPS network.");
+        ui->labelBlockStatus->setToolTip("Your wallet is fully synchronized with the PRCY network.");
         ui->labelBlockCurrent->setAlignment((Qt::AlignHCenter|Qt::AlignVCenter));
     }
 }

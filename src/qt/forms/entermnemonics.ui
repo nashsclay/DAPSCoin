@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>DAPS Wallet Recovery Wizard</string>
+   <string>PRCY Wallet Recovery Wizard</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
    <property name="topMargin">

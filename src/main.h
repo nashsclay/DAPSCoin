@@ -10,7 +10,7 @@
 #define BITCOIN_MAIN_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/dapscoin-config.h"
+#include "config/prcycoin-config.h"
 #endif
 
 #include "amount.h"
@@ -123,7 +123,7 @@ static const unsigned char REJECT_DUST = 0x41;
 static const unsigned char REJECT_INSUFFICIENTFEE = 0x42;
 static const unsigned char REJECT_CHECKPOINT = 0x43;
 
-static const std::string FOUNDATION_WALLET = "41jsGvYo3GMWCvFVZekSnrRV8ptJfMGhuhRjB9tYEv5NSA47VqyLp6gKSCpS3wHTBhCGu9DJ5k1HMWXeHVnL9nUs15CjyeCQDiT";
+//static const std::string FOUNDATION_WALLET = "PandirQr3T895NCsDrSKdCD4TJ324z3VDB8Amcj6wx2kKdB7LztTDefdvP4QTMdgGA72W7SHzQeFzLTo2sikmmbd19E5C8UZbbi";
 
 struct BlockHasher {
     size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
@@ -154,7 +154,7 @@ extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern int64_t nMaxTipAge;
 extern bool fVerifyingBlocks;
-extern bool fGenerateDapscoins;
+extern bool fGeneratePrcycoins;
 
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
@@ -254,7 +254,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 CAmount GetBlockValue(const CBlockIndex *ptip);
-CAmount TeamRewards(const CBlockIndex *ptip);
+//CAmount TeamRewards(const CBlockIndex *ptip);
 CAmount PoSBlockReward();
 
 void RemoveInvalidTransactionsFromMempool();
@@ -377,7 +377,7 @@ bool IsTransactionInChain(uint256 txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
 void PopulateInvalidOutPointMap();
 bool ValidOutPoint(const COutPoint out, int nHeight);
-bool RecalculateDAPSSupply(int nHeightStart);
+bool RecalculatePRCYSupply(int nHeightStart);
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError);
 
 

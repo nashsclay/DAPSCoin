@@ -4,7 +4,7 @@
 
 #include "random.h"
 
-#include "test/test_dapscoin.h"
+#include "test/test_prcycoin.h"
 
 #include <boost/test/unit_test.hpp>
 

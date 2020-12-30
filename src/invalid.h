@@ -3,10 +3,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DAPScoin_INVALID_H
-#define DAPScoin_INVALID_H
+#ifndef PRCYcoin_INVALID_H
+#define PRCYcoin_INVALID_H
 
-#endif //DAPScoin_INVALID_H
+#endif //PRCYcoin_INVALID_H
 
 #include <univalue/include/univalue.h>
 #include <primitives/transaction.h>

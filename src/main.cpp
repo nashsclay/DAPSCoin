@@ -41,7 +41,7 @@ using namespace boost;
 using namespace std;
 
 #if defined(NDEBUG)
-#error "DAPS cannot be compiled without assertions."
+#error "PRCY cannot be compiled without assertions."
 #endif
 
 // 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
@@ -655,8 +655,8 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         }
         int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
-        if (blockValue > posBlockReward) {
-            //numUTXO - 1 is team rewards, numUTXO - 2 is masternode reward
+        /*if (blockValue > posBlockReward) {
+            numUTXO - 1 is team rewards, numUTXO - 2 is masternode reward
             const CTxOut& mnOut = coinstake.vout[numUTXO - 2];
             std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
             if (!VerifyDerivedAddress(mnOut, mnsa)) {
@@ -675,7 +675,7 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
                 LogPrintf("ReVerifyPoSBlock() : Incorrect derived address PoS rewards for foundation");
                 return false;
             }
-        } else {
+        } else {*/
             //there is no team rewards in this block
             const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
             std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
@@ -683,12 +683,12 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
                 LogPrintf("ReVerifyPoSBlock() : Incorrect derived address for masternode rewards");
                 return false;
             }
-        }
+        //}
 
         // track money supply and mint amount info
         CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
         pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn - nFees;
-        //LogPrintf("%s: nMoneySupplyPrev=%d, pindex->nMoneySupply=%d, nFees = %d", __func__, nMoneySupplyPrev, pindex->nMoneySupply, nFees);
+        LogPrint("supply", "%s: nMoneySupplyPrev=%d, pindex->nMoneySupply=%d, nFees = %d", __func__, nMoneySupplyPrev, pindex->nMoneySupply, nFees);
         pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
 
         //PoW phase redistributed fees to miner. PoS stage destroys fees.
@@ -1468,7 +1468,7 @@ bool VerifyShnorrKeyImageTxIn(const CTxIn& txin, uint256 ctsHash)
 bool VerifyShnorrKeyImageTx(const CTransaction& tx)
 {
     //check if a transaction is staking or spending collateral
-    //this assumes that the transaction is already checked for either a staking transaction or transactions spending only UTXOs of 1M DAPS
+    //this assumes that the transaction is already checked for either a staking transaction or transactions spending only UTXOs of 2.5K PRCY
     if (!tx.IsCoinStake()) return true;
     uint256 cts = GetTxInSignatureHash(tx.vin[0]);
     return VerifyShnorrKeyImageTxIn(tx.vin[0], cts);
@@ -1606,15 +1606,6 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                     if (ancestor != atTheblock) {
                         LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", alldecoys[j].hash.GetHex(), tip->GetBlockHash().GetHex());
                         return false;
-                    }
-
-                    if (atTheblock->IsProofOfAudit() && chainActive.Height() >= Params().HardFork()) {
-                        CBlock b;
-                        ReadBlockFromDisk(b, atTheblock);
-                        if (!CheckPoABlockRewardAmount(b, atTheblock)) {
-                            LogPrintf("Reject poa transaction %s\n");
-                            return false;
-                        }
                     }
                 }
             }
@@ -2151,39 +2142,39 @@ double ConvertBitsToDouble(unsigned int nBits)
 
 CAmount PoSBlockReward()
 {
-    return 900 * COIN;
+    return 1 * COIN;
 }
 
-CAmount TeamRewards(const CBlockIndex* ptip)
-{
-    const CBlockIndex* pForkTip = ptip;
-    if (!ptip) {
-        pForkTip = chainActive.Tip();
-    }
+//CAmount TeamRewards(const CBlockIndex* ptip)
+//{
+//    const CBlockIndex* pForkTip = ptip;
+//    if (!ptip) {
+//        pForkTip = chainActive.Tip();
+//    }
 
-    if (!pForkTip->IsProofOfAudit()) return 0;
-    const CBlockIndex* lastPoABlock = pForkTip;
-    if (lastPoABlock->hashPrevPoABlock.IsNull()) {
-        //pay daps team after the first PoA block
-        return (pForkTip->nHeight - Params().LAST_POW_BLOCK() - 1 + 1 /*+1 for the being created PoS block*/) * 50 * COIN;
-    }
+//    if (!pForkTip->IsProofOfAudit() || pForkTip->nHeight >= Params().REMOVE_REWARD_BLOCK()) return 0;
+//    const CBlockIndex* lastPoABlock = pForkTip;
+//    if (lastPoABlock->hashPrevPoABlock.IsNull()) {
+//        //pay prcy team after the first PoA block
+//        return (pForkTip->nHeight - Params().LAST_POW_BLOCK() - 1 + 1 /*+1 for the being created PoS block*/) * 0.5 * COIN;
+//    }
 
-    //loop back to find the PoA block right after which the daps team is paid
-    uint256 lastPoAHash = lastPoABlock->hashPrevPoABlock;
-    CAmount ret = 0;
-    int numPoABlocks = 1;
-    while (!lastPoAHash.IsNull()) {
-        if (numPoABlocks != 0 && numPoABlocks % Params().TEAM_REWARD_FREQUENCY == 0) break;
-        CBlockIndex* p = mapBlockIndex[lastPoAHash];
-        lastPoAHash = p->hashPrevPoABlock;
-        numPoABlocks++;
-    }
+    //loop back to find the PoA block right after which the prcy team is paid
+//    uint256 lastPoAHash = lastPoABlock->hashPrevPoABlock;
+//    CAmount ret = 0;
+//    int numPoABlocks = 1;
+//    while (!lastPoAHash.IsNull()) {
+//        if (numPoABlocks != 0 && numPoABlocks % Params().TEAM_REWARD_FREQUENCY == 0) break;
+//        CBlockIndex* p = mapBlockIndex[lastPoAHash];
+//        lastPoAHash = p->hashPrevPoABlock;
+//        numPoABlocks++;
+//    }
 
-    if (!lastPoAHash.IsNull() && numPoABlocks != 0 && numPoABlocks % 24 == 0) {
-        ret = (pForkTip->nHeight - (mapBlockIndex[lastPoAHash]->nHeight + 1) - numPoABlocks + 1 /*+1 for the being created PoS block*/) * 50 * COIN;
-    }
-    return ret;
-}
+//    if (!lastPoAHash.IsNull() && numPoABlocks != 0 && numPoABlocks % 24 == 0) {
+//        ret = (pForkTip->nHeight - (mapBlockIndex[lastPoAHash]->nHeight + 1) - numPoABlocks + 1 /*+1 for the being created PoS block*/) * 0.5 * COIN;
+//    }
+//    return ret;
+//}
 
 int64_t GetBlockValue(const CBlockIndex* ptip)
 {
@@ -2195,14 +2186,14 @@ int64_t GetBlockValue(const CBlockIndex* ptip)
     }
 
     if (pForkTip->nMoneySupply >= Params().TOTAL_SUPPLY) {
-        //zero rewards when total supply reach 70B DAPS
+        //zero rewards when total supply reach 70M PRCY
         return 0;
     }
     if (pForkTip->nHeight < Params().LAST_POW_BLOCK()) {
-        nSubsidy = 120000000 * COIN;
+        nSubsidy = 120000 * COIN;
     } else {
         nSubsidy = PoSBlockReward();
-        nSubsidy += TeamRewards(pForkTip);
+ //       nSubsidy += TeamRewards(pForkTip);
     }
 
     if (pForkTip->nMoneySupply + nSubsidy >= Params().TOTAL_SUPPLY) {
@@ -2221,7 +2212,7 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nMasternodeCount, int nHeight)
         nMasternodeCount = mnodeman.size();
     }
 
-    int64_t mNodeCoins = nMasternodeCount * 1000000 * COIN;
+    int64_t mNodeCoins = nMasternodeCount * 5000 * COIN;
 
     // Use this log to compare the masternode count for different clients
     LogPrintf("Adjusting seesaw at height %d with %d masternodes (without drift: %d) at %ld\n", nHeight,
@@ -2357,7 +2348,7 @@ bool VerifyZeroBlindCommitment(const CTxOut& out)
 
 bool VerifyDerivedAddress(const CTxOut& out, std::string stealth)
 {
-    CPubKey foundationalGenPub, pubView, pubSpend;
+    CPubKey addressGenPub, pubView, pubSpend;
     bool hasPaymentID;
     uint64_t paymentID;
     if (!CWallet::DecodeStealthAddress(stealth, pubView, pubSpend, hasPaymentID, paymentID)) {
@@ -2366,13 +2357,13 @@ bool VerifyDerivedAddress(const CTxOut& out, std::string stealth)
     }
 
     //reconstruct destination address from masternode address and tx private key
-    CKey foundationTxPriv;
-    foundationTxPriv.Set(&(out.txPriv[0]), &(out.txPriv[0]) + 32, true);
-    CPubKey foundationTxPub = foundationTxPriv.GetPubKey();
+    CKey addressTxPriv;
+    addressTxPriv.Set(&(out.txPriv[0]), &(out.txPriv[0]) + 32, true);
+    CPubKey foundationTxPub = addressTxPriv.GetPubKey();
     CPubKey origin(out.txPub.begin(), out.txPub.end());
     if (foundationTxPub != origin) return false;
-    CWallet::ComputeStealthDestination(foundationTxPriv, pubView, pubSpend, foundationalGenPub);
-    CScript foundationalScript = GetScriptForDestination(foundationalGenPub);
+    CWallet::ComputeStealthDestination(addressTxPriv, pubView, pubSpend, addressGenPub);
+    CScript foundationalScript = GetScriptForDestination(addressGenPub);
     return foundationalScript == out.scriptPubKey;
 }
 
@@ -2797,11 +2788,11 @@ static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck()
 {
-    util::ThreadRename("dapscoin-scriptch");
+    util::ThreadRename("prcycoin-scriptch");
     scriptcheckqueue.Thread();
 }
 
-bool RecalculateDAPSSupply(int nHeightStart)
+bool RecalculatePRCYSupply(int nHeightStart)
 {
     const int chainHeight = chainActive.Height();
     if (nHeightStart > chainHeight)
@@ -2810,12 +2801,12 @@ bool RecalculateDAPSSupply(int nHeightStart)
     CBlockIndex* pindex = chainActive[nHeightStart];
     CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
 
-    uiInterface.ShowProgress(_("Recalculating DAPS supply..."), 0);
+    uiInterface.ShowProgress(_("Recalculating PRCY supply..."), 0);
     while (true) {
         if (pindex->nHeight % 1000 == 0) {
             LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
             int percent = std::max(1, std::min(99, (int)((double)((pindex->nHeight - nHeightStart) * 100) / (chainHeight - nHeightStart))));
-            uiInterface.ShowProgress(_("Recalculating DAPS supply..."), percent);
+            uiInterface.ShowProgress(_("Recalculating PRCY supply..."), percent);
         }
         CBlock block;
         assert(ReadBlockFromDisk(block, pindex));
@@ -3054,7 +3045,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
         int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
-        if (blockValue > posBlockReward) {
+        /*if (blockValue > posBlockReward) {
             //numUTXO - 1 is team rewards, numUTXO - 2 is masternode reward
             const CTxOut& mnOut = coinstake.vout[numUTXO - 2];
             std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
@@ -3066,15 +3057,15 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (foundationOut.nValue != teamReward)
                 return state.DoS(100, error("ConnectBlock() : Incorrect amount PoS rewards for foundation, reward = %d while the correct reward = %d", foundationOut.nValue, teamReward));
 
-            if (!VerifyDerivedAddress(foundationOut, FOUNDATION_WALLET))
-                return state.DoS(100, error("ConnectBlock() : Incorrect derived address PoS rewards for foundation"));
-        } else {
+            //if (!VerifyDerivedAddress(foundationOut, FOUNDATION_WALLET))
+                //return state.DoS(100, error("ConnectBlock() : Incorrect derived address PoS rewards for foundation"));
+        } else {*/
             //there is no team rewards in this block
             const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
             std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
             if (!VerifyDerivedAddress(mnOut, mnsa))
                 return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
-        }
+        //}
     }
 
     // track money supply and mint amount info
@@ -4142,7 +4133,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             if (block.vtx[i].IsCoinStake())
                 return state.DoS(100, error("CheckBlock() : more than one coinstake"));
 
-        //check foundation wallet address is receiving 50 DAPS
+        //check foundation wallet address is receiving 50 PRCY
         const CTransaction& coinstake = block.vtx[1];
         int numUTXO = coinstake.vout.size();
 
@@ -4185,7 +4176,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 nHeight = (*mi).second->nHeight + 1;
         }
 
-        // DAPScoin
+        // PRCYcoin
         // It is entierly possible that we don't have enough data and this could fail
         // (i.e. the block could indeed be valid). Store the block for later consideration
         // but issue an initial reject message.
@@ -4461,41 +4452,6 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     }
 
     int nHeight = pindex->nHeight;
-
-    if (pindex->nHeight >= Params().HardFork()) {
-            for(size_t i = 0; i < block.vtx.size(); i++) {
-                const CTransaction& tx = block.vtx[i];
-                for (unsigned int i = 0; i < tx.vin.size(); i++) {
-                    if (tx.IsCoinBase()) continue;
-                    //check output and decoys
-                    std::vector<COutPoint> alldecoys = tx.vin[i].decoys;
-
-                    alldecoys.push_back(tx.vin[i].prevout);
-                    for (size_t j = 0; j < alldecoys.size(); j++) {
-                        CTransaction prev;
-                        uint256 bh;
-                        if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
-                            return false;
-                        }
-
-                        if (mapBlockIndex.count(bh) < 1) return false;
-                        CBlockIndex* atTheblock = mapBlockIndex[bh];
-                        if (!atTheblock) {
-                            //LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", alldecoys[j].hash.GetHex(), tip->GetBlockHash().GetHex());
-                            return false;
-                        } else {
-                            CBlock bhBlock;
-                            ReadBlockFromDisk(bhBlock, atTheblock);
-                            if (atTheblock->IsProofOfAudit()) {
-                                if (prev.vout[alldecoys[j].n].nValue > 50000 * COIN || prev.vout[alldecoys[j].n].nValue != bhBlock.posBlocksAudited.size() * 100 * COIN) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
     // Write block to history file
     try {

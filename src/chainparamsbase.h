@@ -9,8 +9,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between dapscoin-cli and dapscoind)
- * of a given instance of the Dapscoin system.
+ * CBaseChainParams defines the base parameters (shared between prcycoin-cli and prcycoind)
+ * of a given instance of the Prcycoin system.
  */
 class CBaseChainParams
 {

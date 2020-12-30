@@ -57,7 +57,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     dblVal->setNotation(QDoubleValidator::StandardNotation);
     dblVal->setLocale(lo);
     ui->lineEditWithhold->setValidator(dblVal);
-    ui->lineEditWithhold->setPlaceholderText("DAPS Amount");
+    ui->lineEditWithhold->setPlaceholderText("PRCY Amount");
     if (nReserveBalance > 0)
         ui->lineEditWithhold->setText(BitcoinUnits::format(0, nReserveBalance).toUtf8());
 
@@ -148,7 +148,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         QFont font = ui->addNewFunds->font();
         font.setStrikeOut(true);
         ui->addNewFunds->setFont(font);
-        ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 DAPS fee each time you receive a new deposit that needs to be consolidated for staking.");
+        ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 PRCY fee each time you receive a new deposit that needs to be consolidated for staking.");
     }
     ui->mapPortUpnp->setChecked(settings.value("fUseUPnP", false).toBool());
     ui->minimizeToTray->setChecked(settings.value("fMinimizeToTray", false).toBool());
@@ -163,7 +163,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
 
 void OptionsPage::setStakingToggle()
 {
-    ui->toggleStaking->setState(fGenerateDapscoins);
+    ui->toggleStaking->setState(fGeneratePrcycoins);
 }
 
 void OptionsPage::setModel(WalletModel* model)
@@ -208,7 +208,7 @@ void OptionsPage::on_pushButtonSave_clicked() {
         ui->lineEditWithhold->setStyleSheet("border: 2px solid red");
         QMessageBox msgBox;
         msgBox.setWindowTitle("Reserve Balance Empty");
-        msgBox.setText("DAPS reserve amount is empty and must be a minimum of 1.\nPlease click Disable if you would like to turn it off.");
+        msgBox.setText("PRCY reserve amount is empty and must be a minimum of 1.\nPlease click Disable if you would like to turn it off.");
         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
         msgBox.setIcon(QMessageBox::Information);
         msgBox.exec();
@@ -234,7 +234,7 @@ void OptionsPage::on_pushButtonSave_clicked() {
     QString reserveBalance = ui->lineEditWithhold->text().trimmed();
     QMessageBox msgBox;
     msgBox.setWindowTitle("Reserve Balance Set");
-    msgBox.setText("Reserve balance of " + reserveBalance + " DAPS is successfully set.");
+    msgBox.setText("Reserve balance of " + reserveBalance + " PRCY is successfully set.");
     msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
     msgBox.setIcon(QMessageBox::Information);
     msgBox.exec();
@@ -478,14 +478,14 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             stt == UNSTAKABLE_BALANCE_TOO_LOW_CONSOLIDATION_FAILED) {
             QMessageBox msgBox;
             if (stt == StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW) {
-                errorMessage = "Your stakeable balance is under the threshold of 400 000 DAPS. Please deposit more DAPS into your account in order to enable staking.";
+                errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. Please deposit more PRCY into your account in order to enable staking.";
             } else if (stt == UNSTAKABLE_BALANCE_TOO_LOW_CONSOLIDATION_FAILED) {
-                errorMessage = "Your balance requires a consolidation transaction which incurs a fee of between  " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " DAPS. However after that transaction fee, your balance will be below the staking threshold of 400 000 DAPS. Please deposit more DAPS into your account or reduce your reserved amount in order to enable staking.";
+                errorMessage = "Your balance requires a consolidation transaction which incurs a fee of between  " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY. However after that transaction fee, your balance will be below the staking threshold of 2500 PRCY. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.";
             } else if (stt == UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH) {
-                errorMessage = "Your stakeable balance is under the threshold of 400 000 DAPS. This is due to your reserve balance being too high. Please deposit more DAPS into your account or reduce your reserved amount in order to enable staking.";
+                errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. This is due to your reserve balance being too high. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.";
             } else {
                 CAmount totalFee = maxFee + pwalletMain->ComputeFee(1, 2, MAX_RING_SIZE);
-                errorMessage = "Your stakeable balance is under the threshold of 400 000 DAPS. This is due to your reserve balance of " + FormatMoney(nReserveBalance) + " DAPS being too high. The wallet software has tried to consolidate your funds with the reserve balance but without success because of a consolidation fee of " + FormatMoney(totalFee) + " DAPS. Please wait around 10 minutes for the wallet to resolve the reserve to enable staking.";
+                errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. This is due to your reserve balance of " + FormatMoney(nReserveBalance) + " PRCY being too high. The wallet software has tried to consolidate your funds with the reserve balance but without success because of a consolidation fee of " + FormatMoney(totalFee) + " PRCY. Please wait around 10 minutes for the wallet to resolve the reserve to enable staking.";
             }
             QString msg = QString::fromStdString(errorMessage);
             msgBox.setWindowTitle("Warning: Staking Issue");
@@ -511,9 +511,9 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
 
         QMessageBox::StandardButton reply;
         if (stt == StakingStatusError::STAKABLE_NEED_CONSOLIDATION) {
-            errorMessage = "In order to enable staking with 100% of your current balance, your previous DAPS deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " DAPS.\n\nWould you like to do this?";
+            errorMessage = "In order to enable staking with 100% of your current balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY.\n\nWould you like to do this?";
         } else {
-            errorMessage = "In order to enable staking with 100% of your current balance except the reserve balance, your previous DAPS deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " DAPS.\n\nWould you like to do this?";
+            errorMessage = "In order to enable staking with 100% of your current balance except the reserve balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY.\n\nWould you like to do this?";
         }
         reply = QMessageBox::question(this, "Staking Needs Consolidation", QString::fromStdString(errorMessage), QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes) { 

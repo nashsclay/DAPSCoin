@@ -15,7 +15,7 @@ typedef int64_t CAmount;
 
 static const CAmount COIN = 100000000;
 static const CAmount CENT = 1000000;
-static const CAmount BASE_FEE = COIN;
+static const CAmount MAX_FEE = COIN / 100;
 
 /** Type-safe wrapper class to for fee rates
  * (how much to pay based on transaction size)

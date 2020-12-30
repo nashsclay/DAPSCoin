@@ -49,7 +49,8 @@ void RevealTxDialog::setTxPrivKey(QString strPrivKey)
 
 void RevealTxDialog::setTxFee(CAmount fee)
 {
-    ui->lblTxFee->setText(BitcoinUnits::floorHtmlWithUnit(BitcoinUnits::DAPS, fee, false, BitcoinUnits::separatorAlways));
+    int nDisplayUnit;
+    ui->lblTxFee->setText(BitcoinUnits::formatHtmlWithUnit(0, fee, false, BitcoinUnits::separatorAlways));
 }
 
 void RevealTxDialog::on_buttonBox_accepted()
