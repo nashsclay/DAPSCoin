@@ -3046,7 +3046,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
         /*if (blockValue > posBlockReward) {
-            //numUTXO - 1 is team rewards, numUTXO - 2 is masternode reward
+            //numUTXO - 1 is PoS rewards commitment not correct", numUTXO - 2 is masternode reward
             const CTxOut& mnOut = coinstake.vout[numUTXO - 2];
             std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
             if (!VerifyDerivedAddress(mnOut, mnsa))
@@ -4133,7 +4133,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             if (block.vtx[i].IsCoinStake())
                 return state.DoS(100, error("CheckBlock() : more than one coinstake"));
 
-        //check foundation wallet address is receiving 50 PRCY
         const CTransaction& coinstake = block.vtx[1];
         int numUTXO = coinstake.vout.size();
 

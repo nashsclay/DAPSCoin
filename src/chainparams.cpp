@@ -61,22 +61,22 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("000009e175f8c0d2deb7c5b5567a871b7ad9c39ad3ed692883b1fcd8764bb5e9"))
-    (500, uint256("00000d2aec31a540a35daee9ee68245d357634da1101cd2468397c4f1bf9c7de")) // Final POW Block
-    (561, uint256("b9e090de7a045ad2330c7ee4622e0c070b9d6d7664ccf5415ef937aefa9ed301")) // First PoA Block
-    (6000, uint256("c90653e0b45c0c1c4f4a44aba6a8ef0bae98a9215f2e828fc338778c3e0583e4")) // REMOVE_REWARD_BLOCK()
-    (7224, uint256("825c4e559fb9b5bb61a6e60235e296283eae70b16c872c332e6d4d95bc106e77")) // Latest PoA Block before release
+    (0, uint256("000006957e238ff4e6bcf00c8a7d1b3e7249c0a2109b0391d8740821a40c1d8c"))
+    (500, uint256("00214da9b906c7c14558395b9bc88293301e6e5f87a714194079dd651293fadb")) // Final POW Block
+    (561, uint256("54872c72e81b34117bc5a6095d6f1b8d85746992d2513d7adc90a2aceed1651e")) // First PoA Block
+    (562, uint256("0f00d3a6636c8a265724764da082fdef8106fce7057dfdda94ab6537f7211b4f"))
+	(796, uint256("9e6125b2bb455dfebc0144c0f1b0055ca520a37ae21235dea1053d50e54cde30")) // Last PoA Block before compile
     ;
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1609817800, // * UNIX timestamp of last checkpoint block
-    14452,    // * total number of transactions between genesis and last checkpoint
+    1610548984,          // * UNIX timestamp of last checkpoint block
+    1225,          // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     1440        // * estimated number of transactions per day after checkpoint
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
-    boost::assign::map_list_of(0, uint256("000003f79defe180bfe631095c0336569fa44fe2a799864114fad455012fdc96"));
+    boost::assign::map_list_of(0, uint256("000001488be8bb442cd72cb737ade49a31de90dbbe5dce36f7d7e07f5dde2b77"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
     0,
@@ -84,7 +84,7 @@ static const Checkpoints::CCheckpointData dataTestnet = {
     0};
 
 static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
-    boost::assign::map_list_of(0, uint256("6fb3bfd9708a5d8695d25acbe45abd8be92f2eb72fcaa792e94703e179e424d2"));
+    boost::assign::map_list_of(0, uint256("690cbb5c7ae999de1de49948a3c109d3b15fe4de4297980de8ff0cbfe3c7823a"));
 static const Checkpoints::CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
     0,
@@ -141,7 +141,7 @@ public:
          *     CTxOut(nValue=50.00000000, scriptPubKey=0xA9037BAC7050C479B121CF)
          *   vMerkleTree: e0028e
          */
-        const char* pszTimestamp = "31 December 2020 PRCY Coin Development Team - Privacy is Your Right";
+        const char* pszTimestamp = "12 January 2021 PRCY Coin Development Team - Privacy is Your Right";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -152,12 +152,12 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1609372800; //12/31/2020 @ 12:00am (GMT)
+        genesis.nTime = 1610409600; // 1/12/2021 @ 12:00am (GMT)
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 26889091;
+        genesis.nNonce = 28141687;
 
         //change blockhash from 0x00000e9468bba3df97334bfb5015543488a0fb38193c82b101472937590e3037 because of transaction structure change
-        if(genesis.GetHash()!=uint256("000009e175f8c0d2deb7c5b5567a871b7ad9c39ad3ed692883b1fcd8764bb5e9"))
+        if(genesis.GetHash()!=uint256("000006957e238ff4e6bcf00c8a7d1b3e7249c0a2109b0391d8740821a40c1d8c"))
         {
             printf("Searchingforgenesisblock...\n");
             uint256 hashTarget=uint256().SetCompact(genesis.nBits);
@@ -189,22 +189,16 @@ public:
 
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("000009e175f8c0d2deb7c5b5567a871b7ad9c39ad3ed692883b1fcd8764bb5e9"));
-        assert(genesis.hashMerkleRoot == uint256("8d5980c6a90cc08d2fe9f336cafb0245062b2a437b056433992c5a046b40354b"));
+        assert(hashGenesisBlock == uint256("000006957e238ff4e6bcf00c8a7d1b3e7249c0a2109b0391d8740821a40c1d8c"));
+        assert(genesis.hashMerkleRoot == uint256("cd01f1ca20c22b336f1ee83af9fd8b7facbf42083bf3bed49af045f5cadc9cd4"));
 
         // nodes with support for servicebits filtering should be at the top
         vSeeds.push_back(CDNSSeedData("seed.prcycoin.com", "seed.prcycoin.com"));        // Single node address
-        vSeeds.push_back(CDNSSeedData("seed1.prcycoin.com", "seed1.prcycoin.com"));      // Single node address
-        vSeeds.push_back(CDNSSeedData("seed2.prcycoin.com", "seed2.prcycoin.com"));      // Single node address
-        vSeeds.push_back(CDNSSeedData("seed3.prcycoin.com", "seed3.prcycoin.com"));      // Single node address
-        vSeeds.push_back(CDNSSeedData("seed4.prcycoin.com", "seed4.prcycoin.com"));      // Single node address
-        vSeeds.push_back(CDNSSeedData("seed5.prcycoin.com", "seed5.prcycoin.com"));      // Single node address
-        vSeeds.push_back(CDNSSeedData("vps.prcycoin.com", "vps.prcycoin.com"));          // Single node address
+        vSeeds.push_back(CDNSSeedData("seed1.prcycoin.com", "seed1.prcycoin.com"));        // Single node address
+        vSeeds.push_back(CDNSSeedData("seed2.prcycoin.com", "seed2.prcycoin.com"));        // Single node address
+        vSeeds.push_back(CDNSSeedData("vps.prcycoin.com", "vps.prcycoin.com"));        // Single node address
         vSeeds.push_back(CDNSSeedData("vps1.prcycoin.com", "vps1.prcycoin.com"));        // Single node address
         vSeeds.push_back(CDNSSeedData("vps2.prcycoin.com", "vps2.prcycoin.com"));        // Single node address
-        vSeeds.push_back(CDNSSeedData("vps3.prcycoin.com", "vps3.prcycoin.com"));        // Single node address
-        vSeeds.push_back(CDNSSeedData("vps4.prcycoin.com", "vps4.prcycoin.com"));        // Single node address
-        vSeeds.push_back(CDNSSeedData("vps5.prcycoin.com", "vps5.prcycoin.com"));        // Single node address
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 55);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 61);
@@ -277,9 +271,9 @@ public:
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1608422400;
-        genesis.nNonce = 20912564;
+        genesis.nNonce = 23323155;
 
-        if(genesis.GetHash()!=uint256("000003f79defe180bfe631095c0336569fa44fe2a799864114fad455012fdc96"))
+        if(genesis.GetHash()!=uint256("000001488be8bb442cd72cb737ade49a31de90dbbe5dce36f7d7e07f5dde2b77"))
         {
             printf("Searchingforgenesisblock...\n");
             uint256 hashTarget=uint256().SetCompact(genesis.nBits);
@@ -309,7 +303,7 @@ public:
         }
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("000003f79defe180bfe631095c0336569fa44fe2a799864114fad455012fdc96"));
+        assert(hashGenesisBlock == uint256("000001488be8bb442cd72cb737ade49a31de90dbbe5dce36f7d7e07f5dde2b77"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -374,9 +368,9 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         genesis.nTime = 1608422399;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 12359;
+        genesis.nNonce = 12361;
 
-        if(genesis.GetHash()!=uint256("6fb3bfd9708a5d8695d25acbe45abd8be92f2eb72fcaa792e94703e179e424d2"))
+        if(genesis.GetHash()!=uint256("690cbb5c7ae999de1de49948a3c109d3b15fe4de4297980de8ff0cbfe3c7823a"))
         {
             printf("Searchingforgenesisblock...\n");
             uint256 hashTarget=uint256().SetCompact(genesis.nBits);
@@ -408,7 +402,7 @@ public:
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
 
-        assert(hashGenesisBlock == uint256("6fb3bfd9708a5d8695d25acbe45abd8be92f2eb72fcaa792e94703e179e424d2"));
+        assert(hashGenesisBlock == uint256("690cbb5c7ae999de1de49948a3c109d3b15fe4de4297980de8ff0cbfe3c7823a"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

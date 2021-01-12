@@ -1,4 +1,4 @@
-![Github Actions CI for PRCY](https://github.com/PRCYcoin/PRCYCoin-dev/workflows/Github%20Actions%20CI%20for%20PRCY/badge.svg?branch=master)
+![Github Actions CI for PRCY](https://github.com/PRCYCoin/PRCYCoin/workflows/Github%20Actions%20CI%20for%20PRCY/badge.svg?branch=master)
 
 Welcome to PRCY
 =====================================
