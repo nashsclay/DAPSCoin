@@ -2918,7 +2918,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!CheckPoABlockRewardAmount(block, pindex)) {
             return state.DoS(100, error("ConnectBlock(): This PoA block reward does not match the value it should"));
         }
-        if (block.GetBlockTime() >= GetAdjustedTime() + 2 * 60 * 60) {
+        if (block.GetBlockTime() >= GetAdjustedTime() + 2 * 60) {
             return state.DoS(100, error("ConnectBlock(): A PoA block should not be in the future"));
         }
     }
