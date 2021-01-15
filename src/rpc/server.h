@@ -259,6 +259,7 @@ extern UniValue decodestealthaddress(const UniValue& params, bool fHelp);
 extern UniValue sendtostealthaddress(const UniValue& params, bool fHelp);
 extern UniValue createprivacysubaddress(const UniValue& params, bool fHelp);
 extern UniValue getwalletinfo(const UniValue& params, bool fHelp);
+extern UniValue gettxcount(const UniValue& params, bool fHelp);
 extern UniValue getblockchaininfo(const UniValue& params, bool fHelp);
 extern UniValue getnetworkinfo(const UniValue& params, bool fHelp);
 extern UniValue reservebalance(const UniValue& params, bool fHelp);

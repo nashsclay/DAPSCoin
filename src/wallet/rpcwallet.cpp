@@ -2045,6 +2045,26 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp)
     return obj;
 }
 
+UniValue gettxcount(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "gettxcount\n"
+            "Returns the total number of transactions in the wallet.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"txcount\": xxxxxxx,          (numeric) the total number of transactions in the wallet\n"
+            "}\n"
+            "\nExamples:\n" +
+            HelpExampleCli("gettxcount", "") + HelpExampleRpc("gettxcount", ""));
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    UniValue obj(UniValue::VOBJ);
+    obj.push_back(Pair("txcount", (int)pwalletMain->mapWallet.size()));
+    return obj;
+}
+
 // ppcoin: reserve balance from being staked for network protection
 UniValue reservebalance(const UniValue& params, bool fHelp)
 {
