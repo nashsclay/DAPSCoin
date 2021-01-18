@@ -5336,16 +5336,14 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
 
 void CWallet::AutoCombineDust()
 {
-    if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced()) return;
-    //if (IsInitialBlockDownload()) return;
-    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) {
+    if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced() || IsLocked()) return;
+    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300)) {
         LogPrintf("Time elapsed for autocombine transaction too short\n");
         return;
     }
 
     if (stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
-        if (IsLocked()) return;
-        if (fGeneratePrcycoins && chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK()) {
+        if (fGeneratePrcycoins) {
             //sweeping to create larger UTXO for staking
             LOCK2(cs_main, cs_wallet);
             CAmount max = dirtyCachedBalance;

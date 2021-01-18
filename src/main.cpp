@@ -4610,12 +4610,12 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     if (pwalletMain) {
         LOCK2(cs_main, pwalletMain->cs_wallet);
-        // If turned on MultiSend will send a transaction (or more) on the after maturity of a stake
+        /*// If turned on MultiSend will send a transaction (or more) on the after maturity of a stake
         if (pwalletMain->isMultiSendEnabled())
-            pwalletMain->MultiSend();
+            pwalletMain->MultiSend();*/
 
         // If turned on Auto Combine will scan wallet for dust to combine
-        if (pwalletMain->fCombineDust && chainActive.Height() % 15 == 0)
+        if (pwalletMain->fCombineDust)
             pwalletMain->AutoCombineDust();
 
         if (chainActive.Height() % 15 == 0) {
