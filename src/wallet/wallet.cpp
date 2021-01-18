@@ -4013,7 +4013,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             nReward = PoSBlockReward();
             txNew.vout[1].nValue = nCredit;
             txNew.vout[2].nValue = nReward;
-            LogPrintf("DEBUGGING: %s, nCredit: %d, nReward: %d\n", __func__, nCredit, nReward);
               /*if (stakingMode == STAKING_WITH_CONSOLIDATION || STAKING_WITH_CONSOLIDATION_WITH_STAKING_NEWW_FUNDS) {
                 //the first output contains all funds (input + rewards + fee)
                 if (nCredit + nReward > (MINIMUM_STAKE_AMOUNT + 100000*COIN)*2) {
@@ -5336,12 +5335,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
 
 void CWallet::AutoCombineDust()
 {
-    if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced() || IsLocked()) return;
-    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300)) {
-        LogPrintf("Time elapsed for autocombine transaction too short\n");
-        return;
-    }
-
+    if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced() || chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) return;
     if (stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
         if (fGeneratePrcycoins) {
             //sweeping to create larger UTXO for staking
