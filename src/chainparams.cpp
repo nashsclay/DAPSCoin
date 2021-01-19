@@ -64,13 +64,16 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     (0, uint256("000006957e238ff4e6bcf00c8a7d1b3e7249c0a2109b0391d8740821a40c1d8c"))
     (500, uint256("00214da9b906c7c14558395b9bc88293301e6e5f87a714194079dd651293fadb")) // Final POW Block
     (561, uint256("54872c72e81b34117bc5a6095d6f1b8d85746992d2513d7adc90a2aceed1651e")) // First PoA Block
-    (562, uint256("0f00d3a6636c8a265724764da082fdef8106fce7057dfdda94ab6537f7211b4f"))
-	(796, uint256("9e6125b2bb455dfebc0144c0f1b0055ca520a37ae21235dea1053d50e54cde30")) // Last PoA Block before compile
+    (562, uint256("0f00d3a6636c8a265724764da082fdef8106fce7057dfdda94ab6537f7211b4f")) // First Block after PoA
+    (14905, uint256("6389ecdb851500d9467b41a54d02c58b1542bfc2d5c99339821c89d25135a4b0")) // Chain split
+    (17153, uint256("4e63d92ac5209f0a342c2e74098778bbe36324de66734ff41132c7f3db3ad628"))
+    (17154, uint256("99b3b7520da08697d1ca4292d115dd8ebabd684020dbc740325690014b80ceaf")) //Last Poa Block
+    (17829, uint256("5ffafd80d1e8c17c7e2db9c0c3d98fa89542009a59b7ba81b514d96a15b524f0")) //Last block before compile
     ;
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1610548984,          // * UNIX timestamp of last checkpoint block
-    1225,          // * total number of transactions between genesis and last checkpoint
+    1611140558,          // * UNIX timestamp of last checkpoint block
+    36538,          // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     1440        // * estimated number of transactions per day after checkpoint
 };
