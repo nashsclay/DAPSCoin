@@ -204,7 +204,7 @@ bool CheckPoAContainRecentHash(const CBlock& block)
     } else {
         if (pindex->nHeight >= Params().START_POA_BLOCK()) {
             // Bypass bad block			
-            if (pindex->nHeight == 17077 || pindex->nHeight == 17154) {
+            if (pindex->nHeight == 17077 || pindex->nHeight == 17154 || pindex->nHeight == 18375) {
                 return true;
             }
             CBlock prevPoablock;
@@ -364,7 +364,7 @@ bool CheckPoAMerkleRoot(const CBlock& block, bool* fMutate)
 bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block, const CBlockIndex* pindex)
 {
     // Bypass bad block
-    if (pindex->nHeight == 17154) {
+    if (pindex->nHeight == 17154 || pindex->nHeight == 18375) {
         return true;
     } 
     uint32_t numOfPoSBlocks = block.posBlocksAudited.size();
