@@ -456,5 +456,5 @@ bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 }
 
 bool IsFixedAudit(std::string txid) {
-    return (txid == "");
+    return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135");
 }
