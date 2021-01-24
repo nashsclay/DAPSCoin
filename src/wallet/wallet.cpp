@@ -5212,7 +5212,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                         }
                     }
                 }
-                LogPrintf("Generating consolidation transaction, total = %d PRCY\n", total);
+                LogPrintf("Generating consolidation transaction, total = %d PRCY\n", total / COIN);
                 // Generate transaction public key
                 CWalletTx wtxNew;
                 CKey secret;
