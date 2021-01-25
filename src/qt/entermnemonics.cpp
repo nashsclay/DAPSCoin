@@ -23,11 +23,7 @@ EnterMnemonics::~EnterMnemonics()
 
 void EnterMnemonics::on_next()
 {
-    std::string phrase = ui->mnemonics->toPlainText().toStdString();
-    if (ui->mnemonics->toPlainText().endsWith(" ")) {
-       QMessageBox::warning(this, "Recovery Phrase Invalid", "Recovery phrase has an extra space at the end. Please remove it to properly restore your wallet.", QMessageBox::Ok);
-       return;
-    }
+    std::string phrase = ui->mnemonics->toPlainText().trimmed().toStdString();
     try {
         pwalletMain->GenerateNewHDChain(&phrase);
         QMessageBox::information(this, "Recovery Phrase Import Successful", "Your mnemonics have been successfully imported into the wallet. Rescanning will be scheduled to recover all your funds.", QMessageBox::Ok);
