@@ -126,12 +126,7 @@ unsigned short GetListenPort() {
 }
 
 bool IsUnsupportedVersion(std::string strSubVer) {
-    std::time_t banningTime = std::time(0);
-    //Monday, January 25, 2021 12:00:00 AM GMT
-    if (banningTime >= 1611532800) {
-        return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/");
-    }
-    return (strSubVer == "/PRCY:1.0.0.2/");
+    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/");
 }
 
 // find 'best' local address for a particular peer
