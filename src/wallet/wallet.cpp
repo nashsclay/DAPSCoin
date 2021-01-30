@@ -3601,6 +3601,11 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
             LogPrintf("\nSelected transaction is not in the main chain\n");
             return false;
         }
+        
+        if (tx.nLockTime != 0) {
+            LogPrintf("\ntx.nLockTime != 0, currently disabled\n");
+            return false;
+        }
 
         CBlockIndex* atTheblock = mapBlockIndex[hashBlock];
         CBlockIndex* tip = chainActive.Tip();
