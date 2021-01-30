@@ -1943,9 +1943,13 @@ bool AppInit2(bool isDaemon)
         storedStakingStatus = pwalletMain->ReadStakingStatus();
         if (GetBoolArg("-staking", false) || storedStakingStatus) {
             fGeneratePrcycoins = true;
-            pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
+            pwalletMain->stakingMode = StakingMode::STAKING_WITHOUT_CONSOLIDATION;
             LogPrintf("Starting staking\n");
             threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
+        }
+        if (GetBoolArg("-autoconsolidate", false)) {
+            LogPrintf("Autoconsolidate is true and we are setting StakingMode::STAKING_WITH_CONSOLIDATION now\n");
+            pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
         }
         //read decoy confirmation min
         pwalletMain->DecoyConfirmationMinimum = GetArg("-decoyconfirm", 15);
