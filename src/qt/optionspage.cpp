@@ -432,8 +432,8 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
 {
     if (!masternodeSync.IsSynced()) {
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Staking Disabled - Syncing");
-        msgBox.setText("Enable Staking is disabled when you are still syncing the wallet. Please allow the wallet to fully sync before attempting to Enable Staking.");
+        msgBox.setWindowTitle("Staking Disabled - Syncing Masternode list");
+        msgBox.setText("Enable Staking is disabled when you are still syncing the Masternode list as this is required. Please allow the wallet to fully sync this list before attempting to Enable Staking.");
         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
