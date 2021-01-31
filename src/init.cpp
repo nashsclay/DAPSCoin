@@ -1940,8 +1940,10 @@ bool AppInit2(bool isDaemon)
         // Run a thread to flush wallet periodically
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
 
+        LogPrintf("nDefaultConsolidateTime = %ss\n", CWallet::nDefaultConsolidateTime); //temp excessive log to check value changes
+
         storedStakingStatus = pwalletMain->ReadStakingStatus();
-        if (GetBoolArg("-staking", false) || storedStakingStatus) {
+        if (GetBoolArg("-staking", true) || (storedStakingStatus == true)) {
             fGeneratePrcycoins = true;
             LogPrintf("Starting staking\n");
             threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
@@ -1949,7 +1951,6 @@ bool AppInit2(bool isDaemon)
             // This changes that setting only if staking is on
             if (GetBoolArg("-autoconsolidate", true)) {
                 LogPrintf("Autoconsolidate is enabled and we are setting StakingMode::STAKING_WITH_CONSOLIDATION now\n");
-				LogPrintf("nDefaultConsolidateTime = %sms\n", nDefaultConsolidateTime); //temp excessive log to check value changes
                 pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
             }
 			else{

@@ -54,7 +54,7 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();
 int64_t nReserveBalance = 0;
-uint32_t nDefaultConsolidateTime = 0;
+uint64_t nDefaultConsolidateTime = 0;
 
 #include "uint256.h"
 
