@@ -54,7 +54,7 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();
 int64_t nReserveBalance = 0;
-int64_t nDefaultConsolidateTime = 0;
+int64_t nDefaultConsolidateTime = GetArg("-autoconsolidatetime", 300);
 
 #include "uint256.h"
 
@@ -5336,8 +5336,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
 
 void CWallet::AutoCombineDust()
 {
-    nDefaultConsolidateTime = GetArg("-autoconsolidatetime", 300);
-    // QT wallet is always locked at startup, return immediately
+        // QT wallet is always locked at startup, return immediately
     if (IsLocked()) return;
     // Chain is not synced, return
     if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced()) return;
