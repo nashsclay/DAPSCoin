@@ -5334,8 +5334,13 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
 }
 
 void CWallet::AutoCombineDust()
-{
-    if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced() || chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) return;
+{    
+    // QT wallet is always locked at startup, return immediately
+    if (IsLocked()) return;
+    // Chain is not synced, return
+    if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced()) return;
+    // Tip()->nTime < (GetAdjustedTime() - 300) - (to be changed to a .conf setting)
+    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300)) return;
     if (stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
         if (fGeneratePrcycoins) {
             //sweeping to create larger UTXO for staking
