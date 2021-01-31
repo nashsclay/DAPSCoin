@@ -5337,7 +5337,6 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
 void CWallet::AutoCombineDust()
 {
     nDefaultConsolidateTime = GetArg("-autoconsolidatetime", 300);
-    LogPrintf("nDefaultConsolidateTime = %sms\n", nDefaultConsolidateTime); //temp excessive log to check value changes
     // QT wallet is always locked at startup, return immediately
     if (IsLocked()) return;
     // Chain is not synced, return

@@ -1949,9 +1949,11 @@ bool AppInit2(bool isDaemon)
             // This changes that setting only if staking is on
             if (GetBoolArg("-autoconsolidate", true)) {
                 LogPrintf("Autoconsolidate is enabled and we are setting StakingMode::STAKING_WITH_CONSOLIDATION now\n");
+				LogPrintf("nDefaultConsolidateTime = %sms\n", nDefaultConsolidateTime); //temp excessive log to check value changes
                 pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
             }
 			else{
+				pwalletMain->stakingMode = StakingMode::STAKING_WITHOUT_CONSOLIDATION;
 				LogPrintf("Autoconsolidate is disabled\n");
 			}
         }
