@@ -1940,7 +1940,7 @@ bool AppInit2(bool isDaemon)
         // Run a thread to flush wallet periodically
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
 
-        LogPrintf("nDefaultConsolidateTime = %ss\n", CWallet::nDefaultConsolidateTime); //temp excessive log to check value changes
+        LogPrintf("nDefaultConsolidateTime = %ss\n", nDefaultConsolidateTime); //temp excessive log to check value changes
 
         storedStakingStatus = pwalletMain->ReadStakingStatus();
         if (GetBoolArg("-staking", true) || (storedStakingStatus == true)) {
