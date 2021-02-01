@@ -7,7 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 
-
 #include "miner.h"
 
 #include "amount.h"
@@ -23,10 +22,10 @@
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
-extern CWallet *pwalletMain;
+extern CWallet* pwalletMain;
 #endif
-#include "validationinterface.h"
 #include "masternode-payments.h"
+#include "validationinterface.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -97,7 +96,8 @@ void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
 }
 
-uint32_t GetListOfPoSInfo(uint32_t currentHeight, std::vector<PoSBlockSummary>& audits) {
+uint32_t GetListOfPoSInfo(uint32_t currentHeight, std::vector<PoSBlockSummary>& audits)
+{
     //A PoA block should be mined only after at least 59 PoS blocks have not been audited
     //Look for the previous PoA block
     uint32_t nloopIdx = currentHeight;
@@ -128,7 +128,7 @@ uint32_t GetListOfPoSInfo(uint32_t currentHeight, std::vector<PoSBlockSummary>& 
             PoSBlockSummary back = block.posBlocksAudited.back();
             uint32_t lastAuditedHeight = back.height;
             uint32_t nextAuditHeight = lastAuditedHeight + 1;
-            
+
             while (nextAuditHeight <= currentHeight) {
                 CBlockIndex* posIndex = chainActive[nextAuditHeight];
                 CBlock posBlock;
@@ -256,12 +256,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
         for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();
              mi != mempool.mapTx.end(); ++mi) {
             const CTransaction& tx = mi->second.GetTx();
-            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)){
+            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)) {
                 continue;
             }
             bool fKeyImageCheck = true;
             // Check key images not duplicated with what in db
-            for (const CTxIn& txin: tx.vin) {
+            for (const CTxIn& txin : tx.vin) {
                 const CKeyImage& keyImage = txin.keyImage;
                 if (IsKeyImageSpend1(keyImage.GetHex(), uint256())) {
                     fKeyImageCheck = false;
@@ -289,7 +289,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             CFeeRate feeRate(tx.nTxFee, nTxSize);
 
             bool isDuplicate = false;
-            for (const CTxIn& txin: tx.vin) {
+            for (const CTxIn& txin : tx.vin) {
                 const CKeyImage& keyImage = txin.keyImage;
                 if (keyImages.count(keyImage)) {
                     isDuplicate = true;
@@ -415,7 +415,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             pblock->vtx[1].vout[2].nValue += nFees;
             pblocktemplate->vTxFees[0] = nFees;
         }
-        
+
         CPubKey sharedSec;
         sharedSec.Set(txPub.begin(), txPub.end());
         //compute commitment
@@ -428,11 +428,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
                 return NULL;
             }
         } else {
-            sharedSec.Set(pblock->vtx[1].vout[2].txPub.begin(), pblock->vtx[1].vout[2].txPub.end());
-            pwallet->EncodeTxOutAmount(pblock->vtx[1].vout[2], pblock->vtx[1].vout[2].nValue, sharedSec.begin());
-            nValue = pblock->vtx[1].vout[2].nValue;
-            pblock->vtx[1].vout[2].commitment.clear();
-            if (!pwallet->CreateCommitment(zeroBlind, nValue, pblock->vtx[1].vout[2].commitment)) {
+            pblock->vtx[1].vout[1].nValue += pblock->vtx[1].vout[2].nValue;
+            pblock->vtx[1].vout[2].SetEmpty();
+            sharedSec.Set(pblock->vtx[1].vout[1].txPub.begin(), pblock->vtx[1].vout[1].txPub.end());
+            pwallet->EncodeTxOutAmount(pblock->vtx[1].vout[1], pblock->vtx[1].vout[1].nValue, sharedSec.begin());
+            nValue = pblock->vtx[1].vout[1].nValue;
+            pblock->vtx[1].vout[1].commitment.clear();
+            if (!pwallet->CreateCommitment(zeroBlind, nValue, pblock->vtx[1].vout[1].commitment)) {
                 return NULL;
             }
 
@@ -464,7 +466,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
     return pblocktemplate.release();
 }
 
-CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& txPub, const CKey& txPriv, CWallet* pwallet) {
+CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& txPub, const CKey& txPriv, CWallet* pwallet)
+{
     CReserveKey reservekey(pwallet);
 
     if (chainActive.Tip()->nHeight < Params().START_POA_BLOCK()) {
@@ -705,21 +708,20 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
                     continue;
                 }
             }
-            
         }
         MilliSleep(nDefaultMinerSleep);
         //
         // Create new block
         //
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
-        CBlockIndex* pindexPrev; 
+        CBlockIndex* pindexPrev;
         {
             LOCK(cs_main);
             pindexPrev = chainActive.Tip();
         }
         if (!pindexPrev)
             continue;
- 
+
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
         if (!pblocktemplate.get())
             continue;
@@ -749,8 +751,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
             continue;
         }
         GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
-        LogPrint("staking", "Running PRCYcoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(), 
-                 ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+        LogPrint("staking", "Running PRCYcoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+            ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
         //
         // Search
@@ -910,10 +912,11 @@ void GeneratePrcycoins(bool fGenerate, CWallet* pwallet, int nThreads)
 }
 
 // ppcoin: stake minter thread
-void ThreadStakeMinter() {
+void ThreadStakeMinter()
+{
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
-    CWallet *pwallet = pwalletMain;
+    CWallet* pwallet = pwalletMain;
     try {
         BitcoinMiner(pwallet, true);
         boost::this_thread::interruption_point();
