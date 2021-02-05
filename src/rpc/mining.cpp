@@ -148,7 +148,8 @@ UniValue setgenerate(const UniValue& params, bool fHelp)
         if (nGenProcLimit == 0)
             fGenerate = false;
     }
-
+	pwalletMain->WriteStakingStatus(fGenerate);
+	
     // -regtest mode: don't return until nGenProcLimit blocks are generated
     if (fGenerate && Params().MineBlocksOnDemand()) {
         int nHeightStart = 0;
