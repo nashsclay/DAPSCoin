@@ -5357,7 +5357,7 @@ void CWallet::AutoCombineDust()
         }
         return;
     }
-    CreateSweepingTransaction(nAutoCombineThreshold, nAutoCombineThreshold, GetAdjustedTime());
+    CreateSweepingTransaction(nAutoCombineTarget, nAutoCombineThreshold, GetAdjustedTime());
 }
 
 bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee) {
@@ -5757,6 +5757,7 @@ void CWallet::SetNull()
     //Auto Combine Dust
     fCombineDust;
     nAutoCombineThreshold = 150;
+    nAutoCombineTarget = GetArg("-autocombinetarget", 15);
 }
 
 bool CWallet::isMultiSendEnabled()
