@@ -2160,6 +2160,9 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
     minFee = 0;
     maxFee = 0;
     CAmount nBalance = GetBalance();
+    if (pwalletMain->IsMasternodeController()) {
+        nBalance = GetSpendableBalance();
+    }
     if (nBalance < MINIMUM_STAKE_AMOUNT) {
         return StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW;
     }
