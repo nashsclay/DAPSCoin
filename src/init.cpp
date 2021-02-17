@@ -1436,7 +1436,6 @@ bool AppInit2(bool isDaemon)
                     fCLTVHasMajority = false;
                 else
                     fCLTVHasMajority = fIsActiveCLTV;
-                LogPrintf("CHECKLOCKTIMEVERIFY Active: %s\n", fCLTVHasMajority.load());
 
                 if (fReindex)
                     pblocktree->WriteReindexing(true);
