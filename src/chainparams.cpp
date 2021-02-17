@@ -121,9 +121,9 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 1; // PRCYcoin starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 210000;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
+        nEnforceBlockUpgradeMajority = 1080;
+        nRejectBlockOutdatedMajority = 1368;
+        nToCheckBlockUpgradeMajority = 1440;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // PRCYcoin: 1 day
         nTargetSpacing = 1 * 60;  // PRCYcoin: 1 minute
