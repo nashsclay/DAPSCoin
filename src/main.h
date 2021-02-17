@@ -152,7 +152,6 @@ extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern int64_t nMaxTipAge;
 extern bool fVerifyingBlocks;
-extern bool fCLTVHasMajority;
 extern bool fGeneratePrcycoins;
 
 extern bool fLargeWorkForkFound;

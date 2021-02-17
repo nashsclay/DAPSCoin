@@ -90,7 +90,6 @@ unsigned int nCoinCacheSize = 5000;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 
 unsigned int nStakeMinAge = 60 * 60;
-bool fCLTVHasMajority = false;
 
 const int MIN_RING_SIZE = 11;
 const int MAX_RING_SIZE = 15;
@@ -1760,6 +1759,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             }
         }
 
+        bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
+
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
         int flags = STANDARD_SCRIPT_VERIFY_FLAGS;
@@ -1976,6 +1977,8 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             return error("AcceptableInputs: insane fees %s, %d > %d",
                 hash.ToString(),
                 nFees, ::minRelayTxFee.GetFee(nSize) * 10000);
+
+        bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -2761,9 +2764,6 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
 
-    // Check if supermajority for CLTV has changed.
-    fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
-
     if (pfClean) {
         *pfClean = fClean;
         return true;
@@ -2958,6 +2958,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             REJECT_INVALID, "PoW-ended");
 
     bool fScriptChecks = pindex->nHeight >= Checkpoints::GetTotalBlocksEstimate();
+
+    // If scripts won't be checked anyways, don't bother seeing if CLTV is activated
+    bool fCLTVHasMajority = false;
+    if (fScriptChecks && pindex->pprev) {
+        fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, pindex->pprev, Params().EnforceBlockUpgradeMajority());
+    }
 
     // BIP16 didn't become active until Apr 1 2012
     int64_t nBIP16SwitchTime = 1333238400;
@@ -3158,12 +3164,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     nTimeCallbacks += nTime4 - nTime3;
     LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
 
-    // If CLTV hasn't been activated check for a supermajority upon accepting new block.
-    if (!fCLTVHasMajority && CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority())) {
-        fCLTVHasMajority = true;
-        LogPrintf("CHECKLOCKTIMEVERIFY achieved supermajority! Transactions that use CLTV will now be verified.\n");
-    }
-
     return true;
 }
 
@@ -3210,8 +3210,6 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
                     vBlocks.push_back(*it);
                     setDirtyBlockIndex.erase(it++);
                 }
-				
-            pblocktree->WriteFlag("CLTVHasMajority", fCLTVHasMajority);
 
                 if (!pblocktree->WriteBatchSync(vFiles, nLastBlockFile, vBlocks)) {
                     return state.Abort("Files to write to block index database");
