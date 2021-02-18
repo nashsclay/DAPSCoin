@@ -56,7 +56,7 @@ class CBlockHeader
 {
 public:
     // header
-    static const int32_t CURRENT_VERSION=4;
+    static const int32_t CURRENT_VERSION=5;     // Version 5 supports CLTV activation
     //Efficient and compatible, but not beautiful design: A PoA block version will be always equal or higher this const
     static const int32_t POA_BLOCK_VERSION_LOW_LIMIT = 100;
     int32_t nVersion;
