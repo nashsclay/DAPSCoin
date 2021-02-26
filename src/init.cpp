@@ -1463,9 +1463,6 @@ bool AppInit2(bool isDaemon)
                     break;
                 }
 
-                // Populate list of invalid/fraudulent outpoints that are banned from the chain
-                PopulateInvalidOutPointMap();
-
                 // Recalculate money supply for blocks
                 if (GetBoolArg("-reindexmoneysupply", false)) {
                     RecalculatePRCYSupply(1);

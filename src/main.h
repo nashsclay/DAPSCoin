@@ -373,7 +373,6 @@ bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx);
 bool RemoveSerialFromDB(const CBigNum& bnSerial);
 bool IsTransactionInChain(uint256 txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
-void PopulateInvalidOutPointMap();
 bool RecalculatePRCYSupply(int nHeightStart);
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError);
 

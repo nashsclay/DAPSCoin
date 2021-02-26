@@ -2739,19 +2739,9 @@ CBitcoinAddress addressExp2("DTQYdnNqKuEHXyNeeYhPQGGGdqHbXYwjpj");
 map<COutPoint, COutPoint> mapInvalidOutPoints;
 map<CBigNum, CAmount> mapInvalidSerials;
 
-void AddInvalidSpendsToMap(const CBlock& block)
-{
-    //empty function
-}
-
 // Populate global map (mapInvalidOutPoints) of invalid/fraudulent OutPoints that are banned from being used on the chain.
 CAmount nFilteredThroughBittrex = 0;
 bool fListPopulatedAfterLock = false;
-
-void PopulateInvalidOutPointMap()
-{
-    //empty function
-}
 
 CAmount GetInvalidUTXOValue()
 {
