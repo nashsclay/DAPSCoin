@@ -102,8 +102,6 @@ public:
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int START_POA_BLOCK() const { return nStartPOABlock; }
-//    int REMOVE_REWARD_BLOCK() const { return nRemoveRewardBlock; }
-    int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
     int SoftFork() const { return nSoftForkBlock;}
 
     //For PoA block time
@@ -111,8 +109,6 @@ public:
     int MIN_NUM_POS_BLOCKS_AUDITED() const {return nMinNumPoSBlocks;}
     int MAX_NUM_POS_BLOCKS_AUDITED() const {return nMaxNumPoSBlocks;}
     int nLastPOWBlock;
-//    int nRemoveRewardBlock;
-//    int TEAM_REWARD_FREQUENCY = 3; //every  TEAM_REWARD_FREQUENCY PoA blocks, reward the prcy team
     double MAX_MONEY;
     CAmount TOTAL_SUPPLY = 70000000 * COIN; //70M PRCY
 
@@ -158,11 +154,6 @@ protected:
     std::string strObfuscationPoolDummyAddress;
     int64_t nStartMasternodePayments;
     int64_t nBudget_Fee_Confirmations;
-    int nBlockEnforceSerialRange;
-    int nBlockRecalculateAccumulators;
-    int nBlockFirstFraudulent;
-    int nBlockLastGoodCheckpoint;
-    int nBlockEnforceInvalidUTXO;
 
     //For PoA blocks
     int nPoABlockTime;

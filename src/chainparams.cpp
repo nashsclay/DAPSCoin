@@ -137,7 +137,6 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 500;
         nStartPOABlock = 560;
-//        nRemoveRewardBlock = 6000;
         nModifierUpdateBlock = 615800;
         nPoABlockTime = 60 * 60; //a PoA block every 60 minutes
         nMinNumPoSBlocks = 59;
@@ -274,7 +273,6 @@ public:
         nTargetSpacing = 1 * 60;  // PRCYcoin: 1 minute
         nLastPOWBlock = 500;
         nStartPOABlock = 560;
-//        nRemoveRewardBlock = 6000;
         nPoABlockTime = 30 * 60;  //1 PoA block every 30 minutes
         nMinNumPoSBlocks = 20;
         nMaturity = 15;
@@ -282,11 +280,6 @@ public:
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
         MAX_MONEY = 5000000000.0;
         nMaxMoneyOut = MAX_MONEY * COIN;
-        nBlockEnforceSerialRange = 1; //Enforce serial range starting this block
-        nBlockRecalculateAccumulators = 9908000; //Trigger a recalculation of accumulators
-        nBlockFirstFraudulent = 9891737; //First block that bad serials emerged
-        nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
-        nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
         nSoftForkBlock = 0; // Soft fork block for difficulty change - testnet started with it
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
