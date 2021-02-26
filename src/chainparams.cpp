@@ -137,7 +137,6 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 500;
         nStartPOABlock = 560;
-//        nRemoveRewardBlock = 6000;
         nModifierUpdateBlock = 615800;
         nPoABlockTime = 60 * 60; //a PoA block every 60 minutes
         nMinNumPoSBlocks = 59;
@@ -274,7 +273,6 @@ public:
         nTargetSpacing = 1 * 60;  // PRCYcoin: 1 minute
         nLastPOWBlock = 500;
         nStartPOABlock = 560;
-//        nRemoveRewardBlock = 6000;
         nPoABlockTime = 30 * 60;  //1 PoA block every 30 minutes
         nMinNumPoSBlocks = 20;
         nMaturity = 15;
