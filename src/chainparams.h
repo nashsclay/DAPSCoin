@@ -102,7 +102,6 @@ public:
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int START_POA_BLOCK() const { return nStartPOABlock; }
-    int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
     int SoftFork() const { return nSoftForkBlock;}
 
     //For PoA block time
@@ -155,11 +154,6 @@ protected:
     std::string strObfuscationPoolDummyAddress;
     int64_t nStartMasternodePayments;
     int64_t nBudget_Fee_Confirmations;
-    int nBlockEnforceSerialRange;
-    int nBlockRecalculateAccumulators;
-    int nBlockFirstFraudulent;
-    int nBlockLastGoodCheckpoint;
-    int nBlockEnforceInvalidUTXO;
 
     //For PoA blocks
     int nPoABlockTime;
