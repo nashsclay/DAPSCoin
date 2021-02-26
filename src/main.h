@@ -374,7 +374,6 @@ bool RemoveSerialFromDB(const CBigNum& bnSerial);
 bool IsTransactionInChain(uint256 txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
 void PopulateInvalidOutPointMap();
-bool ValidOutPoint(const COutPoint out, int nHeight);
 bool RecalculatePRCYSupply(int nHeightStart);
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError);
 
