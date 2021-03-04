@@ -14,7 +14,7 @@
 #include "recentrequeststablemodel.h"
 #include "transactionrecord.h"
 #include "transactiontablemodel.h"
-
+#include "init.h" // for ShutdownRequested(). Future: move to an interface wrapper
 
 #include "base58.h"
 #include "wallet/db.h"
@@ -61,6 +61,11 @@ WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* p
     pollTimer->start(MODEL_UPDATE_DELAY);
 
     subscribeToCoreSignals();
+}
+
+bool WalletModel::isShutdownRequested()
+{
+    return ShutdownRequested();
 }
 
 WalletModel::~WalletModel()
