@@ -54,7 +54,6 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();
 int64_t nReserveBalance = 0;
-int64_t nDefaultConsolidateTime;
 
 #include "uint256.h"
 
@@ -5340,8 +5339,8 @@ void CWallet::AutoCombineDust()
     if (IsLocked()) return;
     // Chain is not synced, return
     if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced()) return;
-    // Tip()->nTime < (GetAdjustedTime() - 300) - (default .conf setting = 300)
-    if (chainActive.Tip()->nTime < (GetAdjustedTime() - nDefaultConsolidateTime)) return;
+    // Tip()->nTime < (GetAdjustedTime() - 300)
+    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300)) return;
     bool stkStatus = pwalletMain->ReadStakingStatus();
     if (combineMode == CombineMode::ON && stkStatus) {
         //sweeping to create larger UTXO for staking

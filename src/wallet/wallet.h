@@ -56,7 +56,6 @@ extern bool bdisableSystemnotifications;
 extern bool fSendFreeTransactions;
 extern bool fPayAtLeastCustomFee;
 extern int64_t nReserveBalance;
-extern int64_t nDefaultConsolidateTime;
 
 //! -paytxfee default
 static const CAmount DEFAULT_TRANSACTION_FEE = 0.1 * COIN;//
