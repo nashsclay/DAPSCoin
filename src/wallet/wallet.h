@@ -218,9 +218,8 @@ enum StakingStatusError
 };
 
 enum CombineMode {
-    STOPPED, //staking disabled or balance < 2.5k
-    STAKING_WITHOUT_CONSOLIDATION, //only for when specifically set in the conf
-    STAKING_WITH_CONSOLIDATION,
+    OFF,
+    ON,
 };
 
 /**
@@ -351,7 +350,7 @@ public:
 
     int64_t nTimeFirstKey;
 
-    CombineMode combineMode = STOPPED;
+    CombineMode combineMode = OFF;
     int64_t DecoyConfirmationMinimum = 15;
 
     mutable std::map<std::string, CKeyImage> outpointToKeyImages;

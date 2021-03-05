@@ -5198,11 +5198,11 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
             int ringSize = MIN_RING_SIZE + secp256k1_rand32() % (MAX_RING_SIZE - MIN_RING_SIZE + 1);
             if (vCoins.size() <= 1) return false;
             CAmount estimatedFee = ComputeFee(vCoins.size(), 1, ringSize);
-            if (combineMode != CombineMode::STAKING_WITH_CONSOLIDATION && (vCoins.empty() || (vCoins.size() < MIN_TX_INPUTS_FOR_SWEEPING) || (total < target + estimatedFee && vCoins.size() <= MAX_TX_INPUTS))) {
+            if (combineMode != CombineMode::ON && (vCoins.empty() || (vCoins.size() < MIN_TX_INPUTS_FOR_SWEEPING) || (total < target + estimatedFee && vCoins.size() <= MAX_TX_INPUTS))) {
                 //preconditions to create auto sweeping transactions not satisfied, do nothing here
                 ret = false;
             } else {
-                if (combineMode == CombineMode::STAKING_WITH_CONSOLIDATION) {
+                if (combineMode == CombineMode::ON) {
                     if (total < target + estimatedFee) {
                         if (lowestLarger.tx != NULL && currentLowestLargerAmount >= threshold) {
                             vCoins.push_back(lowestLarger);
@@ -5342,7 +5342,7 @@ void CWallet::AutoCombineDust()
     if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced()) return;
     // Tip()->nTime < (GetAdjustedTime() - 300) - (to be changed to a .conf setting)
     if (chainActive.Tip()->nTime < (GetAdjustedTime() - nDefaultConsolidateTime)) return;
-    if (combineMode == CombineMode::STAKING_WITH_CONSOLIDATION) {
+    if (combineMode == CombineMode::ON) {
         if (fGeneratePrcycoins) {
             //sweeping to create larger UTXO for staking
             LOCK2(cs_main, cs_wallet);
