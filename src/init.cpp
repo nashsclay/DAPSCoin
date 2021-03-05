@@ -1847,23 +1847,26 @@ bool AppInit2(bool isDaemon)
     //get the mode of budget voting for this masternode
     strBudgetMode = GetArg("-budgetvotemode", "auto");
 
+#ifdef ENABLE_WALLET
     if (GetBoolArg("-mnconflock", true) && pwalletMain) {
         LOCK(pwalletMain->cs_wallet);
-        LogPrintf("Locking Masternodes:\n");
+        LogPrintf("Locking Masternodes collateral utxo:\n");
         uint256 mnTxHash;
-        for (CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {
-            LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
+        for (const auto& mne : masternodeConfig.getEntries()) {
             mnTxHash.SetHex(mne.getTxHash());
             COutPoint outpoint = COutPoint(mnTxHash, (unsigned int) std::stoul(mne.getOutputIndex().c_str()));
             pwalletMain->LockCoin(outpoint);
+            LogPrintf("Locked collateral, MN: %s, tx hash: %s, output index: %s\n",
+                      mne.getAlias(), mne.getTxHash(), mne.getOutputIndex());
         }
     }
+#endif
 
     fEnableSwiftTX = GetBoolArg("-enableswifttx", fEnableSwiftTX);
     nSwiftTXDepth = GetArg("-swifttxdepth", nSwiftTXDepth);
     nSwiftTXDepth = std::min(std::max(nSwiftTXDepth, 0), 60);
 
-    //lite mode disables all Masternode and Obfuscation related functionality
+    // lite mode disables all Masternode and Obfuscation related functionality
     fLiteMode = GetBoolArg("-litemode", false);
     if (fMasterNode && fLiteMode) {
         return InitError("You can not start a masternode in litemode");
