@@ -5343,18 +5343,16 @@ void CWallet::AutoCombineDust()
     // Tip()->nTime < (GetAdjustedTime() - 300) - (to be changed to a .conf setting)
     if (chainActive.Tip()->nTime < (GetAdjustedTime() - nDefaultConsolidateTime)) return;
     if (combineMode == CombineMode::ON) {
-        if (fGeneratePrcycoins) {
-            //sweeping to create larger UTXO for staking
-            LOCK2(cs_main, cs_wallet);
-            CAmount max = dirtyCachedBalance;
-            if (max == 0) {
-                max = GetBalance();
-            }
-            uint32_t nTime = ReadAutoConsolidateSettingTime();
-            nTime = (nTime == 0)? GetAdjustedTime() : nTime;
-            LogPrintf("Attempting to create a consolidation transaction for a larger UTXO for staking\n");
-            CreateSweepingTransaction(MINIMUM_STAKE_AMOUNT, max + MAX_FEE, nTime);
+        //sweeping to create larger UTXO for staking
+        LOCK2(cs_main, cs_wallet);
+        CAmount max = dirtyCachedBalance;
+        if (max == 0) {
+            max = GetBalance();
         }
+        uint32_t nTime = ReadAutoConsolidateSettingTime();
+        nTime = (nTime == 0)? GetAdjustedTime() : nTime;
+        LogPrintf("Attempting to create a consolidation transaction for a larger UTXO for staking\n");
+        CreateSweepingTransaction(MINIMUM_STAKE_AMOUNT, max + MAX_FEE, nTime);
         return;
     }
     CreateSweepingTransaction(nAutoCombineTarget * COIN, nAutoCombineThreshold * COIN, GetAdjustedTime());
