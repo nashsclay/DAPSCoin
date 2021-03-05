@@ -117,7 +117,7 @@ UniValue getinfo(const UniValue &params, bool fHelp) {
             obj.push_back(Pair("staking status", ("inactive (no peer connections)")));
         } else if (!masternodeSync.IsSynced()) {
             obj.push_back(Pair("staking status", ("inactive (syncing masternode list)")));
-        } else if (!pwalletMain->MintableCoins() && pwalletMain->stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
+        } else if (!pwalletMain->MintableCoins() && pwalletMain->combineMode == CombineMode::STAKING_WITH_CONSOLIDATION) {
             obj.push_back(Pair("staking status", ("delayed (waiting for 100 blocks)")));
         } else if (!pwalletMain->MintableCoins()) {
             obj.push_back(Pair("staking status", ("inactive (no mintable coins)")));
@@ -519,7 +519,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp)
             obj.push_back(Pair("staking status", ("inactive (no peer connections)")));
         } else if (!masternodeSync.IsSynced()) {
             obj.push_back(Pair("staking status", ("inactive (syncing masternode list)")));
-        } else if (!pwalletMain->MintableCoins() && pwalletMain->stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
+        } else if (!pwalletMain->MintableCoins() && pwalletMain->combineMode == CombineMode::STAKING_WITH_CONSOLIDATION) {
             obj.push_back(Pair("staking status", ("delayed (waiting for 100 blocks)")));
         } else if (!pwalletMain->MintableCoins()) {
             obj.push_back(Pair("staking status", ("inactive (no mintable coins)")));

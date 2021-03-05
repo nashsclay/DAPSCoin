@@ -194,7 +194,7 @@ UniValue setgenerate(const UniValue& params, bool fHelp)
     {
         mapArgs["-gen"] = (fGenerate ? "1" : "0");
         mapArgs["-genproclimit"] = itostr(nGenProcLimit);
-        pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
+        pwalletMain->combineMode = CombineMode::STAKING_WITH_CONSOLIDATION;
         GeneratePrcycoins(fGenerate, pwalletMain, nGenProcLimit);
     }
 

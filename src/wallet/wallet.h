@@ -217,9 +217,9 @@ enum StakingStatusError
     STAKABLE_NEED_CONSOLIDATION_WITH_RESERVE_BALANCE  //stable and consolidation, needs to estimate fees
 };
 
-enum StakingMode {
+enum CombineMode {
     STOPPED, //staking disabled or balance < 2.5k
-    STAKING_WITHOUT_CONSOLIDATION,
+    STAKING_WITHOUT_CONSOLIDATION, //only for when specifically set in the conf
     STAKING_WITH_CONSOLIDATION,
 };
 
@@ -351,7 +351,7 @@ public:
 
     int64_t nTimeFirstKey;
 
-    StakingMode stakingMode = STOPPED;
+    CombineMode combineMode = STOPPED;
     int64_t DecoyConfirmationMinimum = 15;
 
     mutable std::map<std::string, CKeyImage> outpointToKeyImages;
