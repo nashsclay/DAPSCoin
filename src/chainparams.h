@@ -27,6 +27,11 @@ public:
     CDNSSeedData(const std::string& strName, const std::string& strHost, bool supportsServiceBitsFilteringIn = false) : name(strName), host(strHost), supportsServiceBitsFiltering(supportsServiceBitsFilteringIn) {}
 };
 
+struct SeedSpec6 {
+    uint8_t addr[16];
+    uint16_t port;
+};
+
 /**
  * CChainParams defines various tweakable parameters of a given instance of the
  * PRCY system. There are three: the main network on which people trade goods
