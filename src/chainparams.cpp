@@ -19,13 +19,6 @@
 using namespace std;
 using namespace boost::assign;
 
-struct SeedSpec6 {
-    uint8_t addr[16];
-    uint16_t port;
-};
-
-#include "chainparamsseeds.h"
-
 std::string CDNSSeedData::getHost(uint64_t requiredServiceBits) const {
     //use default host for non-filter-capable seeds or if we use the default service bits (NODE_NETWORK)
     if (!supportsServiceBitsFiltering || requiredServiceBits == NODE_NETWORK)
