@@ -201,15 +201,16 @@ void PrepareShutdown()
     GeneratePrcycoins(false, NULL, 0);
 #endif
     StopNode();
-    DumpMasternodes();
-    DumpBudgets();
-    DumpMasternodePayments();
-    UnregisterNodeSignals(GetNodeSignals());
 
     // After everything has been shut down, but before things get flushed, stop the
     // CScheduler/checkqueue threadGroup
     threadGroup.interrupt_all();
     threadGroup.join_all();
+
+    DumpMasternodes();
+    DumpBudgets();
+    DumpMasternodePayments();
+    UnregisterNodeSignals(GetNodeSignals());
 
     if (fFeeEstimatesInitialized) {
         boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
