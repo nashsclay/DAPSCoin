@@ -504,7 +504,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
             pwalletMain->fCombineDust = true;
-            pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
+            pwalletMain->combineMode = CombineMode::ON;
             saveConsolidationSettingTime(ui->addNewFunds->isChecked());
             return;
         }
@@ -521,7 +521,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
             pwalletMain->fCombineDust = true;
-            pwalletMain->stakingMode = StakingMode::STAKING_WITH_CONSOLIDATION;
+            pwalletMain->combineMode = CombineMode::ON;
             saveConsolidationSettingTime(ui->addNewFunds->isChecked());
             bool success = false;
             try {
@@ -545,7 +545,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             }            
             return;
         } else {
-            pwalletMain->stakingMode = StakingMode::STOPPED;
             nLastCoinStakeSearchInterval = 0;
             model->generateCoins(false, 0);
             Q_EMIT model->stakingStatusChanged(false);
@@ -625,7 +624,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             }
         }*/
     } else {
-        pwalletMain->stakingMode = StakingMode::STOPPED;
         nLastCoinStakeSearchInterval = 0;
         model->generateCoins(false, 0);
         Q_EMIT model->stakingStatusChanged(false);

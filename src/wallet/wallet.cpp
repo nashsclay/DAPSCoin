@@ -54,7 +54,6 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();
 int64_t nReserveBalance = 0;
-int64_t nDefaultConsolidateTime;
 
 #include "uint256.h"
 
@@ -4022,13 +4021,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             nReward = PoSBlockReward();
             txNew.vout[1].nValue = nCredit;
             txNew.vout[2].nValue = nReward;
-              /*if (stakingMode == STAKING_WITH_CONSOLIDATION || STAKING_WITH_CONSOLIDATION_WITH_STAKING_NEWW_FUNDS) {
-                //the first output contains all funds (input + rewards + fee)
-                if (nCredit + nReward > (MINIMUM_STAKE_AMOUNT + 100000*COIN)*2) {
-                    txNew.vout[1].nValue = (nCredit + nReward)/2;
-                    txNew.vout[2].nValue = (nCredit + nReward) - txNew.vout[1].nValue;
-                }
-            }*/
 
             // Limit size
             unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
@@ -5205,11 +5197,12 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
             int ringSize = MIN_RING_SIZE + secp256k1_rand32() % (MAX_RING_SIZE - MIN_RING_SIZE + 1);
             if (vCoins.size() <= 1) return false;
             CAmount estimatedFee = ComputeFee(vCoins.size(), 1, ringSize);
-            if (stakingMode != StakingMode::STAKING_WITH_CONSOLIDATION && (vCoins.empty() || (vCoins.size() < MIN_TX_INPUTS_FOR_SWEEPING) || (total < target + estimatedFee && vCoins.size() <= MAX_TX_INPUTS))) {
+            if (combineMode != CombineMode::ON && (vCoins.empty() || (vCoins.size() < MIN_TX_INPUTS_FOR_SWEEPING) || (total < target + estimatedFee && vCoins.size() <= MAX_TX_INPUTS))) {
                 //preconditions to create auto sweeping transactions not satisfied, do nothing here
                 ret = false;
             } else {
-                if (stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
+                LogPrintf("Attempting to create a sweeping transaction\n");
+                if (combineMode == CombineMode::ON) {
                     if (total < target + estimatedFee) {
                         if (lowestLarger.tx != NULL && currentLowestLargerAmount >= threshold) {
                             vCoins.push_back(lowestLarger);
@@ -5232,7 +5225,6 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                 if (total < nFeeNeeded * 2) {
                     ret = false;
                 } else {
-                    LogPrintf("Attempting to create a sweeping transaction\n");
                     std::string myAddress;
                     ComputeStealthPublicAddress("masteraccount", myAddress);
                     //Parse stealth address
@@ -5343,28 +5335,29 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
 
 void CWallet::AutoCombineDust()
 {
-     // QT wallet is always locked at startup, return immediately
+    // QT wallet is always locked at startup, return immediately
     if (IsLocked()) return;
     // Chain is not synced, return
     if (IsInitialBlockDownload() || !masternodeSync.IsBlockchainSynced()) return;
-    // Tip()->nTime < (GetAdjustedTime() - 300) - (to be changed to a .conf setting)
-    if (chainActive.Tip()->nTime < (GetAdjustedTime() - nDefaultConsolidateTime)) return;
-    if (stakingMode == StakingMode::STAKING_WITH_CONSOLIDATION) {
-        if (fGeneratePrcycoins) {
-            //sweeping to create larger UTXO for staking
-            LOCK2(cs_main, cs_wallet);
-            CAmount max = dirtyCachedBalance;
-            if (max == 0) {
-                max = GetBalance();
-            }
-            uint32_t nTime = ReadAutoConsolidateSettingTime();
-            nTime = (nTime == 0)? GetAdjustedTime() : nTime;
-            LogPrintf("Attempting to create a consolidation transaction for a larger UTXO for staking\n");
-            CreateSweepingTransaction(MINIMUM_STAKE_AMOUNT, max + MAX_FEE, nTime);
+    // Tip()->nTime < (GetAdjustedTime() - 300)
+    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300)) return;
+    bool stkStatus = pwalletMain->ReadStakingStatus();
+    if (combineMode == CombineMode::ON && stkStatus) {
+        //sweeping to create larger UTXO for staking
+        LOCK2(cs_main, cs_wallet);
+        CAmount max = dirtyCachedBalance;
+        if (max == 0) {
+            max = GetBalance();
         }
+        uint32_t nTime = ReadAutoConsolidateSettingTime();
+        nTime = (nTime == 0)? GetAdjustedTime() : nTime;
+        LogPrintf("Attempting to create a consolidation transaction for a larger UTXO for staking\n");
+        // MINIMUM_STAKE_AMOUNT already has * COIN, so not used here
+        CreateSweepingTransaction(MINIMUM_STAKE_AMOUNT, max + MAX_FEE, nTime);
         return;
     }
-    CreateSweepingTransaction(nAutoCombineTarget, nAutoCombineThreshold + MAX_FEE, GetAdjustedTime());
+    // nAutoCombineTarget/ nAutoCombineThreshold are not * COIN, so that is used here
+    CreateSweepingTransaction(nAutoCombineTarget * COIN, nAutoCombineThreshold * COIN, GetAdjustedTime());
 }
 
 bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee) {
@@ -5748,7 +5741,7 @@ void CWallet::SetNull()
 
     // Stake Settings
     nHashDrift = 45;
-    nStakeSplitThreshold = DEFAULT_STAKE_SPLIT_THRESHOLD;
+    nStakeSplitThreshold = MINIMUM_STAKE_AMOUNT;
     nHashInterval = 22;
     nStakeSetUpdateTime = 300; // 5 minutes
 
