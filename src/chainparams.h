@@ -108,6 +108,7 @@ public:
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int START_POA_BLOCK() const { return nStartPOABlock; }
     int SoftFork() const { return nSoftForkBlock;}
+    int BIP65ActivationHeight() const { return nBIP65ActivationHeight; }
 
     //For PoA block time
     int POA_BLOCK_TIME() const { return nPoABlockTime; }
@@ -159,6 +160,7 @@ protected:
     std::string strObfuscationPoolDummyAddress;
     int64_t nStartMasternodePayments;
     int64_t nBudget_Fee_Confirmations;
+    int nBIP65ActivationHeight;
 
     //For PoA blocks
     int nPoABlockTime;
