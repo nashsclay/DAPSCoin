@@ -17,14 +17,16 @@
 #include <math.h>
 
 unsigned int N_BITS = 0x1e050000;
-unsigned int N_BITS_SF = 0x1e127ff8;
+unsigned int N_BITS_SF = 0x1e127ff8; // Params().SoftFork()
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
     if (N_BITS != 0 && pblock->IsPoABlockByVersion()) {
         if (pindexLast->nHeight < Params().SoftFork()) {
+            LogPrint("poa", "%s: returning N_BITS\n", __func__);
             return N_BITS;
         }
+        LogPrint("poa", "%s: returning N_BITS_SF\n", __func__);
         return N_BITS_SF;
     }
     /* current difficulty formula, prcycoin - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
