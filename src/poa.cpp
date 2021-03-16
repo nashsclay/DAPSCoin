@@ -216,7 +216,7 @@ bool CheckPoAContainRecentHash(const CBlock& block)
     } else {
         if (pindex->nHeight >= Params().START_POA_BLOCK()) {
             // Bypass bad block			
-            if (pindex->nHeight == 17077 || pindex->nHeight == 17154) {
+            if (pindex->nHeight == 17077 || pindex->nHeight == 17154 || pindex->nHeight == 135887) {
                 return true;
             }
             CBlock prevPoablock;
@@ -376,7 +376,7 @@ bool CheckPoAMerkleRoot(const CBlock& block, bool* fMutate)
 bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block, const CBlockIndex* pindex)
 {
     // Bypass bad block
-    if (pindex->nHeight == 17154) {
+    if (pindex->nHeight == 17154 || pindex->nHeight == 135948) {
         return true;
     } 
     uint32_t numOfPoSBlocks = block.posBlocksAudited.size();
@@ -468,5 +468,5 @@ bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 }
 
 bool IsFixedAudit(std::string txid) {
-    return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135");
+    return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135" ||txid == "dd3d1dccf8f39a220e3a83cfabaf1b567b6696af877073ec580d09af6198f098");
 }
