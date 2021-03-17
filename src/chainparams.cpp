@@ -124,6 +124,7 @@ public:
         nMinNumPoSBlocks = 59;
         nMaxNumPoSBlocks = 120;
         nSoftForkBlock = 120000; // Soft fork block for difficulty change
+        nPoANewDiff = 145000; // New PoA difficulty
         nBIP65ActivationHeight = 125000; // Last v3 block was 124712, leave a bit of padding
 
         /**
@@ -264,6 +265,7 @@ public:
         MAX_MONEY = 5000000000.0;
         nMaxMoneyOut = MAX_MONEY * COIN;
         nSoftForkBlock = 0; // Soft fork block for difficulty change - testnet started with it
+        nPoANewDiff = 600;
         nBIP65ActivationHeight = 0;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
