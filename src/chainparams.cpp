@@ -124,7 +124,7 @@ public:
         nMinNumPoSBlocks = 59;
         nMaxNumPoSBlocks = 120;
         nSoftForkBlock = 120000; // Soft fork block for difficulty change
-        nPoANewDiff = 145000; // New PoA difficulty
+        nPoANewDiff = 150000; // New PoA difficulty
         nBIP65ActivationHeight = 125000; // Last v3 block was 124712, leave a bit of padding
 
         /**
