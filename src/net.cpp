@@ -126,7 +126,7 @@ unsigned short GetListenPort() {
 }
 
 bool IsUnsupportedVersion(std::string strSubVer) {
-    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/");
+    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/");
 }
 
 // find 'best' local address for a particular peer
