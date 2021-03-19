@@ -127,7 +127,7 @@ public:
         nSoftForkBlock = 120000; // Soft fork block for difficulty change
         nPoANewDiff = 150000; // New PoA difficulty
         nBIP65ActivationHeight = 125000; // Last v3 block was 124712, leave a bit of padding
-        nPoAFixTime = 1609200000; // Fork time for PoA fix - (GMT)
+        nPoAFixTime = 1616716800; // Fork time for PoA fix - Friday, March 26, 2021 12:00:00 AM (GMT)
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
