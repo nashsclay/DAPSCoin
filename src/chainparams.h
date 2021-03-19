@@ -109,6 +109,7 @@ public:
     int START_POA_BLOCK() const { return nStartPOABlock; }
     int SoftFork() const { return nSoftForkBlock;}
     int PoANewDiff() const { return nPoANewDiff;}
+    int PoAFixTime() const { return nPoAFixTime;}
     int BIP65ActivationHeight() const { return nBIP65ActivationHeight; }
 
     //For PoA block time
@@ -138,6 +139,7 @@ protected:
     int nStartPOABlock;
     int nSoftForkBlock;
     int nPoANewDiff;
+    int nPoAFixTime;
     int nMasternodeCountDrift;
     int nMaturity;
     int nModifierUpdateBlock;
