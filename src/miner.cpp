@@ -509,7 +509,7 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
         return NULL;
     }
     
-    if (pblock->posBlocksAudited.size() >= MIN_NUM_POS_BLOCKS_AUDITED() && pblock->posBlocksAudited.height == (chainActive.Tip()->nHeight - 30)){
+    if (pblock->posBlocksAudited.size() >= MIN_NUM_POS_BLOCKS_AUDITED() && pblock->posBlocksAudited[nMinNumPoSBlocks].height == (chainActive.Tip()->nHeight - 30)){
         return NULL;
     }
     // Set block version to differentiate PoA blocks from PoS blocks
