@@ -509,8 +509,8 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
         return NULL;
     }
 	
-    std::time_t banningTime = std::time(0);
-    if (banningTime >= Params().PoAPaddingTime()) {
+    std::time_t paddingTime = std::time(0);
+    if (paddingTime >= Params().PoAPaddingTime()) {
         if (pblock->posBlocksAudited.size() >= (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() && pblock->posBlocksAudited[Params().MIN_NUM_POS_BLOCKS_AUDITED()].height >= (chainActive.Tip()->nHeight - 30)){
             return NULL;
         }
