@@ -123,7 +123,7 @@ public:
         nModifierUpdateBlock = 615800;
         nPoABlockTime = 60 * 60; //a PoA block every 60 minutes
         nMinNumPoSBlocks = 59;
-        nMaxNumPoSBlocks = 120;
+        nMaxNumPoSBlocks = 65;
         nSoftForkBlock = 120000; // Soft fork block for difficulty change
         nPoANewDiff = 150000; // New PoA difficulty
         nBIP65ActivationHeight = 125000; // Last v3 block was 124712, leave a bit of padding
