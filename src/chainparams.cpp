@@ -271,7 +271,8 @@ public:
         nSoftForkBlock = 600; // Soft fork block for difficulty change - testnet started with it
         nPoANewDiff = 650;
         nBIP65ActivationHeight = 0;
-
+        nPoAFixTime = 1616277580; // Fork time for PoA fix - Saturday, March 20, 2021 22:00:00 AM (GMT)
+        nPoAPaddingTime = 1616281200; // Fork time for PoA fix - Saturday, March 20, 2021 23:00:00 AM (GMT)
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1608422400;
         genesis.nNonce = 23323155;
