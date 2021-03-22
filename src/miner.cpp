@@ -143,15 +143,15 @@ uint32_t GetListOfPoSInfo(uint32_t currentHeight, std::vector<PoSBlockSummary>& 
                     audits.push_back(pos);
                 }
                 //The current number of PoS blocks audited in a PoA block is changed from 59 to MAX
-				std::time_t paddingTime = std::time(0);
-				if (paddingTime >= Params().PoAPaddingTime()){
-					if (audits.size() == (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED()) {
-						break;
-					}
-				}
-				if (audits.size() == 120) {
-					break;
-				}
+                std::time_t paddingTime = std::time(0);
+                if (paddingTime >= Params().PoAPaddingTime()){
+                    if (audits.size() == (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED()) {
+                        break;
+                    }
+                }
+                if (audits.size() == 120) {
+                    break;
+                }
                 nextAuditHeight++;
             }
         }
@@ -510,11 +510,11 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
     int nprevPoAHeight;
 
     nprevPoAHeight = GetListOfPoSInfo(pindexPrev->nHeight, pblock->posBlocksAudited);
-	
+
     if (pblock->posBlocksAudited.size() == 0) {
         return NULL;
     }
-	
+
     std::time_t paddingTime = std::time(0);
     if (paddingTime >= Params().PoAPaddingTime()) {
         if (pblock->posBlocksAudited.size() >= (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() && pblock->posBlocksAudited[Params().MIN_NUM_POS_BLOCKS_AUDITED()].height >= (chainActive.Tip()->nHeight - 30)){
