@@ -222,7 +222,7 @@ bool CheckPoAContainRecentHash(const CBlock& block)
         }
     } else {
         if (pindex->nHeight >= Params().START_POA_BLOCK()) {
-            // Bypass bad block			
+            // Bypass bad block         
             if (pindex->nHeight == 17077 || pindex->nHeight == 17154 || pindex->nHeight == 135887) {
                 return true;
             }
@@ -303,9 +303,17 @@ bool CheckPoAContainRecentHash(const CBlock& block)
 
 bool CheckNumberOfAuditedPoSBlocks(const CBlock& block, const CBlockIndex* pindex)
 {
+    std::time_t paddingTime = std::time(0);
     bool ret = true;
-    if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() || block.posBlocksAudited.size() > (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED() ) {
-        ret = false;
+
+    if (paddingTime >= Params().PoAPaddingTime()){
+        if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() || block.posBlocksAudited.size() > (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED()) {
+            ret = false;
+        }
+    } else {
+        if (block.posBlocksAudited.size() < (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() || block.posBlocksAudited.size() > 120 ) {
+            ret = false;
+        }
     }
     return ret;
 }
