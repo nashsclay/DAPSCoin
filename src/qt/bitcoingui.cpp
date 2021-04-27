@@ -571,13 +571,13 @@ void BitcoinGUI::createMenuBar()
     QMenu* socials = appMenuBar->addMenu(tr("Social"));
     socials->addAction(facebookAction);
     socials->addAction(twitterAction);
-    //socials->addAction(discordAction);
+    socials->addAction(discordAction);
     socials->addAction(telegramOfficialAction);
     socials->addAction(telegramLoungeAction);
     socials->addAction(mediumAction);
     //socials->addAction(steemitAction);
     socials->addAction(instagramAction);
-    //socials->addAction(redditAction);
+    socials->addAction(redditAction);
 
     QMenu* help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(showHelpMessageAction);
@@ -851,7 +851,7 @@ void BitcoinGUI::twitterActionClicked()
 }
 void BitcoinGUI::discordActionClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://prcycoin.com/discord"));
+    QDesktopServices::openUrl(QUrl("https://discord.prcycoin.com"));
 }
 void BitcoinGUI::telegramOfficialActionClicked()
 {
