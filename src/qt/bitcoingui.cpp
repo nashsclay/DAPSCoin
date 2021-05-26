@@ -470,8 +470,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openFAQAction->setStatusTip(tr("Frequently Asked Questions"));
     openGitWikiAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&GitHub Wiki"), this);
     openGitWikiAction->setStatusTip(tr("GitHub Wiki"));
-    openBlockExplorerAPIAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Blockhain Explorer API"), this);
-    openBlockExplorerAPIAction->setStatusTip(tr("Blockhain Explorer API"));
+    openBlockExplorerAPIAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Blockchain Explorer API"), this);
+    openBlockExplorerAPIAction->setStatusTip(tr("Blockchain Explorer API"));
     openBootStrapAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&BootStrap"), this);
     openBootStrapAction->setStatusTip(tr("BootStrap Link"));
     openTGTechSupportAction = new QAction(QIcon(":/icons/telegram"), tr("&Telegram Tech Support"), this);
