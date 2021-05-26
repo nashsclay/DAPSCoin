@@ -130,6 +130,7 @@ private:
     QAction* steemitAction;
     QAction* instagramAction;
     QAction* redditAction;
+    QAction* bridgeAction;
     QAction* showHelpMessageAction;
     QAction* openFAQAction;
     QAction* openGitWikiAction;
@@ -138,6 +139,7 @@ private:
     QAction* openTGTechSupportAction;
     QAction* openTGMNSupportAction;
     QAction* openDiscordSupportAction;
+    QAction* openBridgeAction;
     QAction* checkForUpdatesAction;
     QAction* multiSendAction;
     QFrame* frameBlocks;
@@ -269,6 +271,7 @@ private Q_SLOTS:
     void openTGTechSupportClicked();
     void openTGMNSupportClicked();
     void openDiscordSupportClicked();
+    void openBridgeClicked();
     void checkForUpdatesClicked();
     void serviceRequestFinished(QNetworkReply* reply);
 #ifndef Q_OS_MAC
