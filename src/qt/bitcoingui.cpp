@@ -370,6 +370,11 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     optionsAction->setMenuRole(QAction::PreferencesRole);
     optionsAction->setToolTip(optionsAction->statusTip());
     optionsAction->setCheckable(true);
+#ifdef Q_OS_MAC
+        optionsAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_6));
+#else
+        optionsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+#endif
     tabGroup->addAction(optionsAction);
 
     stakingAction = new QAction(QIcon(":/icons/options"), tr("&Staking"), this);
