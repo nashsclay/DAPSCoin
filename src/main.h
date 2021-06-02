@@ -368,7 +368,6 @@ void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCach
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, bool fzcActive, bool fRejectBadUTXO, CValidationState& state);
-bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx);
 bool RemoveSerialFromDB(const CBigNum& bnSerial);
 bool IsTransactionInChain(uint256 txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);

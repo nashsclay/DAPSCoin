@@ -1379,22 +1379,6 @@ int GetIXConfirmations(uint256 nTXHash)
     return 0;
 }
 
-bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx)
-{
-    uint256 txHash = 0;
-
-    CTransaction tx;
-    uint256 hashBlock;
-    if (!GetTransaction(txHash, tx, hashBlock, true))
-        return false;
-
-    bool inChain = mapBlockIndex.count(hashBlock) && chainActive.Contains(mapBlockIndex[hashBlock]);
-    if (inChain)
-        nHeightTx = mapBlockIndex.at(hashBlock)->nHeight;
-
-    return inChain;
-}
-
 bool VerifyShnorrKeyImageTxIn(const CTxIn& txin, uint256 ctsHash)
 {
     COutPoint prevout = txin.prevout;
