@@ -4033,29 +4033,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 return false;
             }
 
-            //Check whether team rewards should be included in this block
-/*             CBlockIndex* pindexPrev = chainActive.Tip();
-            CAmount blockValue = GetBlockValue(pindexPrev);
-            if (blockValue > PoSBlockReward()) {
-                CAmount teamReward = blockValue - PoSBlockReward();
-                const std::string foundational = FOUNDATION_WALLET;
-                CPubKey addressGenPub, pubView, pubSpend;
-                bool hasPaymentID;
-                uint64_t paymentID;
-                if (!CWallet::DecodeStealthAddress(foundational, pubView, pubSpend, hasPaymentID, paymentID)) {
-                    LogPrintf("%s: Cannot decode foundational address\n", __func__);
-                    continue;
-                }
-                CKey addressTxPriv;
-                addressTxPriv.MakeNewKey(true);
-                CPubKey foundationTxPub = addressTxPriv.GetPubKey();
-                ComputeStealthDestination(addressTxPriv, pubView, pubSpend, addressGenPub);
-                CScript foundationalScript = GetScriptForDestination(addressGenPub);
-                CTxOut foundationalOut(teamReward, foundationalScript);
-                std::copy(addressTxPriv.begin(), addressTxPriv.end(), std::back_inserter(foundationalOut.txPriv));
-                std::copy(foundationTxPub.begin(), foundationTxPub.end(), std::back_inserter(foundationalOut.txPub));
-                txNew.vout.push_back(foundationalOut);
-            }*/
             //Encoding amount
             CPubKey sharedSec1;
             //In this case, use the transaction pubkey to encode the transactiona amount
