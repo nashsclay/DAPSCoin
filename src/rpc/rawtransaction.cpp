@@ -110,7 +110,12 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                                         CAmount decodedAmount;
                                         CKey blind;
                                         pwalletMain->RevealTxOutAmount(prev, prev.vout[allDecoys[i].n], decodedAmount, blind);
-                                        decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+                                        if (pwalletMain->IsLocked()) {
+                                            decoy.push_back(Pair("decoded_amount", "Wallet is Locked"));
+                                        } else {
+                                            decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+                                        }
+                                        
                                         decoy.push_back(Pair("isMine", true));
                                     }
                                 }
@@ -163,7 +168,12 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
             } else {
                 pBlind = blind.begin();
             }
-            out.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+            if (pwalletMain->IsLocked()) {
+                out.push_back(Pair("decoded_amount", "Wallet is Locked"));
+            } else {
+                out.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+            }
+
             out.push_back(Pair("isMine", true));
         } else {
             out.push_back(Pair("isMine", false));
