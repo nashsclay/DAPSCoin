@@ -1813,11 +1813,11 @@ UniValue walletlock(const UniValue& params, bool fHelp)
             "\nClear the passphrase since we are done before 2 minutes is up\n" + HelpExampleCli("walletlock", "") +
             "\nAs json rpc call\n" + HelpExampleRpc("walletlock", ""));
 
-    /*if (fHelp)
+    if (fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    return Value::null;*/
-    return "This feature is currently not available.";
+    return NullUniValue;
+    //return "This feature is currently not available.";
 }
 
 
