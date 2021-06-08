@@ -322,6 +322,9 @@ UniValue getrawtransaction(const UniValue& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = (params[1].get_int() != 0);
 
+    if (params[1].get_int() == 2)
+        EnsureWalletIsUnlocked();
+
     CTransaction tx;
     uint256 hashBlock = 0;
     if (!GetTransaction(hash, tx, hashBlock, true))
