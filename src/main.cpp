@@ -1435,7 +1435,7 @@ bool VerifyShnorrKeyImageTx(const CTransaction& tx)
     return VerifyShnorrKeyImageTxIn(tx.vin[0], cts);
 }
 
-bool CheckTransaction(const CTransaction& tx, bool fzcActive, bool fRejectBadUTXO, CValidationState& state)
+bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -1596,7 +1596,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         *pfMissingInputs = false;
 
     // Check transaction
-    if (!CheckTransaction(tx, false, true, state))
+    if (!CheckTransaction(tx, true, state))
         return state.DoS(100, error("%s : CheckTransaction failed", __func__), REJECT_INVALID, "bad-tx");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -1785,7 +1785,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
 
     const int chainHeight = chainActive.Height();
 
-    if (!CheckTransaction(tx, false, true, state))
+    if (!CheckTransaction(tx, true, state))
         return error("AcceptableInputs: CheckTransaction failed");
 
     // Coinbase is only valid in a block, not as a loose transaction
