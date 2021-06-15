@@ -655,35 +655,12 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         }
         int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
-        /*if (blockValue > posBlockReward) {
-            numUTXO - 1 is team rewards, numUTXO - 2 is masternode reward
-            const CTxOut& mnOut = coinstake.vout[numUTXO - 2];
-            std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
-            if (!VerifyDerivedAddress(mnOut, mnsa)) {
-                LogPrintf("ReVerifyPoSBlock() : Incorrect derived address for masternode rewards");
-                return false;
-            }
-
-            CAmount teamReward = blockValue - posBlockReward;
-            const CTxOut& foundationOut = coinstake.vout[numUTXO - 1];
-            if (foundationOut.nValue != teamReward) {
-                LogPrintf("ReVerifyPoSBlock() : Incorrect amount PoS rewards for foundation, reward = %d while the correct reward = %d", foundationOut.nValue, teamReward);
-                return false;
-            }
-
-            if (!VerifyDerivedAddress(foundationOut, FOUNDATION_WALLET)) {
-                LogPrintf("ReVerifyPoSBlock() : Incorrect derived address PoS rewards for foundation");
-                return false;
-            }
-        } else {*/
-            //there is no team rewards in this block
-            const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
-            std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
-            if (!VerifyDerivedAddress(mnOut, mnsa)) {
-                LogPrintf("ReVerifyPoSBlock() : Incorrect derived address for masternode rewards");
-                return false;
-            }
-        //}
+        const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
+        std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
+        if (!VerifyDerivedAddress(mnOut, mnsa)) {
+            LogPrintf("ReVerifyPoSBlock() : Incorrect derived address for masternode rewards");
+            return false;
+        }
 
         // track money supply and mint amount info
         CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
@@ -1402,22 +1379,6 @@ int GetIXConfirmations(uint256 nTXHash)
     return 0;
 }
 
-bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx)
-{
-    uint256 txHash = 0;
-
-    CTransaction tx;
-    uint256 hashBlock;
-    if (!GetTransaction(txHash, tx, hashBlock, true))
-        return false;
-
-    bool inChain = mapBlockIndex.count(hashBlock) && chainActive.Contains(mapBlockIndex[hashBlock]);
-    if (inChain)
-        nHeightTx = mapBlockIndex.at(hashBlock)->nHeight;
-
-    return inChain;
-}
-
 bool VerifyShnorrKeyImageTxIn(const CTxIn& txin, uint256 ctsHash)
 {
     COutPoint prevout = txin.prevout;
@@ -1474,7 +1435,7 @@ bool VerifyShnorrKeyImageTx(const CTransaction& tx)
     return VerifyShnorrKeyImageTxIn(tx.vin[0], cts);
 }
 
-bool CheckTransaction(const CTransaction& tx, bool fzcActive, bool fRejectBadUTXO, CValidationState& state)
+bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -1635,7 +1596,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         *pfMissingInputs = false;
 
     // Check transaction
-    if (!CheckTransaction(tx, false, true, state))
+    if (!CheckTransaction(tx, true, state))
         return state.DoS(100, error("%s : CheckTransaction failed", __func__), REJECT_INVALID, "bad-tx");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -1824,7 +1785,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
 
     const int chainHeight = chainActive.Height();
 
-    if (!CheckTransaction(tx, false, true, state))
+    if (!CheckTransaction(tx, true, state))
         return error("AcceptableInputs: CheckTransaction failed");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -2150,37 +2111,6 @@ CAmount PoSBlockReward()
     return 1 * COIN;
 }
 
-//CAmount TeamRewards(const CBlockIndex* ptip)
-//{
-//    const CBlockIndex* pForkTip = ptip;
-//    if (!ptip) {
-//        pForkTip = chainActive.Tip();
-//    }
-
-//    if (!pForkTip->IsProofOfAudit() || pForkTip->nHeight >= Params().REMOVE_REWARD_BLOCK()) return 0;
-//    const CBlockIndex* lastPoABlock = pForkTip;
-//    if (lastPoABlock->hashPrevPoABlock.IsNull()) {
-//        //pay prcy team after the first PoA block
-//        return (pForkTip->nHeight - Params().LAST_POW_BLOCK() - 1 + 1 /*+1 for the being created PoS block*/) * 0.5 * COIN;
-//    }
-
-    //loop back to find the PoA block right after which the prcy team is paid
-//    uint256 lastPoAHash = lastPoABlock->hashPrevPoABlock;
-//    CAmount ret = 0;
-//    int numPoABlocks = 1;
-//    while (!lastPoAHash.IsNull()) {
-//        if (numPoABlocks != 0 && numPoABlocks % Params().TEAM_REWARD_FREQUENCY == 0) break;
-//        CBlockIndex* p = mapBlockIndex[lastPoAHash];
-//        lastPoAHash = p->hashPrevPoABlock;
-//        numPoABlocks++;
-//    }
-
-//    if (!lastPoAHash.IsNull() && numPoABlocks != 0 && numPoABlocks % 24 == 0) {
-//        ret = (pForkTip->nHeight - (mapBlockIndex[lastPoAHash]->nHeight + 1) - numPoABlocks + 1 /*+1 for the being created PoS block*/) * 0.5 * COIN;
-//    }
-//    return ret;
-//}
-
 int64_t GetBlockValue(const CBlockIndex* ptip)
 {
     LOCK(cs_main);
@@ -2198,7 +2128,6 @@ int64_t GetBlockValue(const CBlockIndex* ptip)
         nSubsidy = 120000 * COIN;
     } else {
         nSubsidy = PoSBlockReward();
- //       nSubsidy += TeamRewards(pForkTip);
     }
 
     if (pForkTip->nMoneySupply + nSubsidy >= Params().TOTAL_SUPPLY) {
@@ -3056,11 +2985,6 @@ bool RecalculatePRCYSupply(int nHeightStart)
     return true;
 }
 
-bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError)
-{
-    return true;
-}
-
 static int64_t nTimeVerify = 0;
 static int64_t nTimeConnect = 0;
 static int64_t nTimeIndex = 0;
@@ -3239,27 +3163,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
         int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
-        /*if (blockValue > posBlockReward) {
-            //numUTXO - 1 is PoS rewards commitment not correct", numUTXO - 2 is masternode reward
-            const CTxOut& mnOut = coinstake.vout[numUTXO - 2];
-            std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
-            if (!VerifyDerivedAddress(mnOut, mnsa))
-                return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
+        const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
+        std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
+        if (!VerifyDerivedAddress(mnOut, mnsa))
+            return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
 
-            CAmount teamReward = blockValue - posBlockReward;
-            const CTxOut& foundationOut = coinstake.vout[numUTXO - 1];
-            if (foundationOut.nValue != teamReward)
-                return state.DoS(100, error("ConnectBlock() : Incorrect amount PoS rewards for foundation, reward = %d while the correct reward = %d", foundationOut.nValue, teamReward));
-
-            //if (!VerifyDerivedAddress(foundationOut, FOUNDATION_WALLET))
-                //return state.DoS(100, error("ConnectBlock() : Incorrect derived address PoS rewards for foundation"));
-        } else {*/
-            //there is no team rewards in this block
-            const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
-            std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
-            if (!VerifyDerivedAddress(mnOut, mnsa))
-                return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
-        //}
     }
 
     // track money supply and mint amount info
