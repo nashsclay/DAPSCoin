@@ -511,7 +511,10 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
     }
 
     if (pblock->posBlocksAudited.size() >= (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() && pblock->posBlocksAudited[Params().MIN_NUM_POS_BLOCKS_AUDITED()].height >= (chainActive.Tip()->nHeight - 30)){
+        LogPrintf("%s: PoA Padding Not Reached - No PoA block to mine\n", __func__);
         return NULL;
+    } else {
+        LogPrintf("%s: PoA Padding Reached - Attemtping to mine PoA block\n", __func__);
     }
     // Set block version to differentiate PoA blocks from PoS blocks
     pblock->SetVersionPoABlock();
