@@ -1821,11 +1821,18 @@ UniValue walletlock(const UniValue& params, bool fHelp)
             "\nClear the passphrase since we are done before 2 minutes is up\n" + HelpExampleCli("walletlock", "") +
             "\nAs json rpc call\n" + HelpExampleRpc("walletlock", ""));
 
-    if (fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
+    if (fHelp)
+        return true;
+
+    if (!pwalletMain->IsCrypted())
+        throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletlock was called.");
+
+    pwalletMain->Lock();
+    nWalletUnlockTime = 0;
+
     return NullUniValue;
-    //return "This feature is currently not available.";
 }
 
 
