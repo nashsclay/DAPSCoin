@@ -112,6 +112,7 @@ public:
     int PoANewDiff() const { return nPoANewDiff;}
     int PoAFixTime() const { return nPoAFixTime;}
     int PoAPaddingBlock() const { return nPoAPaddingBlock;}
+    int PoAPadding() const { return nPoAPadding;}
     int BIP65ActivationHeight() const { return nBIP65ActivationHeight; }
 
     //For PoA block time
@@ -143,6 +144,7 @@ protected:
     int nPoANewDiff;
     int nPoAFixTime;
     int nPoAPaddingBlock;
+    int nPoAPadding;
     int nMasternodeCountDrift;
     int nMaturity;
     int nModifierUpdateBlock;
