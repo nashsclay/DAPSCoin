@@ -121,6 +121,7 @@ public:
         nMasternodeCountDrift = 20;
         MAX_MONEY = 70000000.0;
         nMaxMoneyOut = MAX_MONEY * COIN;
+        nMNCollateralAmt = 5000 * COIN;
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 500;
@@ -282,6 +283,7 @@ public:
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
         MAX_MONEY = 70000000.0;
         nMaxMoneyOut = MAX_MONEY * COIN;
+        nMNCollateralAmt = 5000 * COIN;
         nSoftForkBlock = 600; // Soft fork block for difficulty change - testnet started with it
         nPoANewDiff = 650;
         nBIP65ActivationHeight = 0;
