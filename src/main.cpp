@@ -1634,11 +1634,18 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 return false;
             }
 
+            int banscore;
             if (!tx.IsCoinStake() && !tx.IsCoinBase() && !tx.IsCoinAudit()) {
                 if (!tx.IsCoinAudit()) {
-                    if (!VerifyRingSignatureWithTxFee(tx, chainActive.Tip()))
-                        return state.DoS(100, error("AcceptToMemoryPool() : Ring Signature check for transaction %s failed", tx.GetHash().ToString()),
+                    if (masternodeSync.IsBlockchainSynced()) {
+                        banscore = 100;
+                    } else {
+                        banscore = 1;
+                    }
+                    if (!VerifyRingSignatureWithTxFee(tx, chainActive.Tip())) {
+                        return state.DoS(banscore, error("AcceptToMemoryPool() : Ring Signature check for transaction %s failed", tx.GetHash().ToString()),
                             REJECT_INVALID, "bad-ring-signature");
+                    }
                     if (!VerifyBulletProofAggregate(tx))
                         return state.DoS(100, error("AcceptToMemoryPool() : Bulletproof check for transaction %s failed", tx.GetHash().ToString()),
                             REJECT_INVALID, "bad-bulletproof");
