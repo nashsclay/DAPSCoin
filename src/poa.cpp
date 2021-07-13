@@ -487,5 +487,5 @@ bool IsFixedAudit(std::string txid) {
 }
 
 bool IsWrongAudit(std::string txid) {
-    return (txid == "ef99f7882a681a075ebd51fa83be01685257ca66ccb736950fefc037f00e1538");
+    return (txid == "ef99f7882a681a075ebd51fa83be01685257ca66ccb736950fefc037f00e1538" || txid == "6514be1fad4d956a059924d5185a6f9db20a62f2f99e3e9b79257d6d3ca36065" || txid == "fd5a19a7a7df25774a6a030295f01bae6395be4229ebe2caf4974d536432e0dd");
 }
