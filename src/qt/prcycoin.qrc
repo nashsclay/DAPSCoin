@@ -79,6 +79,7 @@
     </qresource>
     <qresource prefix="/css">
         <file alias="dark">res/css/Dark.css</file>
+        <file alias="webwallet">res/css/WebWallet.css</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
