@@ -136,6 +136,7 @@ public:
         nPoAFixTime = 1616716800; // Fork time for PoA fix - Friday, March 26, 2021 12:00:00 AM (GMT)
         nPoAPaddingBlock = 169869; // Last block with 120 PoS blocks in a PoA Audit
         nPoAPadding = 30; // Current PoA Padding
+        nHardForkBlock = 350000; // Add hard fork block for Consensus/PoA Padding
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -290,6 +291,7 @@ public:
         nPoAFixTime = 1616277580; // Fork time for PoA fix - Saturday, March 20, 2021 22:00:00 AM (GMT)
         nPoAPaddingBlock = 0;
         nPoAPadding = 15; // Current PoA Padding
+        nHardForkBlock = 700; // Add hard fork block for Consensus/PoA Padding
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1608422400;

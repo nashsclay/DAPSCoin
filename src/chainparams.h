@@ -115,6 +115,7 @@ public:
     int PoAPaddingBlock() const { return nPoAPaddingBlock;}
     int PoAPadding() const { return nPoAPadding;}
     int BIP65ActivationHeight() const { return nBIP65ActivationHeight; }
+    int HardFork() const { return nHardForkBlock;}
 
     //For PoA block time
     int POA_BLOCK_TIME() const { return nPoABlockTime; }
@@ -142,6 +143,7 @@ protected:
     int64_t nTargetSpacing;
     int nStartPOABlock;
     int nSoftForkBlock;
+    int nHardForkBlock;
     int nPoANewDiff;
     int nPoAFixTime;
     int nPoAPaddingBlock;
