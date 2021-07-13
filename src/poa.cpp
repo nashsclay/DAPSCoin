@@ -482,10 +482,16 @@ bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
     return ret;
 }
 
+// The functions below are workarounds for incorrectly audited blocks.
+// Without them, PoA mining can not continue as these values are expected.
+// To determine them, check the last 1-5 audited blocks of the raw data of
+// the PoA block where the issue occurred. Compare to the real blocks/txids.
 bool IsFixedAudit(std::string txid) {
+    // Correct TXIDs for Block 17152, Block 135946, Block 311330 and Block 311331
     return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135" || txid == "dd3d1dccf8f39a220e3a83cfabaf1b567b6696af877073ec580d09af6198f098" || txid =="e8aafd0513a8b2da536d55d9efd788956d03c6a0baa8acc4251f8dc0f3f03e87" || txid == "2666169b99521f12b6c69454f66e23af465c63e4a4807a5a8ed45467846ebe93");
 }
 
 bool IsWrongAudit(std::string txid) {
+    // Orphan TXIDs for Block 135946, Block 311330 and Block 311331
     return (txid == "ef99f7882a681a075ebd51fa83be01685257ca66ccb736950fefc037f00e1538" || txid == "6514be1fad4d956a059924d5185a6f9db20a62f2f99e3e9b79257d6d3ca36065" || txid == "fd5a19a7a7df25774a6a030295f01bae6395be4229ebe2caf4974d536432e0dd");
 }
