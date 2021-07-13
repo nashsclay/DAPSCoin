@@ -483,7 +483,7 @@ bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 }
 
 bool IsFixedAudit(std::string txid) {
-    return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135" || txid == "dd3d1dccf8f39a220e3a83cfabaf1b567b6696af877073ec580d09af6198f098");
+    return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135" || txid == "dd3d1dccf8f39a220e3a83cfabaf1b567b6696af877073ec580d09af6198f098" || txid =="e8aafd0513a8b2da536d55d9efd788956d03c6a0baa8acc4251f8dc0f3f03e87" || txid == "2666169b99521f12b6c69454f66e23af465c63e4a4807a5a8ed45467846ebe93");
 }
 
 bool IsWrongAudit(std::string txid) {
