@@ -3022,19 +3022,23 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (!fVerifyingBlocks && block.IsProofOfAudit()) {
         //Check PoA consensus rules
         if (!CheckPoAContainRecentHash(block)) {
-            return state.DoS(100, error("ConnectBlock(): PoA block should contain only non-audited recent PoS blocks"));
+            return state.DoS(100, error("ConnectBlock(): PoA block should contain only non-audited recent PoS blocks"),
+                REJECT_INVALID, "blocks-already-audited");
         }
 
         if (!CheckNumberOfAuditedPoSBlocks(block, pindex)) {
-            return state.DoS(100, error("ConnectBlock(): A PoA block should audit at least 59 PoS blocks and no more than 120 PoS blocks (65 max after block 169869)"));
+            return state.DoS(100, error("ConnectBlock(): A PoA block should audit at least 59 PoS blocks and no more than 120 PoS blocks (65 max after block 169869)"),
+                             REJECT_INVALID, "incorrect-number-audited-blocks");
         }
 
         if (!CheckPoABlockNotContainingPoABlockInfo(block, pindex)) {
-            return state.DoS(100, error("ConnectBlock(): A PoA block should not audit any existing PoA blocks"));
+            return state.DoS(100, error("ConnectBlock(): A PoA block should not audit any existing PoA blocks"),
+                             REJECT_INVALID, "auditing-poa-block");
         }
 
         if (!CheckPoABlockRewardAmount(block, pindex)) {
-            return state.DoS(100, error("ConnectBlock(): This PoA block reward does not match the value it should"));
+            return state.DoS(100, error("ConnectBlock(): This PoA block reward does not match the value it should"),
+                             REJECT_INVALID, "incorrect-reward");
         }
 
         if (!CheckPoABlockPaddingAmount(block, pindex)) {
@@ -3043,7 +3047,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
 
         if (block.GetBlockTime() >= GetAdjustedTime() + 2 * 60) {
-            return state.DoS(100, error("ConnectBlock(): A PoA block should not be in the future"));
+            return state.DoS(100, error("ConnectBlock(): A PoA block should not be in the future"),
+                             REJECT_INVALID, "time-in-future");
         }
     }
 
