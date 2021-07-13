@@ -474,9 +474,15 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
 bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 {
     bool ret = false;
+    CAmount nReward;
+    if (pindex->nHeight >= Params().HardFork()) {
+        nReward = 0.25 * COIN;
+    } else {
+        nReward = 0.5 * COIN;
+    }
     ret = block.vtx.size() == 1;
     ret = ret && block.vtx[0].vout.size() == 1;
-    ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * 0.5 * COIN;
+    ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * nReward;
     ret = ret && VerifyZeroBlindCommitment(block.vtx[0].vout[0]);
 
     return ret;
