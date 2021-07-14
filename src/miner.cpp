@@ -110,7 +110,7 @@ uint32_t GetListOfPoSInfo(uint32_t currentHeight, std::vector<PoSBlockSummary>& 
     }
     if (nloopIdx <= Params().START_POA_BLOCK()) {
         //this is the first PoA block ==> take all PoS blocks from LAST_POW_BLOCK up to currentHeight - 60 inclusive
-        for (int i = Params().LAST_POW_BLOCK() + 1; i <= Params().LAST_POW_BLOCK() + 60; i++) {
+        for (int i = Params().LAST_POW_BLOCK() + 1; i <= Params().LAST_POW_BLOCK() + (size_t)Params().MAX_NUM_POS_BLOCKS_AUDITED(); i++) {
             PoSBlockSummary pos;
             pos.hash = chainActive[i]->GetBlockHash();
             CBlockIndex* pindex = mapBlockIndex[pos.hash];
@@ -510,18 +510,17 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
         return NULL;
     }
 
-        LogPrintf("%s: PoA Padding Not Reached - No PoA block to mine\n", __func__);
-    if (pblock->posBlocksAudited.size() >= (size_t)Params().MIN_NUM_POS_BLOCKS_AUDITED() && pblock->posBlocksAudited[Params().MIN_NUM_POS_BLOCKS_AUDITED()].height >= (chainActive.Tip()->nHeight - Params().PoAPadding())){
-        return NULL;
-    } else {
-        LogPrintf("%s: PoA Padding Reached - Attemtping to mine PoA block\n", __func__);
-    }
     // Set block version to differentiate PoA blocks from PoS blocks
     pblock->SetVersionPoABlock();
     pblock->nTime = GetAdjustedTime();
 
     //compute PoA block reward
-    CAmount nReward = pblock->posBlocksAudited.size() * 0.5 * COIN;
+    CAmount nReward;
+    if (pindexPrev->nHeight >= Params().HardFork()) {
+        nReward = pblock->posBlocksAudited.size() * 0.25 * COIN;
+    } else {
+        nReward = pblock->posBlocksAudited.size() * 0.5 * COIN;
+    }
     pblock->vtx[0].vout[0].nValue = nReward;
 
     pblock->vtx[0].txType = TX_TYPE_REVEAL_AMOUNT;

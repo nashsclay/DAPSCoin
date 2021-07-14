@@ -474,11 +474,47 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
 bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex)
 {
     bool ret = false;
+    CAmount nReward;
+    if (pindex->nHeight >= Params().HardFork()) {
+        nReward = 0.25 * COIN;
+    } else {
+        nReward = 0.5 * COIN;
+    }
     ret = block.vtx.size() == 1;
     ret = ret && block.vtx[0].vout.size() == 1;
-    ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * 0.5 * COIN;
+    ret = ret && block.vtx[0].vout[0].nValue == block.posBlocksAudited.size() * nReward;
     ret = ret && VerifyZeroBlindCommitment(block.vtx[0].vout[0]);
 
+    return ret;
+}
+
+bool CheckPoABlockPaddingAmount(const CBlock& block, const CBlockIndex* pindex)
+{
+    bool ret = true;
+
+    int nHeight = pindex->nHeight;
+    int prevPoAHeight = 0;
+    int lastPoSHeight = 0;
+    int padding = 0;
+
+    if (nHeight >= Params().HardFork()) {
+        ret = false;
+        if (mapBlockIndex.count(block.hashPrevPoABlock) != 0) {
+            CBlockIndex* pPrevPoAIndex = mapBlockIndex[block.hashPrevPoABlock];
+            CBlock prevPoablock;
+            if (!ReadBlockFromDisk(prevPoablock, pPrevPoAIndex))
+                throw runtime_error("Can't read block from disk");
+            prevPoAHeight = pPrevPoAIndex->nHeight;
+            for (size_t i = 0; i < block.posBlocksAudited.size(); i++) {
+                lastPoSHeight = block.posBlocksAudited[i].height;
+            }
+        }
+        padding = (nHeight - lastPoSHeight);
+        if (padding >= Params().PoAPadding()){
+            ret = true;
+        }
+        LogPrint("poa", "%s: nHeight: %d, prevPoAHeight: %d, lastPoSHeight: %d, padding: %d\n", __func__, nHeight, prevPoAHeight, lastPoSHeight, padding);
+    }
     return ret;
 }
 

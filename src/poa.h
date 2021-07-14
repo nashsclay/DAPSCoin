@@ -47,6 +47,7 @@ bool CheckPoABlockNotContainingPoABlockInfo(const CBlock& block, const CBlockInd
 bool CheckPoAblockTime(const CBlock& block);
 bool CheckPoABlockNotAuditingOverlap(const CBlock& block);
 bool CheckPoABlockRewardAmount(const CBlock& block, const CBlockIndex* pindex);
+bool CheckPoABlockPaddingAmount(const CBlock& block, const CBlockIndex* pindex);
 bool IsFixedAudit(std::string txid);
 bool IsWrongAudit(std::string txid);
 
