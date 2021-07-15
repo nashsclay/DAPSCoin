@@ -5840,7 +5840,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             vRecv >> LIMITED_STRING(pfrom->strSubVer, MAX_SUBVERSION_LENGTH);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
-        if (IsUnsupportedVersion(pfrom->strSubVer)) {
+        if (IsUnsupportedVersion(pfrom->strSubVer, chainActive.Height())) {
                 // disconnect from peers other than these sub versions
                 LogPrintf("peer %s using unsupported version %s; disconnecting and banning\n", pfrom->addr.ToString().c_str(), pfrom->strSubVer.c_str());
                 state->fShouldBan = true;
