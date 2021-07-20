@@ -275,16 +275,18 @@ QPushButton {
 }
 
 QPushButton:hover {
-  background-color: #383838;
-  color: #b0fcff;
+  background-color: #FFFFFF;
+  color: rgb(254,79,0);
   font-style: bold;
 }
 
 QPushButton:pressed {
-  background-color: #383838;
+  background-color: #FFFFFF;
+  color: rgb(254,79,0);
   border-style: solid;
-  border-color: #EEEEEE;
+  border-color: rgb(254,79,0);
   border-width: 2px;
+  font-style: bold;
 }
 
 QPushButton#btn_rescan{
@@ -376,8 +378,8 @@ ToggleButton > QPushButton {
 }
 
 ToggleButton > QPushButton:enabled:checked {
-  background-color: black;
-  color: #93faff;
+  background-color: #FFFFFF;
+  color: #000000;
   padding: 0;
   text-align: center;
   border: 1px solid #93faff;
