@@ -225,6 +225,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     connect(openConfEditorAction, SIGNAL(triggered()), rpcConsole, SLOT(showConfEditor()));
     connect(openMNConfEditorAction, SIGNAL(triggered()), rpcConsole, SLOT(showMNConfEditor()));
     connect(showDataDirAction, SIGNAL(triggered()), rpcConsole, SLOT(showDataDir()));
+    connect(showQtDirAction, SIGNAL(triggered()), rpcConsole, SLOT(showQtDir()));
     connect(showBackupsAction, SIGNAL(triggered()), rpcConsole, SLOT(showBackups()));
     connect(labelConnectionsIcon, SIGNAL(clicked()), rpcConsole, SLOT(showPeers()));
     connect(labelEncryptionIcon, SIGNAL(clicked()), walletFrame, SLOT(toggleLockWallet()));
@@ -429,6 +430,9 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     showDataDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &PRCYcoin Folder"), this);
     showDataDirAction->setStatusTip(tr("Show the PRCYcoin folder"));
     showDataDirAction->setShortcut(Qt::Key_F2);
+    showQtDirAction = new QAction(QIcon(":/icons/browse"), tr("Show &Qt Folder"), this);
+    showQtDirAction->setStatusTip(tr("Show the Qt folder"));
+    showQtDirAction->setShortcut(Qt::Key_F3);
     showBackupsAction = new QAction(QIcon(":/icons/browse"), tr("Show Automatic &Backups"), this);
     showBackupsAction->setStatusTip(tr("Show automatically created wallet backups"));
 
@@ -575,6 +579,7 @@ void BitcoinGUI::createMenuBar()
         tools->addAction(openConfEditorAction);
         tools->addAction(openMNConfEditorAction);
         tools->addAction(showDataDirAction);
+        tools->addAction(showQtDirAction);
         tools->addAction(showBackupsAction);
         tools->addAction(openBlockExplorerAction);
     }
@@ -826,6 +831,7 @@ void BitcoinGUI::createTrayIconMenu()
     trayIconMenu->addAction(openConfEditorAction);
     trayIconMenu->addAction(openMNConfEditorAction);
     trayIconMenu->addAction(showDataDirAction);
+    trayIconMenu->addAction(showQtDirAction);
     trayIconMenu->addAction(showBackupsAction);
     trayIconMenu->addAction(openBlockExplorerAction);
 #ifndef Q_OS_MAC // This is built-in on Mac
