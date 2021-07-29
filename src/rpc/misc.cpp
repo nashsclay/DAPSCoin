@@ -131,6 +131,24 @@ UniValue getinfo(const UniValue &params, bool fHelp) {
     return obj;
 }
 
+UniValue getversion(const UniValue &params, bool fHelp) {
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getversion\n"
+            "Returns the server version.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"version\": xxxxx,           (numeric) the server version\n"
+            "}\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getversion", "") + HelpExampleRpc("getversion", ""));
+    LOCK(cs_main);
+
+    UniValue obj(UniValue::VOBJ);
+    obj.push_back(Pair("version", CLIENT_VERSION));
+    return obj;
+}
+
 UniValue mnsync(const UniValue &params, bool fHelp) {
     std::string strMode;
     if (params.size() == 1)
