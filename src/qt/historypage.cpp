@@ -290,9 +290,18 @@ void HistoryPage::updateFilter()
             hide = true;
         if (selectedType != tr("All Types")) {
             if (selectedType == tr("Received")) {
-                hide = !(type == tr("Received") || type == tr("Masternode Reward") || type == tr("Staking Reward") || type == ("PoA Reward"));
-            } else
-                hide = (selectedType != type) || hide;
+                hide = !(type == tr("Received"));
+            } else if (selectedType == tr("Sent")) {
+                hide = !(type == tr("Sent"));
+            } else if (selectedType == tr("Mined")) {
+                hide = !(type == tr("Mined"));
+            } else if (selectedType == tr("Minted")) {
+                hide = !(type == tr("Minted"));
+            } else if (selectedType == tr("Masternode")) {
+                hide = !(type == tr("Masternode"));
+            }
+        } else {
+            hide = !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode"));
         }
         if (ui->lineEditDesc->currentText() != allAddressString) {
             bool found = false;
@@ -302,7 +311,7 @@ void HistoryPage::updateFilter()
             hide = !found || hide;
         }
 
-        ui->tableView->setRowHidden(row, false);
+        ui->tableView->setRowHidden(row, hide);
     }
 }
 
