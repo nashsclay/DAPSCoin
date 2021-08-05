@@ -523,7 +523,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     std::string strPayeesPossible = "";
     nMasternode_Drift_Count = mnodeman.size() + Params().MasternodeCountDrift();
     CBlockIndex* pindexPrev = chainActive.Tip();
-    CAmount requiredMasternodePayment = GetMasternodePayment(nBlockHeight, GetBlockValue(pindexPrev));
+    CAmount requiredMasternodePayment = GetMasternodePayment(nBlockHeight, GetBlockValue(pindexPrev->nHeight));
 
     //require at least 6 signatures
     for (CMasternodePayee& payee : vecPayments)

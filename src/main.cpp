@@ -653,8 +653,7 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
             LogPrintf("ReVerifyPoSBlock() : Previous block not found, received block %s, previous %s, current tip %s", block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex());
             return false;
         }
-        int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
-        CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
+        CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]->nHeight);
         const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
         std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
         if (!VerifyDerivedAddress(mnOut, mnsa)) {
@@ -669,7 +668,7 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
 
         //PoW phase redistributed fees to miner. PoS stage destroys fees.
-        CAmount nExpectedMint = GetBlockValue(pindex->pprev);
+        CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
         nExpectedMint += nFees;
 
         if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
@@ -2118,27 +2117,24 @@ CAmount PoSBlockReward()
     return 1 * COIN;
 }
 
-int64_t GetBlockValue(const CBlockIndex* ptip)
+CAmount GetBlockValue(int nHeight)
 {
     LOCK(cs_main);
     int64_t nSubsidy = 0;
-    const CBlockIndex* pForkTip = ptip;
-    if (!ptip) {
-        pForkTip = chainActive.Tip();
-    }
+    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
 
-    if (pForkTip->nMoneySupply >= Params().TOTAL_SUPPLY) {
+    if (nMoneySupply >= Params().TOTAL_SUPPLY) {
         //zero rewards when total supply reach 70M PRCY
         return 0;
     }
-    if (pForkTip->nHeight < Params().LAST_POW_BLOCK()) {
+    if (nHeight < Params().LAST_POW_BLOCK()) {
         nSubsidy = 120000 * COIN;
     } else {
         nSubsidy = PoSBlockReward();
     }
 
-    if (pForkTip->nMoneySupply + nSubsidy >= Params().TOTAL_SUPPLY) {
-        nSubsidy = Params().TOTAL_SUPPLY - pForkTip->nMoneySupply;
+    if (nMoneySupply + nSubsidy >= Params().TOTAL_SUPPLY) {
+        nSubsidy = Params().TOTAL_SUPPLY - nMoneySupply;
     }
 
     return nSubsidy;
@@ -3179,8 +3175,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (mapBlockIndex.count(block.hashPrevBlock) < 1) {
             return state.DoS(100, error("ConnectBlock() : Previous block not found, received block %s, previous %s, current tip %s", block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex()));
         }
-        int thisBlockHeight = mapBlockIndex[block.hashPrevBlock]->nHeight + 1; //avoid potential block disorder during download
-        CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]);
+        CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]->nHeight);
         const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
         std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
         if (!VerifyDerivedAddress(mnOut, mnsa))
@@ -3202,7 +3197,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    CAmount nExpectedMint = GetBlockValue(pindex->pprev);
+    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
     nExpectedMint += nFees;
 
     if (!block.IsPoABlockByVersion() && !IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
