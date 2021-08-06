@@ -252,7 +252,6 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 CAmount GetBlockValue(int nHeight);
-CAmount PoSBlockReward();
 
 void RemoveInvalidTransactionsFromMempool();
 

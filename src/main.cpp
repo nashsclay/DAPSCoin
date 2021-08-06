@@ -648,7 +648,6 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         nValueOut = coinstake.GetValueOut();
 
         size_t numUTXO = coinstake.vout.size();
-        CAmount posBlockReward = PoSBlockReward();
         if (mapBlockIndex.count(block.hashPrevBlock) < 1) {
             LogPrintf("ReVerifyPoSBlock() : Previous block not found, received block %s, previous %s, current tip %s", block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex());
             return false;
@@ -2112,11 +2111,6 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-CAmount PoSBlockReward()
-{
-    return 1 * COIN;
-}
-
 CAmount GetBlockValue(int nHeight)
 {
     LOCK(cs_main);
@@ -2130,7 +2124,7 @@ CAmount GetBlockValue(int nHeight)
     if (nHeight < Params().LAST_POW_BLOCK()) {
         nSubsidy = 120000 * COIN;
     } else {
-        nSubsidy = PoSBlockReward();
+        nSubsidy = 1 * COIN;
     }
 
     if (nMoneySupply + nSubsidy >= Params().TOTAL_SUPPLY) {
@@ -3171,7 +3165,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (block.IsProofOfStake()) {
         const CTransaction coinstake = block.vtx[1];
         size_t numUTXO = coinstake.vout.size();
-        CAmount posBlockReward = PoSBlockReward();
         if (mapBlockIndex.count(block.hashPrevBlock) < 1) {
             return state.DoS(100, error("ConnectBlock() : Previous block not found, received block %s, previous %s, current tip %s", block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex()));
         }

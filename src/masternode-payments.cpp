@@ -310,7 +310,7 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
         hasPayment = false;
     }
 
-    CAmount posBlockReward = PoSBlockReward();
+    CAmount posBlockReward = GetBlockValue(pindexPrev->nHeight);
     CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight, posBlockReward);
     if (hasPayment) {
         if (fProofOfStake) {
