@@ -126,10 +126,7 @@ unsigned short GetListenPort() {
 }
 
 bool IsUnsupportedVersion(std::string strSubVer, int nHeight) {
-    if (nHeight >= Params().HardFork()) {
-        return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/" || strSubVer == "/PRCY:1.0.0.6/");
-    }
-    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/");
+    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/" || strSubVer == "/PRCY:1.0.0.6/");
 }
 
 // find 'best' local address for a particular peer
