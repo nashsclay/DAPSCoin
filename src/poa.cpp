@@ -192,8 +192,8 @@ bool CheckPoAContainRecentHash(const CBlock& block)
     }
     //Find the previous PoA block
     CBlockIndex* pindex = currentTip;
+    nHeight = pindex->nHeight;
     while (pindex->nHeight >= Params().START_POA_BLOCK()) {
-        nHeight = pindex->nHeight;
         if (pindex->GetBlockHeader().IsPoABlockByVersion()) {
             break;
         }
