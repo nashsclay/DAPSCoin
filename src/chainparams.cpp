@@ -122,6 +122,7 @@ public:
         MAX_MONEY = 70000000.0;
         nMaxMoneyOut = MAX_MONEY * COIN;
         nMNCollateralAmt = 5000 * COIN;
+        nMinimumStakeAmount = 2500 * COIN;
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 500;
