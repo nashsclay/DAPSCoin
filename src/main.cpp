@@ -3186,6 +3186,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!VerifyDerivedAddress(mnOut, mnsa))
             return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
 
+        if (pindex->nHeight <= Params().HardFork() && nValueIn < CWallet::MINIMUM_STAKE_AMOUNT)
+            return state.DoS(100, error("ConnectBlock() : Incorrect Minimum Stake Amount"));
     }
 
     // track money supply and mint amount info
