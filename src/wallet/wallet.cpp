@@ -4018,7 +4018,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             // Calculate reward
             CAmount nReward;
             const CBlockIndex* pIndex0 = chainActive.Tip();
-            nReward = PoSBlockReward();
+            nReward = GetBlockValue(pIndex0->nHeight);
             txNew.vout[1].nValue = nCredit;
             txNew.vout[2].nValue = nReward;
 
