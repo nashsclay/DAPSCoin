@@ -3174,7 +3174,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!VerifyDerivedAddress(mnOut, mnsa))
             return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
 
-        if (pindex->nHeight <= Params().HardFork() && nValueIn < Params().MinimumStakeAmount())
+        if (pindex->nHeight >= Params().HardFork() && nValueIn < Params().MinimumStakeAmount())
             return state.DoS(100, error("ConnectBlock() : Incorrect Minimum Stake Amount"));
     }
 
