@@ -3136,7 +3136,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 }
             }
 
-            if (!tx.IsCoinStake() && tx.nTxFee < MIN_FEE)
+            if (!tx.IsCoinStake() && tx.nTxFee < MIN_FEE && nHeight >= Params().HardFork())
                 return state.Invalid(error("ConnectBlock() : Fee below Minimum. Network spam detected."),
                     REJECT_INVALID, "bad-txns-low-fee");
             if (!tx.IsCoinStake())
