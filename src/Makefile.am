@@ -123,7 +123,7 @@ BITCOIN_CORE_H = \
   swifttx.h \
   key.h \
   keystore.h \
-  leveldbwrapper.h \
+  dbwrapper.h \
   limitedmap.h \
   main.h \
   masternode.h \
@@ -200,7 +200,7 @@ libbitcoin_server_a_SOURCES = \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
-  leveldbwrapper.cpp \
+  dbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
