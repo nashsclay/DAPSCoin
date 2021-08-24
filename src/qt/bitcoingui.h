@@ -118,6 +118,7 @@ private:
     QAction* openConfEditorAction;
     QAction* openMNConfEditorAction;
     QAction* showDataDirAction;
+    QAction* showQtDirAction;
     QAction* showBackupsAction;
     QAction* openAction;
     QAction* openBlockExplorerAction;

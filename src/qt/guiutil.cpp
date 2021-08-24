@@ -379,6 +379,12 @@ void showDataDir()
         QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
 }
 
+void showQtDir()
+{
+    QString pathQt = QCoreApplication::applicationDirPath();
+    QDesktopServices::openUrl(QUrl(pathQt, QUrl::TolerantMode));
+}
+
 void showBackups()
 {
     boost::filesystem::path pathBackups = GetDataDir() / "backups";

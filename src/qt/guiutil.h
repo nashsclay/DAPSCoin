@@ -124,6 +124,9 @@ void openMNConfigfile();
 // Browse DataDir folder
 void showDataDir();
 
+// Browse Qt Dir folder
+void showQtDir();
+
 // Browse backup folder
 void showBackups();
 
