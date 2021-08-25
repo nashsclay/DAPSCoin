@@ -11,7 +11,6 @@
 #include "main.h"
 #include "masternode.h"
 
-using namespace std;
 
 extern RecursiveMutex cs_vecPayments;
 extern RecursiveMutex cs_mapMasternodeBlocks;
