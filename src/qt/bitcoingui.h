@@ -142,6 +142,7 @@ private:
     QAction* openDiscordSupportAction;
     QAction* openBridgeAction;
     QAction* openDexAction;
+    QAction* openCheckerAction;
     QAction* checkForUpdatesAction;
     QAction* multiSendAction;
     QFrame* frameBlocks;
@@ -275,6 +276,7 @@ private Q_SLOTS:
     void openDiscordSupportClicked();
     void openBridgeClicked();
     void openDexClicked();
+    void openCheckerClicked();
     void checkForUpdatesClicked();
     void serviceRequestFinished(QNetworkReply* reply);
 #ifndef Q_OS_MAC
