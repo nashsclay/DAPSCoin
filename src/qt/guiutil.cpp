@@ -820,7 +820,7 @@ void saveWindowGeometry(const QString& strSetting, QWidget* parent)
 
 void HideDisabledWidgets( QVector<QWidget*> widgets ){
     auto hide = []( QWidget* widget) { widget->setVisible(false); };
-    for_each (widgets.begin(), widgets.end(), hide);
+    std::for_each (widgets.begin(), widgets.end(), hide);
 }
 
 

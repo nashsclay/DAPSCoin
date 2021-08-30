@@ -27,7 +27,6 @@ static const char DB_LAST_BLOCK = 'l';
 static const char DB_INT = 'I';
 static const char DB_KEYIMAGE = 'k';
 
-using namespace std;
 
 CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe)
 {
@@ -181,12 +180,12 @@ bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos>
 }
 
 
-bool CBlockTreeDB::ReadKeyImage(const string& keyImage, uint256& bh)
+bool CBlockTreeDB::ReadKeyImage(const std::string& keyImage, uint256& bh)
 {
     return Read(std::make_pair(DB_KEYIMAGE, keyImage), bh);
 }
 
-bool CBlockTreeDB::ReadKeyImages(const string& keyImage, std::vector<uint256>& bhs)
+bool CBlockTreeDB::ReadKeyImages(const std::string& keyImage, std::vector<uint256>& bhs)
 {
     uint256 bh;
     if (!Read(std::make_pair(DB_KEYIMAGE, keyImage), bh)) return false;
@@ -199,7 +198,7 @@ bool CBlockTreeDB::ReadKeyImages(const string& keyImage, std::vector<uint256>& b
     return true;
 }
 
-bool CBlockTreeDB::WriteKeyImage(const string& keyImage, const uint256& bh)
+bool CBlockTreeDB::WriteKeyImage(const std::string& keyImage, const uint256& bh)
 {
     uint256 blockHash;
     if (!ReadKeyImage(keyImage, blockHash)) {
