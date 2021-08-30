@@ -6,6 +6,7 @@
 
 #include "main.h"
 #include "random.h"
+#include "fs.h"
 #include "txdb.h"
 #include "guiinterface.h"
 #include "util.h"
@@ -14,7 +15,6 @@
 #include "wallet/wallet.h"
 #endif
 
-#include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 

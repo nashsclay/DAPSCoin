@@ -31,6 +31,7 @@
 #include "masternodeconfig.h"
 
 #include "init.h"
+#include "fs.h"
 #include "main.h"
 #include "rpc/server.h"
 #include "guiinterface.h"
@@ -51,7 +52,6 @@
 #include <execinfo.h>
 #endif
 
-#include <boost/filesystem/operations.hpp>
 #include <boost/thread.hpp>
 
 #include <QApplication>

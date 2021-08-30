@@ -8,13 +8,13 @@
 #include "main.h"
 
 #include "addrman.h"
+#include "fs.h"
 #include "masternode-budget.h"
 #include "masternode-sync.h"
 #include "masternode.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
 #include "util.h"
-#include <boost/filesystem.hpp>
 
 CBudgetManager budget;
 RecursiveMutex cs_budget;

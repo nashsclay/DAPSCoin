@@ -18,6 +18,7 @@
 #endif
 
 #include "compat.h"
+#include "fs.h"
 #include "tinyformat.h"
 #include "utiltime.h"
 #include "util/threadnames.h"
@@ -28,7 +29,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 #include "pubkey.h"
 
