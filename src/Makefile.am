@@ -112,6 +112,7 @@ BITCOIN_CORE_H = \
   obfuscation.h \
   obfuscation-relay.h \
   wallet/db.h \
+  fs.h \
   eccryptoverify.h \
   ecwrapper.h \
   hash.h \
@@ -366,6 +367,7 @@ libbitcoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_util_a_SOURCES = \
   allocators.cpp \
   compat/strnlen.cpp \
+  fs.cpp \
   compat/glibc_sanity.cpp \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \

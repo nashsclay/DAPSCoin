@@ -33,7 +33,6 @@
 #include "secp256k1_generator.h"
 #include "txdb.h"
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "masternodeconfig.h"

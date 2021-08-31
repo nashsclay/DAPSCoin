@@ -9,6 +9,7 @@
 #include "rpc/server.h"
 
 #include "base58.h"
+#include "fs.h"
 #include "init.h"
 #include "main.h"
 #include "random.h"
@@ -22,7 +23,6 @@
 #endif
 
 #include <boost/bind.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/shared_ptr.hpp>
