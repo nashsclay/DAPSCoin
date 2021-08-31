@@ -205,7 +205,7 @@ static void DebugPrintInit()
     assert(mutexDebugLog == NULL);
 
     fs::path pathDebug = GetDataDir() / "debug.log";
-    fileout = fopen(pathDebug.string().c_str(), "a");
+    fileout = fsbridge::fopen(pathDebug, "a");
     if (fileout) setbuf(fileout, NULL); // unbuffered
 
     mutexDebugLog = new boost::mutex();
@@ -528,7 +528,7 @@ void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
     fs::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good()) {
         // Create empty prcycoin.conf if it does not exist
-        FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
+        FILE* configFile = fsbridge::fopen(GetConfigFile(), "a");
         if (configFile != NULL)
             fclose(configFile);
         return; // Nothing to read, so just return
@@ -565,7 +565,7 @@ fs::path GetPidFile()
 
 void CreatePidFile(const fs::path& path, pid_t pid)
 {
-    FILE* file = fopen(path.string().c_str(), "w");
+    FILE* file = fsbridge::fopen(path, "w");
     if (file) {
         fprintf(file, "%d\n", pid);
         fclose(file);
@@ -703,7 +703,7 @@ void ShrinkDebugFile()
 {
     // Scroll debug.log if it's getting too big
     fs::path pathLog = GetDataDir() / "debug.log";
-    FILE* file = fopen(pathLog.string().c_str(), "r");
+    FILE* file = fsbridge::fopen(pathLog, "r");
     if (file && fs::file_size(pathLog) > 10 * 1000000) {
         // Restart the file with some of the end
         std::vector<char> vch(200000, 0);
@@ -711,7 +711,7 @@ void ShrinkDebugFile()
         int nBytes = fread(vch.data(), 1, vch.size(), file);
         fclose(file);
 
-        file = fopen(pathLog.string().c_str(), "w");
+        file = fsbridge::fopen(pathLog, "w");
         if (file) {
             fwrite(vch.data(), 1, nBytes, file);
             fclose(file);

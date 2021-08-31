@@ -599,10 +599,10 @@ BOOST_AUTO_TEST_CASE(script_build)
     }
 
 #ifdef UPDATE_JSON_TESTS
-    FILE* valid = fopen("script_valid.json.gen", "w");
+    FILE* valid = fsbridge::fopen("script_valid.json.gen", "w");
     fputs(strGood.c_str(), valid);
     fclose(valid);
-    FILE* invalid = fopen("script_invalid.json.gen", "w");
+    FILE* invalid = fsbridge::fopen("script_invalid.json.gen", "w");
     fputs(strBad.c_str(), invalid);
     fclose(invalid);
 #endif
