@@ -29,7 +29,7 @@ extern void noui_connect();
 
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;
-    boost::filesystem::path pathTemp;
+    fs::path pathTemp;
     boost::thread_group threadGroup;
 
     TestingSetup() {
@@ -44,7 +44,7 @@ struct TestingSetup {
 #endif
         // pathTemp = GetTempPath() / strprintf("test_prcycoin_%lu_%i", (unsigned long)GetTime(), (int)(insecure_randrange(100000)));
         pathTemp = GetTempPath() / "test_prcycoin";
-        boost::filesystem::create_directories(pathTemp);
+        fs::create_directories(pathTemp);
         mapArgs["-datadir"] = pathTemp.string();
 
         vector<string> categories;
@@ -124,7 +124,7 @@ struct TestingSetup {
 #ifdef ENABLE_WALLET
         bitdb.Flush(true);
 #endif
-        boost::filesystem::remove_all(pathTemp);
+        fs::remove_all(pathTemp);
     }
 };
 
