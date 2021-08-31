@@ -439,7 +439,6 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 
 fs::path GetDefaultDataDir()
 {
-    namespace fs = fs;
 // Windows < Vista: C:\Documents and Settings\Username\Application Data\PRCYcoin
 // Windows >= Vista: C:\Users\Username\AppData\Roaming\PRCYcoin
 // Mac: ~/Library/Application Support/PRCYcoin
@@ -472,8 +471,6 @@ static RecursiveMutex csPathCached;
 
 const fs::path& GetDataDir(bool fNetSpecific)
 {
-    namespace fs = fs;
-
     LOCK(csPathCached);
 
     fs::path& path = fNetSpecific ? pathCachedNetSpecific : pathCached;
@@ -723,8 +720,6 @@ void ShrinkDebugFile()
 #ifdef WIN32
 fs::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
-    namespace fs = fs;
-
     char pszPath[MAX_PATH] = "";
 
     if (SHGetSpecialFolderPathA(NULL, pszPath, nFolder, fCreate)) {
