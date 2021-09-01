@@ -5673,11 +5673,10 @@ bool CMerkleTx::IsTransactionLockTimedOut() const
 
 std::string CWallet::GetUniqueWalletBackupName() const
 {
-    boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
     std::stringstream ssDateTime;
+    std::string strWalletBackupName = strprintf("%s", DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime()));
+    ssDateTime << strWalletBackupName;
 
-
-    ssDateTime << boost::gregorian::to_iso_extended_string(timeLocal.date()) << "-" << timeLocal.time_of_day();
     return strprintf("wallet%s.dat%s", "", DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime()));
 }
 
