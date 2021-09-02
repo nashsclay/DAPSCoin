@@ -422,7 +422,7 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
             CTransaction txPrev;
             uint256 hashBlock;
             if (!GetTransaction(decoysForIn[j].hash, txPrev, hashBlock)) {
-                LogPrintf("failed to find transaction %s\n", decoysForIn[j].hash.GetHex());
+                LogPrintf("Failed to find transaction %s\n", decoysForIn[j].hash.GetHex());
                 return false;
             }
             CBlockIndex* tip = chainActive.Tip();
@@ -444,7 +444,7 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
 
             CPubKey extractedPub;
             if (!ExtractPubKey(txPrev.vout[decoysForIn[j].n].scriptPubKey, extractedPub)) {
-                LogPrintf("failed to extract pubkey\n");
+                LogPrintf("Failed to extract pubkey\n");
                 return false;
             }
             memcpy(allInPubKeys[i][j], extractedPub.begin(), 33);
@@ -466,12 +466,12 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
 
     for (size_t i = 0; i < tx.vout.size(); i++) {
         if (tx.vout[i].commitment.empty()) {
-            LogPrintf("Commitment could not be null\n");
+            LogPrintf("Commitment can not be null\n");
             return false;
         }
         memcpy(allOutCommitments[i], &(tx.vout[i].commitment[0]), 33);
         if (!secp256k1_pedersen_commitment_parse(both, &allOutCommitmentsPacked[i], allOutCommitments[i])) {
-            LogPrintf("failed to parse commitment\n");
+            LogPrintf("Failed to parse commitment\n");
             return false;
         }
     }
@@ -500,7 +500,7 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
         const secp256k1_pedersen_commitment* inCptr[MAX_VIN * 2];
         for (size_t k = 0; k < tx.vin.size(); k++) {
             if (!secp256k1_pedersen_commitment_parse(both, &allInCommitmentsPacked[k][j], allInCommitments[k][j])) {
-                LogPrintf("failed to parse commitment\n");
+                LogPrintf("Failed to parse commitment\n");
                 return false;
             }
             inCptr[k] = &allInCommitmentsPacked[k][j];
@@ -512,11 +512,11 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
         secp256k1_pedersen_commitment out;
         size_t length;
         if (!secp256k1_pedersen_commitment_sum(both, inCptr, tx.vin.size() * 2, outCptr, tx.vout.size() + 1, &out)) {
-            LogPrintf("failed to secp256k1_pedersen_commitment_sum\n");
+            LogPrintf("Failed to secp256k1_pedersen_commitment_sum\n");
             return false;
         }
         if (!secp256k1_pedersen_commitment_to_serialized_pubkey(&out, allInPubKeys[tx.vin.size()][j], &length)) {
-            LogPrintf("failed to serialized pubkey\n");
+            LogPrintf("Failed to serialized pubkey\n");
             return false;
         }
     }
@@ -531,12 +531,12 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
             unsigned char P[33];
             memcpy(P, allInPubKeys[i][j], 33);
             if (!secp256k1_ec_pubkey_tweak_mul(P, 33, C)) {
-                LogPrintf("failed to mul pubkey\n");
+                LogPrintf("Failed to mul pubkey\n");
                 return false;
             }
 
             if (!secp256k1_ec_pubkey_tweak_add(P, 33, SIJ[i][j])) {
-                LogPrintf("failed to add pubkey\n");
+                LogPrintf("Failed to add pubkey\n");
                 return false;
             }
 
@@ -551,7 +551,7 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
             unsigned char ci[33];
             memcpy(ci, allKeyImages[i], 33);
             if (!secp256k1_ec_pubkey_tweak_mul(ci, 33, C)) {
-                LogPrintf("failed to mul tweak\n");
+                LogPrintf("Failed to mul tweak\n");
                 return false;
             }
 
@@ -1251,7 +1251,6 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
         CTransaction txPrev;
         uint256 hashBlockPrev;
         if (!GetTransaction(tx.vin[i].prevout.hash, txPrev, hashBlockPrev)) {
-            LogPrintf("GetCoinAge: failed to find vin transaction \n");
             continue; // previous transaction not in main chain
         }
 

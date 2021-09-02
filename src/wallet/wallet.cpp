@@ -5157,7 +5157,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                     try {
                         SendToStealthAddress(masterAddr, ComputeReserveUTXOAmount(), wtx);
                     } catch (const std::exception& err) {
-                        LogPrintf("failed to create reserve UTXO\n");
+                        LogPrintf("Failed to create reserve UTXO\n");
                     }
                     return false;
                 } else {
