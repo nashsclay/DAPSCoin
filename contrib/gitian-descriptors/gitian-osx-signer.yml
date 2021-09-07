@@ -1,13 +1,13 @@
 ---
 name: "prcycoin-dmg-signer"
 suites:
-- "trusty"
+- "bionic"
 architectures:
 - "amd64"
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/prcycoin-project/prcycoin-detached-sigs.git"
+- "url": "https://github.com/prcycoin/prcycoin-detached-sigs.git"
   "dir": "signature"
 files:
 - "prcycoin-osx-unsigned.tar.gz"
