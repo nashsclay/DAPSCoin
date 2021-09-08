@@ -315,7 +315,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++-riscv64-linux-gnu binutils-riscv64-linux-gnu
     - name: Build Dependencies
-      run: make -C depends -j$(nproc) HOST=riscv64-linux-gnu
+      run: make -C depends -j$(nproc) HOST=riscv64-linux-gnu NO_QT=1
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build PRCY
       run: |
@@ -326,8 +326,8 @@ jobs:
     - name: Prepare Files for Artifact
       run: |
         mkdir -p $ARTIFACT_DIR
-        chmod +x $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt}
-        mv $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt} $ARTIFACT_DIR
+        chmod +x $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind}
+        mv $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind} $ARTIFACT_DIR
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
       with:
