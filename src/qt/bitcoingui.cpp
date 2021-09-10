@@ -258,6 +258,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
         timerStakingIcon->start(10000);
         setStakingStatus();
     }
+    checkForUpdatesClicked();
 }
 
 BitcoinGUI::~BitcoinGUI()
@@ -992,12 +993,14 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
                 return;
             }
         } else {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("No Update Available");
-            msgBox.setText("No update available.\n\nYour wallet is up to date.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.exec();
+            if (!isStartup) {
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("No Update Available");
+                msgBox.setText("No update available.\n\nYour wallet is up to date.");
+                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+                msgBox.setIcon(QMessageBox::Information);
+                msgBox.exec();
+            }
         }
     } else {
         QByteArray error = reply->readAll();
@@ -1008,6 +1011,7 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
     }
+    isStartup = false;
 }
 
 #ifdef ENABLE_WALLET
