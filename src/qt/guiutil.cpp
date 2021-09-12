@@ -364,25 +364,27 @@ void bringToFront(QWidget* w)
     }
 }
 
-void openDebugLogfile()
+bool openDebugLogfile()
 {
     fs::path pathDebug = GetDataDir() / "debug.log";
 
     /* Open debug.log with the associated application */
     if (fs::exists(pathDebug))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
+        return QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
+    return false;
 }
 
-void openConfigfile()
+bool openConfigfile()
 {
     fs::path pathConfig = GetConfigFile();
 
     /* Open prcycoin.conf with the associated application */
     if (fs::exists(pathConfig))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
+        return QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
+    return false;
 }
 
-void openMNConfigfile()
+bool openMNConfigfile()
 {
     fs::path pathConfig = GetMasternodeConfigFile();
 
@@ -391,13 +393,14 @@ void openMNConfigfile()
         QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
 }
 
-void showDataDir()
+bool showDataDir()
 {
-    fs::path pathBackups = GetDataDir();
+    fs::path pathDataDir = GetDataDir();
 
     /* Open folder with default browser */
-    if (fs::exists(pathBackups))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
+    if (fs::exists(pathDataDir))
+        return QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDataDir)));
+    return false;
 }
 
 void showQtDir()
@@ -406,13 +409,14 @@ void showQtDir()
     QDesktopServices::openUrl(QUrl(pathQt, QUrl::TolerantMode));
 }
 
-void showBackups()
+bool showBackups()
 {
     fs::path pathBackups = GetDataDir() / "backups";
 
     /* Open folder with default browser */
     if (fs::exists(pathBackups))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
+        return QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
+    return false;
 }
 
 void SubstituteFonts(const QString& language)
