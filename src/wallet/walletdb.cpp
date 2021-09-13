@@ -1145,6 +1145,10 @@ bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc, const f
 {
     bool retStatus;
     try {
+        if (fs::equivalent(pathSrc, pathDest)) {
+            LogPrintf("cannot backup to wallet source file %s\n", pathDest.string());
+            return false;
+        }
 #if BOOST_VERSION >= 105800 /* BOOST_LIB_VERSION 1_58 */
         fs::copy_file(pathSrc, pathDest, fs::copy_option::overwrite_if_exists);
 #else
