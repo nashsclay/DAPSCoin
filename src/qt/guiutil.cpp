@@ -83,6 +83,7 @@ extern double NSAppKitVersionNumber;
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <CoreServices/CoreServices.h>
+#include <QProcess>
 
 void ForceActivation();
 #endif
@@ -364,40 +365,45 @@ void bringToFront(QWidget* w)
     }
 }
 
-void openDebugLogfile()
+/* Open file with the associated application */
+bool openFile(fs::path path, bool isTextFile)
 {
-    fs::path pathDebug = GetDataDir() / "debug.log";
-
-    /* Open debug.log with the associated application */
-    if (fs::exists(pathDebug))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
+    bool ret = false;
+    if (fs::exists(path)) {
+        ret = QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(path)));
+#ifdef Q_OS_MAC
+        // Workaround for macOS-specific behavior; see btc@15409.
+        if (isTextFile && !ret) {
+            ret = QProcess::startDetached("/usr/bin/open", QStringList{"-t", boostPathToQString(path)});
+        }
+#endif
+    }
+    return ret;
 }
 
-void openConfigfile()
+bool openDebugLogfile()
 {
-    fs::path pathConfig = GetConfigFile();
-
-    /* Open prcycoin.conf with the associated application */
-    if (fs::exists(pathConfig))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
+    return openFile(GetDataDir() / "debug.log", true);
 }
 
-void openMNConfigfile()
+bool openConfigfile()
 {
-    fs::path pathConfig = GetMasternodeConfigFile();
-
-    /* Open masternode.conf with the associated application */
-    if (fs::exists(pathConfig))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
+    return openFile(GetConfigFile(), true);
 }
 
-void showDataDir()
+bool openMNConfigfile()
 {
-    fs::path pathBackups = GetDataDir();
+    return openFile(GetMasternodeConfigFile(), true);
+}
+
+bool showDataDir()
+{
+    fs::path pathDataDir = GetDataDir();
 
     /* Open folder with default browser */
-    if (fs::exists(pathBackups))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
+    if (fs::exists(pathDataDir))
+        return QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDataDir)));
+    return false;
 }
 
 void showQtDir()
@@ -406,13 +412,9 @@ void showQtDir()
     QDesktopServices::openUrl(QUrl(pathQt, QUrl::TolerantMode));
 }
 
-void showBackups()
+bool showBackups()
 {
-    fs::path pathBackups = GetDataDir() / "backups";
-
-    /* Open folder with default browser */
-    if (fs::exists(pathBackups))
-        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
+    return openFile(GetDataDir() / "backups", false);
 }
 
 void SubstituteFonts(const QString& language)
