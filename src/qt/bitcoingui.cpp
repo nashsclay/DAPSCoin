@@ -142,12 +142,8 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     QString userWindowTitle = QString::fromStdString(GetArg("-windowtitle", ""));
     if (!userWindowTitle.isEmpty()) windowTitle += " - " + userWindowTitle;
     windowTitle += " " + networkStyle->getTitleAddText();
-#ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getAppIcon());
     setWindowIcon(networkStyle->getAppIcon());
-#else
-    MacDockIconHandler::instance()->setIcon(networkStyle->getAppIcon());
-#endif
     setWindowTitle(windowTitle);
 
     rpcConsole = new RPCConsole(enableWallet ? this : 0);
@@ -799,7 +795,7 @@ void BitcoinGUI::createTrayIcon(const NetworkStyle* networkStyle)
 void BitcoinGUI::createTrayIconMenu()
 {
 #ifndef Q_OS_MAC
-    // return if trayIcon is unset (only on non-Mac OSes)
+    // return if trayIcon is unset (only on non-macOSes)
     if (!trayIcon)
         return;
 
@@ -809,13 +805,15 @@ void BitcoinGUI::createTrayIconMenu()
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
         this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 #else
-    // Note: On Mac, the dock icon is used to provide the tray's functionality.
+    // Note: On macOS, the Dock icon is used to provide the tray's functionality.
     MacDockIconHandler* dockIconHandler = MacDockIconHandler::instance();
-    dockIconHandler->setMainWindow((QMainWindow*)this);
-    trayIconMenu = dockIconHandler->dockMenu();
+    connect(dockIconHandler, &MacDockIconHandler::dockIconClicked, this, &BitcoinGUI::macosDockIconActivated);
+
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->setAsDockMenu();
 #endif
 
-    // Configuration of the tray icon (or dock icon) icon menu
+    // Configuration of the tray icon (or Dock icon) icon menu
     trayIconMenu->addAction(toggleHideAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(sendCoinsAction);
@@ -839,7 +837,7 @@ void BitcoinGUI::createTrayIconMenu()
     trayIconMenu->addAction(showQtDirAction);
     trayIconMenu->addAction(showBackupsAction);
     trayIconMenu->addAction(openBlockExplorerAction);
-#ifndef Q_OS_MAC // This is built-in on Mac
+#ifndef Q_OS_MAC // This is built-in on macOS
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 #endif
@@ -853,6 +851,12 @@ void BitcoinGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
         toggleHidden();
     }
 }
+#else
+void BitcoinGUI::macosDockIconActivated()
+ {
+     show();
+     activateWindow();
+ }
 #endif
 
 void BitcoinGUI::optionsClicked()
@@ -1463,18 +1467,11 @@ void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden)
     if (!clientModel)
         return;
 
-    // activateWindow() (sometimes) helps with keyboard focus on Windows
-    if (isHidden()) {
-        show();
-        activateWindow();
-    } else if (isMinimized()) {
-        showNormal();
-        activateWindow();
-    } else if (GUIUtil::isObscured(this)) {
-        raise();
-        activateWindow();
-    } else if (fToggleHidden)
+    if (!isHidden() && !isMinimized() && !GUIUtil::isObscured(this) && fToggleHidden) {
         hide();
+    } else {
+        GUIUtil::bringToFront(this);
+    }
 }
 
 void BitcoinGUI::toggleHidden()
