@@ -14,8 +14,7 @@ To install:
 	sudo update-desktop-database
 
 If you build yourself, you will either need to modify the paths in
-the .desktop file or copy or symlink your prcycoinqt binary to `/usr/bin`
+the .desktop file or copy or symlink your prcycoin-qt binary to `/usr/bin`
 and the `../../share/pixmaps/prcycoin128.png` to `/usr/share/pixmaps`
 
 prcycoin-qt.protocol (KDE)
-

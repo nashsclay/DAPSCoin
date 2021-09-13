@@ -1,2 +1,2 @@
-debian/manpages/prcycoind.1
-debian/manpages/prcycoin.conf.5
+doc/man/prcycoind.1
+doc/man/prcycoin-cli.1
