@@ -974,6 +974,7 @@ void BitcoinGUI::openCheckerClicked()
 
 void BitcoinGUI::checkForUpdatesClicked()
 {
+    LogPrintf("Check For Updates: Checking...\n");
     QUrl serviceUrl = QUrl("https://raw.githubusercontent.com/PRCYCoin/PRCYCoin/master/version.txt");
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(serviceRequestFinished(QNetworkReply*)));
@@ -989,14 +990,17 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
     if(reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
         if (data.trimmed() != currentVersion) {
+            LogPrintf("Check For Updates: Update Available!\n");
             QMessageBox::StandardButton msgReply;
             msgReply = QMessageBox::question(this, "Wallet Update Available!", "Wallet update available.\n\nWould you like to go to the GitHub Releases page to download v" + data.trimmed() + "?", QMessageBox::Yes|QMessageBox::No);
             if (msgReply == QMessageBox::Yes) {
                 QDesktopServices::openUrl(QUrl("https://github.com/PRCYCoin/PRCYCoin/releases/latest"));
             } else {
+                LogPrintf("Check For Updates: Update Available, but declined by user.\n");
                 return;
             }
         } else {
+            LogPrintf("Check For Updates: No update available.\n");
             if (!isStartup) {
                 QMessageBox msgBox;
                 msgBox.setWindowTitle("No Update Available");
@@ -1007,6 +1011,7 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
             }
         }
     } else {
+        LogPrintf("Check For Updates: Error!\n");
         QByteArray error = reply->readAll();
         QMessageBox msgBox;
         msgBox.setWindowTitle("Error");
