@@ -1,2 +1,3 @@
 usr/local/bin/prcycoind usr/bin
 usr/local/bin/prcycoin-cli usr/bin
+debian/examples/prcycoin.conf etc/prcycoin
