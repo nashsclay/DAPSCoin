@@ -54,25 +54,26 @@ QString BitcoinUnits::id(int unit)
 
 QString BitcoinUnits::name(int unit)
 {
+    const QString CURR_UNIT = QString(CURRENCY_UNIT.c_str());
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
         case PRCY:
-            return QString("PRCY");
+            return CURR_UNIT;
         case mPRCY:
-            return QString("mPRCY");
+            return QString("m") + CURR_UNIT;
         case uPRCY:
-            return QString::fromUtf8("μPRCY");
+            return QString::fromUtf8("μ") + CURR_UNIT;
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
         case PRCY:
-            return QString("tPRCY");
+            return QString("t") + CURR_UNIT;
         case mPRCY:
-            return QString("mtPRCY");
+            return QString("mt") + CURR_UNIT;
         case uPRCY:
-            return QString::fromUtf8("μtPRCY");
+            return QString::fromUtf8("μt") + CURR_UNIT;
         default:
             return QString("???");
         }
@@ -81,25 +82,26 @@ QString BitcoinUnits::name(int unit)
 
 QString BitcoinUnits::description(int unit)
 {
+    const QString CURR_UNIT = QString(CURRENCY_UNIT.c_str());
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
         case PRCY:
-            return QString("PRCY");
+            return CURR_UNIT;
         case mPRCY:
-            return QString("Milli-PRCY (1 / 1" THIN_SP_UTF8 "000)");
+            return QString("Milli-") + CURR_UNIT + QString(" (1 / 1" THIN_SP_UTF8 "000)");
         case uPRCY:
-            return QString("Micro-PRCY (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            return QString("Micro-") + CURR_UNIT + QString(" (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
         case PRCY:
-            return QString("TestPRCYs");
+            return QString("Test") + CURR_UNIT;
         case mPRCY:
-            return QString("Milli-TestPRCY (1 / 1" THIN_SP_UTF8 "000)");
+            return QString("Milli-Test") + CURR_UNIT + QString(" (1 / 1" THIN_SP_UTF8 "000)");
         case uPRCY:
-            return QString("Micro-TestPRCY (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            return QString("Micro-Test") + CURR_UNIT + QString(" (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
