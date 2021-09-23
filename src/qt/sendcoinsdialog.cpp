@@ -153,12 +153,10 @@ void SendCoinsDialog::on_sendButton_clicked(){
     send_amount = recipient.amount;
     bool isValidAddresss = (regex_match(address.toStdString(), std::regex("[a-zA-z0-9]+")))&&(address.length()==99||address.length()==110);
     bool isValidAmount = ((recipient.amount>0) && (recipient.amount<=model->getBalance()));
-    bool isMinimumAmount = (recipient.amount >= 5  * COIN);
     bool fAlwaysRequest2FA = settings.value("fAlwaysRequest2FA").toBool();
 
     form->errorAddress(isValidAddresss);
     form->errorAmount(isValidAmount);
-    form->errorAmount(isMinimumAmount);
 
     if (!isValidAddresss) {
         QMessageBox msgBox;
@@ -174,16 +172,6 @@ void SendCoinsDialog::on_sendButton_clicked(){
         QMessageBox msgBox;
         msgBox.setWindowTitle("Invalid Amount");
         msgBox.setText("Invalid amount entered. Please enter an amount less than your Spendable Balance.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-        return;
-    }
-
-    if (!isMinimumAmount) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Invalid Amount");
-        msgBox.setText("Invalid amount entered. The minimum amount is 5 PRCY.");
         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();

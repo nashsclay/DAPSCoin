@@ -6247,9 +6247,6 @@ bool CWallet::GenerateAddress(CPubKey& pub, CPubKey& txPub, CKey& txPriv) const
 bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount nValue, CWalletTx& wtxNew, bool fUseIX, int ringSize)
 {
     LOCK2(cs_main, cs_wallet);
-    // Check amount
-    if (nValue < 5 * COIN)
-        throw std::runtime_error("Invalid amount. The minimum amount is 5 PRCY.");
 
     std::string strError;
     if (this->IsLocked()) {
