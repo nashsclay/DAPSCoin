@@ -152,6 +152,7 @@ void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map
 fs::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif
 fs::path GetTempPath();
+void OpenDebugLog();
 void ShrinkDebugFile();
 void runCommand(std::string strCommand);
 
