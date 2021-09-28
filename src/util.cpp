@@ -119,6 +119,8 @@ bool fSucessfullyLoaded = false;
 std::vector<int64_t> obfuScationDenominations;
 std::string strBudgetMode = "";
 
+const char * const DEFAULT_DEBUGLOGFILE = "debug.log";
+
 std::map<std::string, std::string> mapArgs;
 std::map<std::string, std::vector<std::string> > mapMultiArgs;
 bool fPrintToConsole = false;
@@ -220,17 +222,29 @@ static void DebugPrintInit()
     vMsgsBeforeOpenLog = new std::list<std::string>;
 }
 
-void OpenDebugLog()
+fs::path GetDebugLogPath()
+{
+    fs::path logfile(GetArg("-debuglogfile", DEFAULT_DEBUGLOGFILE));
+    if (logfile.is_absolute()) {
+        return logfile;
+    } else {
+        return GetDataDir() / logfile;
+    }
+}
+
+bool OpenDebugLog()
 {
     boost::call_once(&DebugPrintInit, debugPrintInitFlag);
     boost::mutex::scoped_lock scoped_lock(*mutexDebugLog);
     assert(fileout == nullptr);
     assert(vMsgsBeforeOpenLog);
 
-    fs::path pathDebug = GetDataDir() / "debug.log";
-    fileout = fsbridge::fopen(pathDebug, "a");
-    if (fileout) setbuf(fileout, nullptr); // unbuffered
+    fs::path pathDebug = GetDebugLogPath();
 
+    fileout = fsbridge::fopen(pathDebug, "a");
+    if (!fileout) return false;
+
+    setbuf(fileout, nullptr); // unbuffered
     // dump buffered messages from before we opened the log
     while (!vMsgsBeforeOpenLog->empty()) {
         FileWriteStr(vMsgsBeforeOpenLog->front(), fileout);
@@ -239,6 +253,7 @@ void OpenDebugLog()
 
     delete vMsgsBeforeOpenLog;
     vMsgsBeforeOpenLog = nullptr;
+    return true;
 }
 
 struct CLogCategoryDesc
@@ -400,7 +415,7 @@ int LogPrintStr(const std::string& str)
             // reopen the log file, if requested
             if (fReopenDebugLog) {
                 fReopenDebugLog = false;
-                boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
+                boost::filesystem::path pathDebug = GetDebugLogPath();
                 if (freopen(pathDebug.string().c_str(),"a",fileout) != NULL)
                     setbuf(fileout, NULL); // unbuffered
             }
@@ -800,7 +815,7 @@ void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length)
 void ShrinkDebugFile()
 {
     // Scroll debug.log if it's getting too big
-    fs::path pathLog = GetDataDir() / "debug.log";
+    fs::path pathLog = GetDebugLogPath();
     FILE* file = fsbridge::fopen(pathLog, "r");
     if (file && fs::file_size(pathLog) > 10 * 1000000) {
         // Restart the file with some of the end
