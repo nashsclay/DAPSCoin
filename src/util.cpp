@@ -129,7 +129,7 @@ bool fLogTimestamps = false;
 bool fLogIPs = false;
 volatile bool fReopenDebugLog = false;
 
-/** Log categories bitfield. libevent needs special handling if their flags are changed at runtime. */
+/** Log categories bitfield. */
 std::atomic<uint32_t> logCategories(0);
 
 /** Init OpenSSL library multithreading support */
