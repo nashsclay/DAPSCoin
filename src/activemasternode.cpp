@@ -20,12 +20,12 @@ void CActiveMasternode::ManageStatus()
 
     if (!fMasterNode) return;
 
-    if (fDebug) LogPrint("masternode", "CActiveMasternode::ManageStatus() - Begin\n");
+    if (logCategories != BCLog::NONE) LogPrint(BCLog::MASTERNODE, "CActiveMasternode::ManageStatus() - Begin\n");
 
     //need correct blocks to send ping
     if (Params().NetworkID() != CBaseChainParams::REGTEST && !masternodeSync.IsBlockchainSynced()) {
         status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
-        LogPrint("masternode", "CActiveMasternode::ManageStatus() - %s\n", GetStatus());
+        LogPrint(BCLog::MASTERNODE, "CActiveMasternode::ManageStatus() - %s\n", GetStatus());
         return;
     }
 
@@ -210,7 +210,7 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
             return false;
         }
 
-        LogPrint("masternode", "dseep - relaying from active mn, %s \n", vin.ToString().c_str());
+        LogPrint(BCLog::MASTERNODE, "dseep - relaying from active mn, %s \n", vin.ToString().c_str());
         LOCK(cs_vNodes);
         for (CNode* pnode : vNodes)
             pnode->PushMessage("dseep", vin, vchMasterNodeSignature, masterNodeSignatureTime, false);
@@ -437,7 +437,7 @@ bool CActiveMasternode::GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubke
     CTransaction prev;
     uint256 bh;
     if (!GetTransaction(prevout.hash, prev, bh, true)) {
-        LogPrint("masternode","dsee - failed to read transaction hash %s\n", vin.prevout.hash.ToString());
+        LogPrint(BCLog::MASTERNODE,"dsee - failed to read transaction hash %s\n", vin.prevout.hash.ToString());
         return false;
     }
 

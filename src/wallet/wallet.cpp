@@ -2320,7 +2320,7 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
 
     // try to find nondenom first to prevent unneeded spending of mixed coins
     for (unsigned int tryDenom = 0; tryDenom < 2; tryDenom++) {
-        if (fDebug) LogPrint("selectcoins", "tryDenom: %d\n", tryDenom);
+        LogPrint(BCLog::SELECTCOINS, "tryDenom: %d\n", tryDenom);
         vValue.clear();
         nTotalLower = 0;
         for (const COutput& output : vCoins) {
@@ -3904,8 +3904,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 if (it != mapBlockIndex.end()) {
                     pindex = it->second;
                 } else {
-                    if (fDebug) {
-                        LogPrintf("CreateCoinStake() failed to find block index\n");
+                    if (logCategories != BCLog::NONE) {
+                        LogPrintf("%s: CreateCoinStake() failed to find block index\n", __func__);
                     }
                     continue;
                 }
@@ -3931,7 +3931,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     }
 
                     // Found a kernel
-                    if (fDebug && GetBoolArg("-printcoinstake", false))
+                    if (GetBoolArg("-printcoinstake", false))
                         LogPrintf("CreateCoinStake : kernel found\n");
 
                     std::vector<valtype> vSolutions;
@@ -3943,10 +3943,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                         break;
                     }
 
-                    if (fDebug && GetBoolArg("-printcoinstake", false))
+                    if (GetBoolArg("-printcoinstake", false))
                         LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
                     if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH) {
-                        if (fDebug && GetBoolArg("-printcoinstake", false))
+                        if (GetBoolArg("-printcoinstake", false))
                             LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
                         break; // only support pay to public key and pay to address
                     }
@@ -3955,7 +3955,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                         //convert to pay to public key type
                         CKey key;
                         if (!keystore.GetKey(uint160(vSolutions[0]), key)) {
-                            if (fDebug && GetBoolArg("-printcoinstake", false))
+                            if (GetBoolArg("-printcoinstake", false))
                                 LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
                             break; // unable to find corresponding public key
                         }
@@ -4000,7 +4000,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     std::copy(txPubStaking.begin(), txPubStaking.end(), std::back_inserter(outStaking.txPub));
                     txNew.vout.push_back(outStaking);
                     //the staking process for the moment only accept one UTXO as staking coin
-                    if (fDebug && GetBoolArg("-printcoinstake", false))
+                    if (GetBoolArg("-printcoinstake", false))
                         LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
                     fKernelFound = true;
                     break;
