@@ -63,14 +63,24 @@ bool LogAcceptCategory(const char* category);
 /** Send a string to the log output */
 int LogPrintStr(const std::string& str);
 
-#define LogPrint(category, ...) do { \
-    if (LogAcceptCategory((category))) { \
-        LogPrintStr(tfm::format(__VA_ARGS__)); \
-    } \
+/** Get format string from VA_ARGS for error reporting */
+template<typename... Args> std::string FormatStringFromLogArgs(const char *fmt, const Args&... args) { return fmt; }
+
+#define LogPrintf(...) do {                                                         \
+    std::string _log_msg_; /* Unlikely name to avoid shadowing variables */         \
+    try {                                                                           \
+        _log_msg_ = tfm::format(__VA_ARGS__);                                       \
+    } catch (std::runtime_error &e) {                                               \
+        /* Original format string will have newline so don't add one here */        \
+        _log_msg_ = "Error \"" + std::string(e.what()) + "\" while formatting log message: " + FormatStringFromLogArgs(__VA_ARGS__); \
+    }                                                                               \
+    LogPrintStr(_log_msg_);                                                         \
 } while(0)
 
-#define LogPrintf(...) do { \
-    LogPrintStr(tfm::format(__VA_ARGS__)); \
+#define LogPrint(category, ...) do {                                                \
+    if (LogAcceptCategory((category))) {                                            \
+        LogPrintf(__VA_ARGS__);                                                     \
+    }                                                                               \
 } while(0)
 
 template<typename... Args>
@@ -176,7 +186,6 @@ std::string HelpMessageGroup(const std::string& message);
 std::string HelpMessageOpt(const std::string& option, const std::string& message);
 
 void SetThreadPriority(int nPriority);
-
 
 /**
  * .. and a wrapper that just calls func once
