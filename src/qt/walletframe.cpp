@@ -40,11 +40,8 @@ bool WalletFrame::addWallet(const QString& name, WalletModel* walletModel)
 {
     if (!gui || !clientModel || !walletModel || mapWalletViews.count(name) > 0)
         return false;
-    LogPrint("wallet", "initializing walletview");
     WalletView* walletView = new WalletView(walletStack);
-    LogPrint("wallet", "setting bitcoin GUI");
     walletView->setBitcoinGUI(gui);
-    LogPrint("wallet", "setting client model");
     walletView->setClientModel(clientModel);
     walletView->setWalletModel(walletModel);
     walletView->showSyncStatus(bOutOfSync);

@@ -25,14 +25,14 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 {
     if (N_BITS != 0 && pblock->IsPoABlockByVersion()) {
         if (pindexLast->nHeight < Params().SoftFork()) {
-            LogPrint("poa", "%s: returning N_BITS\n", __func__);
+            LogPrint(BCLog::POA, "%s: returning N_BITS\n", __func__);
             return N_BITS;
         }
         if (pindexLast->nHeight < Params().PoANewDiff()) {
-            LogPrint("poa", "%s: returning N_BITS_SF\n", __func__);
+            LogPrint(BCLog::POA, "%s: returning N_BITS_SF\n", __func__);
             return N_BITS_SF;
         }
-        LogPrint("poa", "%s: returning N_BITS_PD\n", __func__);
+        LogPrint(BCLog::POA, "%s: returning N_BITS_PD\n", __func__);
         return N_BITS_PD;
     }
     /* current difficulty formula, prcycoin - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
@@ -419,17 +419,17 @@ bool CheckPoAblockTime(const CBlock& block)
     if (block.hashPrevPoABlock.IsNull()) {
         ret = true;
     } else {
-        LogPrint("poa", "%s: Previous PoA block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
+        LogPrint(BCLog::POA, "%s: Previous PoA block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
         if (mapBlockIndex.count(block.hashPrevPoABlock) != 0) {
             CBlockIndex* pindex = mapBlockIndex[block.hashPrevPoABlock];
             uint32_t prevPoATime = pindex->nTime;
             if (block.nTime > prevPoATime && (block.nTime - pindex->nTime >= (uint32_t)Params().POA_BLOCK_TIME())) {
                 ret = true;
             }
-            LogPrint("poa", "%s: PoA Block time: %d, Previous: %d, Current: %d, Distance: %d\n", __func__,
+            LogPrint(BCLog::POA, "%s: PoA Block time: %d, Previous: %d, Current: %d, Distance: %d\n", __func__,
                 Params().POA_BLOCK_TIME(), prevPoATime, block.nTime, block.nTime - pindex->nTime);
         } else {
-            LogPrint("poa", "%s: Cannot find block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
+            LogPrint(BCLog::POA, "%s: Cannot find block hash %s\n", __func__, block.hashPrevPoABlock.GetHex());
         }
     }
     return ret;
@@ -441,7 +441,7 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
 
     if (block.hashPrevPoABlock.IsNull()) {
         //First PoA block
-        LogPrint("poa", "%s: First PoA Block Hash: %s\n", __func__, block.GetHash().GetHex());
+        LogPrint(BCLog::POA, "%s: First PoA Block Hash: %s\n", __func__, block.GetHash().GetHex());
         ret = true;
     } else {
         if (mapBlockIndex.count(block.hashPrevPoABlock) != 0) {
@@ -455,7 +455,7 @@ bool CheckPoABlockNotAuditingOverlap(const CBlock& block)
                 for (size_t j = 0; j < prevPoablock.posBlocksAudited.size(); j++) {
                     if (prevPoablock.posBlocksAudited[j].hash == block.posBlocksAudited[i].hash && prevPoablock.posBlocksAudited[j].nTime == block.posBlocksAudited[i].nTime && prevPoablock.posBlocksAudited[j].height == block.posBlocksAudited[i].height) {
                         isAlreadyAudited = true;
-                        LogPrint("poa", "%s: PoA Block Hash: %s, is already auditted by Block %s\n", __func__,
+                        LogPrint(BCLog::POA, "%s: PoA Block Hash: %s, is already auditted by Block %s\n", __func__,
                             block.posBlocksAudited[i].hash.GetHex(),
                             prevPoablock.GetHash().GetHex());
                         break;
@@ -515,7 +515,7 @@ bool CheckPoABlockPaddingAmount(const CBlock& block, const CBlockIndex* pindex)
         if (padding >= Params().PoAPadding()){
             ret = true;
         }
-        LogPrint("poa", "%s: nHeight: %d, prevPoAHeight: %d, lastPoSHeight: %d, padding: %d\n", __func__, nHeight, prevPoAHeight, lastPoSHeight, padding);
+        LogPrint(BCLog::POA, "%s: nHeight: %d, prevPoAHeight: %d, lastPoSHeight: %d, padding: %d\n", __func__, nHeight, prevPoAHeight, lastPoSHeight, padding);
     }
     return ret;
 }
@@ -525,13 +525,13 @@ bool CheckPoABlockPaddingAmount(const CBlock& block, const CBlockIndex* pindex)
 // To determine them, check the last 1-5 audited blocks of the raw data of
 // the PoA block where the issue occurred. Compare to the real blocks/txids.
 bool IsFixedAudit(std::string txid, int nHeight) {
-    LogPrint("poa", "%s: block %d passed in as nHeight\n", __func__, nHeight);
+    LogPrint(BCLog::POA, "%s: block %d passed in as nHeight\n", __func__, nHeight);
     // Correct TXIDs for Block 17152, Block 135946, Block 311330 and Block 311331
     return (txid == "9965850037f14dcb4abf1168016e9f96f53692322714e7fac92a2b8838544135" || txid == "dd3d1dccf8f39a220e3a83cfabaf1b567b6696af877073ec580d09af6198f098" || txid =="e8aafd0513a8b2da536d55d9efd788956d03c6a0baa8acc4251f8dc0f3f03e87" || txid == "2666169b99521f12b6c69454f66e23af465c63e4a4807a5a8ed45467846ebe93");
 }
 
 bool IsWrongAudit(std::string txid, int nHeight) {
-    LogPrint("poa", "%s: block %d passed in as nHeight\n", __func__, nHeight);
+    LogPrint(BCLog::POA, "%s: block %d passed in as nHeight\n", __func__, nHeight);
     // Orphan TXIDs for Block 135946, Block 311330 and Block 311331
     return (txid == "ef99f7882a681a075ebd51fa83be01685257ca66ccb736950fefc037f00e1538" || txid == "6514be1fad4d956a059924d5185a6f9db20a62f2f99e3e9b79257d6d3ca36065" || txid == "fd5a19a7a7df25774a6a030295f01bae6395be4229ebe2caf4974d536432e0dd");
 }
