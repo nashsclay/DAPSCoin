@@ -25,7 +25,9 @@
 #include "wallet/walletdb.h"
 
 #include <algorithm>
+#include <atomic>
 #include <map>
+#include <memory>
 #include <set>
 #include <stdexcept>
 #include <stdint.h>
@@ -33,17 +35,13 @@
 #include <utility>
 #include <vector>
 
-
-#include <memory>
-
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
-#include <atomic>
 
-
+extern CWallet* pwalletMain;
 
 /**
  * Settings
@@ -640,6 +638,9 @@ public:
     bool computeSharedSec(const CTransaction& tx, const CTxOut& out, CPubKey& sharedSec) const;
     void AddComputedPrivateKey(const CTxOut& out);
     bool IsCollateralized(const COutPoint& outpoint);
+
+    /* Wallets parameter interaction */
+    static bool ParameterInteraction();
 private:
     bool encodeStealthBase58(const std::vector<unsigned char>& raw, std::string& stealth);
     bool allMyPrivateKeys(std::vector<CKey>& spends, std::vector<CKey>& views);

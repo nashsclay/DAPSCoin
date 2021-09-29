@@ -168,6 +168,7 @@ BITCOIN_CORE_H = \
   txdb.h \
   txmempool.h \
   guiinterface.h \
+  guiinterfaceutil.h \
   uint256.h \
   undo.h \
   util.h \
