@@ -34,7 +34,7 @@ struct TestingSetup {
     TestingSetup() {
         RandomInit();
         SetupEnvironment();
-        fPrintToDebugLog = true; // don't want to write to debug.log file
+        g_logger->fPrintToDebugLog = false; // don't want to write to debug.log file
         fCheckBlockIndex = false;
         SelectParams(CBaseChainParams::MAIN);
         noui_connect();

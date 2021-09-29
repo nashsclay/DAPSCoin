@@ -298,7 +298,7 @@ void HandleSIGTERM(int)
 
 void HandleSIGHUP(int)
 {
-    fReopenDebugLog = true;
+    g_logger->fReopenDebugLog = true;
 }
 
 #ifndef WIN32
@@ -877,12 +877,16 @@ static std::string ResolveErrMsg(const char * const optname, const std::string& 
 
 void InitLogging()
 {
-    fPrintToConsole = GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = GetBoolArg("-logtimestamps", true);
-    fLogIPs = GetBoolArg("-logips", false);
+    g_logger->fPrintToConsole = GetBoolArg("-printtoconsole", !GetBoolArg("-daemon", false));
+    //g_logger->fPrintToDebugLog = !IsArgNegated("-debuglogfile");
+    g_logger->fPrintToDebugLog = true;
+    g_logger->fLogTimestamps = GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
+    g_logger->fLogTimeMicros = GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
 
-    if (fPrintToDebugLog)
-        OpenDebugLog();
+    fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
+
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("PRCY version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
 }
 
 /** Initialize prcy.
@@ -1042,14 +1046,16 @@ bool AppInit2(bool isDaemon)
 #endif
     if (GetBoolArg("-shrinkdebugfile", logCategories != BCLog::NONE))
         ShrinkDebugFile();
-    if (fPrintToDebugLog && !OpenDebugLog()) {
+    if (g_logger->fPrintToDebugLog && !OpenDebugLog()) {
         return UIError(strprintf("Could not open debug log file %s", GetDebugLogPath().string()));
     }
+    if (g_logger->fPrintToDebugLog)
+        OpenDebugLog();
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
     LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
 #endif
-    if (!fLogTimestamps)
+    if (!g_logger->fLogTimestamps)
         LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", strDataDir);
