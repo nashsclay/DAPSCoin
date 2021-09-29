@@ -11,6 +11,7 @@
 #include "base58.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
+#include "guiinterfaceutil.h"
 #include "kernel.h"
 #include "masternode-budget.h"
 #include "net.h"
@@ -708,22 +709,6 @@ void CWallet::SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator> ran
 }
 
 ///////// Init ////////////////
-
-bool static UIError(const std::string &str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "Error", CClientUIInterface::MSG_ERROR);
-    return false;
-}
-
-void static UIWarning(const std::string &str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "Warning", CClientUIInterface::MSG_WARNING);
-}
-
-std::string AmountErrMsg(const char * const optname, const std::string& strValue)
-{
-    return strprintf(_("Invalid amount for -%s=<amount>: '%s'"), optname, strValue);
-}
 
 bool CWallet::ParameterInteraction()
 {
