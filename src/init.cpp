@@ -897,8 +897,8 @@ void InitLogging()
     fLogTimestamps = GetBoolArg("-logtimestamps", true);
     fLogIPs = GetBoolArg("-logips", false);
 
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("PRCY version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+    if (fPrintToDebugLog)
+        OpenDebugLog();
 }
 
 /** Initialize prcy.
