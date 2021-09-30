@@ -1044,13 +1044,12 @@ bool AppInit2(bool isDaemon)
 #ifndef WIN32
     CreatePidFile(GetPidFile(), getpid());
 #endif
-    if (GetBoolArg("-shrinkdebugfile", logCategories != BCLog::NONE))
-        ShrinkDebugFile();
-    if (g_logger->fPrintToDebugLog && !OpenDebugLog()) {
-        return UIError(strprintf("Could not open debug log file %s", GetDebugLogPath().string()));
+    if (g_logger->fPrintToDebugLog) {
+        if (GetBoolArg("-shrinkdebugfile", logCategories != BCLog::NONE))
+            g_logger->ShrinkDebugFile();
+        if (!g_logger->OpenDebugLog())
+            return UIError(strprintf("Could not open debug log file %s", g_logger->GetDebugLogPath().string()));
     }
-    if (g_logger->fPrintToDebugLog)
-        OpenDebugLog();
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
     LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
