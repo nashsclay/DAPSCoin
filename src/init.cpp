@@ -877,16 +877,28 @@ static std::string ResolveErrMsg(const char * const optname, const std::string& 
 
 void InitLogging()
 {
-    g_logger->m_print_to_console = GetBoolArg("-printtoconsole", !GetBoolArg("-daemon", false));
     //g_logger->m_print_to_file = !IsArgNegated("-debuglogfile");
     g_logger->m_print_to_file = true;
+    g_logger->m_file_path = AbsPathForConfigVal(GetArg("-debuglogfile", DEFAULT_DEBUGLOGFILE));
+
+    // Add newlines to the logfile to distinguish this execution from the last
+    // one; called before console logging is set up, so this is only sent to
+    // debug.log.
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+    g_logger->m_print_to_console = GetBoolArg("-printtoconsole", !GetBoolArg("-daemon", false));
     g_logger->m_log_timestamps = GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
     g_logger->m_log_time_micros = GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
 
     fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
 
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("PRCY version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+    std::string version_string = FormatFullVersion();
+#ifdef DEBUG
+    version_string += " (debug build)";
+#else
+    version_string += " (release build)";
+#endif
+    LogPrintf("PRCY version %s (%s)\n", version_string, CLIENT_DATE);
 }
 
 /** Initialize prcy.
@@ -1044,7 +1056,7 @@ bool AppInit2(bool isDaemon)
         if (GetBoolArg("-shrinkdebugfile", g_logger->DefaultShrinkDebugFile()))
             g_logger->ShrinkDebugFile();
         if (!g_logger->OpenDebugLog())
-            return UIError(strprintf("Could not open debug log file %s", g_logger->GetDebugLogPath().string()));
+            return UIError(strprintf("Could not open debug log file %s", g_logger->m_file_path.string()));
     }
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET

@@ -185,6 +185,7 @@ void TraceThread(const char* name, Callable func)
     }
 }
 
+fs::path AbsPathForConfigVal(const boost::filesystem::path& path, bool net_specific = true);
 bool PointHashingSuccessively(const CPubKey& pk, const unsigned char* tweak, unsigned char* out);
 
 #endif // BITCOIN_UTIL_H
