@@ -298,7 +298,7 @@ void HandleSIGTERM(int)
 
 void HandleSIGHUP(int)
 {
-    fReopenDebugLog = true;
+    g_logger->m_reopen_file = true;
 }
 
 #ifndef WIN32
@@ -877,12 +877,28 @@ static std::string ResolveErrMsg(const char * const optname, const std::string& 
 
 void InitLogging()
 {
-    fPrintToConsole = GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = GetBoolArg("-logtimestamps", true);
-    fLogIPs = GetBoolArg("-logips", false);
+    //g_logger->m_print_to_file = !IsArgNegated("-debuglogfile");
+    g_logger->m_print_to_file = true;
+    g_logger->m_file_path = AbsPathForConfigVal(GetArg("-debuglogfile", DEFAULT_DEBUGLOGFILE));
 
-    if (fPrintToDebugLog)
-        OpenDebugLog();
+    // Add newlines to the logfile to distinguish this execution from the last
+    // one; called before console logging is set up, so this is only sent to
+    // debug.log.
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+    g_logger->m_print_to_console = GetBoolArg("-printtoconsole", !GetBoolArg("-daemon", false));
+    g_logger->m_log_timestamps = GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
+    g_logger->m_log_time_micros = GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
+
+    fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
+
+    std::string version_string = FormatFullVersion();
+#ifdef DEBUG
+    version_string += " (debug build)";
+#else
+    version_string += " (release build)";
+#endif
+    LogPrintf("PRCY version %s (%s)\n", version_string, CLIENT_DATE);
 }
 
 /** Initialize prcy.
@@ -922,11 +938,9 @@ bool AppInit2(bool isDaemon)
     if (!(GetBoolArg("-nodebug", false) ||
             find(categories.begin(), categories.end(), std::string("0")) != categories.end())) {
         for (const auto& cat : categories) {
-            uint32_t flag;
-            if (!GetLogCategory(&flag, &cat))
+            if (!g_logger->EnableCategory(cat)) {
                 UIWarning(strprintf(_("Unsupported logging category %s=%s."), "-debug", cat));
-            else
-                logCategories |= flag;
+            }
         }
     }
 
@@ -934,11 +948,9 @@ bool AppInit2(bool isDaemon)
     if (mapMultiArgs.count("-debugexclude") > 0) {
         const std::vector<std::string>& excludedCategories = mapMultiArgs.at("-debugexclude");
         for (const auto& cat : excludedCategories) {
-            uint32_t flag;
-            if (!GetLogCategory(&flag, &cat))
+            if (!g_logger->DisableCategory(cat)) {
                 UIWarning(strprintf(_("Unsupported logging category %s=%s."), "-debugexclude", cat));
-            else
-                logCategories &= ~flag;
+            }
         }
     }
 
@@ -1040,16 +1052,17 @@ bool AppInit2(bool isDaemon)
 #ifndef WIN32
     CreatePidFile(GetPidFile(), getpid());
 #endif
-    if (GetBoolArg("-shrinkdebugfile", logCategories != BCLog::NONE))
-        ShrinkDebugFile();
-    if (fPrintToDebugLog && !OpenDebugLog()) {
-        return UIError(strprintf("Could not open debug log file %s", GetDebugLogPath().string()));
+    if (g_logger->m_print_to_file) {
+        if (GetBoolArg("-shrinkdebugfile", g_logger->DefaultShrinkDebugFile()))
+            g_logger->ShrinkDebugFile();
+        if (!g_logger->OpenDebugLog())
+            return UIError(strprintf("Could not open debug log file %s", g_logger->m_file_path.string()));
     }
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
     LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
 #endif
-    if (!fLogTimestamps)
+    if (!g_logger->m_log_timestamps)
         LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", strDataDir);

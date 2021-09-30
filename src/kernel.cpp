@@ -401,7 +401,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
 
     unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;
-    if (!CheckStakeKernelHash(block.nBits, blockprev, txPrev, txin.prevout, &txin.encryptionKey[0], nTime, nInterval, true, hashProofOfStake, logCategories != BCLog::NONE))
+    if (!CheckStakeKernelHash(block.nBits, blockprev, txPrev, txin.prevout, &txin.encryptionKey[0], nTime, nInterval, true, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

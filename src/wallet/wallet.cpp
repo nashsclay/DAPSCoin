@@ -3949,9 +3949,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 if (it != mapBlockIndex.end()) {
                     pindex = it->second;
                 } else {
-                    if (logCategories != BCLog::NONE) {
-                        LogPrintf("%s: CreateCoinStake() failed to find block index\n", __func__);
-                    }
+                    LogPrintf("%s: CreateCoinStake() failed to find block index\n", __func__);
                     continue;
                 }
 
