@@ -61,8 +61,9 @@ namespace BCLog {
         STAKING     = (1 << 21),
         MASTERNODE  = (1 << 22),
         MNBUDGET    = (1 << 23),
-        POA         = (1 << 24),
-        SUPPLY      = (1 << 25),
+        MNPING      = (1 << 24),
+        POA         = (1 << 25),
+        SUPPLY      = (1 << 26),
         ALL         = ~(uint32_t)0,
     };
 
