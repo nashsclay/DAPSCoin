@@ -120,6 +120,7 @@ const CLogCategoryDesc LogCategories[] = {
         {BCLog::STAKING,        "staking"},
         {BCLog::MASTERNODE,     "masternode"},
         {BCLog::MNBUDGET,       "mnbudget"},
+        {BCLog::MNPING,         "mnping"},
         {BCLog::POA,            "poa"},
         {BCLog::SUPPLY,         "supply"},
         {BCLog::ALL,            "1"},
