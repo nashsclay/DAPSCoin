@@ -1715,9 +1715,7 @@ bool CBudgetVote::SignatureValid(bool fSignatureCheck)
     CMasternode* pmn = mnodeman.Find(vin);
 
     if (pmn == NULL) {
-        if (logCategories != BCLog::NONE){
-            LogPrint(BCLog::MASTERNODE,"CBudgetVote::SignatureValid() - Unknown Masternode - %s\n", vin.prevout.hash.ToString());
-        }
+        LogPrint(BCLog::MASTERNODE,"CBudgetVote::SignatureValid() - Unknown Masternode - %s\n", vin.prevout.hash.ToString());
         return false;
     }
 

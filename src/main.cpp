@@ -2140,9 +2140,7 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nMasternodeCount, int nHeight)
 
     // Use this log to compare the masternode count for different clients
     LogPrintf("Adjusting seesaw at height %d with %d masternodes (without drift: %d) at %ld\n", nHeight,nMasternodeCount, nMasternodeCount - Params().MasternodeCountDrift(), GetTime());
-
-    if (logCategories != BCLog::NONE)
-        LogPrintf("%s: moneysupply=%s, nodecoins=%s \n", __func__, FormatMoney(nMoneySupply).c_str(), FormatMoney(mNodeCoins).c_str());
+    LogPrintf("%s: moneysupply=%s, nodecoins=%s \n", __func__, FormatMoney(nMoneySupply).c_str(), FormatMoney(mNodeCoins).c_str());
 
     CAmount ret = 0;
     if (mNodeCoins == 0) {
@@ -4282,8 +4280,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                     REJECT_INVALID, "bad-cb-payee");
             }
         } else {
-            if (logCategories != BCLog::NONE)
-                LogPrintf("%s: Masternode payment check skipped on sync - skipping IsBlockPayeeValid()\n", __func__);
+            LogPrint(BCLog::MASTERNODE, "%s: Masternode payment check skipped on sync - skipping IsBlockPayeeValid()\n", __func__);
         }
     }
 
@@ -5780,8 +5777,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
     CNodeState* state = State(pfrom->GetId());
     if (state == NULL)
         return false;
-    if (logCategories != BCLog::NONE)
-        LogPrintf("received: %s (%u bytes) peer=%d, chainheight=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id, chainActive.Height());
+    LogPrintf("received: %s (%u bytes) peer=%d, chainheight=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id, chainActive.Height());
     if (mapArgs.count("-dropmessagestest") && GetRand(atoi(mapArgs["-dropmessagestest"])) == 0) {
         LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
         return true;
@@ -6014,8 +6010,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 if (pfrom) {
                     pfrom->PushMessage("getblocks", chainActive.GetLocator(mapBlockIndex[inv.hash]), uint256(0));
                 }
-                if (logCategories != BCLog::NONE)
-                    printf("force request: %s\n", inv.ToString().c_str());
+                printf("force request: %s\n", inv.ToString().c_str());
             }
 
             // Track requests for our stuff
@@ -6115,9 +6110,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
         std::vector<CBlock> vHeaders;
         int nLimit = MAX_HEADERS_RESULTS;
-        if (logCategories != BCLog::NONE)
-            LogPrintf("getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(),
-                pfrom->id);
+        LogPrintf("getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), pfrom->id);
         for (; pindex; pindex = chainActive.Next(pindex)) {
             vHeaders.push_back(pindex->GetBlockHeader());
             if (--nLimit <= 0 || pindex->GetBlockHash() == hashStop)
