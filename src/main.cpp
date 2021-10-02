@@ -4636,17 +4636,17 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         // Inputs
         std::vector<CTxIn> prcyInputs;
 
-        for (CTxIn stakeIn : stakeTxIn.vin) {
+        for (const CTxIn& stakeIn : stakeTxIn.vin) {
             prcyInputs.push_back(stakeIn);
         }
         const bool hasPRCYInputs = !prcyInputs.empty();
 
-        for (CTransaction tx : block.vtx) {
-            for (CTxIn in: tx.vin) {
+        for (const CTransaction& tx : block.vtx) {
+            for (const CTxIn& in: tx.vin) {
                 if(tx.IsCoinStake()) continue;
                 if(hasPRCYInputs)
                     // Check if coinstake input is double spent inside the same block
-                    for (CTxIn prcyIn : prcyInputs){
+                    for (const CTxIn& prcyIn : prcyInputs){
                         if(prcyIn.prevout == in.prevout){
                             // double spent coinstake input inside block
                             return error("%s: double spent coinstake input inside block", __func__);
@@ -4677,10 +4677,10 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 // Increase amount of read blocks
                 readBlock++;
                 // Loop through every input from said block
-                for (CTransaction t : bl.vtx) {
-                    for (CTxIn in: t.vin) {
+                for (const CTransaction& t : bl.vtx) {
+                    for (const CTxIn& in: t.vin) {
                         // Loop through every input of the staking tx
-                        for (CTxIn stakeIn : prcyInputs) {
+                        for (const CTxIn& stakeIn : prcyInputs) {
                             // if it's already spent
 
                             // First regular staking check
@@ -4701,7 +4701,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
         // Let's check if the inputs were spent on the main chain
         const CCoinsViewCache coins(pcoinsTip);
-        for (CTxIn in: stakeTxIn.vin) {
+        for (const CTxIn& in: stakeTxIn.vin) {
             const CCoins* coin = coins.AccessCoins(in.prevout.hash);
 
             if(!coin && !isBlockFromFork){
