@@ -4863,7 +4863,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
                 }
             }
             // Check spamming
-            if(pfrom && GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
+            if(pindex && pfrom && GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
                 CNodeState *nodestate = State(pfrom->GetId());
                 if(nodestate != nullptr) {
                     nodestate->nodeBlocks.onBlockReceived(pindex->nHeight);
@@ -4881,6 +4881,9 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
                 }
             }
             return error("%s : AcceptBlock FAILED", __func__);
+        }
+        else {
+            LogPrintf("%s : AccpetBlock PASSED!", __func__);
         }
     }
 
