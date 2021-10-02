@@ -4629,21 +4629,36 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         // Extra info: duplicated blocks are skipping this checks, so we don't have to worry about those here.
         bool isBlockFromFork = pindexPrev != nullptr && chainActive.Tip() != pindexPrev;
 
+        // Coin stake
         CTransaction &stakeTxIn = block.vtx[1];
+
+        // Inputs
+        std::vector<CTxIn> prcyInputs;
+
+        for (CTxIn stakeIn : stakeTxIn.vin) {
+            prcyInputs.push_back(stakeIn);
+        }
+        const bool hasPRCYInputs = !prcyInputs.empty();
+
+        for (CTransaction tx : block.vtx) {
+            for (CTxIn in: tx.vin) {
+                if(tx.IsCoinStake()) continue;
+                if(hasPRCYInputs)
+                    // Check if coinstake input is double spent inside the same block
+                    for (CTxIn prcyIn : prcyInputs){
+                        if(prcyIn.prevout == in.prevout){
+                            // double spent coinstake input inside block
+                            return error("%s: double spent coinstake input inside block", __func__);
+                        }
+                    }
+            }
+        }
 
         // Check whether is a fork or not
         if (isBlockFromFork) {
 
             // Start at the block we're adding on to
             CBlockIndex *prev = pindexPrev;
-
-            // Inputs
-            std::vector<CTxIn> prcyInputs;
-
-            for (CTxIn stakeIn : stakeTxIn.vin) {
-                prcyInputs.push_back(stakeIn);
-            }
-            const bool hasPRCYInputs = !prcyInputs.empty();
 
             int readBlock = 0;
             CBlock bl;
