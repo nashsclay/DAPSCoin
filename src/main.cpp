@@ -4628,10 +4628,6 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         const bool isBlockFromFork = pindexPrev != nullptr && !chainActive.Contains(pindexPrev);
         CTransaction &stakeTxIn = block.vtx[1];
 
-        // Check validity of the coinStake.
-        if(!stakeTxIn.IsCoinStake())
-            return error("%s: no coin stake on vtx pos 1", __func__);
-
         // Check whether is a fork or not
         if (isBlockFromFork) {
 
@@ -4645,6 +4641,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 prcyInputs.push_back(stakeIn);
             }
             const bool hasPRCYInputs = !prcyInputs.empty();
+
             CBlock bl;
             // Go backwards on the forked chain up to the split
             do {
@@ -4659,13 +4656,11 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                         // Loop through every input of the staking tx
                         for (CTxIn stakeIn : prcyInputs) {
                             // if it's already spent
+
                             // First regular staking check
                             if(hasPRCYInputs) {
                                 if (stakeIn.prevout == in.prevout) {
-                                    // reject the block
-                                    return state.DoS(100,
-                                                     error("%s: input already spent on a previous block",
-                                                           __func__));
+                                    return state.DoS(100, error("%s: input already spent on a previous block", __func__));
                                 }
                             }
                         }
