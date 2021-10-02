@@ -4616,6 +4616,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     }
 
     int nHeight = pindex->nHeight;
+    int splitHeight = -1;
 
     bool isPoS = false;
     if (block.IsProofOfStake()) {
@@ -4624,12 +4625,26 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     if (isPoS) {
         LOCK(cs_main);
 
+        const bool isBlockFromFork = pindexPrev != nullptr && !chainActive.Contains(pindexPrev);
+        CTransaction &stakeTxIn = block.vtx[1];
+
+        // Check validity of the coinStake.
+        if(!stakeTxIn.IsCoinStake())
+            return error("%s: no coin stake on vtx pos 1", __func__);
+
         // Check whether is a fork or not
-        if (pindexPrev != nullptr && !chainActive.Contains(pindexPrev)) {
+        if (isBlockFromFork) {
 
             // Start at the block we're adding on to
             CBlockIndex *prev = pindexPrev;
-            CTransaction &stakeTxIn = block.vtx[1];
+
+            // Inputs
+            std::vector<CTxIn> prcyInputs;
+
+            for (CTxIn stakeIn : stakeTxIn.vin) {
+                prcyInputs.push_back(stakeIn);
+            }
+            const bool hasPRCYInputs = !prcyInputs.empty();
             CBlock bl;
             // Go backwards on the forked chain up to the split
             do {
@@ -4642,20 +4657,41 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 for (CTransaction t : bl.vtx) {
                     for (CTxIn in: t.vin) {
                         // Loop through every input of the staking tx
-                        for (CTxIn stakeIn : stakeTxIn.vin) {
+                        for (CTxIn stakeIn : prcyInputs) {
                             // if it's already spent
-                            if (stakeIn.prevout == in.prevout) {
-                                // reject the block
-                                return state.DoS(100,
-                                                 error("%s: input already spent on a previous block", __func__));
+                            // First regular staking check
+                            if(hasPRCYInputs) {
+                                if (stakeIn.prevout == in.prevout) {
+                                    // reject the block
+                                    return state.DoS(100,
+                                                     error("%s: input already spent on a previous block",
+                                                           __func__));
+                                }
                             }
                         }
                     }
                 }
+
                 prev = prev->pprev;
 
             } while (!chainActive.Contains(prev));
         }
+
+
+        // Let's check if the inputs were spent on the main chain
+        const CCoinsViewCache coins(pcoinsTip);
+        for (CTxIn in: stakeTxIn.vin) {
+            const CCoins* coin = coins.AccessCoins(in.prevout.hash);
+            if(coin && !coin->IsAvailable(in.prevout.n)){
+                // If this is not available get the height of the spent and validate it with the forked height
+                // Check if this occurred before the chain split
+                if(!(isBlockFromFork && coin->nHeight > splitHeight)){
+                    // Coins not available
+                    return error("%s: coin stake inputs already spent in main chain", __func__);
+                }
+            }
+        }
+
     }
 
     // Write block to history file
