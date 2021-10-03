@@ -5777,7 +5777,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
     CNodeState* state = State(pfrom->GetId());
     if (state == NULL)
         return false;
-    LogPrintf("received: %s (%u bytes) peer=%d, chainheight=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id, chainActive.Height());
+    LogPrint(BCLog::NET, "received: %s (%u bytes) peer=%d, chainheight=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id, chainActive.Height());
     if (mapArgs.count("-dropmessagestest") && GetRand(atoi(mapArgs["-dropmessagestest"])) == 0) {
         LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
         return true;
