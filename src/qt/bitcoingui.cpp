@@ -986,10 +986,13 @@ void BitcoinGUI::checkForUpdatesClicked()
 void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
 {
     QString currentVersion = QString::number(CLIENT_VERSION_MAJOR) + "." + QString::number(CLIENT_VERSION_MINOR)+ "." + QString::number(CLIENT_VERSION_REVISION)+ "." + QString::number(CLIENT_VERSION_BUILD);
+    QString currentVersionStripped = currentVersion.remove(QChar('.'), Qt::CaseInsensitive);
     reply->deleteLater();
     if(reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
-        if (data.trimmed() != currentVersion) {
+        QString dataStream = data.trimmed();
+        QString availableVersionStripped = dataStream.remove(QChar('.'), Qt::CaseInsensitive);
+        if (availableVersionStripped > currentVersionStripped) {
             LogPrintf("Check For Updates: Update Available!\n");
             QMessageBox::StandardButton msgReply;
             msgReply = QMessageBox::question(this, "Wallet Update Available!", "Wallet update available.\n\nWould you like to go to the GitHub Releases page to download v" + data.trimmed() + "?", QMessageBox::Yes|QMessageBox::No);
