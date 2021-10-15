@@ -312,7 +312,7 @@ bool CMasternode::IsValidNetAddr()
 {
     // TODO: regtest is fine with any addresses for now,
     // should probably be a bit smarter if one day we start to implement tests for this
-    return Params().NetworkID() == CBaseChainParams::REGTEST ||
+    return Params().IsRegTestNet() ||
            (IsReachable(addr) && addr.IsRoutable());
 }
 
@@ -636,7 +636,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
     }
 
     bool isLocal = addr.IsRFC1918() || addr.IsLocal();
-    if (Params().NetworkID() == CBaseChainParams::REGTEST) isLocal = false;
+    if (Params().IsRegTestNet()) isLocal = false;
 
     if (!isLocal) Relay();
 

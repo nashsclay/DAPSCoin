@@ -4118,6 +4118,8 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
             REJECT_INVALID, "high-hash");
 
+    if (Params().IsRegTestNet()) return true;
+
     //PoA specific header checks
     //Check that the header is valid for PoA mining, this check will use a PoA consensus rule
     if (block.IsPoABlockByVersion() && !CheckPoABlockMinedHash(block)) {

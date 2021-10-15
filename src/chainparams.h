@@ -104,6 +104,7 @@ public:
     int64_t StartMasternodePayments() const { return nStartMasternodePayments; }
     int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
+    bool IsRegTestNet() const { return NetworkID() == CBaseChainParams::REGTEST; }
     int ExtCoinType() const { return nExtCoinType; }
 
     /** Height or Time Based Activations **/

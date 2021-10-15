@@ -229,6 +229,7 @@ void CMasternodeSync::ClearFulfilledRequest()
 void CMasternodeSync::Process()
 {
     static int tick = 0;
+    const bool isRegTestNet = Params().IsRegTestNet();
 
     if (tick++ % MASTERNODE_SYNC_TIMEOUT != 0) return;
 
@@ -253,14 +254,13 @@ void CMasternodeSync::Process()
 
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
-    if (Params().NetworkID() != CBaseChainParams::REGTEST &&
-        !IsBlockchainSynced()) return;
+    if (!isRegTestNet && !IsBlockchainSynced()) return;
 
     TRY_LOCK(cs_vNodes, lockRecv);
     if (!lockRecv) return;
 
     for (CNode* pnode : vNodes) {
-        if (Params().NetworkID() == CBaseChainParams::REGTEST) {
+        if (isRegTestNet) {
             if (RequestedMasternodeAttempt < 4) {
                 mnodeman.DsegUpdate(pnode);
             } else if (RequestedMasternodeAttempt < 6) {
