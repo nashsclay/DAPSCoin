@@ -754,7 +754,7 @@
             <string>Add &amp;Recipient</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../prcycoin.qrc">
              <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
            </property>
            <property name="autoDefault">
@@ -831,7 +831,7 @@
               <string>S&amp;end</string>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="../prcycoin.qrc">
                <normaloff>:/icons/send</normaloff>:/icons/send</iconset>
              </property>
              <property name="autoDefault">
@@ -875,9 +875,8 @@
    <header>qvalidatedlineedit.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../prcycoin.qrc"/>
+ </resources>
  <connections/>
- <buttongroups>
-  <buttongroup name="groupFee"/>
- </buttongroups>
 </ui>
