@@ -180,8 +180,8 @@ jobs:
       run: |
         mkdir -p depends/sdk-sources
         mkdir -p depends/SDKs
-        curl https://bitcoincore.org/depends-sources/sdks/MacOSX10.11.sdk.tar.gz -o depends/sdk-sources/MacOSX10.11.sdk.tar.gz
-        tar -C depends/SDKs -xf depends/sdk-sources/MacOSX10.11.sdk.tar.gz
+        curl https://bitcoincore.org/depends-sources/sdks/MacOSX10.14.sdk.tar.gz -o depends/sdk-sources/MacOSX10.14.sdk.tar.gz
+        tar -C depends/SDKs -xf depends/sdk-sources/MacOSX10.14.sdk.tar.gz
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build Dependencies
       run: make -C depends HOST=x86_64-apple-darwin16 -j$(nproc)
