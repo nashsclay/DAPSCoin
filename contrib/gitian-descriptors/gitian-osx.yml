@@ -31,7 +31,7 @@ remotes:
 - "url": "https://github.com/prcycoin/prcycoin.git"
   "dir": "prcycoin"
 files:
-- "MacOSX10.14.sdk.tar.gz"
+- "Xcode-10.2.1-10E1001-extracted-SDK-with-libcxx-headers.tar.gz"
 script: |
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin16"
@@ -88,7 +88,7 @@ script: |
   BASEPREFIX=`pwd`/depends
 
   mkdir -p ${BASEPREFIX}/SDKs
-  tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/MacOSX10.14.sdk.tar.gz
+  tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/Xcode-10.2.1-10E1001-extracted-SDK-with-libcxx-headers.tar.gz
 
   # Build dependencies for each host
   for i in $HOSTS; do
