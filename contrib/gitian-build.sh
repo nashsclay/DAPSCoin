@@ -189,7 +189,7 @@ then
 fi
 
 # Check for OSX SDK
-if [[ ! -e "gitian-builder/inputs/Xcode-10.2.1-10E1001-extracted-SDK-with-libcxx-headers.tar.gz" && $osx == true ]]
+if [[ ! -e "gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz" && $osx == true ]]
 then
     echo "Cannot build for OSX, SDK does not exist. Will build for other OSes"
     osx=false

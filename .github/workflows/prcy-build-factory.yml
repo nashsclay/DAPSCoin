@@ -171,8 +171,8 @@ jobs:
       shell: bash
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
-        export XCODE_VERSION=10.2.1
-        export XCODE_BUILD_ID=10E1001
+        export XCODE_VERSION=11.3.1
+        export XCODE_BUILD_ID=11C505
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
         echo "XCODE_VERSION=${XCODE_VERSION}" >> $GITHUB_ENV
         echo "XCODE_BUILD_ID=${XCODE_BUILD_ID}" >> $GITHUB_ENV
