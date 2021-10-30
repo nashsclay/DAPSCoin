@@ -86,6 +86,10 @@ The following can be set when running make: `make FOO=bar`
 <dd>Don't download/build/cache libs needed to enable the wallet</dd>
 <dt>NO_UPNP</dt>
 <dd>Don't download/build/cache packages needed for enabling upnp</dd>
+<dt>ALLOW_HOST_PACKAGES</dt>
+<dd>Packages that are missed in dependencies (due to `NO_*` option or
+build script logic) are searched for among the host system packages using
+`pkg-config`. It allows building with packages of other (newer) versions</dd>
 <dt>DEBUG</dt>
 <dd>disable some optimizations and enable more runtime checking</dd>
 <dt>HOST_ID_SALT</dt>
