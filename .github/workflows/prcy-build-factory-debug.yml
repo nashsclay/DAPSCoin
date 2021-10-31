@@ -157,6 +157,7 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       ARTIFACT_DIR: prcycoin-macosx-debug
+      SDK_URL: https://bitcoincore.org/depends-sources/sdks
     steps:
     - name: Getting Source
       uses: actions/download-artifact@v1
@@ -171,17 +172,28 @@ jobs:
       shell: bash
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
+        export XCODE_VERSION=10.2.1
+        export XCODE_BUILD_ID=10E1001
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        echo "XCODE_VERSION=${XCODE_VERSION}" >> $GITHUB_ENV
+        echo "XCODE_BUILD_ID=${XCODE_BUILD_ID}" >> $GITHUB_ENV
+        export OSX_SDK_BASENAME=Xcode-$XCODE_VERSION-$XCODE_BUILD_ID-extracted-SDK-with-libcxx-headers.tar.gz
+        export OSX_SDK_PATH=depends/sdk-sources/$OSX_SDK_BASENAME
+        echo "OSX_SDK_BASENAME=${OSX_SDK_BASENAME}" >> $GITHUB_ENV
+        echo "OSX_SDK_PATH=${OSX_SDK_PATH}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-setuptools libcap-dev zlib1g-dev cmake librsvg2-bin libtiff-tools imagemagick libz-dev libbz2-dev libtinfo5
     - name: Get macOS SDK
       run: |
-        mkdir -p depends/sdk-sources
-        mkdir -p depends/SDKs
-        curl https://bitcoincore.org/depends-sources/sdks/MacOSX10.11.sdk.tar.gz -o depends/sdk-sources/MacOSX10.11.sdk.tar.gz
-        tar -C depends/SDKs -xf depends/sdk-sources/MacOSX10.11.sdk.tar.gz
+        mkdir -p depends/sdk-sources depends/SDKs
+        if [ -n "${{ env.XCODE_VERSION }}" ] && [ ! -f "${{ env.OSX_SDK_PATH }}" ]; then
+          curl --location --fail "${{ env.SDK_URL }}/${{ env.OSX_SDK_BASENAME }}" -o "${{ env.OSX_SDK_PATH }}"
+        fi
+        if [ -n "${{ env.XCODE_VERSION }}" ] && [ -f "${{ env.OSX_SDK_PATH }}" ]; then
+          tar -C "depends/SDKs" -xf "${{ env.OSX_SDK_PATH }}"
+        fi
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build Dependencies
       run: make -C depends HOST=x86_64-apple-darwin16 -j$(nproc)
