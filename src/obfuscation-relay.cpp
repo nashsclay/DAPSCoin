@@ -101,7 +101,7 @@ void CObfuScationRelay::RelayThroughNode(int nRank)
     CMasternode* pmn = mnodeman.GetMasternodeByRank(nRank, nBlockHeight, ActiveProtocol());
 
     if (pmn != NULL) {
-        CNode* pnode = ConnectNode((CAddress)pmn->addr, NULL, false);
+        CNode* pnode = ConnectNode((CAddress)pmn->addr, NULL, false, true);
         if (pnode) {
             pnode->PushMessage("dsr", (*this));
             pnode->Release();
