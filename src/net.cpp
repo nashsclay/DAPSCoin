@@ -1493,6 +1493,8 @@ bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSem
     pnode->fNetworkNode = true;
     if (fOneShot)
         pnode->fOneShot = true;
+
+    return true;
 }
 
 void ThreadMessageHandler() {
