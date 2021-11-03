@@ -258,6 +258,7 @@ extern UniValue setdecoyconfirmation(const UniValue& params, bool fHelp);
 extern UniValue getdecoyconfirmation(const UniValue& params, bool fHelp);
 extern UniValue decodestealthaddress(const UniValue& params, bool fHelp);
 extern UniValue sendtostealthaddress(const UniValue& params, bool fHelp);
+extern UniValue sendalltostealthaddress(const UniValue& params, bool fHelp);
 extern UniValue createprivacysubaddress(const UniValue& params, bool fHelp);
 extern UniValue getwalletinfo(const UniValue& params, bool fHelp);
 extern UniValue gettxcount(const UniValue& params, bool fHelp);

@@ -2781,6 +2781,34 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
+UniValue sendalltostealthaddress(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw std::runtime_error(
+                "sendalltostealthaddress \"prcystealthaddress\"\n"
+                "\nSend all PRCY to stealth address\n" +
+                HelpRequiringPassphrase() +
+                "\nArguments:\n"
+                "1. \"prcystealthaddress\"  (string, required) The prcycoin stealth address to send to.\n"
+                "\nResult:\n"
+                "\"transactionid\"  (string) The transaction id.\n"
+                "\nExamples:\n" +
+                HelpExampleCli("sendalltostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1"));
+
+    std::string stealthAddr = params[0].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    // Wallet comments
+    CWalletTx wtx;
+
+    if (!pwalletMain->SendAll(stealthAddr)) {
+        throw JSONRPCError(RPC_WALLET_ERROR,
+                           "Cannot create transaction.");
+    }
+    return wtx.GetHash().GetHex();
+}
+
 UniValue setdecoyconfirmation(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
