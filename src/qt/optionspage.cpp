@@ -442,7 +442,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         return;
     }
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Staking Setting");
         msgBox.setIcon(QMessageBox::Information);
@@ -637,7 +637,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
 void OptionsPage::on_Enable2FA(ToggleButton* widget)
 {
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("2FA Setting");
         msgBox.setIcon(QMessageBox::Information);
@@ -832,7 +832,7 @@ void OptionsPage::on_month() {
 
 void OptionsPage::onShowMnemonic() {
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
         if (!ctx.isValid()) {
             QMessageBox msgBox;
@@ -903,7 +903,7 @@ void OptionsPage::onShowMnemonic() {
 
 void OptionsPage::setAutoConsolidate(int state) {
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Staking Settings");
         msgBox.setIcon(QMessageBox::Information);
@@ -961,7 +961,7 @@ void OptionsPage::minimizeOnClose_clicked(int state)
 void OptionsPage::changeDigits(int digit)
 {
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("2FA Digit Settings");
         msgBox.setIcon(QMessageBox::Information);
@@ -1002,7 +1002,7 @@ void OptionsPage::changeDigits(int digit)
 void OptionsPage::alwaysRequest2FA_clicked(int state)
 {
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("2FA Settings");
         msgBox.setIcon(QMessageBox::Information);

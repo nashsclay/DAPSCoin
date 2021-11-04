@@ -170,7 +170,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     }
     // PRCY labels
     //TODO-NOTE: Remove immatureBalance from showing on qt wallet (as requested)
-    if (walletStatus == WalletModel::Locked || walletStatus == WalletModel::UnlockedForAnonymizationOnly) {
+    if (walletStatus == WalletModel::Locked || walletStatus == WalletModel::UnlockedForStakingOnly) {
         ui->labelBalance_2->setText("Locked; Hidden");
         ui->labelBalance->setText("Locked; Hidden");
         ui->labelUnconfirmed->setText("Locked; Hidden");
@@ -511,7 +511,7 @@ void OverviewPage::updateRecentTransactions() {
 }
 
 void OverviewPage::on_lockUnlock() {
-    if (walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForAnonymizationOnly) {
+    if (walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForStakingOnly) {
         WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
         if (ctx.isValid()) {
             ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
@@ -539,7 +539,7 @@ void OverviewPage::updateLockStatus(int status) {
         return;
 
     // update wallet state
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly)
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly)
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
     else
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");

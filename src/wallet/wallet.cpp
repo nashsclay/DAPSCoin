@@ -538,7 +538,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly
             if (!crypter.Decrypt(pMasterKey.second.vchCryptedKey, vMasterKey))
                 continue; // try another master key
             if (CCryptoKeyStore::Unlock(vMasterKey)) {
-                fWalletUnlockAnonymizeOnly = anonymizeOnly;
+                fWalletUnlockStakingOnly = anonymizeOnly;
                 rescanNeeded = true;
                 break;
             }
@@ -5752,7 +5752,7 @@ void CWallet::SetNull()
     nNextResend = 0;
     nLastResend = 0;
     nTimeFirstKey = 0;
-    fWalletUnlockAnonymizeOnly = false;
+    fWalletUnlockStakingOnly = false;
     walletStakingInProgress = false;
     fBackupMints = false;
 

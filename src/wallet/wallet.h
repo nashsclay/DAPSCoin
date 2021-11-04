@@ -282,7 +282,7 @@ public:
     mutable RecursiveMutex cs_wallet;
 
     bool fFileBacked;
-    bool fWalletUnlockAnonymizeOnly;
+    bool fWalletUnlockStakingOnly;
     std::string strWalletFile;
     bool fBackupMints;
 

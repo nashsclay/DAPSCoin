@@ -278,8 +278,8 @@ void WalletView::unlockWallet(AskPassphraseDialog::Context context)
         return;
     // Unlock wallet when requested by wallet model
 
-    if (walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForAnonymizationOnly) {
-        AskPassphraseDialog dlg(AskPassphraseDialog::Mode::UnlockAnonymize, this, walletModel, context);
+    if (walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForStakingOnly) {
+        AskPassphraseDialog dlg(AskPassphraseDialog::Mode::UnlockStaking, this, walletModel, context);
         dlg.exec();
     }
 }
@@ -301,11 +301,11 @@ void WalletView::toggleLockWallet()
 
     // Unlock the wallet when requested
     if (encStatus == walletModel->Locked) {
-        AskPassphraseDialog dlg(AskPassphraseDialog::Mode::UnlockAnonymize, this, walletModel, AskPassphraseDialog::Context::ToggleLock);
+        AskPassphraseDialog dlg(AskPassphraseDialog::Mode::UnlockStaking, this, walletModel, AskPassphraseDialog::Context::ToggleLock);
         dlg.exec();
     }
 
-    else if (encStatus == walletModel->Unlocked || encStatus == walletModel->UnlockedForAnonymizationOnly) {
+    else if (encStatus == walletModel->Unlocked || encStatus == walletModel->UnlockedForStakingOnly) {
             walletModel->setWalletLocked(true);
     }
 }
