@@ -122,7 +122,7 @@ void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfir
                               const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance)
 {
     int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForAnonymizationOnly) {
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         ui->labelBalance->setText("Locked; Hidden");
     } else {
         ui->labelBalance->setText(BitcoinUnits::formatHtmlWithUnit(0, balance, false, BitcoinUnits::separatorAlways));
@@ -195,7 +195,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     // and make many transactions while unlocking through this dialog
     // will call relock
     WalletModel::EncryptionStatus encStatus = model->getEncryptionStatus();
-    if (encStatus == model->Locked || encStatus == model->UnlockedForAnonymizationOnly) {
+    if (encStatus == model->Locked || encStatus == model->UnlockedForStakingOnly) {
         WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Send, true));
         if (!ctx.isValid()) {
             // Unlock wallet was cancelled

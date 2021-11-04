@@ -48,9 +48,9 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel
         ui->passEdit1->hide();
         setWindowTitle(tr("Encrypt Wallet"));
         break;
-        ui->anonymizationCheckBox->setChecked(false);
-        ui->anonymizationCheckBox->hide();
-    case Mode::UnlockAnonymize:
+        ui->stakingCheckBox->setChecked(false);
+        ui->stakingCheckBox->hide();
+    case Mode::UnlockStaking:
     case Mode::Unlock: // Ask passphrase
         ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet.<br/><br/>(Wallet may appear not responding as it rescans for all transactions)<br/><br/>"));
         ui->warningLabel->setAlignment(Qt::AlignHCenter);
@@ -74,17 +74,17 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel
         break;
     }
 
-    // Set checkbox "For anonymization, automint, and staking only" depending on from where we were called
+    // Set checkbox "For staking only" depending on from where we were called
     if (context == Context::Unlock_Menu || context == Context::BIP_38) {
-        ui->anonymizationCheckBox->setChecked(true);
+        ui->stakingCheckBox->setChecked(true);
     }
     else {
-        ui->anonymizationCheckBox->setChecked(false);
+        ui->stakingCheckBox->setChecked(false);
     }
 
     // It doesn't make sense to show the checkbox for sending PRCY because you wouldn't check it anyway.
     if (context == Context::Send) {
-        ui->anonymizationCheckBox->hide();
+        ui->stakingCheckBox->hide();
     }
 
     textChanged();
@@ -162,9 +162,9 @@ void AskPassphraseDialog::accept()
             QDialog::reject(); // Cancelled
         }
     } break;
-    case Mode::UnlockAnonymize:
+    case Mode::UnlockStaking:
     case Mode::Unlock:
-        if (!model->setWalletLocked(false, oldpass, ui->anonymizationCheckBox->isChecked())) {
+        if (!model->setWalletLocked(false, oldpass, ui->stakingCheckBox->isChecked())) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Wallet Unlock Failed");
             msgBox.setText("The passphrase entered for the wallet unlock was incorrect. Please try again.");
@@ -225,7 +225,7 @@ void AskPassphraseDialog::textChanged()
     case Mode::Encrypt: // New passphrase x2
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
         break;
-    case Mode::UnlockAnonymize: // Old passphrase x1
+    case Mode::UnlockStaking: // Old passphrase x1
     case Mode::Unlock:          // Old passphrase x1
     case Mode::Decrypt:
         acceptable = !ui->passEdit1->text().isEmpty();
