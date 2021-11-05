@@ -348,6 +348,7 @@ extern UniValue logging(const UniValue& params, bool fHelp);
 extern UniValue getversion(const UniValue& params, bool fHelp); // in rpcmisc.cpp
 extern UniValue mnsync(const UniValue& params, bool fHelp);
 extern UniValue validateaddress(const UniValue& params, bool fHelp);
+extern UniValue validatestealthaddress(const UniValue& params, bool fHelp);
 extern UniValue createmultisig(const UniValue& params, bool fHelp);
 extern UniValue verifymessage(const UniValue& params, bool fHelp);
 extern UniValue setmocktime(const UniValue& params, bool fHelp);
