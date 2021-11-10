@@ -521,7 +521,6 @@ void BitcoinApplication::initializeResult(int retval)
                         pwalletMain->WriteStakingStatus(false);
                     }
                 }
-                Q_EMIT requestedRegisterNodeSignal();
             }
             if (!walletUnlocked && walletModel->getEncryptionStatus() == WalletModel::Unencrypted) {
                 EncryptDialog dlg;
@@ -530,9 +529,9 @@ void BitcoinApplication::initializeResult(int retval)
                 dlg.setStyleSheet(GUIUtil::loadStyleSheet());
                 dlg.exec();
 
-                Q_EMIT requestedRegisterNodeSignal();
                 walletModel->updateStatus();
             }
+            Q_EMIT requestedRegisterNodeSignal();
         }
 #endif
         pollShutdownTimer->start(200);
