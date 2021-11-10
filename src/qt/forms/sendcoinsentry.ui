@@ -65,7 +65,7 @@
         <item>
          <widget class="QValidatedLineEdit" name="payTo">
           <property name="toolTip">
-           <string>PRCY Wallet Address to send to</string>
+           <string>PRCY Coin Wallet Address to send to</string>
           </property>
           <property name="placeholderText">
            <string>Wallet Address</string>
