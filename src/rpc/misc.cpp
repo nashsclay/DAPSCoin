@@ -319,6 +319,39 @@ UniValue validateaddress(const UniValue& params, bool fHelp)
     return ret;
 }
 
+UniValue validatestealthaddress(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw std::runtime_error(
+                "validatestealthaddress \"prcycoinstealthaddress\"\n"
+                "\nReturn information about the given prcycoin stealth address.\n"
+                "\nArguments:\n"
+                "1. \"prcycoinstealthaddress\"     (string, required) The prcycoin stealth address to validate\n"
+                "\nResult:\n"
+                "{\n"
+                "  \"isvalid\" : true|false,         (boolean) If the address is valid or not. If not, this is the only property returned.\n"
+                "}\n"
+                "\nExamples:\n" +
+                HelpExampleCli("validatestealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\"") +
+                HelpExampleRpc("validatestealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\""));
+    EnsureWallet();
+
+    std::string addr = params[0].get_str();
+
+    UniValue ret(UniValue::VOBJ);
+    CPubKey viewKey, spendKey;
+    bool hasPaymentID;
+    uint64_t paymentID;
+    bool isValid = true;
+
+    if (!CWallet::DecodeStealthAddress(addr, viewKey, spendKey, hasPaymentID, paymentID)) {
+        isValid = false;
+    }
+    ret.push_back(Pair("isvalid", isValid));
+
+    return ret;
+}
+
 /**
  * Used by addmultisigaddress / createmultisig:
  */
