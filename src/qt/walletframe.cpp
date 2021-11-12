@@ -138,6 +138,11 @@ void WalletFrame::gotoOptionsPage()
 
 void WalletFrame::gotoSendCoinsPage(QString addr)
 {
+    QSettings settings;
+    if (settings.value("fLockSendStaking", false).toBool()) {
+       LogPrintf("Attempt to go to Send tab.\n");
+       return;
+    }
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoSendCoinsPage(addr);
