@@ -902,16 +902,7 @@ void OptionsPage::onShowMnemonic() {
 }
 
 void OptionsPage::setAutoConsolidate(int state) {
-    int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Staking Settings");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Please unlock the keychain wallet with your passphrase before attempting to change this setting.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
-        return;
-    }
+    checkForUnlock();
     LOCK(pwalletMain->cs_wallet);
     saveConsolidationSettingTime(ui->addNewFunds->isChecked());
 }
@@ -960,16 +951,7 @@ void OptionsPage::minimizeOnClose_clicked(int state)
 
 void OptionsPage::changeDigits(int digit)
 {
-    int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("2FA Digit Settings");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Please unlock the keychain wallet with your passphrase before attempting to change this setting.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
-        return;
-    }
+    checkForUnlock();
     bool twofastatus = pwalletMain->Read2FA();
     if (twofastatus) {
         QMessageBox::StandardButton reply;
@@ -1001,20 +983,25 @@ void OptionsPage::changeDigits(int digit)
 
 void OptionsPage::alwaysRequest2FA_clicked(int state)
 {
-    int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("2FA Settings");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Please unlock the keychain wallet with your passphrase before attempting to change this setting.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
-        return;
-    }
+    checkForUnlock();
     bool twofastatus = pwalletMain->Read2FA();
     if (twofastatus && ui->alwaysRequest2FA->isChecked()) {
         settings.setValue("fAlwaysRequest2FA", true);
     } else {
         settings.setValue("fAlwaysRequest2FA", false);
+    }
+}
+
+void OptionsPage::checkForUnlock()
+{
+    int status = model->getEncryptionStatus();
+    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Password Locked Setting");
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setText("Please unlock the keychain wallet with your passphrase before changing this setting.");
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.exec();
+        return;
     }
 }
