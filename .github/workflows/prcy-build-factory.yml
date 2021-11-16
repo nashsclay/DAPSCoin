@@ -27,17 +27,6 @@ jobs:
         echo "VERSION=${VERSION}"
         echo "TAG=${TAG}"
         printenv
-    # May need qt and protobuf to configure qt and include prcycoin-qt.1 in distribution
-    - name: Install Required Packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libtool bsdmainutils autotools-dev autoconf pkg-config automake python3
-        sudo apt-get install -y libssl1.0-dev libzmq5 libgmp-dev libevent-dev libboost-all-dev libsodium-dev cargo
-        sudo apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler libqrencode-dev
-        sudo apt-get install -y software-properties-common g++-multilib binutils-gold patch
-        sudo add-apt-repository ppa:pivx/pivx
-        sudo apt-get update
-        sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
     - name: Create Distribution Tarball
       run: |
         mkdir -p $ARTIFACT_DIR
@@ -54,6 +43,53 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: ${{ env.SOURCE_ARTIFACT }}
+        path: ${{ env.ARTIFACT_DIR }}
+  build-linux:
+    name: Build for Linux
+    needs: create-source-distribution
+    runs-on: ubuntu-18.04
+    env:
+      ARTIFACT_DIR: prcycoin-linux
+      TEST_LOG_ARTIFACT_DIR: test-logs
+    steps:
+    - name: Getting Source
+      uses: actions/download-artifact@v1
+      with:
+        name: ${{ env.SOURCE_ARTIFACT }}
+    - name: Extract Archives
+      run: |
+        tar -xzf prcycoin.tar.gz --strip-components=1
+      working-directory: ${{ env.SOURCE_ARTIFACT }}
+    - name: Set Env
+      shell: bash
+      run: |
+        export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    # May need qt and protobuf to configure qt and include prcycoin-qt.1 in distribution
+    - name: Install Required Packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libssl1.0-dev libevent-dev libboost-all-dev
+        sudo apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler libqrencode-dev
+        sudo add-apt-repository ppa:pivx/pivx
+        sudo apt-get update
+        sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
+    - name: Build PRCY
+      run: |
+        ./autogen.sh
+        ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default
+        make -j$(nproc)
+      working-directory: ${{ env.SOURCE_ARTIFACT }}
+    - name: Prepare Files for Artifact
+      run: |
+        mkdir -p $ARTIFACT_DIR
+        strip $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt}
+        chmod +x $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt}
+        mv $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt} $ARTIFACT_DIR
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: prcycoin-v${{ env.VERSION }}-linux
         path: ${{ env.ARTIFACT_DIR }}
   build-x86_64-linux:
     name: Build for x86 Linux 64bit
@@ -183,7 +219,7 @@ jobs:
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-setuptools libcap-dev zlib1g-dev cmake librsvg2-bin libtiff-tools imagemagick libz-dev libbz2-dev libtinfo5
+        sudo apt-get install -y python3-setuptools libcap-dev librsvg2-bin libtiff-tools
     - name: Get macOS SDK
       run: |
         mkdir -p depends/sdk-sources depends/SDKs
@@ -237,7 +273,7 @@ jobs:
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-zmq libcap-dev cmake g++-aarch64-linux-gnu
+        sudo apt-get install -y python3-zmq g++-aarch64-linux-gnu
     - name: Build Dependencies
       run: make -C depends HOST=aarch64-linux-gnu -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
@@ -281,7 +317,7 @@ jobs:
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++-arm-linux-gnueabihf libzmq5 libgmp-dev 
+        sudo apt-get install -y g++-arm-linux-gnueabihf
     - name: Build Dependencies
       run: make -C depends -j$(nproc) HOST=arm-linux-gnueabihf
       working-directory: ${{ env.SOURCE_ARTIFACT }}
