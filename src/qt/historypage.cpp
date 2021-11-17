@@ -146,6 +146,11 @@ void HistoryPage::on_cellClicked(int row, int column)
                 }
                 txdlg.setTxAmount(amount);
                 txdlg.setTxFee(tx.nTxFee);
+                if (tx.hasPaymentID) {
+                    txdlg.setTxPaymentID(tx.paymentID);
+                } else {
+                    txdlg.setTxPaymentID(0);
+                }
             }
         }
         std::string txdlgMsg = "Request from Sender (if applicable)";
