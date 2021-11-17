@@ -53,6 +53,7 @@ public Q_SLOTS:
     void reject();
     void accept();
     void copyAddress();
+    void generateAddress();
 
 protected:
     virtual void keyPressEvent(QKeyEvent* event);

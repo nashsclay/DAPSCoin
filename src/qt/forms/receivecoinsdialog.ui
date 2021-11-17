@@ -214,7 +214,7 @@
          </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
+         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0">
           <property name="spacing">
            <number>6</number>
           </property>
@@ -250,6 +250,16 @@
             </property>
             <property name="readOnly">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonGenerate">
+            <property name="toolTip">
+             <string>Generate Integrated Address</string>
+            </property>
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>

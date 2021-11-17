@@ -50,7 +50,10 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget* parent) : QDialog(parent, Qt::Wi
     ui->lineEditAddress->setStyleSheet("border:none; background: transparent; text-align:center;");
     ui->pushButtonCP->setStyleSheet("background:transparent;");
     ui->pushButtonCP->setIcon(QIcon(":/icons/editcopy"));
+    ui->pushButtonGenerate->setIcon(QIcon(":/icons/add"));
+    ui->pushButtonGenerate->setStyleSheet("background:transparent;");
     connect(ui->pushButtonCP, SIGNAL(clicked()), this, SLOT(copyAddress()));
+    connect(ui->pushButtonGenerate, SIGNAL(clicked()), this, SLOT(generateAddress()));
 
     //Create privacy account (wallet is unlocked first launch so !pwalletMain->IsLocked() works here)
     if (pwalletMain && !pwalletMain->IsLocked()) {
@@ -228,4 +231,12 @@ void ReceiveCoinsDialog::copyAddress(){
     CWallet* wl = model->getCWallet();
     wl->AllMyPublicAddresses(addrList, accountList);
     clipboard->setText(QString(addrList[0].c_str()));
+}
+
+void ReceiveCoinsDialog::generateAddress(){
+    uint64_t paymentID = 0;
+    QClipboard *clipboard = QApplication::clipboard();
+    std::string address;
+    address = pwalletMain->GenerateIntegratedAddressWithRandomPaymentID("masteraccount", paymentID);
+    clipboard->setText(QString(address.c_str()));
 }
