@@ -22,6 +22,12 @@ jobs:
         export TAG=v${VERSION}
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
         echo "TAG=${TAG}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Print Variables
       run: |
         echo "VERSION=${VERSION}"
@@ -64,6 +70,12 @@ jobs:
       shell: bash
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
     # May need qt and protobuf to configure qt and include prcycoin-qt.1 in distribution
     - name: Install Required Packages
@@ -113,6 +125,12 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
@@ -157,6 +175,12 @@ jobs:
       shell: bash
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
@@ -216,6 +240,12 @@ jobs:
         export OSX_SDK_PATH=depends/sdk-sources/$OSX_SDK_BASENAME
         echo "OSX_SDK_BASENAME=${OSX_SDK_BASENAME}" >> $GITHUB_ENV
         echo "OSX_SDK_PATH=${OSX_SDK_PATH}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
@@ -270,6 +300,12 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
@@ -314,6 +350,12 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
@@ -357,6 +399,12 @@ jobs:
       shell: bash
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
