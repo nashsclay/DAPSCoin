@@ -633,14 +633,14 @@
           <item>
            <widget class="QCheckBox" name="hideBalanceStaking">
             <property name="text">
-             <string>Hide Balance when unlocked for Staking</string>
+             <string>Hide Balance when unlocked</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="lockSendStaking">
             <property name="text">
-             <string>Lock &quot;Send&quot; tab when unlocked for Staking</string>
+             <string>Lock &quot;Send&quot; tab when unlocked</string>
             </property>
            </widget>
           </item>
