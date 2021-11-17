@@ -21,6 +21,7 @@ public:
     void setTxPrivKey(QString strPrivKey);
     void setTxAmount(QString amount);
     void setTxFee(CAmount fee);
+    void setTxPaymentID(uint64_t paymentID);
 
 private Q_SLOTS:
     void on_buttonBox_accepted();
@@ -29,6 +30,7 @@ private Q_SLOTS:
     void copyPrivateKey();
     void copyTxAmount();
     void copyTxFee();
+    void copyTxPaymentID();
 
 private:
     Ui::RevealTxDialog *ui;

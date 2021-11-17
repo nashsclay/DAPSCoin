@@ -29,6 +29,10 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
     ui->pushButtonCopyTxFee->setStyleSheet("background:transparent;");
     ui->pushButtonCopyTxFee->setIcon(QIcon(":/icons/editcopy"));
     connect(ui->pushButtonCopyTxFee, SIGNAL(clicked()), this, SLOT(copyTxFee()));
+
+    ui->pushButtonCopyTxPaymentID->setStyleSheet("background:transparent;");
+    ui->pushButtonCopyTxPaymentID->setIcon(QIcon(":/icons/editcopy"));
+    connect(ui->pushButtonCopyTxPaymentID, SIGNAL(clicked()), this, SLOT(copyTxPaymentID()));
 }
 
 RevealTxDialog::~RevealTxDialog()
@@ -63,6 +67,16 @@ void RevealTxDialog::setTxFee(CAmount fee)
     ui->lblTxFee->setText(BitcoinUnits::formatHtmlWithUnit(0, fee, false, BitcoinUnits::separatorAlways));
 }
 
+void RevealTxDialog::setTxPaymentID(uint64_t paymentID)
+{
+    if (paymentID == 0) {
+        ui->pushButtonCopyTxPaymentID->hide();
+        ui->label_6->hide();
+        ui->lblTxPaymentID->hide();
+    }
+    ui->lblTxPaymentID->setText(QString::number(paymentID));
+}
+
 void RevealTxDialog::on_buttonBox_accepted()
 {
 
@@ -91,4 +105,9 @@ void RevealTxDialog::copyTxAmount(){
 void RevealTxDialog::copyTxFee(){
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(ui->lblTxFee->text());
+}
+
+void RevealTxDialog::copyTxPaymentID(){
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(ui->lblTxPaymentID->text());
 }
