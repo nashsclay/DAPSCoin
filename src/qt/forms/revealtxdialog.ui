@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
+    <width>750</width>
     <height>290</height>
    </rect>
   </property>
@@ -53,6 +53,13 @@
          <height>0</height>
         </size>
        </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonOpenTXID">
        <property name="text">
         <string/>
        </property>
