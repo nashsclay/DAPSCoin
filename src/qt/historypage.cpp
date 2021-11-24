@@ -151,6 +151,7 @@ void HistoryPage::on_cellClicked(int row, int column)
                 } else {
                     txdlg.setTxPaymentID(0);
                 }
+                txdlg.setTxRingSize(tx.vin[0].decoys.size() + 1);
             }
         }
         std::string txdlgMsg = "Request from Sender (if applicable)";
