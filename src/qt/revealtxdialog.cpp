@@ -33,6 +33,10 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
     ui->pushButtonCopyTxPaymentID->setStyleSheet("background:transparent;");
     ui->pushButtonCopyTxPaymentID->setIcon(QIcon(":/icons/editcopy"));
     connect(ui->pushButtonCopyTxPaymentID, SIGNAL(clicked()), this, SLOT(copyTxPaymentID()));
+
+    ui->pushButtonCopyTxRingSize->setStyleSheet("background:transparent;");
+    ui->pushButtonCopyTxRingSize->setIcon(QIcon(":/icons/editcopy"));
+    connect(ui->pushButtonCopyTxRingSize, SIGNAL(clicked()), this, SLOT(copyTxRingSize()));
 }
 
 RevealTxDialog::~RevealTxDialog()
@@ -71,10 +75,15 @@ void RevealTxDialog::setTxPaymentID(uint64_t paymentID)
 {
     if (paymentID == 0) {
         ui->pushButtonCopyTxPaymentID->hide();
-        ui->label_6->hide();
+        ui->label_7->hide();
         ui->lblTxPaymentID->hide();
     }
     ui->lblTxPaymentID->setText(QString::number(paymentID));
+}
+
+void RevealTxDialog::setTxRingSize(int64_t ringSize)
+{
+    ui->lblTxRingSize->setText(QString::number(ringSize));
 }
 
 void RevealTxDialog::on_buttonBox_accepted()
@@ -110,4 +119,9 @@ void RevealTxDialog::copyTxFee(){
 void RevealTxDialog::copyTxPaymentID(){
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(ui->lblTxPaymentID->text());
+}
+
+void RevealTxDialog::copyTxRingSize(){
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(ui->lblTxRingSize->text());
 }

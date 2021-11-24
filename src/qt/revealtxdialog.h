@@ -22,6 +22,7 @@ public:
     void setTxAmount(QString amount);
     void setTxFee(CAmount fee);
     void setTxPaymentID(uint64_t paymentID);
+    void setTxRingSize(int64_t ringSize);
 
 private Q_SLOTS:
     void on_buttonBox_accepted();
@@ -31,6 +32,7 @@ private Q_SLOTS:
     void copyTxAmount();
     void copyTxFee();
     void copyTxPaymentID();
+    void copyTxRingSize();
 
 private:
     Ui::RevealTxDialog *ui;
