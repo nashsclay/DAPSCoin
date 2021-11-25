@@ -109,6 +109,11 @@
              <string>Masternode</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>Payment to yourself</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item>

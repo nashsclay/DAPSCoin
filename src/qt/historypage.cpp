@@ -307,9 +307,11 @@ void HistoryPage::updateFilter()
                 hide = !(type == tr("Minted"));
             } else if (selectedType == tr("Masternode")) {
                 hide = !(type == tr("Masternode"));
+            } else if (selectedType == tr("Payment to yourself")) {
+                hide = !(type == tr("Payment to yourself"));
             }
         } else {
-            hide = !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode"));
+            hide = !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode")) && !(type == tr("Payment to yourself"));
         }
         if (ui->lineEditDesc->currentText() != allAddressString) {
             bool found = false;
