@@ -1,8 +1,11 @@
 #include "revealtxdialog.h"
 #include "ui_revealtxdialog.h"
 #include "bitcoinunits.h"
+#include "chainparams.h"
 
 #include <QClipboard>
+#include <QDesktopServices>
+#include <QUrl>
 
 RevealTxDialog::RevealTxDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
@@ -37,6 +40,16 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
     ui->pushButtonCopyTxRingSize->setStyleSheet("background:transparent;");
     ui->pushButtonCopyTxRingSize->setIcon(QIcon(":/icons/editcopy"));
     connect(ui->pushButtonCopyTxRingSize, SIGNAL(clicked()), this, SLOT(copyTxRingSize()));
+
+    ui->pushButtonOpenTXID->setStyleSheet("background:transparent;");
+    ui->pushButtonOpenTXID->setIcon(QIcon(":/icons/eye"));
+    connect(ui->pushButtonOpenTXID, SIGNAL(clicked()), this, SLOT(openTXinExplorer()));
+
+    // Hide View in Explorer on any other network but Main
+    bool fMainNet = Params().NetworkID() == CBaseChainParams::MAIN;
+    if (!fMainNet) {
+        ui->pushButtonOpenTXID->hide();
+    }
 }
 
 RevealTxDialog::~RevealTxDialog()
@@ -124,4 +137,10 @@ void RevealTxDialog::copyTxPaymentID(){
 void RevealTxDialog::copyTxRingSize(){
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(ui->lblTxRingSize->text());
+}
+
+void RevealTxDialog::openTXinExplorer()
+{
+    QString URL = "https://explorer.prcycoin.com/tx/";
+    QDesktopServices::openUrl(QUrl(URL.append(ui->lblTxID->text())));
 }

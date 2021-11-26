@@ -33,6 +33,7 @@ private Q_SLOTS:
     void copyTxFee();
     void copyTxPaymentID();
     void copyTxRingSize();
+    void openTXinExplorer();
 
 private:
     Ui::RevealTxDialog *ui;
