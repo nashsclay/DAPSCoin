@@ -238,5 +238,7 @@ void ReceiveCoinsDialog::generateAddress(){
     QClipboard *clipboard = QApplication::clipboard();
     std::string address;
     address = pwalletMain->GenerateIntegratedAddressWithRandomPaymentID("masteraccount", paymentID);
+    ui->reqAddress->addItem(QString(address.c_str()));
+    ui->reqAddress->setCurrentIndex(ui->reqAddress->count() - 1);
     clipboard->setText(QString(address.c_str()));
 }
