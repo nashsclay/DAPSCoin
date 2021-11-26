@@ -162,8 +162,8 @@ extern int64_t nLastCoinStakeSearchInterval;
 //extern int64_t nConsolidationTime;
 extern int64_t nLastCoinStakeSearchTime;
 
-extern const int MIN_RING_SIZE;
-extern const int MAX_RING_SIZE;
+extern int MIN_RING_SIZE;
+extern int MAX_RING_SIZE;
 extern const int MAX_TX_INPUTS;
 extern const int MIN_TX_INPUTS_FOR_SWEEPING;
 
@@ -254,6 +254,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlr
 CAmount GetBlockValue(int nHeight);
 
 void RemoveInvalidTransactionsFromMempool();
+void SetRingSize();
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);

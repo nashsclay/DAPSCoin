@@ -206,6 +206,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     recipientElement.append("<br/><span class='h3'>"+tr("Destination")+": <br/><b>"+recipient.address+"</b></span><br/>");
 
     formatted.append(recipientElement);
+    SetRingSize();
     QString strFee = BitcoinUnits::formatHtmlWithUnit(model->getOptionsModel()->getDisplayUnit(), (pwalletMain->ComputeFee(1, 1, MAX_RING_SIZE)));
     QString questionString = "<br/><span class='h2'><center><b>"+tr("Are you sure you want to send?")+"</b></center></span>";
     questionString.append("%1");
