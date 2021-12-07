@@ -2360,6 +2360,7 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
     coinLowestLarger.second.first = NULL;
     std::vector<std::pair<CAmount, std::pair<const CWalletTx*, unsigned int> > > vValue;
     CAmount nTotalLower = 0;
+    std::string s = "";
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
     // move denoms down on the list
@@ -2431,13 +2432,13 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
             CAmount maxFee = ComputeFee(50, numOut, ringSize);
             if (vValue.size() <= MAX_TX_INPUTS) {
                 //putting all into the transaction
-                std::string s = "CWallet::SelectCoinsMinConf best subset: ";
+                s = "";
                 for (unsigned int i = 0; i < vValue.size(); i++) {
                     setCoinsRet.insert(vValue[i].second);
                     nValueRet += vValue[i].first;
                     s += FormatMoney(vValue[i].first) + " ";
                 }
-                LogPrintf("%s - total %s\n", s, FormatMoney(nValueRet));
+                LogPrintf("%s: best subset: %s - total %s\n", __func__, s, FormatMoney(nValueRet));
                 return true;
             } else {
 
@@ -2448,13 +2449,13 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
 
     if (vValue.size() <= MAX_TX_INPUTS) {
         //putting all into the transaction
-        std::string s = "CWallet::SelectCoinsMinConf best subset: ";
+        s = "";
         for (unsigned int i = 0; i < vValue.size(); i++) {
             setCoinsRet.insert(vValue[i].second);
             nValueRet += vValue[i].first;
             s += FormatMoney(vValue[i].first) + " ";
         }
-        LogPrintf("%s - total %s\n", s, FormatMoney(nValueRet));
+        LogPrintf("%s: best subset: %s - total %s\n", __func__, s, FormatMoney(nValueRet));
         return true;
     }
 
@@ -2486,7 +2487,7 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
         setCoinsRet.insert(coinLowestLarger.second);
         nValueRet += coinLowestLarger.first;
     } else {
-        std::string s = "CWallet::SelectCoinsMinConf best subset: ";
+        s = "";
         for (unsigned int i = 0; i < vValue.size(); i++) {
             if (vfBest[i]) {
                 setCoinsRet.insert(vValue[i].second);
@@ -2494,7 +2495,7 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
                 s += FormatMoney(vValue[i].first) + " ";
             }
         }
-        LogPrintf("%s - total %s\n", s, FormatMoney(nBest));
+        LogPrintf("%s: best subset: %s - total %s\n", __func__, s, FormatMoney(nBest));
     }
 
     return true;
