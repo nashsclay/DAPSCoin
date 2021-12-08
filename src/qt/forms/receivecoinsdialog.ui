@@ -254,6 +254,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="pushButtonRemove">
+            <property name="toolTip">
+             <string>Remove Integrated Address</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="pushButtonGenerate">
             <property name="toolTip">
              <string>Generate Integrated Address</string>
