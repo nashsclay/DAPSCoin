@@ -467,8 +467,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     showHelpMessageAction->setStatusTip(tr("Show the PRCY help message to get a list with possible PRCY command-line options"));
 
     // Help Links
-    openFAQAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Frequently Asked Questions"), this);
-    openFAQAction->setStatusTip(tr("Frequently Asked Questions"));
+    openKBAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Knowledge Base"), this);
+    openKBAction->setStatusTip(tr("Knowledge Base"));
     openGitWikiAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&GitHub Wiki"), this);
     openGitWikiAction->setStatusTip(tr("GitHub Wiki"));
     openBlockExplorerAPIAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Blockchain Explorer API"), this);
@@ -496,7 +496,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(optionsAction, SIGNAL(triggered()), this, SLOT(gotoOptionsPage()));
     connect(toggleHideAction, SIGNAL(triggered()), this, SLOT(toggleHidden()));
     connect(showHelpMessageAction, SIGNAL(triggered()), this, SLOT(showHelpMessageClicked()));
-    connect(openFAQAction, SIGNAL(triggered()), this, SLOT(openFAQClicked()));
+    connect(openKBAction, SIGNAL(triggered()), this, SLOT(openKBClicked()));
     connect(openGitWikiAction, SIGNAL(triggered()), this, SLOT(openGitWikiClicked()));
     connect(openBlockExplorerAPIAction, SIGNAL(triggered()), this, SLOT(openBlockExplorerAPIClicked()));
     connect(openBootStrapAction, SIGNAL(triggered()), this, SLOT(openBootStrapClicked()));
@@ -598,7 +598,7 @@ void BitcoinGUI::createMenuBar()
     QMenu* help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(showHelpMessageAction);
     help->addSeparator();
-    help->addAction(openFAQAction);
+    help->addAction(openKBAction);
     help->addAction(openGitWikiAction);
     help->addSeparator();
     help->addAction(openBlockExplorerAPIAction);
@@ -922,9 +922,9 @@ void BitcoinGUI::showHelpMessageClicked()
     help->show();
 }
 
-void BitcoinGUI::openFAQClicked()
+void BitcoinGUI::openKBClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://prcycoin.com/faq"));
+    QDesktopServices::openUrl(QUrl("https://prcycoin.com/knowledge-base"));
 }
 
 void BitcoinGUI::openGitWikiClicked()

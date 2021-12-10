@@ -134,7 +134,7 @@ private:
     QAction* redditAction;
     QAction* bridgeAction;
     QAction* showHelpMessageAction;
-    QAction* openFAQAction;
+    QAction* openKBAction;
     QAction* openGitWikiAction;
     QAction* openBlockExplorerAPIAction;
     QAction* openBootStrapAction;
@@ -268,7 +268,7 @@ private Q_SLOTS:
     void aboutClicked();
     /** Show help message dialog */
     void showHelpMessageClicked();
-    void openFAQClicked();
+    void openKBClicked();
     void openGitWikiClicked();
     void openBlockExplorerAPIClicked();
     void openBootStrapClicked();
