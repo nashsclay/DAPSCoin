@@ -3,7 +3,6 @@
 
 #include "guiutil.h"
 #include "masternode.h"
-#include "platformstyle.h"
 #include "sync.h"
 #include "togglebutton.h"
 #include "util.h"

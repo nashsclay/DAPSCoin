@@ -212,7 +212,6 @@ HEADERS += src/activemasternode.h \
            src/qt/paymentrequestplus.h \
            src/qt/paymentserver.h \
            src/qt/peertablemodel.h \
-           src/qt/platformstyle.h \
            src/qt/qgoogleauth.h \
            src/qt/qvalidatedlineedit.h \
            src/qt/qvaluecombobox.h \
@@ -541,7 +540,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/paymentrequestplus.cpp \
            src/qt/paymentserver.cpp \
            src/qt/peertablemodel.cpp \
-           src/qt/platformstyle.cpp \
            src/qt/qgoogleauth.cpp \
            src/qt/qvalidatedlineedit.cpp \
            src/qt/qvaluecombobox.cpp \
