@@ -212,13 +212,11 @@ HEADERS += src/activemasternode.h \
            src/qt/paymentrequestplus.h \
            src/qt/paymentserver.h \
            src/qt/peertablemodel.h \
-           src/qt/platformstyle.h \
            src/qt/qgoogleauth.h \
            src/qt/qvalidatedlineedit.h \
            src/qt/qvaluecombobox.h \
            src/qt/receivecoinsdialog.h \
            src/qt/receiverequestdialog.h \
-           src/qt/recentrequeststablemodel.h \
            src/qt/revealtxdialog.h \
            src/qt/rpcconsole.h \
            src/qt/sendcoinsdialog.h \
@@ -542,13 +540,11 @@ SOURCES += src/activemasternode.cpp \
            src/qt/paymentrequestplus.cpp \
            src/qt/paymentserver.cpp \
            src/qt/peertablemodel.cpp \
-           src/qt/platformstyle.cpp \
            src/qt/qgoogleauth.cpp \
            src/qt/qvalidatedlineedit.cpp \
            src/qt/qvaluecombobox.cpp \
            src/qt/receivecoinsdialog.cpp \
            src/qt/receiverequestdialog.cpp \
-           src/qt/recentrequeststablemodel.cpp \
            src/qt/revealtxdialog.cpp \
            src/qt/rpcconsole.cpp \
            src/qt/sendcoinsdialog.cpp \

@@ -11,7 +11,6 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "receiverequestdialog.h"
-#include "recentrequeststablemodel.h"
 #include "walletmodel.h"
 
 #include <QAction>
@@ -86,7 +85,6 @@ void ReceiveCoinsDialog::setModel(WalletModel* model)
     this->model = model;
 
     if (model && model->getOptionsModel()) {
-        model->getRecentRequestsTableModel()->sort(RecentRequestsTableModel::Date, Qt::DescendingOrder);
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
         updateDisplayUnit();
         loadAccount();
@@ -168,7 +166,7 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
         msgBox.exec();
         return;
     }
-    if (!model || !model->getOptionsModel() || !model->getAddressTableModel() || !model->getRecentRequestsTableModel())
+    if (!model || !model->getOptionsModel() || !model->getAddressTableModel())
         return;
 
     std::vector<std::string> addrList, accountList;
@@ -199,7 +197,6 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
         dialog->setInfo(info);
         dialog->show();
         clear();
-        model->getRecentRequestsTableModel()->addNewRequest(info);
     }
 
 }
