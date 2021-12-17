@@ -14,7 +14,6 @@
 #include "masternode-sync.h"
 #include "optionsmodel.h"
 #include "receiverequestdialog.h"
-#include "recentrequeststablemodel.h"
 #include "walletmodel.h"
 #include "2faqrdialog.h"
 #include "2fadialog.h"
@@ -176,10 +175,6 @@ void OptionsPage::setModel(WalletModel* model)
 {
     this->model = model;
     this->options = model->getOptionsModel();
-
-    if (model && model->getOptionsModel()) {
-        model->getRecentRequestsTableModel()->sort(RecentRequestsTableModel::Date, Qt::DescendingOrder);
-    }
 
     mapper->setModel(options);
     setMapper();

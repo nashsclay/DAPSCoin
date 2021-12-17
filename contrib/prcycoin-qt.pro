@@ -218,7 +218,6 @@ HEADERS += src/activemasternode.h \
            src/qt/qvaluecombobox.h \
            src/qt/receivecoinsdialog.h \
            src/qt/receiverequestdialog.h \
-           src/qt/recentrequeststablemodel.h \
            src/qt/revealtxdialog.h \
            src/qt/rpcconsole.h \
            src/qt/sendcoinsdialog.h \
@@ -548,7 +547,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/qvaluecombobox.cpp \
            src/qt/receivecoinsdialog.cpp \
            src/qt/receiverequestdialog.cpp \
-           src/qt/recentrequeststablemodel.cpp \
            src/qt/revealtxdialog.cpp \
            src/qt/rpcconsole.cpp \
            src/qt/sendcoinsdialog.cpp \

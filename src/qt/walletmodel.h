@@ -24,7 +24,6 @@
 
 class AddressTableModel;
 class OptionsModel;
-class RecentRequestsTableModel;
 class TransactionTableModel;
 class WalletModelTransaction;
 
@@ -134,7 +133,6 @@ public:
     AddressTableModel* getAddressTableModel();
     TransactionTableModel* getTransactionTableModel();
     QAbstractTableModel* getTxTableModel();
-    RecentRequestsTableModel* getRecentRequestsTableModel();
 
     bool isShutdownRequested();
 
@@ -240,7 +238,6 @@ private:
 
     AddressTableModel* addressTableModel;
     TransactionTableModel* transactionTableModel;
-    RecentRequestsTableModel* recentRequestsTableModel;
     QAbstractTableModel* txTableModel;
 
     // Cache some values to be able to detect changes
