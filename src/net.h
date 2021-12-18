@@ -68,6 +68,8 @@ static const size_t MAPASKFOR_MAX_SZ = MAX_INV_SZ;
 /** The maximum number of peer connections to maintain. */
 static const unsigned int DEFAULT_MAX_PEER_CONNECTIONS = 125;
 
+static const ServiceFlags REQUIRED_SERVICES = NODE_NETWORK;
+
 unsigned int ReceiveFloodSize();
 unsigned int SendBufferSize();
 
