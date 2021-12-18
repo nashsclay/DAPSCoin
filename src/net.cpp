@@ -68,6 +68,9 @@ namespace {
     };
 }
 
+/** Services this node implementation cares about */
+static const uint64_t nRelevantServices = NODE_NETWORK;
+
 //
 // Global state variables
 //
@@ -439,6 +442,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMa
             vNodes.push_back(pnode);
         }
 
+        pnode->nServicesExpected = addrConnect.nServices & nRelevantServices;
         pnode->nTimeConnected = GetTime();
         if (obfuScationMaster) pnode->fObfuScationMaster = true;
 
@@ -2053,6 +2057,7 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
                                                                                                   INIT_PROTO_VERSION),
                                                                                            setAddrKnown(5000) {
     nServices = 0;
+    nServicesExpected = 0;
     hSocket = hSocketIn;
     nRecvVersion = INIT_PROTO_VERSION;
     nLastSend = 0;
