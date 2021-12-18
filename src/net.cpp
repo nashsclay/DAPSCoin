@@ -469,7 +469,7 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
     fDisconnect = false;
     if (nVersion < nVersionRequired) {
         LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nVersion);
-        PushMessage("reject", strLastCommand, REJECT_OBSOLETE,
+        PushMessage(NetMsgType::REJECT, strLastCommand, REJECT_OBSOLETE,
                     strprintf("Version must be %d or greater", ActiveProtocol()));
         fDisconnect = true;
     }
@@ -1877,7 +1877,7 @@ void RelayTransactionLockReq(const CTransaction &tx, bool relayToAll) {
         if (!relayToAll && !pnode->fRelayTxes)
             continue;
 
-        pnode->PushMessage("ix", tx);
+        pnode->PushMessage(NetMsgType::IX, tx);
     }
 }
 

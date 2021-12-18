@@ -4652,12 +4652,12 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
         if (mi == mapBlockIndex.end() || (mi != mapBlockIndex.end() && mi->second == NULL)) {
             mapBlockIndex.erase(pblock->hashPrevBlock);
-            pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256(0));
+            pfrom->PushMessage(NetMsgType::GETBLOCKS, chainActive.GetLocator(), uint256(0));
             return false;
         } else {
             CBlock r;
             if (!ReadBlockFromDisk(r, mapBlockIndex[pblock->hashPrevBlock])) {
-                pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256(0));
+                pfrom->PushMessage(NetMsgType::GETBLOCKS, chainActive.GetLocator(), uint256(0));
                 return false;
             }
         }
@@ -4679,7 +4679,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         CheckBlockIndex();
         if (!ret) {
             if (pfrom) {
-                pfrom->PushMessage("getblocks", chainActive.GetLocator(pindexBestForkTip), pblock->GetHash());
+                pfrom->PushMessage(NetMsgType::GETBLOCKS, chainActive.GetLocator(pindexBestForkTip), pblock->GetHash());
             }
             if (pwalletMain)
             {
@@ -5649,7 +5649,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mapTxLockVote[inv.hash];
-                        pfrom->PushMessage("txlvote", ss);
+                        pfrom->PushMessage(NetMsgType::IXLOCKVOTE, ss);
                         pushed = true;
                     }
                 }
@@ -5658,7 +5658,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mapTxLockReq[inv.hash];
-                        pfrom->PushMessage("ix", ss);
+                        pfrom->PushMessage(NetMsgType::IX, ss);
                         pushed = true;
                     }
                 }
@@ -5667,7 +5667,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << masternodePayments.mapMasternodePayeeVotes[inv.hash];
-                        pfrom->PushMessage("mnw", ss);
+                        pfrom->PushMessage(NetMsgType::MNWINNER, ss);
                         pushed = true;
                     }
                 }
@@ -5676,7 +5676,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << budget.mapSeenMasternodeBudgetVotes[inv.hash];
-                        pfrom->PushMessage("mvote", ss);
+                        pfrom->PushMessage(NetMsgType::BUDGETVOTE, ss);
                         pushed = true;
                     }
                 }
@@ -5686,7 +5686,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << budget.mapSeenMasternodeBudgetProposals[inv.hash];
-                        pfrom->PushMessage("mprop", ss);
+                        pfrom->PushMessage(NetMsgType::BUDGETPROPOSAL, ss);
                         pushed = true;
                     }
                 }
@@ -5696,7 +5696,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << budget.mapSeenFinalizedBudgetVotes[inv.hash];
-                        pfrom->PushMessage("fbvote", ss);
+                        pfrom->PushMessage(NetMsgType::FINALBUDGETVOTE, ss);
                         pushed = true;
                     }
                 }
@@ -5706,7 +5706,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << budget.mapSeenFinalizedBudgets[inv.hash];
-                        pfrom->PushMessage("fbs", ss);
+                        pfrom->PushMessage(NetMsgType::FINALBUDGET, ss);
                         pushed = true;
                     }
                 }
@@ -5716,7 +5716,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mnodeman.mapSeenMasternodeBroadcast[inv.hash];
-                        pfrom->PushMessage("mnb", ss);
+                        pfrom->PushMessage(NetMsgType::MNBROADCAST, ss);
                         pushed = true;
                     }
                 }
@@ -6008,7 +6008,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 std::vector<CInv> vGetData(1,inv);
 
                 if (pfrom) {
-                    pfrom->PushMessage("getblocks", chainActive.GetLocator(mapBlockIndex[inv.hash]), uint256(0));
+                    pfrom->PushMessage(NetMsgType::GETBLOCKS, chainActive.GetLocator(mapBlockIndex[inv.hash]), uint256(0));
                 }
                 printf("force request: %s\n", inv.ToString().c_str());
             }
@@ -6474,9 +6474,9 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             pfrom->nPingNonceSent = 0;
         }
     } else if (!(nLocalServices & NODE_BLOOM) &&
-               (strCommand == "filterload" ||
-                   strCommand == "filteradd" ||
-                   strCommand == "filterclear")) {
+               (strCommand == NetMsgType::FILTERLOAD ||
+                   strCommand == NetMsgType::FILTERADD ||
+                   strCommand == NetMsgType::FILTERCLEAR)) {
         LogPrintf("bloom message=%s\n", strCommand);
         LOCK(cs_main);
         Misbehaving(pfrom->GetId(), 100);
@@ -6539,12 +6539,26 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 LogPrint(BCLog::NET, "Unparseable reject message received\n");
         }
     } else {
-        //probably one the extensions
-        mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
-        budget.ProcessMessage(pfrom, strCommand, vRecv);
-        masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
-        ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
-        masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+        bool found = false;
+        const std::vector<std::string> &allMessages = getAllNetMessageTypes();
+        for (const std::string msg : allMessages) {
+            if(msg == strCommand) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            //probably one the extensions
+            mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
+            budget.ProcessMessage(pfrom, strCommand, vRecv);
+            masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
+            ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
+            masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+        } else {
+            // Ignore unknown commands for extensibility
+            LogPrint(BCLog::NET, "Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->id);
+        }
     }
 
 
