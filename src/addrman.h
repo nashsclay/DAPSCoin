@@ -261,7 +261,7 @@ protected:
     void Connected_(const CService& addr, int64_t nTime);
 
     //! Update an entry's service bits.
-    void SetServices_(const CService& addr, uint64_t nServices);
+    void SetServices_(const CService& addr, ServiceFlags nServices);
 
 public:
     /**
@@ -589,7 +589,7 @@ public:
         }
     }
 
-    void SetServices(const CService& addr, uint64_t nServices)
+    void SetServices(const CService& addr, ServiceFlags nServices)
     {
         LOCK(cs);
         Check();
