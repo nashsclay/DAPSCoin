@@ -2572,7 +2572,7 @@ void Misbehaving(NodeId pnode, int howmuch)
     if (state == NULL)
         return;
 
-    CAddress cAddr(state->address);
+    CAddress cAddr(state->address, NODE_NETWORK);
     if (CNode::IsWhitelistedRange(cAddr)) return;
 
     state->nMisbehavior += howmuch;
