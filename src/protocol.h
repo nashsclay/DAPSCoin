@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2009-2015 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -285,7 +285,12 @@ extern const char *SYNCSTATUSCOUNT;
 const std::vector<std::string> &getAllNetMessageTypes();
 
 /** nServices flags */
-enum {
+enum ServiceFlags : uint64_t {
+    // Nothing
+    NODE_NONE = 0,
+    // NODE_NETWORK means that the node is capable of serving the block chain. It is currently
+    // set by all Bitcoin Core nodes, and is unset by SPV clients or other peers that just want
+    // network services but don't provide them.
     NODE_NETWORK = (1 << 0),
 
     // NODE_BLOOM means the node is capable and willing to handle bloom-filtered connections.
@@ -294,9 +299,8 @@ enum {
     NODE_BLOOM = (1 << 2),
 
     // NODE_BLOOM_WITHOUT_MN means the node has the same features as NODE_BLOOM with the only difference
-    // that the node doens't want to receive master nodes messages. (the 1<<3 was not picked as constant because on bitcoin 0.14 is witness and we want that update here )
-
-     NODE_BLOOM_WITHOUT_MN = (1 << 4),
+    // that the node doesn't want to receive master nodes messages. (the 1<<3 was not picked as constant because on bitcoin 0.14 is witness and we want that update here )
+    NODE_BLOOM_WITHOUT_MN = (1 << 4),
 
     // Bits 24-31 are reserved for temporary experiments. Just pick a bit that
     // isn't getting used, or one not being used much, and notify the
@@ -312,7 +316,7 @@ class CAddress : public CService
 {
 public:
     CAddress();
-    explicit CAddress(CService ipIn, uint64_t nServicesIn = NODE_NETWORK);
+    explicit CAddress(CService ipIn, ServiceFlags nServicesIn);
 
     void Init();
 
@@ -328,13 +332,15 @@ public:
         if ((nType & SER_DISK) ||
             (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
             READWRITE(nTime);
-        READWRITE(nServices);
+        uint64_t nServicesInt = nServices;
+        READWRITE(nServicesInt);
+        nServices = (ServiceFlags)nServicesInt;
         READWRITE(*(CService*)this);
     }
 
     // TODO: make private (improves encapsulation)
 public:
-    uint64_t nServices;
+    ServiceFlags nServices;
 
     // disk and network only
     unsigned int nTime;

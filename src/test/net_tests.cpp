@@ -19,6 +19,13 @@ class CAddrManSerializationMock : public CAddrMan
 {
 public:
     virtual void Serialize(CDataStream& s, int nType, int nVersionDummy) const = 0;
+
+    //! Ensure that bucket placement is always the same for testing purposes.
+    void MakeDeterministic()
+    {
+        nKey.SetNull();
+        SeedInsecureRand(true);
+    }
 };
 
 class CAddrManUncorrupted : public CAddrManSerializationMock
@@ -46,7 +53,7 @@ public:
         int nUBuckets = ADDRMAN_NEW_BUCKET_COUNT ^ (1 << 30);
         s << nUBuckets;
 
-        CAddress addr = CAddress(CService("252.1.1.1", 7777));
+        CAddress addr = CAddress(CService("252.1.1.1", 7777), NODE_NONE);
         CAddrInfo info = CAddrInfo(addr, CNetAddr("252.2.2.2"));
         s << info;
     }
@@ -67,15 +74,16 @@ BOOST_FIXTURE_TEST_SUITE(net_tests, BasicTestingSetup)
 BOOST_AUTO_TEST_CASE(caddrdb_read)
 {
     CAddrManUncorrupted addrmanUncorrupted;
+    addrmanUncorrupted.MakeDeterministic();
 
     CService addr1 = CService("250.7.1.1", 8333);
     CService addr2 = CService("250.7.2.2", 9999);
     CService addr3 = CService("250.7.3.3", 9999);
 
     // Add three addresses to new table.
-    addrmanUncorrupted.Add(CAddress(addr1), CService("252.5.1.1", 8333));
-    addrmanUncorrupted.Add(CAddress(addr2), CService("252.5.1.1", 8333));
-    addrmanUncorrupted.Add(CAddress(addr3), CService("252.5.1.1", 8333));
+    addrmanUncorrupted.Add(CAddress(addr1, NODE_NONE), CService("252.5.1.1", 8333));
+    addrmanUncorrupted.Add(CAddress(addr2, NODE_NONE), CService("252.5.1.1", 8333));
+    addrmanUncorrupted.Add(CAddress(addr3, NODE_NONE), CService("252.5.1.1", 8333));
 
     // Test that the de-serialization does not throw an exception.
     CDataStream ssPeers1 = AddrmanToStream(addrmanUncorrupted);
@@ -108,6 +116,7 @@ BOOST_AUTO_TEST_CASE(caddrdb_read)
 BOOST_AUTO_TEST_CASE(caddrdb_read_corrupted)
 {
     CAddrManCorrupted addrmanCorrupted;
+    addrmanCorrupted.MakeDeterministic();
 
     // Test that the de-serialization of corrupted addrman throws an exception.
     CDataStream ssPeers1 = AddrmanToStream(addrmanCorrupted);
