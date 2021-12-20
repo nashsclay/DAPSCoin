@@ -40,7 +40,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
     if (fLiteMode) return; //disable all obfuscation/masternode related functionality
     if (!masternodeSync.IsBlockchainSynced()) return;
 
-    if (strCommand == "ix") {
+    if (strCommand == NetMsgType::IX) {
         CDataStream vMsg(vRecv);
         CTransaction tx;
         vRecv >> tx;
@@ -124,7 +124,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
 
             return;
         }
-    } else if (strCommand == "txlvote") // SwiftX Lock Consensus Votes
+    } else if (strCommand == NetMsgType::IXLOCKVOTE) // SwiftX Lock Consensus Votes
     {
         CConsensusVote ctx;
         vRecv >> ctx;
