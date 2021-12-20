@@ -775,4 +775,13 @@ public:
 void DumpBanlist();
 bool IsUnsupportedVersion(std::string strSubVer, int nHeight);
 
+struct AddedNodeInfo {
+    std::string strAddedNode;
+    CService resolvedAddress;
+    bool fConnected;
+    bool fInbound;
+};
+
+std::vector<AddedNodeInfo> GetAddedNodeInfo();
+
 #endif // BITCOIN_NET_H
