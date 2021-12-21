@@ -416,8 +416,11 @@ UniValue setban(const UniValue& params, bool fHelp)
     bool isSubnet = false;
     if (params[0].get_str().find("/") != std::string::npos)
         isSubnet = true;
-    if (!isSubnet)
-        netAddr = CNetAddr(params[0].get_str());
+    if (!isSubnet) {
+        CNetAddr resolved;
+        LookupHost(params[0].get_str().c_str(), resolved, false);
+        netAddr = resolved;
+    }
     else
         subNet = CSubNet(params[0].get_str());
     if (! (isSubnet ? subNet.IsValid() : netAddr.IsValid()) )

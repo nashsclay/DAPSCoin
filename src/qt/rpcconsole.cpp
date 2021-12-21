@@ -1017,8 +1017,18 @@ void RPCConsole::banSelectedNode(int bantime)
 
     // Find possible nodes, ban it and clear the selected node
     const CNodeCombinedStats *stats = clientModel->getPeerTableModel()->getNodeStats(detailNodeRow);
-    if(stats) {
-        CNode::Ban(stats->nodeStats.addr, BanReasonManuallyAdded, bantime);
+
+    if (FindNode(stats->nodeStats.addr.ToString())) {
+        std::string nStr = stats->nodeStats.addr.ToString();
+        std::string addr;
+        int port = 0;
+        SplitHostPort(nStr, port, addr);
+
+        CNetAddr resolved;
+        if (!LookupHost(addr.c_str(), resolved, false))
+            return;
+        CNode::Ban(resolved, BanReasonManuallyAdded, bantime);
+
         clearSelectedNode();
         clientModel->getBanTableModel()->refresh();
     }

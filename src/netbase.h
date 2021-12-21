@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2009-2015 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -47,8 +47,6 @@ protected:
 public:
     CNetAddr();
     CNetAddr(const struct in_addr& ipv4Addr);
-    explicit CNetAddr(const char* pszIp);
-    explicit CNetAddr(const std::string& strIp);
     void Init();
     void SetIP(const CNetAddr& ip);
 
@@ -207,6 +205,7 @@ bool IsProxy(const CNetAddr& addr);
 bool SetNameProxy(const proxyType &addrProxy);
 bool HaveNameProxy();
 bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup);
+bool LookupHost(const char* pszName, CNetAddr& addr, bool fAllowLookup);
 bool Lookup(const char* pszName, CService& addr, int portDefault, bool fAllowLookup);
 bool Lookup(const char* pszName, std::vector<CService>& vAddr, int portDefault, bool fAllowLookup, unsigned int nMaxSolutions);
 bool LookupNumeric(const char* pszName, CService& addr, int portDefault = 0);
