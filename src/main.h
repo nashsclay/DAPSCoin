@@ -578,10 +578,4 @@ extern CCoinsViewCache* pcoinsTip;
 /** Global variable that points to the active block tree (protected by cs_main) */
 extern CBlockTreeDB* pblocktree;
 
-struct CBlockTemplate {
-    CBlock block;
-    std::vector<CAmount> vTxFees;
-    std::vector<int64_t> vTxSigOps;
-};
-
 #endif // BITCOIN_MAIN_H
