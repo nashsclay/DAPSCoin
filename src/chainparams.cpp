@@ -111,8 +111,6 @@ public:
         nTargetSpacing = 1 * 60;  // PRCYcoin: 1 minute
         nMaturity = 100;
         nMasternodeCountDrift = 20;
-        MAX_MONEY = 70000000.0;
-        nMaxMoneyOut = MAX_MONEY * COIN;
         nMNCollateralAmt = 5000 * COIN;
         nMinimumStakeAmount = 2500 * COIN;
 
@@ -275,8 +273,6 @@ public:
         nMaturity = 15;
         nMasternodeCountDrift = 4;
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
-        MAX_MONEY = 70000000.0;
-        nMaxMoneyOut = MAX_MONEY * COIN;
         nMNCollateralAmt = 5000 * COIN;
         nSoftForkBlock = 600; // Soft fork block for difficulty change - testnet started with it
         nPoANewDiff = 650;

@@ -9,6 +9,7 @@
 #include "main.h"
 
 #include "addrman.h"
+#include "amount.h"
 #include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
@@ -1452,7 +1453,7 @@ bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationSt
         if (txout.nValue < 0)
             return state.DoS(100, error("CheckTransaction() : txout.nValue negative"),
                 REJECT_INVALID, "bad-txns-vout-negative");
-        if (txout.nValue > Params().MaxMoneyOut()) {
+        if (txout.nValue > MAX_MONEY_OUT) {
             return state.DoS(100, error("CheckTransaction() : txout.nValue too high"),
                 REJECT_INVALID, "bad-txns-vout-toolarge");
         }

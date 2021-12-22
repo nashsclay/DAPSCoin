@@ -82,7 +82,6 @@ public:
     int64_t TargetSpacing() const { return nTargetSpacing; }
     int64_t Interval() const { return nTargetTimespan / nTargetSpacing; }
     int COINBASE_MATURITY() const { return nMaturity; }
-    CAmount MaxMoneyOut() const { return nMaxMoneyOut; }
     CAmount MNCollateralAmt() const { return nMNCollateralAmt; }
     CAmount MinimumStakeAmount() const { return nMinimumStakeAmount; }
     /** The masternode count that we will allow the see-saw reward payments to be off by */
@@ -122,7 +121,6 @@ public:
     int MIN_NUM_POS_BLOCKS_AUDITED() const {return nMinNumPoSBlocks;}
     int MAX_NUM_POS_BLOCKS_AUDITED() const {return nMaxNumPoSBlocks;}
     int nLastPOWBlock;
-    double MAX_MONEY;
     CAmount TOTAL_SUPPLY = 70000000 * COIN; //70M PRCY
 
 protected:
@@ -151,7 +149,6 @@ protected:
     int nMasternodeCountDrift;
     int nMaturity;
     int nModifierUpdateBlock;
-    CAmount nMaxMoneyOut;
     CAmount nMNCollateralAmt;
     CAmount nMinimumStakeAmount;
     int nMinerThreads;
