@@ -1040,7 +1040,9 @@ void RPCConsole::unbanSelectedNode()
         return;
     // Get currently selected ban address
     QString strNode = GUIUtil::getEntryData(ui->banlistWidget, 0, BanTableModel::Address).toString();
-    CSubNet possibleSubnet(strNode.toStdString());
+    CSubNet possibleSubnet;
+
+    LookupSubNet(strNode.toStdString().c_str(), possibleSubnet);
     if (possibleSubnet.IsValid())
     {
         CNode::Unban(possibleSubnet);
