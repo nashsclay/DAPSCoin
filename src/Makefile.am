@@ -107,6 +107,7 @@ BITCOIN_CORE_H = \
   compat/endian.h \
   compat/sanity.h \
   compressor.h \
+  consensus/consensus.h \
   primitives/block.h \
   primitives/transaction.h \
   core_io.h \

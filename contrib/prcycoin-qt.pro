@@ -148,6 +148,7 @@ HEADERS += src/activemasternode.h \
            src/wallet/wallet.h \
            src/wallet/wallet_ismine.h \
            src/wallet/walletdb.h \
+           src/consensus/consensus.h \
            src/compat/sanity.h \
            src/config/prcycoin-config.h \
            src/crypto/common.h \
