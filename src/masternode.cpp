@@ -7,6 +7,7 @@
 #include "masternode.h"
 #include "addrman.h"
 #include "masternodeman.h"
+#include "netbase.h"
 #include "obfuscation.h"
 #include "sync.h"
 #include "util.h"

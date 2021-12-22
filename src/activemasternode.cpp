@@ -9,6 +9,7 @@
 #include "masternode.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
+#include "netbase.h"
 #include "protocol.h"
 
 //

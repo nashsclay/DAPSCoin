@@ -9,6 +9,7 @@
 #include "addrman.h"
 #include "fs.h"
 #include "masternode.h"
+#include "netbase.h"
 #include "obfuscation.h"
 #include "util.h"
 

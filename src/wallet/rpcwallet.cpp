@@ -11,7 +11,6 @@
 #include "core_io.h"
 #include "init.h"
 #include "net.h"
-#include "netbase.h"
 #include "rpc/server.h"
 #include "timedata.h"
 #include "util.h"

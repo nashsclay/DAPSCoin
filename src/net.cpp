@@ -18,6 +18,7 @@
 #include "miner.h"
 #include "obfuscation.h"
 #include "primitives/transaction.h"
+#include "netbase.h"
 #include "scheduler.h"
 #include "guiinterface.h"
 

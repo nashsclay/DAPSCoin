@@ -8,17 +8,15 @@
 #include "wallet/db.h"
 #include "init.h"
 #include "main.h"
-#include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
+#include "netbase.h"
 #include "rpc/server.h"
 #include "utilmoneystr.h"
 
 #include <boost/tokenizer.hpp>
 #include <univalue.h>
-
-#include <fstream>
 
 extern CAmount GetSeeSaw(const CAmount& blockValue, int nMasternodeCount, int nHeight);
 

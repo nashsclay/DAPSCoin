@@ -14,7 +14,7 @@
 #include "fs.h"
 #include "limitedmap.h"
 #include "mruset.h"
-#include "netbase.h"
+#include "netaddress.h"
 #include "protocol.h"
 #include "random.h"
 #include "streams.h"
