@@ -150,6 +150,7 @@ HEADERS += src/activemasternode.h \
            src/wallet/walletdb.h \
            src/consensus/consensus.h \
            src/consensus/validation.h \
+           src/consensus/tx_verify.h \
            src/compat/sanity.h \
            src/config/prcycoin-config.h \
            src/crypto/common.h \
@@ -475,6 +476,7 @@ SOURCES += src/activemasternode.cpp \
            src/wallet/wallet.cpp \
            src/wallet/wallet_ismine.cpp \
            src/wallet/walletdb.cpp \
+           src/consensus/tx_verify.cpp \
            src/compat/glibc_compat.cpp \
            src/compat/glibc_sanity.cpp \
            src/compat/glibcxx_compat.cpp \
