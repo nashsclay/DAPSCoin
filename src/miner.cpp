@@ -11,6 +11,7 @@
 #include "miner.h"
 
 #include "amount.h"
+#include "consensus/tx_verify.h"
 #include "hash.h"
 #include "main.h"
 #include "masternode-sync.h"
