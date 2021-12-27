@@ -17,6 +17,7 @@
 #include "chain.h"
 #include "chainparams.h"
 #include "coins.h"
+#include "consensus/validation.h"
 #include "net.h"
 #include "poa.h"
 #include "primitives/block.h"
@@ -66,14 +67,8 @@ static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 50000;
 /** The maximum size for transactions we're willing to relay/mine */
 static const unsigned int MAX_STANDARD_TX_SIZE = 100000;
-/** The maximum allowed number of signature check operations in a block (network rule) */
-static const unsigned int MAX_BLOCK_SIGOPS_CURRENT = MAX_BLOCK_SIZE_CURRENT / 50;
-static const unsigned int MAX_BLOCK_SIGOPS_LEGACY = MAX_BLOCK_SIZE_LEGACY / 50;
 /** Maximum number of signature check operations in an IsStandard() P2SH script */
 static const unsigned int MAX_P2SH_SIGOPS = 15;
-/** The maximum number of sigops we're willing to relay/mine in a single tx */
-static const unsigned int MAX_TX_SIGOPS_CURRENT = MAX_BLOCK_SIGOPS_CURRENT / 5;
-static const unsigned int MAX_TX_SIGOPS_LEGACY = MAX_BLOCK_SIGOPS_LEGACY / 5;
 /** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
 static const unsigned int DEFAULT_MAX_ORPHAN_TRANSACTIONS = 100;
 /** The maximum size of a blk?????.dat file (since 0.8) */
@@ -110,16 +105,6 @@ static const unsigned int MAX_REJECT_MESSAGE_LENGTH = 111;
 
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 static const int64_t DEFAULT_MAX_TIP_AGE = 24 * 60 * 60;
-
-/** "reject" message codes */
-static const unsigned char REJECT_MALFORMED = 0x01;
-static const unsigned char REJECT_INVALID = 0x10;
-static const unsigned char REJECT_OBSOLETE = 0x11;
-static const unsigned char REJECT_DUPLICATE = 0x12;
-static const unsigned char REJECT_NONSTANDARD = 0x40;
-static const unsigned char REJECT_DUST = 0x41;
-static const unsigned char REJECT_INSUFFICIENTFEE = 0x42;
-static const unsigned char REJECT_CHECKPOINT = 0x43;
 
 //static const std::string FOUNDATION_WALLET = "PandirQr3T895NCsDrSKdCD4TJ324z3VDB8Amcj6wx2kKdB7LztTDefdvP4QTMdgGA72W7SHzQeFzLTo2sikmmbd19E5C8UZbbi";
 
@@ -257,8 +242,6 @@ void RemoveInvalidTransactionsFromMempool();
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);
-/** Abort with a message */
-bool AbortNode(const std::string& msg, const std::string& userMessage = "");
 /** Get statistics from node state */
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats);
 /** Increase a node's misbehavior score. */
@@ -478,137 +461,6 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** pindex, C
 bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex** ppindex = NULL);
 
 
-class CBlockFileInfo
-{
-public:
-    unsigned int nBlocks;      //! number of blocks stored in file
-    unsigned int nSize;        //! number of used bytes of block file
-    unsigned int nUndoSize;    //! number of used bytes in the undo file
-    unsigned int nHeightFirst; //! lowest height of block in file
-    unsigned int nHeightLast;  //! highest height of block in file
-    uint64_t nTimeFirst;       //! earliest time of block in file
-    uint64_t nTimeLast;        //! latest time of block in file
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(VARINT(nBlocks));
-        READWRITE(VARINT(nSize));
-        READWRITE(VARINT(nUndoSize));
-        READWRITE(VARINT(nHeightFirst));
-        READWRITE(VARINT(nHeightLast));
-        READWRITE(VARINT(nTimeFirst));
-        READWRITE(VARINT(nTimeLast));
-    }
-
-    void SetNull()
-    {
-        nBlocks = 0;
-        nSize = 0;
-        nUndoSize = 0;
-        nHeightFirst = 0;
-        nHeightLast = 0;
-        nTimeFirst = 0;
-        nTimeLast = 0;
-    }
-
-    CBlockFileInfo()
-    {
-        SetNull();
-    }
-
-    std::string ToString() const;
-
-    /** update statistics (does not update nSize) */
-    void AddBlock(unsigned int nHeightIn, uint64_t nTimeIn)
-    {
-        if (nBlocks == 0 || nHeightFirst > nHeightIn)
-            nHeightFirst = nHeightIn;
-        if (nBlocks == 0 || nTimeFirst > nTimeIn)
-            nTimeFirst = nTimeIn;
-        nBlocks++;
-        if (nHeightIn > nHeightLast)
-            nHeightLast = nHeightIn;
-        if (nTimeIn > nTimeLast)
-            nTimeLast = nTimeIn;
-    }
-};
-
-/** Capture information about block/transaction validation */
-class CValidationState
-{
-private:
-    enum mode_state {
-        MODE_VALID,   //! everything ok
-        MODE_INVALID, //! network rule violation (DoS value may be set)
-        MODE_ERROR,   //! run-time error
-    } mode;
-    int nDoS;
-    std::string strRejectReason;
-    unsigned char chRejectCode;
-    bool corruptionPossible;
-
-public:
-    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {}
-    bool DoS(int level, bool ret = false, unsigned char chRejectCodeIn = 0, std::string strRejectReasonIn = "", bool corruptionIn = false)
-    {
-        chRejectCode = chRejectCodeIn;
-        strRejectReason = strRejectReasonIn;
-        corruptionPossible = corruptionIn;
-        if (mode == MODE_ERROR)
-            return ret;
-        nDoS += level;
-        mode = MODE_INVALID;
-        return ret;
-    }
-    bool Invalid(bool ret = false,
-        unsigned char _chRejectCode = 0,
-        std::string _strRejectReason = "")
-    {
-        return DoS(0, ret, _chRejectCode, _strRejectReason);
-    }
-    bool Error(std::string strRejectReasonIn = "")
-    {
-        if (mode == MODE_VALID)
-            strRejectReason = strRejectReasonIn;
-        mode = MODE_ERROR;
-        return false;
-    }
-    bool Abort(const std::string& msg)
-    {
-        AbortNode(msg);
-        return Error(msg);
-    }
-    bool IsValid() const
-    {
-        return mode == MODE_VALID;
-    }
-    bool IsInvalid() const
-    {
-        return mode == MODE_INVALID;
-    }
-    bool IsError() const
-    {
-        return mode == MODE_ERROR;
-    }
-    bool IsInvalid(int& nDoSOut) const
-    {
-        if (IsInvalid()) {
-            nDoSOut = nDoS;
-            return true;
-        }
-        return false;
-    }
-    bool CorruptionPossible() const
-    {
-        return corruptionPossible;
-    }
-    unsigned char GetRejectCode() const { return chRejectCode; }
-    std::string GetRejectReason() const { return strRejectReason; }
-};
-
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
 {
@@ -635,11 +487,5 @@ extern CCoinsViewCache* pcoinsTip;
 
 /** Global variable that points to the active block tree (protected by cs_main) */
 extern CBlockTreeDB* pblocktree;
-
-struct CBlockTemplate {
-    CBlock block;
-    std::vector<CAmount> vTxFees;
-    std::vector<int64_t> vTxSigOps;
-};
 
 #endif // BITCOIN_MAIN_H

@@ -46,7 +46,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget* parent) : QStackedWidget(parent),
 
     QLocale lo(QLocale::C);
     lo.setNumberOptions(QLocale::RejectGroupSeparator);
-    QDoubleValidator *dblVal = new QDoubleValidator(0, Params().MAX_MONEY, 8, ui->payAmount);
+    QDoubleValidator *dblVal = new QDoubleValidator(0, MAX_MONEY_OUT, 8, ui->payAmount);
     dblVal->setNotation(QDoubleValidator::StandardNotation);
     dblVal->setLocale(lo);
     ui->payAmount->setValidator(dblVal);
@@ -130,7 +130,7 @@ static inline int64_t roundint64(double d)
 
 CAmount SendCoinsEntry::getValidatedAmount() {
     double dAmount = ui->payAmount->text().toDouble();
-    if (dAmount < 0.0 || dAmount > Params().MAX_MONEY) {
+    if (dAmount < 0.0 || dAmount > MAX_MONEY_OUT) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Invalid Amount");
         msgBox.setText("Invalid amount entered. Please enter an amount less than 2.1B PRCY.");

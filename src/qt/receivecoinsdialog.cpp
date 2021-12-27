@@ -68,7 +68,7 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget* parent) : QDialog(parent, Qt::Wi
 
     QLocale lo(QLocale::C);
     lo.setNumberOptions(QLocale::RejectGroupSeparator);
-    QDoubleValidator *dblVal = new QDoubleValidator(0, Params().MAX_MONEY, 8, ui->reqAmount);
+    QDoubleValidator *dblVal = new QDoubleValidator(0, MAX_MONEY_OUT, 8, ui->reqAmount);
     dblVal->setNotation(QDoubleValidator::StandardNotation);
     dblVal->setLocale(lo);
     ui->reqAmount->setValidator(dblVal);
@@ -189,7 +189,7 @@ void ReceiveCoinsDialog::updateDisplayUnit()
 void ReceiveCoinsDialog::on_receiveButton_clicked()
 {
     double dAmount = ui->reqAmount->text().toDouble();
-    if (dAmount < 0.0 || dAmount > Params().MAX_MONEY) {
+    if (dAmount < 0.0 || dAmount > MAX_MONEY_OUT) {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Invalid Amount");
         msgBox.setText("Invalid amount entered. Please enter an amount less than 2.1B PRCY.");
