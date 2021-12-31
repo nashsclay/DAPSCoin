@@ -650,14 +650,14 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
 
         size_t numUTXO = coinstake.vout.size();
         if (mapBlockIndex.count(block.hashPrevBlock) < 1) {
-            LogPrintf("ReVerifyPoSBlock() : Previous block not found, received block %s, previous %s, current tip %s", block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex());
+            LogPrintf("%s: Previous block not found, received block %s, previous %s, current tip %s", __func__, block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex());
             return false;
         }
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]->nHeight);
         const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
         std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
         if (!VerifyDerivedAddress(mnOut, mnsa)) {
-            LogPrintf("ReVerifyPoSBlock() : Incorrect derived address for masternode rewards");
+            LogPrintf("%s: Incorrect derived address for masternode rewards", __func__);
             return false;
         }
 
@@ -672,7 +672,7 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         nExpectedMint += nFees;
 
         if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
-            LogPrintf("ReVerifyPoSBlock() : reward pays too much (actual=%s vs limit=%s)", FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
+            LogPrintf("%s: reward pays too much (actual=%s vs limit=%s)", __func__, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
             return false;
         }
         return true;
