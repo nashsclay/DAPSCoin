@@ -515,7 +515,12 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
     pblock->nTime = GetAdjustedTime();
 
     //compute PoA block reward
-    CAmount nReward = pblock->posBlocksAudited.size() * 0.25 * COIN;
+    CAmount nReward;
+    if (pindexPrev->nHeight >= Params().HardFork()) {
+        nReward = pblock->posBlocksAudited.size() * 0.25 * COIN;
+    } else {
+        nReward = pblock->posBlocksAudited.size() * 0.5 * COIN;
+    }
     pblock->vtx[0].vout[0].nValue = nReward;
     pblock->vtx[0].txType = TX_TYPE_REVEAL_AMOUNT;
 
