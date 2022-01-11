@@ -2334,18 +2334,7 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nMasternodeCount, int nHeight)
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
 {
     int64_t ret = 0;
-
     int64_t blockValueForSeeSaw = blockValue;
-
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight < 200)
-            return 0;
-        if (nHeight < 4500)
-            ret = blockValue / 5;
-        else if (nHeight >= 4500) {
-            return GetSeeSaw(blockValueForSeeSaw, nMasternodeCount, nHeight);
-        }
-    }
 
     if (nHeight >= Params().LAST_POW_BLOCK()) {
         return GetSeeSaw(blockValueForSeeSaw, nMasternodeCount, nHeight);
