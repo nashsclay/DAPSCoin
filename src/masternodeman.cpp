@@ -224,9 +224,9 @@ void CMasternodeMan::AskForMN(CNode* pnode, CTxIn& vin)
 
     // ask for the mnb info once from the node that sent mnp
 
-    LogPrint(BCLog::MASTERNODE, "\nCMasternodeMan::AskForMN - Asking node for missing entry, vin: %s\n", vin.prevout.hash.ToString());
+    LogPrint(BCLog::MASTERNODE, "CMasternodeMan::AskForMN - Asking node for missing entry, vin: %s\n", vin.prevout.hash.ToString());
     std::string stl(vin.masternodeStealthAddress.begin(), vin.masternodeStealthAddress.end());
-    LogPrint(BCLog::MASTERNODE, "\nCMasternodeMan::AskForMN - stealth masternode address = %s\n", stl);
+    LogPrint(BCLog::MASTERNODE, "CMasternodeMan::AskForMN - stealth masternode address = %s\n", stl);
     pnode->PushMessage(NetMsgType::DSEG, vin);
     int64_t askAgain = GetTime() + MASTERNODE_MIN_MNP_SECONDS;
     mWeAskedForMasternodeListEntry[vin.prevout] = askAgain;
@@ -822,7 +822,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                     if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
 
                     if (vin == mn.vin) {
-                        LogPrint(BCLog::MASTERNODE, "\ndseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
+                        LogPrint(BCLog::MASTERNODE, "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
                         return;
                     }
                 }
@@ -831,7 +831,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
         if (vin == CTxIn()) {
             pfrom->PushMessage(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
-            LogPrint(BCLog::MASTERNODE, "\ndseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
+            LogPrint(BCLog::MASTERNODE, "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
         }
     }
     /*
@@ -1098,7 +1098,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
                 std::string errorMessage = "";
                 if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-                    LogPrint(BCLog::MASTERNODE, "\ndseep - Got bad Masternode address signature %s \n", vin.prevout.hash.ToString());
+                    LogPrint(BCLog::MASTERNODE, "dseep - Got bad Masternode address signature %s \n", vin.prevout.hash.ToString());
                     return;
                 }
 
@@ -1109,7 +1109,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                 if (pmn->IsEnabled()) {
                     TRY_LOCK(cs_vNodes, lockNodes);
                     if (!lockNodes) return;
-                    LogPrint(BCLog::MASTERNODE, "\ndseep - relaying %s \n", vin.prevout.hash.ToString());
+                    LogPrint(BCLog::MASTERNODE, "dseep - relaying %s \n", vin.prevout.hash.ToString());
                     for (CNode* pnode : vNodes)
                         if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto())
                             pnode->PushMessage(NetMsgType::DSEEP, vin, vchSig, sigTime, stop);
