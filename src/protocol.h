@@ -124,9 +124,17 @@ extern const char *GETHEADERS;
  */
 extern const char *TX;
 /**
- * We are keeping this for now. To be removed in future.
+ * We are keeping these for now. To be removed in future.
  */
+extern const char *DSC;
+extern const char *DSF;
+extern const char *DSQ;
+extern const char *DSR;
 extern const char *DSTX;
+extern const char *DSEE;
+extern const char *DSEG;
+extern const char *DSEEP;
+extern const char *DSSU;
 /**
  * The headers message sends one or more block headers to a node which
  * previously requested certain headers with a getheaders message.

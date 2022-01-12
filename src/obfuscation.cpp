@@ -641,7 +641,7 @@ bool CObfuscationQueue::Relay()
     LOCK(cs_vNodes);
     for (CNode* pnode : vNodes) {
         // always relay to everyone
-        pnode->PushMessage("dsq", (*this));
+        pnode->PushMessage(NetMsgType::DSQ, (*this));
     }
 
     return true;
@@ -651,7 +651,7 @@ void CObfuscationPool::RelayFinalTransaction(const int sessionID, const CTransac
 {
     LOCK(cs_vNodes);
     for (CNode* pnode : vNodes) {
-        pnode->PushMessage("dsf", sessionID, txNew);
+        pnode->PushMessage(NetMsgType::DSF, sessionID, txNew);
     }
 }
 
@@ -659,14 +659,14 @@ void CObfuscationPool::RelayStatus(const int sessionID, const int newState, cons
 {
     LOCK(cs_vNodes);
     for (CNode* pnode : vNodes)
-        pnode->PushMessage("dssu", sessionID, newState, newEntriesCount, newAccepted, errorID);
+        pnode->PushMessage(NetMsgType::DSSU, sessionID, newState, newEntriesCount, newAccepted, errorID);
 }
 
 void CObfuscationPool::RelayCompletedTransaction(const int sessionID, const bool error, const int errorID)
 {
     LOCK(cs_vNodes);
     for (CNode* pnode : vNodes)
-        pnode->PushMessage("dsc", sessionID, error, errorID);
+        pnode->PushMessage(NetMsgType::DSC, sessionID, error, errorID);
 }
 
 //TODO: Rename/move to core

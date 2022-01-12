@@ -5666,7 +5666,7 @@ void static ProcessGetData(CNode* pfrom)
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mnodeman.mapSeenMasternodePing[inv.hash];
-                        pfrom->PushMessage("mnp", ss);
+                        pfrom->PushMessage(NetMsgType::MNPING, ss);
                         pushed = true;
                     }
                 }
@@ -5679,7 +5679,7 @@ void static ProcessGetData(CNode* pfrom)
                            << mapObfuscationBroadcastTxes[inv.hash].vchSig
                            << mapObfuscationBroadcastTxes[inv.hash].sigTime;
 
-                        pfrom->PushMessage("dstx", ss);
+                        pfrom->PushMessage(NetMsgType::DSTX, ss);
                         pushed = true;
                     }
                 }
@@ -6084,9 +6084,9 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         std::vector<unsigned char> vchSig;
         int64_t sigTime;
 
-        if (strCommand == "tx") {
+        if (strCommand == NetMsgType::TX) {
             vRecv >> tx;
-        } else if (strCommand == "dstx") {
+        } else if (strCommand == NetMsgType::DSTX) {
             //these allow masternodes to publish a limited amount of free transactions
             vRecv >> tx >> vin >> vchSig >> sigTime;
 
@@ -6206,7 +6206,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             RelayTransaction(tx);
         }
 
-        if (strCommand == "dstx") {
+        if (strCommand == NetMsgType::DSTX) {
             CInv inv(MSG_DSTX, tx.GetHash());
             RelayInv(inv);
         }
