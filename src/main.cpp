@@ -3443,6 +3443,37 @@ bool DisconnectBlocks(int blocks)
     return true;
 }
 
+void ReprocessBlocks(int nBlocks)
+{
+    std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
+    while (it != mapRejectedBlocks.end()) {
+        //use a window twice as large as is usual for the nBlocks we want to reset
+        if ((*it).second > GetTime() - (nBlocks * 60 * 5)) {
+            BlockMap::iterator mi = mapBlockIndex.find((*it).first);
+            if (mi != mapBlockIndex.end() && (*mi).second) {
+                LOCK(cs_main);
+
+                CBlockIndex* pindex = (*mi).second;
+                LogPrintf("%s - %s\n", __func__, (*it).first.ToString());
+
+                CValidationState state;
+                ReconsiderBlock(state, pindex);
+            }
+        }
+        ++it;
+    }
+
+    CValidationState state;
+    {
+        LOCK(cs_main);
+        DisconnectBlocks(nBlocks);
+    }
+
+    if (state.IsValid()) {
+        ActivateBestChain(state);
+    }
+}
+
 void RemoveInvalidTransactionsFromMempool()
 {
     LOCK2(cs_main, pwalletMain->cs_wallet);
