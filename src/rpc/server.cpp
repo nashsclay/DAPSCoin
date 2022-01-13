@@ -360,7 +360,6 @@ static const CRPCCommand vRPCCommands[] =
          {"prcycoin", "getcurrentseesawreward", &getcurrentseesawreward, true, true, false},
          {"prcycoin", "getseesawrewardratio", &getseesawrewardratio, true, true, false},
          {"prcycoin", "getseesawrewardwithheight", &getseesawrewardwithheight, true, true, false},
-         {"prcycoin", "masternodeconnect", &masternodeconnect, true, true, false},
          {"prcycoin", "masternodecurrent", &masternodecurrent, true, true, false},
          {"prcycoin", "masternodedebug", &masternodedebug, true, true, false},
          {"prcycoin", "startmasternode", &startmasternode, true, true, false},

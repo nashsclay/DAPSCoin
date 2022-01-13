@@ -4,7 +4,7 @@
 
 #include "timedata.h"
 
-#include "netbase.h"
+#include "netaddress.h"
 #include "sync.h"
 #include "guiinterface.h"
 #include "util.h"

@@ -9,6 +9,7 @@
 #include "masternode.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
+#include "netbase.h"
 #include "protocol.h"
 
 //
@@ -64,11 +65,14 @@ void CActiveMasternode::ManageStatus()
                 return;
             }
         } else {
-            service = CService(strMasterNodeAddr);
+            int nPort;
+            std::string strHost;
+            SplitHostPort(strMasterNodeAddr, nPort, strHost);
+            service = LookupNumeric(strHost.c_str(), nPort);
         }
 
         // The service needs the correct default port to work properly
-        if(!CMasternodeBroadcast::CheckDefaultPort(strMasterNodeAddr, errorMessage, "CActiveMasternode::ManageStatus()"))
+        if(!CMasternodeBroadcast::CheckDefaultPort(service, errorMessage, "CActiveMasternode::ManageStatus()"))
             return;
 
         LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
@@ -256,15 +260,16 @@ bool CActiveMasternode::CreateBroadcast(std::string strService, std::string strK
         return false;
     }
 
-    CService service = CService(strService);
+    int nPort;
+    std::string strHost;
+    SplitHostPort(strService, nPort, strHost);
+    CService _service(LookupNumeric(strHost.c_str(), nPort));
 
     // The service needs the correct default port to work properly
-    if(!CMasternodeBroadcast::CheckDefaultPort(strService, errorMessage, "CActiveMasternode::CreateBroadcast()"))
+    if(!CMasternodeBroadcast::CheckDefaultPort(_service, errorMessage, "CActiveMasternode::CreateBroadcast()"))
         return false;
 
-    addrman.Add(CAddress(service, NODE_NETWORK), CNetAddr("127.0.0.1"), 2 * 60 * 60);
-
-    return CreateBroadcast(vin, CService(strService), keyCollateralAddress, pubKeyCollateralAddress, keyMasternode, pubKeyMasternode, errorMessage, mnb);
+    return CreateBroadcast(vin, _service, keyCollateralAddress, pubKeyCollateralAddress, keyMasternode, pubKeyMasternode, errorMessage, mnb);
 }
 
 bool CActiveMasternode::CreateBroadcast(CTxIn vin, CService service, CKey keyCollateralAddress, CPubKey pubKeyCollateralAddress, CKey keyMasternode, CPubKey pubKeyMasternode, std::string& errorMessage, CMasternodeBroadcast &mnb)

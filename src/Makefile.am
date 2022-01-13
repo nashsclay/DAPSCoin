@@ -142,8 +142,9 @@ BITCOIN_CORE_H = \
   merkleblock.h \
   miner.h \
   mruset.h \
-  netbase.h \
   net.h \
+  netaddress.h \
+  netbase.h \
   noui.h \
   poa.h \
   protocol.h \
@@ -356,6 +357,7 @@ libbitcoin_common_a_SOURCES = \
   hash.cpp \
   key.cpp \
   keystore.cpp \
+  netaddress.cpp \
   netbase.cpp \
   protocol.cpp \
   pubkey.cpp \

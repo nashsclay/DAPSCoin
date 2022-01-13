@@ -18,6 +18,7 @@
 #include "miner.h"
 #include "obfuscation.h"
 #include "primitives/transaction.h"
+#include "netbase.h"
 #include "scheduler.h"
 #include "guiinterface.h"
 
@@ -179,7 +180,7 @@ static std::vector<CAddress> convertSeed6(const std::vector<SeedSpec6>& vSeedsIn
 // the normal parameters, since the IP may be changed to a useful
 // one by discovery.
 CAddress GetLocalAddress(const CNetAddr *paddrPeer) {
-    CAddress ret(CService("0.0.0.0", GetListenPort()), NODE_NONE);
+    CAddress ret(CService(CNetAddr(), GetListenPort()), NODE_NONE);
     CService addr;
     if (GetLocal(addr, paddrPeer)) {
         ret = CAddress(addr, nLocalServices);
@@ -486,7 +487,7 @@ void CNode::PushVersion() {
 
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
-    CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0", 0), addr.nServices));
+    CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService(), addr.nServices));
     CAddress addrMe = GetLocalAddress(&addr);
     GetRandBytes((unsigned char *) &nLocalHostNonce, sizeof(nLocalHostNonce));
     if (fLogIPs)
@@ -1151,8 +1152,11 @@ void ThreadMapPort()
                 LogPrintf("UPnP: GetExternalIPAddress() returned %d\n", r);
             else {
                 if (externalIPAddress[0]) {
-                    LogPrintf("UPnP: ExternalIPAddress = %s\n", externalIPAddress);
-                    AddLocal(CNetAddr(externalIPAddress), LOCAL_UPNP);
+                    CNetAddr resolved;
+                    if (LookupHost(externalIPAddress, resolved, false)) {
+                        LogPrintf("UPnP: ExternalIPAddress = %s\n", resolved.ToString().c_str());
+                        AddLocal(resolved, LOCAL_UPNP);
+                    }
                 } else
                     LogPrintf("UPnP: GetExternalIPAddress failed.\n");
             }
@@ -1351,7 +1355,9 @@ void ThreadOpenConnections() {
             static bool done = false;
             if (!done) {
                 LogPrintf("Adding fixed seed nodes as DNS doesn't seem to be available.\n");
-                addrman.Add(convertSeed6(Params().FixedSeeds()), CNetAddr("127.0.0.1"));
+                CNetAddr local;
+                LookupHost("127.0.0.1", local, false);
+                addrman.Add(convertSeed6(Params().FixedSeeds()), local);
                 done = true;
             }
         }
@@ -1446,7 +1452,7 @@ std::vector<AddedNodeInfo> GetAddedNodeInfo()
     }
 
     for (std::string& strAddNode : lAddresses) {
-        CService service(strAddNode, Params().GetDefaultPort());
+        CService service(LookupNumeric(strAddNode.c_str(), Params().GetDefaultPort()));
         if (service.IsValid()) {
             // strAddNode is an IP:port
             auto it = mapConnected.find(service);
@@ -1483,7 +1489,7 @@ void ThreadOpenAddedConnections()
                 CSemaphoreGrant grant(*semOutbound);
                 // If strAddedNode is an IP/port, decode it immediately, so
                 // OpenNetworkConnection can detect existing connections to that IP/port.
-                CService service(info.strAddedNode, Params().GetDefaultPort());
+                CService service(LookupNumeric(info.strAddedNode.c_str(), Params().GetDefaultPort()));
                 OpenNetworkConnection(CAddress(service, NODE_NONE), false, &grant, info.strAddedNode.c_str(), false);
                 MilliSleep(500);
             }
@@ -1767,8 +1773,11 @@ void StartNode(boost::thread_group &threadGroup, CScheduler &scheduler) {
         semOutbound = new CSemaphore(nMaxOutbound);
     }
 
-    if (pnodeLocalHost == NULL)
-        pnodeLocalHost = new CNode(INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), nLocalServices));
+    if (pnodeLocalHost == NULL) {
+        CNetAddr local;
+        LookupHost("127.0.0.1", local, false);
+        pnodeLocalHost = new CNode(INVALID_SOCKET, CAddress(CService(local, 0), nLocalServices));
+    }
 
     Discover(threadGroup);
 

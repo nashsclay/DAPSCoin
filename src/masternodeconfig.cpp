@@ -60,6 +60,7 @@ bool CMasternodeConfig::read(std::string& strErr)
         }
 
         int port = 0;
+        int nDefaultPort = Params().GetDefaultPort();
         std::string hostname = "";
         SplitHostPort(ip, port, hostname);
         if(port == 0 || hostname == "") {
@@ -69,18 +70,10 @@ bool CMasternodeConfig::read(std::string& strErr)
             return false;
         }
 
-        if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (port != 59682) {
-                strErr = _("Invalid port detected in masternode.conf") + "\n" +
-                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
-                         _("(must be 59682 for mainnet)");
-                streamConfig.close();
-                return false;
-            }
-        } else if (port == 59682) {
-            strErr = _("Invalid port detected in masternode.conf") + "\n" +
-                     strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
-                     _("(59682 could be used only on mainnet)");
+        if (port != nDefaultPort) {
+            strErr = strprintf(_("Invalid port %d detected in masternode.conf"), port) + "\n" +
+                     strprintf(_("Line: %d"), linenumber) + "\n\"" + ip + "\"" + "\n" +
+                     strprintf(_("(must be %d for %s-net)"), nDefaultPort, Params().NetworkIDString());
             streamConfig.close();
             return false;
         }
