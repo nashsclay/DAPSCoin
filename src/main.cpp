@@ -3430,17 +3430,48 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     return true;
 }
 
-bool DisconnectBlocksAndReprocess(int blocks)
+bool DisconnectBlocks(int nBlocks)
 {
     LOCK(cs_main);
 
     CValidationState state;
 
-    LogPrintf("DisconnectBlocksAndReprocess: Got command to replay %d blocks\n", blocks);
-    for (int i = 0; i <= blocks; i++)
+    LogPrintf("%s: Got command to replay %d blocks\n", __func__, nBlocks);
+    for (int i = 0; i <= nBlocks; i++)
         DisconnectTip(state);
 
     return true;
+}
+
+void ReprocessBlocks(int nBlocks)
+{
+    std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
+    while (it != mapRejectedBlocks.end()) {
+        //use a window twice as large as is usual for the nBlocks we want to reset
+        if ((*it).second > GetTime() - (nBlocks * Params().TargetSpacing() * 2)) {
+            BlockMap::iterator mi = mapBlockIndex.find((*it).first);
+            if (mi != mapBlockIndex.end() && (*mi).second) {
+                LOCK(cs_main);
+
+                CBlockIndex* pindex = (*mi).second;
+                LogPrintf("%s - %s\n", __func__, (*it).first.ToString());
+
+                CValidationState state;
+                ReconsiderBlock(state, pindex);
+            }
+        }
+        ++it;
+    }
+
+    CValidationState state;
+    {
+        LOCK(cs_main);
+        DisconnectBlocks(nBlocks);
+    }
+
+    if (state.IsValid()) {
+        ActivateBestChain(state);
+    }
 }
 
 void RemoveInvalidTransactionsFromMempool()
