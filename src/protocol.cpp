@@ -23,7 +23,15 @@ const char *MERKLEBLOCK="merkleblock";
 const char *GETBLOCKS="getblocks";
 const char *GETHEADERS="getheaders";
 const char *TX="tx";
+const char *DSC="dsc";
+const char *DSF="dsf";
+const char *DSQ="dsq";
+const char *DSR="dsr";
 const char *DSTX="dstx";
+const char *DSEE="dsee";
+const char *DSEG="dseg";
+const char *DSEEP="dseep";
+const char *DSSU="dssu";
 const char *HEADERS="headers";
 const char *BLOCK="block";
 const char *GETADDR="getaddr";
@@ -55,6 +63,16 @@ static const char* ppszTypeName[] =
 {
     "ERROR", // Should never occur
     NetMsgType::TX,
+    NetMsgType::DSC,
+    NetMsgType::DSF,
+    NetMsgType::DSQ,
+    NetMsgType::DSR,
+    NetMsgType::DSTX,
+    NetMsgType::DSEE,
+    NetMsgType::DSEG,
+    NetMsgType::DSEEP,
+    NetMsgType::DSSU,
+    NetMsgType::HEADERS,
     NetMsgType::BLOCK,
     "filtered block", // Should never occur
     NetMsgType::IX,
@@ -82,6 +100,15 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::GETBLOCKS,
     NetMsgType::GETHEADERS,
     NetMsgType::TX,
+    NetMsgType::DSC,
+    NetMsgType::DSF,
+    NetMsgType::DSQ,
+    NetMsgType::DSR,
+    NetMsgType::DSTX,
+    NetMsgType::DSEE,
+    NetMsgType::DSEG,
+    NetMsgType::DSEEP,
+    NetMsgType::DSSU,
     NetMsgType::HEADERS,
     NetMsgType::BLOCK,
     NetMsgType::GETADDR,

@@ -103,7 +103,7 @@ void CObfuScationRelay::RelayThroughNode(int nRank)
     if (pmn != NULL) {
         CNode* pnode = ConnectNode(CAddress(pmn->addr, NODE_NETWORK), NULL, false, true);
         if (pnode) {
-            pnode->PushMessage("dsr", (*this));
+            pnode->PushMessage(NetMsgType::DSR, (*this));
             pnode->Release();
             return;
         }

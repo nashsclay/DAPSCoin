@@ -227,7 +227,7 @@ void CMasternodeMan::AskForMN(CNode* pnode, CTxIn& vin)
     LogPrint(BCLog::MASTERNODE, "\nCMasternodeMan::AskForMN - Asking node for missing entry, vin: %s\n", vin.prevout.hash.ToString());
     std::string stl(vin.masternodeStealthAddress.begin(), vin.masternodeStealthAddress.end());
     LogPrint(BCLog::MASTERNODE, "\nCMasternodeMan::AskForMN - stealth masternode address = %s\n", stl);
-    pnode->PushMessage("dseg", vin);
+    pnode->PushMessage(NetMsgType::DSEG, vin);
     int64_t askAgain = GetTime() + MASTERNODE_MIN_MNP_SECONDS;
     mWeAskedForMasternodeListEntry[vin.prevout] = askAgain;
 }
@@ -425,7 +425,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
         }
     }
 
-    pnode->PushMessage("dseg", CTxIn());
+    pnode->PushMessage(NetMsgType::DSEG, CTxIn());
     int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
     mWeAskedForMasternodeList[pnode->addr] = askAgain;
 }
@@ -783,7 +783,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         // we might have to ask for a masternode entry once
         AskForMN(pfrom, mnp.vin);
 
-    } else if (strCommand == "dseg") { //Get Masternode list or specific entry
+    } else if (strCommand == NetMsgType::DSEG) { //Get Masternode list or specific entry
 
         CTxIn vin;
         vRecv >> vin;
@@ -840,7 +840,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
      */
 
     // Light version for OLD MASSTERNODES - fake pings, no self-activation
-    else if (strCommand == "dsee") { //ObfuScation Election Entry
+    else if (strCommand == NetMsgType::DSEE) { //ObfuScation Election Entry
         if (!masternodeSync.IsBlockchainSynced()) return;
         CTxIn vin;
         CService addr;
@@ -980,7 +980,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                         if (!lockNodes) return;
                         for (CNode* pnode : vNodes)
                             if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto())
-                                pnode->PushMessage("dsee", vin, addr, vchSig, sigTime, pubkey, pubkey2, count, current, lastUpdated, protocolVersion, donationAddress, donationPercentage);
+                                pnode->PushMessage(NetMsgType::DSEE, vin, addr, vchSig, sigTime, pubkey, pubkey2, count, current, lastUpdated, protocolVersion, donationAddress, donationPercentage);
                     }
                 }
             }
@@ -1041,7 +1041,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                 if (!lockNodes) return;
                 for (CNode* pnode : vNodes)
                     if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto())
-                        pnode->PushMessage("dsee", vin, addr, vchSig, sigTime, pubkey, pubkey2, count, current, lastUpdated, protocolVersion, donationAddress, donationPercentage);
+                        pnode->PushMessage(NetMsgType::DSEE, vin, addr, vchSig, sigTime, pubkey, pubkey2, count, current, lastUpdated, protocolVersion, donationAddress, donationPercentage);
             }
         } else {
             LogPrint(BCLog::MASTERNODE,"dsee - Rejected Masternode entry %s\n", vin.prevout.hash.ToString());
@@ -1056,7 +1056,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
     }
 
-    else if (strCommand == "dseep") { //ObfuScation Election Entry Ping
+    else if (strCommand == NetMsgType::DSEEP) { //ObfuScation Election Entry Ping
 
         CTxIn vin;
         std::vector<unsigned char> vchSig;
@@ -1112,7 +1112,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                     LogPrint(BCLog::MASTERNODE, "\ndseep - relaying %s \n", vin.prevout.hash.ToString());
                     for (CNode* pnode : vNodes)
                         if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto())
-                            pnode->PushMessage("dseep", vin, vchSig, sigTime, stop);
+                            pnode->PushMessage(NetMsgType::DSEEP, vin, vchSig, sigTime, stop);
                 }
             }
             return;
