@@ -71,7 +71,7 @@ void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
     entry.push_back(Pair("time", wtx.GetTxTime()));
     entry.push_back(Pair("timereceived", (int64_t)wtx.nTimeReceived));
 
-    if (wtx.hasPaymentID) {
+    if (wtx.hasPaymentID && pwalletMain->IsMine(wtx)) {
         entry.push_back(Pair("paymentid", wtx.paymentID));
     }
 

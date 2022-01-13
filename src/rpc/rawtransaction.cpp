@@ -69,7 +69,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
     entry.push_back(Pair("version", tx.nVersion));
     entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
     entry.push_back(Pair("txfee", ValueFromAmount(tx.nTxFee)));
-    if (tx.hasPaymentID) {
+    if (tx.hasPaymentID && pwalletMain->IsMine(tx)) {
         entry.push_back(Pair("paymentid", tx.paymentID));
     }
     entry.push_back(Pair("txType", (int64_t)tx.txType));
