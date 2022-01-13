@@ -474,7 +474,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
 
     // incorrect ping or its sigTime
     if(lastPing == CMasternodePing() || !lastPing.CheckAndUpdate(nDos, false, true)) {
-        LogPrint(BCLog::MASTERNODE,"mnb - Incorrect ping or its sigTime");
+        LogPrint(BCLog::MASTERNODE,"mnb - Incorrect ping or its sigTime\n");
         return false;
     }
 
@@ -491,7 +491,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
 
     CScript pubkeyScript;
     pubkeyScript = GetScriptForDestination(pubKeyCollateralAddress);
-    LogPrint(BCLog::MASTERNODE, "\nCMasternodeBroadcast::CheckAndUpdate: pubKeyCollateralAddress=%s\n", pubkeyScript.ToString());
+    LogPrint(BCLog::MASTERNODE, "CMasternodeBroadcast::CheckAndUpdate: pubKeyCollateralAddress=%s\n", pubkeyScript.ToString());
     if ((pubkeyScript.size() != 35) && (pubkeyScript.size() != 67)) {
         LogPrint(BCLog::MASTERNODE,"mnb - pubkey the wrong size\n");
         nDos = 100;
