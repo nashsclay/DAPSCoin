@@ -15,6 +15,8 @@
 #include "guiinterfaceutil.h"
 #include "kernel.h"
 #include "masternode-budget.h"
+#include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "net.h"
 #include "primitives/transaction.h"
 #include "script/script.h"
@@ -29,7 +31,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "ecdhutil.h"
-#include "obfuscation.h"
 #include "secp256k1_bulletproofs.h"
 #include "secp256k1_commitment.h"
 #include "secp256k1_generator.h"

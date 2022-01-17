@@ -5,12 +5,13 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "masternodeman.h"
-#include "activemasternode.h"
+
 #include "addrman.h"
+#include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "fs.h"
 #include "masternode.h"
 #include "netbase.h"
-#include "obfuscation.h"
 #include "swifttx.h"
 #include "util.h"
 
@@ -18,6 +19,8 @@
 
 /** Masternode manager */
 CMasternodeMan mnodeman;
+/** Keep track of the active Masternode */
+CActiveMasternode activeMasternode;
 
 struct CompareLastPaid {
     bool operator()(const std::pair<int64_t, CTxIn>& t1,
