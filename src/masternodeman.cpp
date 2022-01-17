@@ -11,6 +11,7 @@
 #include "masternode.h"
 #include "netbase.h"
 #include "obfuscation.h"
+#include "swifttx.h"
 #include "util.h"
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
@@ -879,4 +880,40 @@ std::string CMasternodeMan::ToString() const
     info << "Masternodes: " << (int)vMasternodes.size() << ", peers who asked us for Masternode list: " << (int)mAskedUsForMasternodeList.size() << ", peers we asked for Masternode list: " << (int)mWeAskedForMasternodeList.size() << ", entries in Masternode list we asked for: " << (int)mWeAskedForMasternodeListEntry.size() << ", nDsqCount: " << (int)nDsqCount;
 
     return info.str();
+}
+
+void ThreadCheckObfuScationPool()
+{
+    if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
+
+    // Make this thread recognisable as the wallet flushing thread
+    util::ThreadRename("prcycoin-obfuscation");
+    LogPrintf("Masternodes thread started\n");
+
+    unsigned int c = 0;
+
+    while (true) {
+        MilliSleep(1000);
+
+        // try to sync from all available nodes, one step at a time
+        masternodeSync.Process();
+
+        if (masternodeSync.IsBlockchainSynced()) {
+            c++;
+
+            // check if we should activate or ping every few minutes,
+            // start right after sync is considered to be done
+            if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
+
+            if (c % 60 == 0) {
+                mnodeman.CheckAndRemove();
+                mnodeman.ProcessMasternodeConnections();
+                masternodePayments.CleanPaymentList();
+                CleanTransactionLocksList();
+            }
+
+            obfuScationPool.CheckTimeout();
+            obfuScationPool.CheckForCompleteQueue();
+        }
+    }
 }
