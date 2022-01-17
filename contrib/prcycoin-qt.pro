@@ -88,7 +88,6 @@ HEADERS += src/activemasternode.h \
            src/eccryptoverify.h \
            src/ecdhutil.h \
            src/ecwrapper.h \
-           src/enum.h \
            src/guiinterface.h \
            src/hash.h \
            src/hdchain.h \

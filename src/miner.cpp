@@ -654,7 +654,7 @@ bool fGeneratePrcycoins = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
-void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, MineType mineType)
+void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     nDefaultMinerSleep = GetArg("-minersleep", 45000);
     LogPrintf("PRCYcoinMiner started with %sms sleep time\n", nDefaultMinerSleep);

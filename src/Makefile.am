@@ -90,7 +90,6 @@ BITCOIN_CORE_H = \
   bip39.h \
   bip39_english.h \
   ecdhutil.h \
-  enum.h \
   hdchain.h \
   bloom.h \
   chain.h \
