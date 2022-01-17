@@ -78,7 +78,6 @@ bool fListen = true;
 ServiceFlags nLocalServices = NODE_NETWORK;
 RecursiveMutex cs_mapLocalHost;
 std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
-//static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
 static CNode *pnodeLocalHost = NULL;
 uint64_t nLocalHostNonce = 0;
@@ -301,7 +300,7 @@ bool IsReachable(enum Network net) {
 /** check whether a given address is in a network we can probably connect to */
 bool IsReachable(const CNetAddr &addr) {
     enum Network net = addr.GetNetwork();
-    return !vfLimited[net];
+    return IsReachable(net);
 }
 
 void AddressCurrentlyConnected(const CService &addr) {
@@ -485,7 +484,6 @@ bool CNode::IsBanned(CNetAddr ip) {
         }
     }
     return fResult;
-    return false;
 }
 
 bool CNode::IsBanned(CSubNet subnet) {
@@ -1274,7 +1272,7 @@ void static ProcessOneShot() {
         strDest = vOneShots.front();
         vOneShots.pop_front();
     }
-    CAddress addr(CService(), NODE_NONE);
+    CAddress addr;
     CSemaphoreGrant grant(*semOutbound, true);
     if (grant) {
         if (!OpenNetworkConnection(addr, false, &grant, strDest.c_str(), true))
@@ -1288,7 +1286,7 @@ void ThreadOpenConnections() {
         for (int64_t nLoop = 0;; nLoop++) {
             ProcessOneShot();
             for (std::string strAddr : mapMultiArgs["-connect"]) {
-                CAddress addr;
+                CAddress addr(CService(), NODE_NONE);
                 OpenNetworkConnection(addr, false, NULL, strAddr.c_str());
                 for (int i = 0; i < 10 && i < nLoop; i++) {
                     MilliSleep(500);
@@ -1531,12 +1529,9 @@ void ThreadMessageHandler() {
             boost::this_thread::interruption_point();
             // Send messages
             {
-                TRY_LOCK(cs_main, lockMain);
-                    if (lockMain) {
-                    TRY_LOCK(pnode->cs_vSend, lockSend);
-                    if (lockSend)
-                        g_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
-                }
+                TRY_LOCK(pnode->cs_vSend, lockSend);
+                if (lockSend)
+                    g_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
             }
             boost::this_thread::interruption_point();
         }
