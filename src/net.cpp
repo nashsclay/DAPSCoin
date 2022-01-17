@@ -1274,7 +1274,7 @@ void static ProcessOneShot() {
         strDest = vOneShots.front();
         vOneShots.pop_front();
     }
-    CAddress addr(CService(), NODE_NONE);
+    CAddress addr;
     CSemaphoreGrant grant(*semOutbound, true);
     if (grant) {
         if (!OpenNetworkConnection(addr, false, &grant, strDest.c_str(), true))
@@ -1288,7 +1288,7 @@ void ThreadOpenConnections() {
         for (int64_t nLoop = 0;; nLoop++) {
             ProcessOneShot();
             for (std::string strAddr : mapMultiArgs["-connect"]) {
-                CAddress addr;
+                CAddress addr(CService(), NODE_NONE);
                 OpenNetworkConnection(addr, false, NULL, strAddr.c_str());
                 for (int i = 0; i < 10 && i < nLoop; i++) {
                     MilliSleep(500);
