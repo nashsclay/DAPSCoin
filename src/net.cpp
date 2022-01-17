@@ -301,7 +301,7 @@ bool IsReachable(enum Network net) {
 /** check whether a given address is in a network we can probably connect to */
 bool IsReachable(const CNetAddr &addr) {
     enum Network net = addr.GetNetwork();
-    return !vfLimited[net];
+    return IsReachable(net);
 }
 
 void AddressCurrentlyConnected(const CService &addr) {
