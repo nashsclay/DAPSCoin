@@ -52,7 +52,6 @@ static const CAmount OBFUSCATION_POOL_MAX = (99999.99 * COIN);
 
 extern CObfuScationSigner obfuScationSigner;
 extern std::string strMasterNodePrivKey;
-extern std::map<uint256, CObfuscationBroadcastTx> mapObfuscationBroadcastTxes;
 extern CActiveMasternode activeMasternode;
 
 /** Holds an Obfuscation input
