@@ -21,8 +21,6 @@
 #include <openssl/rand.h>
 
 
-// The main object for accessing Obfuscation
-CObfuscationPool obfuScationPool;
 // A helper object for signing messages from Masternodes
 CObfuScationSigner obfuScationSigner;
 // The current Obfuscations in progress on the network
@@ -516,8 +514,6 @@ void CObfuscationPool::NewBlock()
     //we we're processing lots of blocks, we'll just leave
     if (GetTime() - lastNewBlock < 10) return;
     lastNewBlock = GetTime();
-
-    obfuScationPool.CheckTimeout();
 }
 
 bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey)
