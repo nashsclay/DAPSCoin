@@ -78,7 +78,6 @@ bool fListen = true;
 ServiceFlags nLocalServices = NODE_NETWORK;
 RecursiveMutex cs_mapLocalHost;
 std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
-//static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
 static CNode *pnodeLocalHost = NULL;
 uint64_t nLocalHostNonce = 0;
