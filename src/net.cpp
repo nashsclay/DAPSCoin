@@ -485,7 +485,6 @@ bool CNode::IsBanned(CNetAddr ip) {
         }
     }
     return fResult;
-    return false;
 }
 
 bool CNode::IsBanned(CSubNet subnet) {
