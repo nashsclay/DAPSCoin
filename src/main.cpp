@@ -260,7 +260,7 @@ double GetPriority(const CTransaction& tx, int nHeight)
     return 1000000000 + tx.ComputePriority(dResult);
 }
 
-bool IsKeyImageSpend1(const std::string& kiHex, const uint256& againsHash)
+bool IsSpentKeyImage(const std::string& kiHex, const uint256& againsHash)
 {
     if (kiHex.empty()) return false;
     std::vector<uint256> bhs;
@@ -1562,7 +1562,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             // Check key images not duplicated with what in db
             for (const CTxIn& txin : tx.vin) {
                 const CKeyImage& keyImage = txin.keyImage;
-                if (IsKeyImageSpend1(keyImage.GetHex(), uint256())) {
+                if (IsSpentKeyImage(keyImage.GetHex(), uint256())) {
                     return state.Invalid(error("AcceptToMemoryPool : key image already spent"),
                         REJECT_DUPLICATE, "bad-txns-inputs-spent");
                 }
@@ -3031,7 +3031,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             for (CTxIn in : tx.vin) {
                 const CKeyImage& keyImage = in.keyImage;
                 std::string kh = keyImage.GetHex();
-                if (IsKeyImageSpend1(kh, bh)) {
+                if (IsSpentKeyImage(kh, bh)) {
                     //remove transaction from the pool?
                     return state.Invalid(error("ConnectBlock() : key image already spent"),
                         REJECT_DUPLICATE, "bad-txns-inputs-spent");
@@ -4602,7 +4602,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     // Duplicate stake allowed only when there is orphan child block
     // Key image will be checked later for duplicate stake
     /*if (pblock->IsProofOfStake() && setStakeSeen.count(pblock->GetProofOfStake())) {
-        if (IsKeyImageSpend1(pblock->vtx[1].vin[0].keyImage.GetHex(), pblock->hashPrevBlock))
+        if (IsSpentKeyImage(pblock->vtx[1].vin[0].keyImage.GetHex(), pblock->hashPrevBlock))
             return error("ProcessNewBlock() : duplicate proof-of-stake (%s, %d) for block %s", pblock->GetProofOfStake().first.ToString().c_str(), pblock->GetProofOfStake().second, pblock->GetHash().ToString().c_str());
     }*/
     // NovaCoin: check proof-of-stake block signature
