@@ -264,7 +264,6 @@ bool CheckKeyImageSpendInMainChain(const std::string& kiHex, int& confirmations)
 
 double GetPriority(const CTransaction& tx, int nHeight);
 
-bool IsKeyImageSpend2(const std::string&, const uint256& bh);
 uint256 GetTxSignatureHash(const CTransaction& tx);
 uint256 GetTxInSignatureHash(const CTxIn& txin);
 bool VerifyShnorrKeyImageTx(const CTransaction& tx);

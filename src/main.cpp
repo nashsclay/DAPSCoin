@@ -598,27 +598,6 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
     return HexStr(tx.c.begin(), tx.c.end()) == HexStr(C, C + 32);
 }
 
-bool IsKeyImageSpend2(const std::string& kiHex, const uint256& bh)
-{
-    CBlock block;
-    CBlockIndex* pblockindex = mapBlockIndex[bh];
-
-    if (pblockindex && ReadBlockFromDisk(block, pblockindex)) {
-        for (size_t i = 0; i < block.vtx.size(); i++) {
-            for (size_t j = 0; j < block.vtx[i].vin.size(); j++) {
-                if (block.vtx[i].vin[j].keyImage.GetHex() == kiHex) {
-                    LogPrintf("%s: keyimage %s spent in block hash %s", __func__, kiHex, bh.GetHex());
-                    if (pwalletMain) {
-                        pwalletMain->keyImagesSpends[kiHex] = true;
-                    }
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
 bool ReVerifyPoSBlock(CBlockIndex* pindex)
 {
     LOCK(cs_main);
