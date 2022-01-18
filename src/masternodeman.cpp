@@ -735,7 +735,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         // make sure it's still unspent
-        //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
+        //  - this is checked later by .check() in many places and by ThreadCheckMasternodes()
         if (mnb.CheckInputsAndAdd(nDoS)) {
             // use this as a peer
             addrman.Add(CAddress(mnb.addr, NODE_NETWORK), pfrom->addr, 2 * 60 * 60);
@@ -870,12 +870,12 @@ std::string CMasternodeMan::ToString() const
     return info.str();
 }
 
-void ThreadCheckObfuScationPool()
+void ThreadCheckMasternodes()
 {
     if (fLiteMode) return; //disable all Masternode related functionality
 
     // Make this thread recognisable as the wallet flushing thread
-    util::ThreadRename("prcycoin-obfuscation");
+    util::ThreadRename("prcycoin-masternodeman");
     LogPrintf("Masternodes thread started\n");
 
     unsigned int c = 0;
