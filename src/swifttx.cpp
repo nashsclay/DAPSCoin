@@ -38,7 +38,7 @@ int nCompleteTXLocks;
 
 void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all obfuscation/masternode related functionality
+    if (fLiteMode) return; //disable all masternode related functionality
     if (!masternodeSync.IsBlockchainSynced()) return;
 
     if (strCommand == NetMsgType::IX) {

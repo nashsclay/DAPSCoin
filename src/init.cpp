@@ -1874,7 +1874,7 @@ bool AppInit2(bool isDaemon)
     nSwiftTXDepth = GetArg("-swifttxdepth", nSwiftTXDepth);
     nSwiftTXDepth = std::min(std::max(nSwiftTXDepth, 0), 60);
 
-    // lite mode disables all Masternode and Obfuscation related functionality
+    // lite mode disables all Masternode related functionality
     fLiteMode = GetBoolArg("-litemode", false);
     if (fMasterNode && fLiteMode) {
         return UIError("You can not start a masternode in litemode");
