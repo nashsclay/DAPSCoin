@@ -273,6 +273,9 @@ public:
 
     int64_t GetLastPaid();
     bool IsValidNetAddr();
+
+    /// Is the input associated with collateral public key? (and there is 5000 PRCY - checking if valid masternode)
+    bool IsInputAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey) const;
 };
 
 

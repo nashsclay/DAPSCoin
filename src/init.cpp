@@ -26,6 +26,7 @@
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
+#include "messagesigner.h"
 #include "miner.h"
 #include "netbase.h"
 #include "net.h"
@@ -1840,7 +1841,7 @@ bool AppInit2(bool isDaemon)
             CKey key;
             CPubKey pubkey;
 
-            if (!obfuScationSigner.SetKey(strMasterNodePrivKey, errorMessage, key, pubkey)) {
+            if (!CMessageSigner::GetKeysFromSecret(strMasterNodePrivKey, key, pubkey)) {
                 return UIError(_("Invalid masternodeprivkey. Please see documenation."));
             }
 

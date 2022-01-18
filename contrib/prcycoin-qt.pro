@@ -435,6 +435,7 @@ SOURCES += src/activemasternode.cpp \
            src/masternodeconfig.cpp \
            src/masternodeman.cpp \
            src/merkleblock.cpp \
+           src/messagesigner.cpp \
            src/miner.cpp \
            src/net.cpp \
            src/netbase.cpp \
