@@ -2326,6 +2326,14 @@ void SetRingSize()
 {
     MIN_RING_SIZE = 11;
     MAX_RING_SIZE = 15;
+    if (chainActive.Tip() == NULL) return;
+    int nHeight = chainActive.Tip()->nHeight;
+    if (nHeight >= Params().HardForkRingSize()) {
+        MIN_RING_SIZE = 25;
+        MAX_RING_SIZE = 30;
+    }
+
+    LogPrint(BCLog::SELECTCOINS, "%s: height %d: min ring size %d, max ring size: %d\n", __func__, nHeight, MIN_RING_SIZE, MAX_RING_SIZE);
     return;
 }
 
