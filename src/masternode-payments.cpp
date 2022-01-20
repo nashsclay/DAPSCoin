@@ -345,7 +345,7 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 int CMasternodePayments::GetMinMasternodePaymentsProto()
 {
-    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT; // Also allow old peers as long as they are allowed to run
+    return ActiveProtocol();
 }
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)

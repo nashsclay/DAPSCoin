@@ -195,34 +195,6 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
 
         mnp.Relay();
 
-        // for migration purposes ping our node on old masternodes network too
-        std::string retErrorMessage;
-        std::vector<unsigned char> vchMasterNodeSignature;
-        int64_t masterNodeSignatureTime = GetAdjustedTime();
-        std::string ss = service.ToString();
-        bool val = false;
-        CDataStream ser(SER_NETWORK, PROTOCOL_VERSION);
-        ser << ss << masterNodeSignatureTime << val;
-        std::string strMessage = HexStr(ser.begin(), ser.end());
-        if (!obfuScationSigner.SignMessage(strMessage, retErrorMessage, vchMasterNodeSignature, keyMasternode)) {
-            errorMessage = "dseep sign message failed: " + retErrorMessage;
-            return false;
-        }
-
-        if (!obfuScationSigner.VerifyMessage(pubKeyMasternode, vchMasterNodeSignature, strMessage, retErrorMessage)) {
-            errorMessage = "dseep verify message failed: " + retErrorMessage;
-            return false;
-        }
-
-        LogPrint(BCLog::MASTERNODE, "dseep - relaying from active mn, %s \n", vin.ToString().c_str());
-        LOCK(cs_vNodes);
-        for (CNode* pnode : vNodes)
-            pnode->PushMessage(NetMsgType::DSEEP, vin, vchMasterNodeSignature, masterNodeSignatureTime, false);
-
-        /*
-         * END OF "REMOVE"
-         */
-
         return true;
     } else {
         // Seems like we are trying to send a ping while the Masternode is not registered in the network
@@ -292,41 +264,6 @@ bool CActiveMasternode::CreateBroadcast(CTxIn vin, CService service, CKey keyCol
         mnb = CMasternodeBroadcast();
         return false;
     }
-
-    // for migration purposes inject our node in old masternodes' list too
-    std::string retErrorMessage;
-    std::vector<unsigned char> vchMasterNodeSignature;
-    int64_t masterNodeSignatureTime = GetAdjustedTime();
-    std::string donationAddress = "";
-    int donationPercantage = 0;
-
-    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
-    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
-    std::string ss = service.ToString();
-
-    CDataStream ser(SER_NETWORK, PROTOCOL_VERSION);
-    ser << ss << masterNodeSignatureTime << pubKeyCollateralAddress << pubKeyMasternode << PROTOCOL_VERSION;
-
-    /*uint256 h = Hash(BEGIN(ss), END(ss),
-                    BEGIN(masterNodeSignatureTime), END(masterNodeSignatureTime),
-                    pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end(),
-                    pubKeyMasternode.begin(), pubKeyMasternode.end(),
-                    BEGIN(PROTOCOL_VERSION), END(PROTOCOL_VERSION));*/
-    std::string strMessage = HexStr(ser.begin(), ser.end());
-    if (!obfuScationSigner.SignMessage(strMessage, retErrorMessage, vchMasterNodeSignature, keyCollateralAddress)) {
-        errorMessage = "dsee sign message failed: " + retErrorMessage;
-        LogPrintf("CActiveMasternode::Register() - Error: %s\n", errorMessage.c_str());
-        return false;
-    }
-
-    if (!obfuScationSigner.VerifyMessage(pubKeyCollateralAddress, vchMasterNodeSignature, strMessage, retErrorMessage)) {
-        errorMessage = "dsee verify message failed: " + retErrorMessage;
-        LogPrintf("CActiveMasternode::Register() - Error: %s\n", errorMessage.c_str());
-        return false;
-    }
-    LOCK(cs_vNodes);
-    for (CNode* pnode : vNodes)
-    pnode->PushMessage(NetMsgType::DSEE, vin, service, vchMasterNodeSignature, masterNodeSignatureTime, pubKeyCollateralAddress, pubKeyMasternode, -1, -1, masterNodeSignatureTime, PROTOCOL_VERSION, donationAddress, donationPercantage);
 
     return true;
 }
