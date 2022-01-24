@@ -1302,6 +1302,8 @@ void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmoun
 {
     // Only send notifications when not disabled
     if (!bdisableSystemnotifications) {
+        // Only show notifications when synced to prevent spam
+        if (!masternodeSync.IsSynced()) return;
         // On new transaction, make an info balloon
         message((amount) < 0 ? (pwalletMain->fMultiSendNotify == true ? tr("Sent MultiSend transaction") : tr("Sent transaction")) : tr("Incoming transaction"),
             tr("Date: %1\n"
