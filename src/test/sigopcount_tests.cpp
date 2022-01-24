@@ -7,6 +7,7 @@
 #include "script/script.h"
 #include "script/standard.h"
 #include "uint256.h"
+#include "test_prcycoin.h"
 
 #include <vector>
 
@@ -22,7 +23,7 @@ Serialize(const CScript& s)
 }*/
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(sigopcount_tests)
+BOOST_FIXTURE_TEST_SUITE(sigopcount_tests, TestingSetup)
 
 BOOST_AUTO_TEST_CASE(GetSigOpCount)
 {
