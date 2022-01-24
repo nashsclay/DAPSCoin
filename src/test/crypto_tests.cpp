@@ -13,6 +13,7 @@
 #include "test_random.h"
 #include "random.h"
 #include "utilstrencodings.h"
+#include "test/test_prcycoin.h"
 
 #include <vector>
 
@@ -20,7 +21,7 @@
 #include <boost/test/unit_test.hpp>
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(crypto_tests)
+BOOST_FIXTURE_TEST_SUITE(crypto_tests, BasicTestingSetup)
 
 template<typename Hasher, typename In, typename Out>
 void TestVector(const Hasher &h, const In &in, const Out &out) {

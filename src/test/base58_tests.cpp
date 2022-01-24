@@ -13,6 +13,7 @@
 #include "uint256.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "test/test_prcycoin.h"
 
 #include <boost/test/unit_test.hpp>
 #include <univalue.h>
@@ -20,7 +21,7 @@
 extern UniValue read_json(const std::string& jsondata);
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(base58_tests)
+BOOST_FIXTURE_TEST_SUITE(base58_tests, BasicTestingSetup)
 
 // Goal: test low-level base58 encoding functionality
 BOOST_AUTO_TEST_CASE(base58_EncodeBase58)

@@ -13,7 +13,7 @@
 #include "script/script.h"
 #include "script/script_error.h"
 #include "core_io.h"
-#include "test_prcycoin.h"
+#include "test/test_prcycoin.h"
 
 #include <map>
 #include <string>

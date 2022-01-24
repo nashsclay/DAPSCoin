@@ -57,7 +57,6 @@ void dumpKeyInfo(uint256 privkey)
 }
 #endif
 
-
 #ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(key_tests, TestingSetup)
 

@@ -7,12 +7,13 @@
 #include <string>
 #include <map>
 #include <univalue.h>
+#include "test/test_prcycoin.h"
 
 #include <boost/test/unit_test.hpp>
 
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(univalue_tests)
+BOOST_FIXTURE_TEST_SUITE(univalue_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(univalue_constructor)
         {

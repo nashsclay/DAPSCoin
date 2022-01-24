@@ -7,6 +7,7 @@
 #include "test_prcycoin.h"
 
 #include <boost/test/unit_test.hpp>
+
 #ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(sanity_tests, TestingSetup)
 

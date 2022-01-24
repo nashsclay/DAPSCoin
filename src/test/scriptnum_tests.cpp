@@ -4,12 +4,14 @@
 
 #include "bignum.h"
 #include "script/script.h"
+#include "test/test_prcycoin.h"
+
 #include <boost/test/unit_test.hpp>
 #include <limits.h>
 #include <stdint.h>
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(scriptnum_tests)
+BOOST_FIXTURE_TEST_SUITE(scriptnum_tests, BasicTestingSetup)
 
 static const long values[] = \
 { 0, 1, CHAR_MIN, CHAR_MAX, UCHAR_MAX, SHRT_MIN, USHRT_MAX, INT_MIN, INT_MAX, static_cast<long>UINT_MAX, LONG_MIN, LONG_MAX };
