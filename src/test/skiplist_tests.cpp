@@ -5,6 +5,7 @@
 #include "main.h"
 #include "test_random.h"
 #include "util.h"
+#include "test/test_prcycoin.h"
 
 #include <vector>
 
@@ -13,7 +14,7 @@
 #define SKIPLIST_LENGTH 300000
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(skiplist_tests)
+BOOST_FIXTURE_TEST_SUITE(skiplist_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(skiplist_test)
 {

@@ -3,11 +3,12 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "utilstrencodings.h"
+#include "test/test_prcycoin.h"
 
 #include <boost/test/unit_test.hpp>
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(base32_tests)
+BOOST_FIXTURE_TEST_SUITE(base32_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(base32_testvectors)
 {

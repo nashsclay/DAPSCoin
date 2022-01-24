@@ -8,6 +8,8 @@
 #include "uint256.h"
 #include "version.h"
 #include "test_random.h"
+#include "random.h"
+#include "test/test_prcycoin.h"
 
 #include <vector>
 
@@ -27,7 +29,7 @@ public:
 };
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(pmt_tests)
+BOOST_FIXTURE_TEST_SUITE(pmt_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(pmt_test1)
 {

@@ -13,6 +13,7 @@
 #include "script/script.h"
 #include "script/script_error.h"
 #include "core_io.h"
+#include "test/test_prcycoin.h"
 
 #include <map>
 #include <string>
@@ -78,7 +79,7 @@ string FormatScriptFlags(unsigned int flags)
 }
 
 #ifdef DISABLE_FAILED_TEST
-BOOST_AUTO_TEST_SUITE(transaction_tests)
+BOOST_FIXTURE_TEST_SUITE(transaction_tests, TestingSetup)
 
 BOOST_AUTO_TEST_CASE(tx_valid)
         {

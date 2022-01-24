@@ -5,6 +5,7 @@
 #include "coins.h"
 #include "test_random.h"
 #include "uint256.h"
+#include "test/test_prcycoin.h"
 
 #include <vector>
 #include <map>
@@ -61,7 +62,7 @@ public:
 }
 
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(coins_tests)
+BOOST_FIXTURE_TEST_SUITE(coins_tests, BasicTestingSetup)
 
 static const unsigned int NUM_SIMULATION_ITERATIONS = 40000;
 

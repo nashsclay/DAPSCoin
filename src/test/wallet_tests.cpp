@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
+#include "test_prcycoin.h"
 
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
@@ -24,7 +25,7 @@ typedef set<pair<const CWalletTx*,unsigned int> > CoinSet;
 extern CWallet* pwalletMain;
 extern int64_t nReserveBalance;
 
-BOOST_AUTO_TEST_SUITE(wallet_tests)
+BOOST_FIXTURE_TEST_SUITE(wallet_tests, TestingSetup)
 
 static void generate_block(int count) {
     int nHeightStart = 0;

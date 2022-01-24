@@ -4,10 +4,12 @@
 
 #include "compat/sanity.h"
 #include "key.h"
+#include "test_prcycoin.h"
 
 #include <boost/test/unit_test.hpp>
+
 #ifdef DISABLE_PASSED_TEST
-BOOST_AUTO_TEST_SUITE(sanity_tests)
+BOOST_FIXTURE_TEST_SUITE(sanity_tests, TestingSetup)
 
 BOOST_AUTO_TEST_CASE(basic_sanity)
 {
