@@ -15,14 +15,14 @@ BOOST_AUTO_TEST_SUITE(hd_tests)
 BOOST_AUTO_TEST_CASE(hd_test1)
 {
     CHDChain newHdChain;
-    string strMnemonic = "sorry jelly twice human measure impact caution despair inner stock spare gossip connect someone industry provide panel decade dose loud tunnel famous knife belt";
-    string strMnemonicPassphrase = "";
+    std::string strMnemonic = "sorry jelly twice human measure impact caution despair inner stock spare gossip connect someone industry provide panel decade dose loud tunnel famous knife belt";
+    std::string strMnemonicPassphrase = "";
 
     SecureVector vchMnemonic(strMnemonic.begin(), strMnemonic.end());
     SecureVector vchMnemonicPassphrase(strMnemonicPassphrase.begin(), strMnemonicPassphrase.end());
 
     BOOST_CHECK(newHdChain.SetMnemonic(vchMnemonic, vchMnemonicPassphrase, true));
-    BOOST_CHECK(Params().ExtCoinType() == 0x80000166);
+    BOOST_CHECK(Params().ExtCoinType() == 0x80000001);
 
     SecureVector vchSeed = newHdChain.GetSeed();
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(hd_test1)
 
     newKey = childKey.key;
     newPubKey = newKey.GetPubKey();
-    BOOST_CHECK(newPubKey.GetHex() == "5c0d4f0b9383a9d83addc16929cd90f5cfacbc3ab35b1ee930fc215b9dffe8e402");
+    BOOST_CHECK(newPubKey.GetHex() == "7b778698f0790e7e42fa1b5c78ef702facd6c299e2e8f650948cf69d1ea16da503");
 
     nAccountIndex = 1;
     cointypeKey.Derive(accountKey, nAccountIndex | 0x80000000);
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(hd_test1)
 
     newKey = childKey.key;
     newPubKey = newKey.GetPubKey();
-    BOOST_CHECK(newPubKey.GetHex() == "c6a5832438db1047eea30ce51213aa976f96e029f3c626dd36c85d4bc3ea75da03");
+    BOOST_CHECK(newPubKey.GetHex() == "61289bee97899246901fd02d634e8924f28468e17ba982588f7ab16d3913f81402");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -7,7 +7,6 @@
 #include "streams.h"
 #include "uint256.h"
 #include "version.h"
-#include "test_random.h"
 #include "random.h"
 #include "test/test_prcycoin.h"
 

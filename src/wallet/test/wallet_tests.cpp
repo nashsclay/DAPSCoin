@@ -21,7 +21,7 @@
 #define RANDOM_REPEATS 5
 
 
-typedef set<pair<const CWalletTx*,unsigned int> > CoinSet;
+typedef std::set<std::pair<const CWalletTx*,unsigned int> > CoinSet;
 extern CWallet* pwalletMain;
 extern int64_t nReserveBalance;
 
@@ -46,7 +46,7 @@ static void generate_block(int count) {
         if (nHeight > Params().LAST_POW_BLOCK())
             createPoSBlock = true;
 
-        unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwalletMain, createPoSBlock));
+        std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwalletMain, createPoSBlock));
         BOOST_CHECK(pblocktemplate.get());
 
         CBlock* pblock = &pblocktemplate->block;
@@ -345,12 +345,11 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
     }
     empty_wallet();
 }
-#endif
 
 BOOST_AUTO_TEST_CASE(test_StealthSend)
 {
     SelectParams(CBaseChainParams::REGTEST);
-    std::string stealthAddr = "41iK3WWry6hR9QBMrYRXcybkXk8TCuvcBSeBov1PBehUR8bYVsiGecoEuq9pcLBHkVAJ5CNr3nAoqEjtRJywPUKX19URn9t22yF";
+    std::string stealthAddr = "Pap9NcoXyLMQxDLoJ56faM5aRHVvWhmdTfrtBkmbySmb6cDjygrVcNUWqpUrLLrtQt89Ev3nDutQRMYcs7gWHtr11AN6pGMEELj";
     CAmount nAmount = 100 * COIN;
     CWalletTx wtx;
     bool ret;
@@ -385,9 +384,10 @@ BOOST_AUTO_TEST_CASE(test_StealthSend)
     }
     BOOST_CHECK_MESSAGE(ret, "Sending to stealth address have to be success on enough balance wallet");
 
-    printf("%llu/%llu/%llu/%llu\n", pwalletMain->GetSpendableBalance(), pwalletMain->GetBalance(), pwalletMain->GetUnlockedCoins(), pwalletMain->GetLockedCoins());
+    printf("%lu/%lu/%lu/%lu\n", pwalletMain->GetSpendableBalance(), pwalletMain->GetBalance(), pwalletMain->GetUnlockedCoins(), pwalletMain->GetLockedCoins());
 
     // check stealth sending on not enough balance wallet
     SelectParams(CBaseChainParams::MAIN);
 }
+#endif
 BOOST_AUTO_TEST_SUITE_END()

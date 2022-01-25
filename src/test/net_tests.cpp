@@ -19,7 +19,7 @@
 class CAddrManSerializationMock : public CAddrMan
 {
 public:
-    virtual void Serialize(CDataStream& s) const = 0;
+    virtual void Serialize(CDataStream& s, int nType, int nVersion) const = 0;
 
     //! Ensure that bucket placement is always the same for testing purposes.
     void MakeDeterministic()
@@ -32,20 +32,18 @@ public:
 class CAddrManUncorrupted : public CAddrManSerializationMock
 {
 public:
-    void Serialize(CDataStream& s) const
+    void Serialize(CDataStream& s, int nType, int nVersion) const
     {
-        CAddrMan::Serialize(s);
+        CAddrMan::Serialize(s, nType, nVersion);
     }
 };
 
 class CAddrManCorrupted : public CAddrManSerializationMock
 {
 public:
-    void Serialize(CDataStream& s) const
+    void Serialize(CDataStream& s, int nType, int nVersion) const
     {
         // Produces corrupt output that claims addrman has 20 addrs when it only has one addr.
-        unsigned char nVersion = 1;
-        s << nVersion;
         s << ((unsigned char)32);
         s << nKey;
         s << 10; // nNew

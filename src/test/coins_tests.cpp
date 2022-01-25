@@ -3,7 +3,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "coins.h"
-#include "test_random.h"
 #include "uint256.h"
 #include "test/test_prcycoin.h"
 
@@ -61,7 +60,6 @@ public:
 };
 }
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(coins_tests, BasicTestingSetup)
 
 static const unsigned int NUM_SIMULATION_ITERATIONS = 40000;
@@ -178,4 +176,3 @@ BOOST_AUTO_TEST_CASE(coins_cache_simulation_test)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif
