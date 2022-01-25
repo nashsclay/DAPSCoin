@@ -2293,3 +2293,14 @@ void DumpBanlist() {
     LogPrint(BCLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
              banmap.size(), GetTimeMillis() - nStart);
 }
+
+// valid, reachable and routable address (except for RegTest)
+bool validateMasternodeIP(const std::string& addrStr)
+{
+    CNetAddr resolved;
+    if (LookupHost(addrStr.c_str(), resolved, false)) {
+        return ((IsReachable(resolved) && resolved.IsRoutable()) ||
+                (Params().IsRegTestNet() && resolved.IsValid()));
+    }
+    return false;
+}
