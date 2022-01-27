@@ -27,6 +27,7 @@ BITCOIN_TEST_SUITE = \
   test/test_prcycoin.cpp
 # test_prcycoin binary #
 BITCOIN_TESTS =\
+  test/addrman_tests.cpp \
   test/allocator_tests.cpp \
   test/base32_tests.cpp \
   test/base58_tests.cpp \
