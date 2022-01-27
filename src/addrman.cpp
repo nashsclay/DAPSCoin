@@ -224,7 +224,7 @@ void CAddrMan::Good_(const CService& addr, int64_t nTime)
         return;
 
     // find a bucket it is in now
-    int nRnd = GetRandInt(ADDRMAN_NEW_BUCKET_COUNT);
+    int nRnd = RandomInt(ADDRMAN_NEW_BUCKET_COUNT);
     int nUBucket = -1;
     for (unsigned int n = 0; n < ADDRMAN_NEW_BUCKET_COUNT; n++) {
         int nB = (n + nRnd) % ADDRMAN_NEW_BUCKET_COUNT;
@@ -286,7 +286,7 @@ bool CAddrMan::Add_(const CAddress& addr, const CNetAddr& source, int64_t nTimeP
         int nFactor = 1;
         for (int n = 0; n < pinfo->nRefCount; n++)
             nFactor *= 2;
-        if (nFactor > 1 && (GetRandInt(nFactor) != 0))
+        if (nFactor > 1 && (RandomInt(nFactor) != 0))
             return false;
     } else {
         pinfo = Create(addr, source, &nId);
@@ -341,18 +341,21 @@ void CAddrMan::Attempt_(const CService& addr, bool fCountFailure, int64_t nTime)
     }
 }
 
-CAddrInfo CAddrMan::Select_()
+CAddrInfo CAddrMan::Select_(bool newOnly)
 {
     if (size() == 0)
         return CAddrInfo();
 
+    if (newOnly && nNew == 0)
+        return CAddrInfo();
+
     // Use a 50% chance for choosing between tried and new table entries.
-    if (nTried > 0 && (nNew == 0 || GetRandInt(2) == 0)) {
+    if (!newOnly && (nTried > 0 && (nNew == 0 || RandomInt(2) == 0))) {
         // use a tried node
         double fChanceFactor = 1.0;
         while (1) {
-            int nKBucket = GetRandInt(ADDRMAN_TRIED_BUCKET_COUNT);
-            int nKBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
+            int nKBucket = RandomInt(ADDRMAN_TRIED_BUCKET_COUNT);
+            int nKBucketPos = RandomInt(ADDRMAN_BUCKET_SIZE);
             while (vvTried[nKBucket][nKBucketPos] == -1) {
                 nKBucket = (nKBucket + insecure_rand.randbits(ADDRMAN_TRIED_BUCKET_COUNT_LOG2)) % ADDRMAN_TRIED_BUCKET_COUNT;
                 nKBucketPos = (nKBucketPos + insecure_rand.randbits(ADDRMAN_BUCKET_SIZE_LOG2)) % ADDRMAN_BUCKET_SIZE;
@@ -360,7 +363,7 @@ CAddrInfo CAddrMan::Select_()
             int nId = vvTried[nKBucket][nKBucketPos];
             assert(mapInfo.count(nId) == 1);
             CAddrInfo& info = mapInfo[nId];
-            if (GetRandInt(1 << 30) < fChanceFactor * info.GetChance() * (1 << 30))
+            if (RandomInt(1 << 30) < fChanceFactor * info.GetChance() * (1 << 30))
                 return info;
             fChanceFactor *= 1.2;
         }
@@ -368,8 +371,8 @@ CAddrInfo CAddrMan::Select_()
         // use a new node
         double fChanceFactor = 1.0;
         while (1) {
-            int nUBucket = GetRandInt(ADDRMAN_NEW_BUCKET_COUNT);
-            int nUBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
+            int nUBucket = RandomInt(ADDRMAN_NEW_BUCKET_COUNT);
+            int nUBucketPos = RandomInt(ADDRMAN_BUCKET_SIZE);
             while (vvNew[nUBucket][nUBucketPos] == -1) {
                 nUBucket = (nUBucket + insecure_rand.randbits(ADDRMAN_NEW_BUCKET_COUNT_LOG2)) % ADDRMAN_NEW_BUCKET_COUNT;
                 nUBucketPos = (nUBucketPos + insecure_rand.randbits(ADDRMAN_BUCKET_SIZE_LOG2)) % ADDRMAN_BUCKET_SIZE;
@@ -377,7 +380,7 @@ CAddrInfo CAddrMan::Select_()
             int nId = vvNew[nUBucket][nUBucketPos];
             assert(mapInfo.count(nId) == 1);
             CAddrInfo& info = mapInfo[nId];
-            if (GetRandInt(1 << 30) < fChanceFactor * info.GetChance() * (1 << 30))
+            if (RandomInt(1 << 30) < fChanceFactor * info.GetChance() * (1 << 30))
                 return info;
             fChanceFactor *= 1.2;
         }
@@ -473,7 +476,7 @@ void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr)
         if (vAddr.size() >= nNodes)
             break;
 
-        int nRndPos = GetRandInt(vRandom.size() - n) + n;
+        int nRndPos = RandomInt(vRandom.size() - n) + n;
         SwapRandom(n, nRndPos);
         assert(mapInfo.count(vRandom[n]) == 1);
 
@@ -501,6 +504,10 @@ void CAddrMan::Connected_(const CService& addr, int64_t nTime)
     int64_t nUpdateInterval = 20 * 60;
     if (nTime - info.nTime > nUpdateInterval)
         info.nTime = nTime;
+}
+
+int CAddrMan::RandomInt(int nMax){
+    return GetRandInt(nMax);
 }
 
 void CAddrMan::SetServices_(const CService& addr, ServiceFlags nServices)

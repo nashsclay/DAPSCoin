@@ -19,11 +19,13 @@
 #include <stdint.h>
 #include <vector>
 
-/** 
- * Extended statistics about a CAddress 
+/**
+ * Extended statistics about a CAddress
  */
 class CAddrInfo : public CAddress
 {
+
+
 public:
     //! last try whatsoever by us (memory only)
     int64_t nLastTry;
@@ -174,17 +176,14 @@ public:
 #define ADDRMAN_NEW_BUCKET_COUNT (1 << ADDRMAN_NEW_BUCKET_COUNT_LOG2)
 #define ADDRMAN_BUCKET_SIZE (1 << ADDRMAN_BUCKET_SIZE_LOG2)
 
-/** 
- * Stochastical (IP) address manager 
+/**
+ * Stochastical (IP) address manager
  */
 class CAddrMan
 {
 private:
     //! critical section to protect the inner data structures
     mutable RecursiveMutex cs;
-
-    //! secret key to randomize bucket select with
-    uint256 nKey;
 
     //! last used nId
     int nIdCount;
@@ -214,6 +213,9 @@ private:
     int64_t nLastGood;
 
 protected:
+    //! secret key to randomize bucket select with
+    uint256 nKey;
+
     //! Source of random numbers for randomization in inner loops
     FastRandomContext insecure_rand;
 
@@ -245,9 +247,11 @@ protected:
     //! Mark an entry as attempted to connect.
     void Attempt_(const CService& addr, bool fCountFailure, int64_t nTime);
 
-    //! Select an address to connect to.
-    //! nUnkBias determines how much to favor new addresses over tried ones (min=0, max=100)
-    CAddrInfo Select_();
+    //! Select an address to connect to, if newOnly is set to true, only the new table is selected from.
+    CAddrInfo Select_(bool newOnly);
+
+    //! Wraps GetRandInt to allow tests to override RandomInt and make it determinismistic.
+    virtual int RandomInt(int nMax);
 
 #ifdef DEBUG_ADDRMAN
     //! Perform consistency check. Returns an error code or zero.
@@ -553,13 +557,13 @@ public:
      * Choose an address to connect to.
      * nUnkBias determines how much "new" entries are favored over "tried" ones (0-100).
      */
-    CAddrInfo Select()
+    CAddrInfo Select(bool newOnly = false)
     {
         CAddrInfo addrRet;
         {
             LOCK(cs);
             Check();
-            addrRet = Select_();
+            addrRet = Select_(newOnly);
             Check();
         }
         return addrRet;
