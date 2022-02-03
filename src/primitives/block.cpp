@@ -154,7 +154,7 @@ uint256 CBlock::BuildMerkleTree(bool* fMutated) const
     if (fMutated) {
         *fMutated = mutated;
     }
-    return (vMerkleTree.empty() ? uint256() : vMerkleTree.back());
+    return (vMerkleTree.empty() ? UINT256_ZERO : vMerkleTree.back());
 }
 
 uint256 CBlock::BuildPoAMerkleTree(bool* fMutated) const
@@ -182,7 +182,7 @@ uint256 CBlock::BuildPoAMerkleTree(bool* fMutated) const
     if (fMutated) {
         *fMutated = mutated;
     }
-    return (poaMerkleTree.empty() ? uint256() : poaMerkleTree.back());
+    return (poaMerkleTree.empty() ? UINT256_ZERO : poaMerkleTree.back());
 }
 
 std::vector<uint256> CBlock::GetMerkleBranch(int nIndex) const
