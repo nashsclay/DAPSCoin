@@ -46,7 +46,7 @@ uint256 CCoinsViewDB::GetBestBlock() const
 {
     uint256 hashBestChain;
     if (!db.Read(DB_BEST_BLOCK, hashBestChain))
-        return uint256(0);
+        return UINT256_ZERO;
     return hashBestChain;
 }
 
@@ -67,7 +67,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
         CCoinsMap::iterator itOld = it++;
         mapCoins.erase(itOld);
     }
-    if (hashBlock != uint256(0))
+    if (hashBlock != UINT256_ZERO)
         batch.Write(DB_BEST_BLOCK, hashBlock);
 
     LogPrint(BCLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n", (unsigned int)changed, (unsigned int)count);
@@ -239,7 +239,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
 {
     boost::scoped_ptr<CDBIterator> pcursor(NewIterator());
 
-    pcursor->Seek(std::make_pair(DB_BLOCK_INDEX, uint256(0)));
+    pcursor->Seek(std::make_pair(DB_BLOCK_INDEX, UINT256_ZERO));
 
     // Load mapBlockIndex
     uint256 nPreviousCheckpoint;

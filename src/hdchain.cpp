@@ -12,7 +12,7 @@
 bool CHDChain::SetNull()
 {
     nVersion = CURRENT_VERSION;
-    id = uint256();
+    id = UINT256_ZERO;
     fCrypted = false;
     vchSeed.clear();
     vchMnemonic.clear();
@@ -22,7 +22,7 @@ bool CHDChain::SetNull()
 
 bool CHDChain::IsNull() const
 {
-    return vchSeed.empty() || id == uint256();
+    return vchSeed.empty() || id == UINT256_ZERO;
 }
 
 void CHDChain::SetCrypted(bool fCryptedIn)

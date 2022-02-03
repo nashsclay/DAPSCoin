@@ -14,7 +14,7 @@ extern FastRandomContext insecure_rand_ctx;
 static inline void seed_insecure_rand(bool fDeterministic = false)
 {
     if (fDeterministic) {
-        insecure_rand_seed = uint256();
+        insecure_rand_seed = UINT256_ZERO;
     } else {
         insecure_rand_seed = GetRandHash();
     }

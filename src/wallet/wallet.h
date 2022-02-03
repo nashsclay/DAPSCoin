@@ -734,7 +734,7 @@ public:
 
     void Init()
     {
-        hashBlock = 0;
+        hashBlock = UINT256_ZERO;
         nIndex = -1;
         fMerkleVerified = false;
     }
