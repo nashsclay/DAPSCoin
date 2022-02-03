@@ -72,7 +72,7 @@ uint256 CBlockIndex::GetBlockTrust() const
 
     if (IsProofOfStake()) {
         // Return trust score as usual
-        return (uint256(1) << 256) / (bnTarget + 1);
+        return (UINT256_ONE << 256) / (bnTarget + 1);
     } else {
         // Calculate work amount for block
         uint256 bnPoWTrust = ((~UINT256_ZERO >> 20) / (bnTarget + 1));

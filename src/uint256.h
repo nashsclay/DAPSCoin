@@ -419,5 +419,6 @@ inline uint512 uint512S(const std::string& str)
 
 /** constant uint256 instances */
 const uint256 UINT256_ZERO = uint256();
+const uint256 UINT256_ONE = uint256("0000000000000000000000000000000000000000000000000000000000000001");
 
 #endif // BITCOIN_UINT256_H
