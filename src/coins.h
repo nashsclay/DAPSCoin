@@ -7,6 +7,7 @@
 #define BITCOIN_COINS_H
 
 #include "compressor.h"
+#include "memusage.h"
 #include "consensus/consensus.h"  // can be removed once policy/ established
 #include "script/standard.h"
 #include "serialize.h"
@@ -285,6 +286,15 @@ public:
                 return false;
         return true;
     }
+
+    size_t DynamicMemoryUsage() const {
+        size_t ret = memusage::DynamicUsage(vout);
+        for(const CTxOut &out : vout) {
+            const std::vector<unsigned char> *script = &out.scriptPubKey;
+            ret += memusage::DynamicUsage(*script);
+        }
+        return ret;
+    }
 };
 
 class CCoinsKeyHasher
@@ -391,7 +401,8 @@ class CCoinsModifier
 private:
     CCoinsViewCache& cache;
     CCoinsMap::iterator it;
-    CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_);
+    size_t cachedCoinUsage; // Cached memory usage of the CCoins object before modification
+    CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_, size_t usage);
 
 public:
     CCoins* operator->() { return &it->second.coins; }
@@ -413,6 +424,9 @@ protected:
      */
     mutable uint256 hashBlock;
     mutable CCoinsMap cacheCoins;
+
+    /* Cached dynamic memory usage for the inner CCoins objects. */
+    mutable size_t cachedCoinsUsage;
 
 public:
     CCoinsViewCache(CCoinsView* baseIn);
@@ -448,6 +462,9 @@ public:
 
     //! Calculate the size of the cache (in number of transactions)
     unsigned int GetCacheSize() const;
+
+    //! Calculate the size of the cache (in bytes)
+    size_t DynamicMemoryUsage() const;
 
     //! Check whether all prevouts of the transaction are present in the UTXO set represented by this view
     bool HaveInputs(const CTransaction& tx) const;
