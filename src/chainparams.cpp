@@ -128,7 +128,7 @@ public:
         nPoAPaddingBlock = 169869; // Last block with 120 PoS blocks in a PoA Audit
         nPoAPadding = 10; // Current PoA Padding
         nHardForkBlock = 375000; // Add hard fork block for Consensus/PoA Padding
-        nHardForkBlockRingSize = 650000; // Add hard fork block for Ring Size bump
+        nHardForkBlockRingSize = 700000; // Add hard fork block for Ring Size bump
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
