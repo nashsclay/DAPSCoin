@@ -327,7 +327,6 @@ HEADERS += src/activemasternode.h \
            src/secp256k1/src/testrand.h \
            src/secp256k1/src/testrand_impl.h \
            src/secp256k1/src/util.h \
-           src/test/data/alertTests.raw \
            src/test/data/base58_encode_decode.json \
            src/test/data/base58_keys_invalid.json \
            src/test/data/base58_keys_valid.json \
@@ -580,6 +579,7 @@ SOURCES += src/activemasternode.cpp \
            src/script/sign.cpp \
            src/script/standard.cpp \
            src/test/accounting_tests.cpp \
+           src/test/addrman_tests.cpp \
            src/test/alert_tests.cpp \
            src/test/allocator_tests.cpp \
            src/test/base32_tests.cpp \
@@ -595,12 +595,12 @@ SOURCES += src/activemasternode.cpp \
            src/test/DoS_tests.cpp \
            src/test/getarg_tests.cpp \
            src/test/hash_tests.cpp \
+           src/test/hdchain_tests.cpp \
            src/test/key_tests.cpp \
            src/test/main_tests.cpp \
            src/test/mempool_tests.cpp \
            src/test/miner_tests.cpp \
            src/test/mruset_tests.cpp \
-           src/test/multisig_tests.cpp \
            src/test/netbase_tests.cpp \
            src/test/pmt_tests.cpp \
            src/test/rpc_tests.cpp \
