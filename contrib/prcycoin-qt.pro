@@ -133,6 +133,7 @@ HEADERS += src/activemasternode.h \
            src/txdb.h \
            src/txmempool.h \
            src/uint256.h \
+           src/blob_uint256.h \
            src/undo.h \
            src/util.h \
            src/utilmoneystr.h \
