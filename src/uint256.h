@@ -312,6 +312,12 @@ public:
         s.read((char*)pn, sizeof(pn));
     }
 
+    // Temporary for migration to opaque uint160/256
+    uint64_t GetCheapHash() const
+    {
+        return GetLow64();
+    }
+
     friend class uint160;
     friend class uint256;
     friend class uint512;
@@ -365,7 +371,7 @@ public:
 
 /* uint256 from const char *.
  * This is a separate function because the constructor uint256(const char*) can result
- * in dangerously catching uint256(0).
+ * in dangerously catching UINT256_ZERO.
  */
 inline uint256 uint256S(const char* str)
 {
@@ -375,7 +381,7 @@ inline uint256 uint256S(const char* str)
 }
 /* uint256 from std::string.
  * This is a separate function because the constructor uint256(const std::string &str) can result
- * in dangerously catching uint256(0) via std::string(const char*).
+ * in dangerously catching UINT256_ZERO via std::string(const char*).
  */
 inline uint256 uint256S(const std::string& str)
 {
@@ -410,5 +416,9 @@ inline uint512 uint512S(const std::string& str)
     rv.SetHex(str);
     return rv;
 }
+
+/** constant uint256 instances */
+const uint256 UINT256_ZERO = uint256();
+const uint256 UINT256_ONE = uint256("0000000000000000000000000000000000000000000000000000000000000001");
 
 #endif // BITCOIN_UINT256_H

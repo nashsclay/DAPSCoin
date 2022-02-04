@@ -158,14 +158,14 @@ bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb)
 //
 uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
 {
-    if (chainActive.Tip() == NULL) return 0;
+    if (chainActive.Tip() == NULL) return UINT256_ZERO;
 
-    uint256 hash = 0;
+    uint256 hash;
     uint256 aux = vin.prevout.hash + vin.prevout.n;
 
     if (!GetBlockHash(hash, nBlockHeight)) {
         LogPrint(BCLog::MASTERNODE,"CalculateScore ERROR - nHeight %d - Returned 0\n", nBlockHeight);
-        return 0;
+        return UINT256_ZERO;
     }
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
@@ -206,7 +206,7 @@ void CMasternode::Check(bool forceCheck)
             TRY_LOCK(cs_main, lockMain);
             if (!lockMain) return;
 
-            if (IsSpentKeyImage(vin.keyImage.GetHex(), uint256())) {
+            if (IsSpentKeyImage(vin.keyImage.GetHex(), UINT256_ZERO)) {
                 activeState = MASTERNODE_VIN_SPENT;
                 return;
             }
@@ -612,7 +612,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
 
     // verify that sig time is legit in past
     // should be at least not earlier than block when 1000 PRCY tx got MASTERNODE_MIN_CONFIRMATIONS
-    uint256 hashBlock = 0;
+    uint256 hashBlock = UINT256_ZERO;
     CTransaction tx2;
     GetTransaction(vin.prevout.hash, tx2, hashBlock, true);
     BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
@@ -694,7 +694,7 @@ std::string CMasternodeBroadcast::GetStrMessage()
 CMasternodePing::CMasternodePing()
 {
     vin = CTxIn();
-    blockHash = uint256(0);
+    blockHash = UINT256_ZERO;
     sigTime = 0;
     vchSig = std::vector<unsigned char>();
 }

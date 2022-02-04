@@ -109,7 +109,7 @@ static const int64_t DEFAULT_MAX_TIP_AGE = 24 * 60 * 60;
 //static const std::string FOUNDATION_WALLET = "PandirQr3T895NCsDrSKdCD4TJ324z3VDB8Amcj6wx2kKdB7LztTDefdvP4QTMdgGA72W7SHzQeFzLTo2sikmmbd19E5C8UZbbi";
 
 struct BlockHasher {
-    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
+    size_t operator()(const uint256& hash) const { return hash.GetCheapHash(); }
 };
 
 extern CScript COINBASE_FLAGS;

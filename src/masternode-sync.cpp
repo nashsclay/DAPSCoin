@@ -266,7 +266,7 @@ void CMasternodeSync::Process()
             } else if (RequestedMasternodeAttempt < 6) {
                 int nMnCount = mnodeman.CountEnabled();
                 pnode->PushMessage(NetMsgType::GETMNWINNERS, nMnCount); //sync payees
-                uint256 n = 0;
+                uint256 n;
                 pnode->PushMessage(NetMsgType::BUDGETVOTESYNC, n); //sync masternode votes
             } else {
                 RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
@@ -355,7 +355,7 @@ void CMasternodeSync::Process()
 
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
-                uint256 n = 0;
+                uint256 n;
                 pnode->PushMessage(NetMsgType::BUDGETVOTESYNC, n); //sync masternode votes
                 RequestedMasternodeAttempt++;
 

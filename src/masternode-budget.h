@@ -284,7 +284,7 @@ public:
     {
         payee = CScript();
         nAmount = 0;
-        nProposalHash = 0;
+        nProposalHash = UINT256_ZERO;
     }
 
     ADD_SERIALIZE_METHODS;

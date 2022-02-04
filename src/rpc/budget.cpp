@@ -118,7 +118,7 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     //*************************************************************************
 
     // create transaction 15 minutes into the future, to allow for confirmation time
-    CBudgetProposalBroadcast budgetProposalBroadcast(strProposalName, strURL, nPaymentCount, scriptPubKey, nAmount, nBlockStart, 0);
+    CBudgetProposalBroadcast budgetProposalBroadcast(strProposalName, strURL, nPaymentCount, scriptPubKey, nAmount, nBlockStart, UINT256_ZERO);
 
     std::string strError = "";
     if (!budgetProposalBroadcast.IsValid(strError, false))
@@ -764,7 +764,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
             throw std::runtime_error("Correct usage is 'mnfinalbudget vote-many BUDGET_HASH'");
 
         std::string strHash = params[1].get_str();
-        uint256 hash(strHash);
+        uint256 hash(uint256S(strHash));
 
         int success = 0;
         int failed = 0;
@@ -836,7 +836,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
             throw std::runtime_error("Correct usage is 'mnfinalbudget vote BUDGET_HASH'");
 
         std::string strHash = params[1].get_str();
-        uint256 hash(strHash);
+        uint256 hash(uint256S(strHash));
 
         CPubKey pubKeyMasternode;
         CKey keyMasternode;
@@ -894,7 +894,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
             throw std::runtime_error("Correct usage is 'mnbudget getvotes budget-hash'");
 
         std::string strHash = params[1].get_str();
-        uint256 hash(strHash);
+        uint256 hash(uint256S(strHash));
 
         UniValue obj(UniValue::VOBJ);
 

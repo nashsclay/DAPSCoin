@@ -263,15 +263,15 @@ public:
         nStakeTime = 0;
 
         nVersion = 0;
-        hashMerkleRoot = uint256();
+        hashMerkleRoot = UINT256_ZERO;
         nTime = 0;
         nBits = 0;
         nNonce = 0;
-        nAccumulatorCheckpoint = 0;
+        nAccumulatorCheckpoint = UINT256_ZERO;
 
-        hashPoAMerkleRoot = uint256();
-        minedHash = uint256();
-        hashPrevPoABlock = uint256();
+        hashPoAMerkleRoot = UINT256_ZERO;
+        minedHash = UINT256_ZERO;
+        hashPrevPoABlock = UINT256_ZERO;
     }
 
     CBlockIndex()
@@ -292,13 +292,13 @@ public:
             nAccumulatorCheckpoint = block.nAccumulatorCheckpoint;
 
         //Proof of Stake
-        bnChainTrust = uint256();
+        bnChainTrust = UINT256_ZERO;
         nMint = 0;
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
         nStakeModifierChecksum = 0;
-        hashProofOfStake = uint256();
+        hashProofOfStake = UINT256_ZERO;
 
         if (block.IsProofOfAudit()) {
             SetProofOfAudit();
@@ -409,7 +409,7 @@ public:
 
     unsigned int GetStakeEntropyBit() const
     {
-        unsigned int nEntropyBit = ((GetBlockHash().Get64()) & 1);
+        unsigned int nEntropyBit = ((GetBlockHash().GetCheapHash()) & 1);
         if (GetBoolArg("-printstakemodifier", false))
             LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
 
@@ -491,13 +491,13 @@ public:
 
     CDiskBlockIndex()
     {
-        hashPrev = uint256();
-        hashNext = uint256();
+        hashPrev = UINT256_ZERO;
+        hashNext = UINT256_ZERO;
     }
 
     explicit CDiskBlockIndex(const CBlockIndex* pindex) : CBlockIndex(*pindex)
     {
-        hashPrev = (pprev ? pprev->GetBlockHash() : uint256(0));
+        hashPrev = (pprev ? pprev->GetBlockHash() : UINT256_ZERO);
         if (IsProofOfAudit()) {
             hashPoAMerkleRoot = pindex->hashPoAMerkleRoot;
             minedHash = pindex->minedHash;
@@ -539,7 +539,7 @@ public:
         } else {
             const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
             const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
-            const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
+            const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = UINT256_ZERO;
         }
 
         // block header

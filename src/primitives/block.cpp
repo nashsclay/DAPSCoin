@@ -75,7 +75,7 @@ uint256 CBlockHeader::ComputeMinedHash() const
             BEGIN(nBits), END(nBits),
             BEGIN(nNonce), END(nNonce));
     }
-    return uint256();
+    return UINT256_ZERO;
 }
 
 uint256 CBlockHeader::GetHash() const
@@ -154,7 +154,7 @@ uint256 CBlock::BuildMerkleTree(bool* fMutated) const
     if (fMutated) {
         *fMutated = mutated;
     }
-    return (vMerkleTree.empty() ? uint256() : vMerkleTree.back());
+    return (vMerkleTree.empty() ? UINT256_ZERO : vMerkleTree.back());
 }
 
 uint256 CBlock::BuildPoAMerkleTree(bool* fMutated) const
@@ -182,7 +182,7 @@ uint256 CBlock::BuildPoAMerkleTree(bool* fMutated) const
     if (fMutated) {
         *fMutated = mutated;
     }
-    return (poaMerkleTree.empty() ? uint256() : poaMerkleTree.back());
+    return (poaMerkleTree.empty() ? UINT256_ZERO : poaMerkleTree.back());
 }
 
 std::vector<uint256> CBlock::GetMerkleBranch(int nIndex) const
@@ -220,7 +220,7 @@ std::vector<uint256> CBlock::GetPoAMerkleBranch(int nIndex) const
 uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMerkleBranch, int nIndex)
 {
     if (nIndex == -1)
-        return uint256();
+        return UINT256_ZERO;
     for (std::vector<uint256>::const_iterator it(vMerkleBranch.begin()); it != vMerkleBranch.end(); ++it)
     {
         if (nIndex & 1)
@@ -235,7 +235,7 @@ uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMer
 uint256 CBlock::CheckPoAMerkleBranch(uint256 mhash, const std::vector<uint256>& poaMerkleBranch, int nIndex)
 {
     if (nIndex == -1)
-        return uint256();
+        return UINT256_ZERO;
     for (std::vector<uint256>::const_iterator it(poaMerkleBranch.begin()); it != poaMerkleBranch.end(); ++it)
     {
         if (nIndex & 1)

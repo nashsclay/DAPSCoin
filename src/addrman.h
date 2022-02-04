@@ -478,7 +478,7 @@ public:
 
     ~CAddrMan()
     {
-        nKey = uint256();
+        nKey = UINT256_ZERO;
     }
 
     //! Return the number of (unique) addresses in all tables.

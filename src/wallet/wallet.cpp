@@ -777,7 +777,7 @@ bool CWallet::IsSpent(const uint256& hash, unsigned int n)
 
     std::string outString = outpoint.hash.GetHex() + std::to_string(outpoint.n);
     CKeyImage ki = outpointToKeyImages[outString];
-    if (IsSpentKeyImage(ki.GetHex(), uint256())) {
+    if (IsSpentKeyImage(ki.GetHex(), UINT256_ZERO)) {
         return true;
     }
 
@@ -3962,7 +3962,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 // Read block header
                 CBlockHeader block = pindex->GetBlockHeader();
                 bool fKernelFound = false;
-                uint256 hashProofOfStake = 0;
+                uint256 hashProofOfStake;
                 COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
                 nTxNewTime = GetAdjustedTime();
 
@@ -4840,7 +4840,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
 unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx) const
 {
     unsigned int nTimeSmart = wtx.nTimeReceived;
-    if (wtx.hashBlock != 0) {
+    if (!wtx.hashBlock.IsNull()) {
         if (mapBlockIndex.count(wtx.hashBlock)) {
             int64_t latestNow = wtx.nTimeReceived;
             int64_t latestEntry = 0;
