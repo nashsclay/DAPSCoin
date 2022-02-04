@@ -64,6 +64,7 @@ INCLUDEPATH += . \
 HEADERS += src/activemasternode.h \
            src/addrman.h \
            src/allocators.h \
+           src/arith_uint256.h \
            src/amount.h \
            src/base58.h \
            src/bignum.h \
@@ -133,6 +134,7 @@ HEADERS += src/activemasternode.h \
            src/txdb.h \
            src/txmempool.h \
            src/uint256.h \
+           src/uint512.h \
            src/blob_uint256.h \
            src/undo.h \
            src/util.h \
