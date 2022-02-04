@@ -106,8 +106,10 @@ bool CDBEnv::Open(const fs::path& pathIn)
             DB_RECOVER |
             nEnvFlags,
         S_IRUSR | S_IWUSR);
-    if (ret != 0)
+    if (ret != 0) {
+        dbenv->close(0);
         return error("CDBEnv::Open : Error %d opening database environment: %s\n", ret, DbEnv::strerror(ret));
+    }
 
     fDbEnvInit = true;
     fMockDb = false;
@@ -396,8 +398,10 @@ bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
                         bitdb.CloseDb(strFile);
                         if (pdbCopy->close(0))
                             fSuccess = false;
-                        delete pdbCopy;
+                    } else {
+                        pdbCopy->close(0);
                     }
+                    delete pdbCopy;
                 }
                 if (fSuccess) {
                     Db dbA(bitdb.dbenv, 0);
