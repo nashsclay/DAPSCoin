@@ -1135,22 +1135,6 @@ UniValue getinvalid (const UniValue& params, bool fHelp)
         strCommand = params[0].get_str();
     }
 
-    if (strCommand == "serials") {
-        UniValue ret(UniValue::VARR);
-        CAmount nSerialTotal = 0;
-        for (auto it : mapInvalidSerials) {
-            UniValue objSerial(UniValue::VOBJ);
-            objSerial.push_back(Pair(it.first.GetHex(), FormatMoney(it.second)));
-            nSerialTotal += it.second;
-            ret.push_back(objSerial);
-        }
-
-        UniValue objTotal(UniValue::VOBJ);
-        objTotal.push_back(Pair("total_value", FormatMoney(nSerialTotal)));
-        ret.push_back(objTotal);
-        return ret;
-    }
-
     bool fShowAll = false;
     if (strCommand == "all")
         fShowAll = true;
