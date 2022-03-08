@@ -44,10 +44,6 @@
 #error "PRCY cannot be compiled without assertions."
 #endif
 
-// 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
-#define SCRIPT_OFFSET 6
-// For Script size (BIGNUM/Uint256 size)
-#define BIGNUM_SIZE 4
 /**
  * Global state
  */
@@ -1290,25 +1286,6 @@ int GetInputAge(CTxIn& vin)
     }
 }
 
-int GetInputAgeIX(uint256 nTXHash, CTxIn& vin)
-{
-    int sigs = 0;
-    int nResult = GetInputAge(vin);
-    if (nResult < 0) nResult = 0;
-
-    if (nResult < 6) {
-        std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(nTXHash);
-        if (i != mapTxLocks.end()) {
-            sigs = (*i).second.CountSignatures();
-        }
-        if (sigs >= SWIFTTX_SIGNATURES_REQUIRED) {
-            return nSwiftTXDepth + nResult;
-        }
-    }
-
-    return -1;
-}
-
 int GetIXConfirmations(uint256 nTXHash)
 {
     int sigs = 0;
@@ -1524,7 +1501,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
     if (pool.exists(hash)) {
-        return false;
+        return error("%s tx already in mempool", __func__);
     }
     // ----------- swiftTX transaction scanning -----------
 
@@ -1665,7 +1642,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // Store transaction in memory
         pool.addUnchecked(hash, entry);
     }
-    SyncWithWallets(tx, NULL);
+    SyncWithWallets(tx, nullptr);
 
     if (pwalletMain) {
         LOCK(pwalletMain->cs_wallet);
@@ -1730,8 +1707,8 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     // Check for conflicts with in-memory transactions
     {
         LOCK(pool.cs); // protect pool.mapNextTx
-        for (unsigned int i = 0; i < tx.vin.size(); i++) {
-            COutPoint outpoint = tx.vin[i].prevout;
+        for (const auto &in : tx.vin) {
+            COutPoint outpoint = in.prevout;
             if (pool.mapNextTx.count(outpoint)) {
                 // Disable replacement feature for now
                 return false;
@@ -2570,11 +2547,7 @@ bool CScriptCheck::operator()()
     return true;
 }
 
-CBitcoinAddress addressExp1("DQZzqnSR6PXxagep1byLiRg9ZurCZ5KieQ");
-CBitcoinAddress addressExp2("DTQYdnNqKuEHXyNeeYhPQGGGdqHbXYwjpj");
-
 std::map<COutPoint, COutPoint> mapInvalidOutPoints;
-std::map<CBigNum, CAmount> mapInvalidSerials;
 
 // Populate global map (mapInvalidOutPoints) of invalid/fraudulent OutPoints that are banned from being used on the chain.
 CAmount nFilteredThroughBittrex = 0;
@@ -3000,7 +2973,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         fCLTVIsActivated = pindex->pprev->nHeight >= Params().BIP65ActivationHeight();
     }
 
-    CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
+    CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : nullptr);
 
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
@@ -3036,7 +3009,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
             // Check that the inputs are not marked as invalid/fraudulent
             uint256 bh = pindex->GetBlockHash();
-            for (CTxIn in : tx.vin) {
+            for (const CTxIn& in : tx.vin) {
                 const CKeyImage& keyImage = in.keyImage;
                 std::string kh = keyImage.GetHex();
                 if (IsSpentKeyImage(kh, bh)) {
@@ -3074,11 +3047,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         CTxUndo undoDummy;
         if (i > 0) {
-            blockundo.vtxundo.push_back(CTxUndo());
+            blockundo.vtxundo.emplace_back();
         }
         UpdateCoins(tx, state, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), nHeight);
 
-        vPos.push_back(std::make_pair(tx.GetHash(), pos));
+        vPos.emplace_back(tx.GetHash(), pos);
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
@@ -3136,14 +3109,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // Write undo information to disk
     if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
         if (pindex->GetUndoPos().IsNull()) {
-            CDiskBlockPos pos;
-            if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
+            CDiskBlockPos diskPosBlock;
+            if (!FindUndoPos(state, pindex->nFile, diskPosBlock, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
                 return error("ConnectBlock() : FindUndoPos failed");
-            if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
+            if (!blockundo.WriteToDisk(diskPosBlock, pindex->pprev->GetBlockHash()))
                 return AbortNode(state, "Failed to write undo data");
 
             // update nUndoPos in block index
-            pindex->nUndoPos = pos.nPos;
+            pindex->nUndoPos = diskPosBlock.nPos;
             pindex->nStatus |= BLOCK_HAVE_UNDO;
         }
 
