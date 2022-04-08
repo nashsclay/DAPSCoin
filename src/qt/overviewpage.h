@@ -13,6 +13,7 @@
 #include <QDialog>
 #include <QSizeGrip>
 #include <QSettings>
+#include <QNetworkReply>
 
 class ClientModel;
 class TransactionFilterProxy;
@@ -63,6 +64,7 @@ Q_SIGNALS:
 private:
     QTimer* timer;
     QTimer* pingNetworkInterval;
+    QTimer* checkCurrencyValueInterval;
     Ui::OverviewPage* ui;
     ClientModel* clientModel;
     WalletModel* walletModel;
@@ -86,6 +88,7 @@ private:
     QWidget* balanceAnimSyncCircle;
     bool isSyncingBalance=true;
     QSettings settings;
+    bool isRuninngQuery=false;
 
     void initSyncCircle(float percentOfParent);
     void moveSyncCircle(QWidget* anchor, QWidget* animated, int deltaRadius, float degreesPerSecond, float angleOffset=0);
@@ -98,6 +101,8 @@ private Q_SLOTS:
     void updateWatchOnlyLabels(bool showWatchOnly);
     void on_lockUnlock();
     void updateLockStatus(int status);
+    void checkCurrencyValue();
+    void checkCurrencyValueserviceRequestFinished(QNetworkReply* reply);
 };
 
 #endif // BITCOIN_QT_OVERVIEWPAGE_H
