@@ -240,7 +240,15 @@ void ReceiveCoinsDialog::keyPressEvent(QKeyEvent* event)
 
 void ReceiveCoinsDialog::copyAddress(){
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(ui->lineEditAddress->text());
+    if (ui->lineEditAddress->text().contains(".")) {
+        // It's a smaller screen, don't copy the line text as it is truncated
+        QString addr;
+        std::string address;
+        pwalletMain->ComputeStealthPublicAddress("masteraccount", address);
+        clipboard->setText(QString(address.c_str()));
+    } else {
+        clipboard->setText(ui->lineEditAddress->text());
+    }
 }
 
 void ReceiveCoinsDialog::generateAddress()
