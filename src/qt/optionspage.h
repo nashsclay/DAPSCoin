@@ -105,6 +105,8 @@ private Q_SLOTS:
     void hideBalanceStaking_clicked(int);
     void lockSendStaking_clicked(int);
     void checkForUnlock();
+    void displayCurrencyValue_clicked(int);
+    void setDefaultCurrency(int);
 };
 
 #endif // BITCOIN_QT_OPTIONSPAGE_H

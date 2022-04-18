@@ -23,6 +23,10 @@
 #include <QPainter>
 #include <QTimer>
 #include <QtMath>
+#include <QNetworkAccessManager>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
 
 #define DECORATION_SIZE 48
 #define ICON_OFFSET 16
@@ -121,6 +125,11 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
     pingNetworkInterval->setInterval(3000);
     pingNetworkInterval->start();
 
+    checkCurrencyValueInterval = new QTimer(this);
+    connect(checkCurrencyValueInterval, SIGNAL(timeout()), this, SLOT(checkCurrencyValue()));
+    checkCurrencyValueInterval->setInterval(300000);
+    checkCurrencyValueInterval->start();
+
     initSyncCircle(.8);
 
     connect(ui->btnLockUnlock, SIGNAL(clicked()), this, SLOT(on_lockUnlock()));
@@ -197,6 +206,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelBalance_2->setFont(font);   
 
     updateRecentTransactions();
+    checkCurrencyValue();
 }
 
 // show/hide watch-only labels
@@ -523,6 +533,7 @@ void OverviewPage::on_lockUnlock() {
             ui->labelBalance->setText(BitcoinUnits::formatHtmlWithUnit(0, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
             ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
             pwalletMain->combineMode = CombineMode::ON;
+            checkCurrencyValue();
         }
     }
     else {
@@ -534,6 +545,7 @@ void OverviewPage::on_lockUnlock() {
             ui->labelBalance_2->setText("Locked; Hidden");
             ui->labelBalance->setText("Locked; Hidden");
             ui->labelUnconfirmed->setText("Locked; Hidden");
+            checkCurrencyValue();
         }
     }
 }
@@ -547,4 +559,75 @@ void OverviewPage::updateLockStatus(int status) {
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
     else
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
+}
+
+void OverviewPage::checkCurrencyValue()
+{
+    QSettings settings;
+    // Get Default Currency from Settings
+    bool fDisplayCurrencyValue = settings.value("fDisplayCurrencyValue").toBool();
+    QString defaultCurrency = settings.value("strDefaultCurrency").toString();
+
+    // Don't check value if wallet is locked, balance is 0, or fDisplayCurrencyValue is set to false
+    if (pwalletMain->IsLocked() || pwalletMain->GetBalance() == 0 || !fDisplayCurrencyValue) {
+        ui->labelCurrencyValue->setText("");
+        return;
+    }
+    if (isRuninngQuery) {
+        return;
+    }
+    isRuninngQuery = true;
+    QUrl serviceUrl = QUrl("https://api.coingecko.com/api/v3/simple/price?ids=prcy-coin&vs_currencies=" + defaultCurrency + "&include_market_cap=false&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkCurrencyValueserviceRequestFinished(QNetworkReply*)));
+    QNetworkRequest request;
+    request.setUrl(serviceUrl);
+    QNetworkReply* reply = manager->get(request);
+}
+
+void OverviewPage::checkCurrencyValueserviceRequestFinished(QNetworkReply* reply)
+{
+    QSettings settings;
+    // Get Default Currency from Settings
+    QString defaultCurrency = settings.value("strDefaultCurrency").toString();
+    QString defaultCurrencySymbol;
+
+    // Set the Default Currency symbol to match
+    if (defaultCurrency == "USD" || defaultCurrency == "CAD") {
+        defaultCurrencySymbol = "$";
+    } else if (defaultCurrency == "EUR") {
+        defaultCurrencySymbol = "€";
+    } else if (defaultCurrency == "GBP") {
+        defaultCurrencySymbol = "£";
+    } else if (defaultCurrency == "BTC") {
+        defaultCurrencySymbol = "₿";
+    } else if (defaultCurrency == "ETH") {
+        defaultCurrencySymbol = "Ξ";
+    } else if (defaultCurrency == "XAU") {
+        defaultCurrencySymbol = "XAU";
+    } else if (defaultCurrency == "XAG") {
+        defaultCurrencySymbol = "XAG";
+    }
+
+    reply->deleteLater();
+    if(reply->error() == QNetworkReply::NoError) {
+        // Parse data
+        QByteArray data = reply->readAll();
+        QJsonDocument jsonDocument(QJsonDocument::fromJson(data));
+        const QJsonObject item  = jsonDocument.object();
+        const QJsonObject currency  = item["prcy-coin"].toObject();
+        auto currencyValue = currency[defaultCurrency.toLower()].toDouble();
+
+        // Get current balance
+        int balance = pwalletMain->GetBalance() / COIN;
+
+        // Calculate value
+        double currentValue = balance *  currencyValue;
+
+        // Set value
+        ui->labelCurrencyValue->setText(defaultCurrency + " Value: " + defaultCurrencySymbol + QString::number(currentValue, 'f', 2));
+    } else {
+        LogPrintf("%s: Error checking for Alternative Currency value.\n", __func__);
+    }
+    isRuninngQuery = false;
 }

@@ -647,6 +647,80 @@
          </layout>
         </widget>
        </item>
+       <item>
+        <widget class="QGroupBox" name="currencyValuegroupBox">
+         <property name="title">
+          <string>Alternative Currency Value</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QCheckBox" name="displayCurrencyValue">
+              <property name="text">
+               <string>Display alternative currency value of wallet on Overview</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Default Currency:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="defaultCurrency">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>USD</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>CAD</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>EUR</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>GBP</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BTC</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>ETH</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>XAU</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>XAG</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>

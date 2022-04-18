@@ -157,6 +157,8 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     ui->alwaysRequest2FA->setChecked(settings.value("fAlwaysRequest2FA", false).toBool());
     ui->hideBalanceStaking->setChecked(settings.value("fHideBalance", false).toBool());
     ui->lockSendStaking->setChecked(settings.value("fLockSendStaking", false).toBool());
+    ui->displayCurrencyValue->setChecked(settings.value("fDisplayCurrencyValue", false).toBool());
+    ui->defaultCurrency->setCurrentText(settings.value("strDefaultCurrency").toString());
     connect(ui->addNewFunds, SIGNAL(stateChanged(int)), this, SLOT(setAutoConsolidate(int)));
     connect(ui->mapPortUpnp, SIGNAL(stateChanged(int)), this, SLOT(mapPortUpnp_clicked(int)));
     connect(ui->minimizeToTray, SIGNAL(stateChanged(int)), this, SLOT(minimizeToTray_clicked(int)));
@@ -164,6 +166,8 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     connect(ui->alwaysRequest2FA, SIGNAL(stateChanged(int)), this, SLOT(alwaysRequest2FA_clicked(int)));
     connect(ui->hideBalanceStaking, SIGNAL(stateChanged(int)), this, SLOT(hideBalanceStaking_clicked(int)));
     connect(ui->lockSendStaking, SIGNAL(stateChanged(int)), this, SLOT(lockSendStaking_clicked(int)));
+    connect(ui->displayCurrencyValue, SIGNAL(stateChanged(int)), this, SLOT(displayCurrencyValue_clicked(int)));
+    connect(ui->defaultCurrency, SIGNAL(currentIndexChanged(int)), this, SLOT(setDefaultCurrency(int)));
 }
 
 void OptionsPage::setStakingToggle()
@@ -1062,6 +1066,26 @@ void OptionsPage::lockSendStaking_clicked(int state) {
             return;
         }
     }
+}
+
+
+void OptionsPage::displayCurrencyValue_clicked(int)
+{
+    checkForUnlock();
+    if (ui->displayCurrencyValue->isChecked()) {
+        settings.setValue("fDisplayCurrencyValue", true);
+        // Only set default USD if one doesn't already exist
+        if (!settings.contains("strDefaultCurrency"))
+            settings.setValue("strDefaultCurrency", "USD");
+    } else {
+        settings.setValue("fDisplayCurrencyValue", false);
+    }
+}
+
+void OptionsPage::setDefaultCurrency(int)
+{
+    checkForUnlock();
+    settings.setValue("strDefaultCurrency", ui->defaultCurrency->currentText());
 }
 
 void OptionsPage::checkForUnlock()
