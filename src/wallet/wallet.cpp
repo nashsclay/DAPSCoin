@@ -2202,7 +2202,7 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
 {
     minFee = 0;
     maxFee = 0;
-    SetRingSize();
+    SetRingSize(0);
     CAmount nBalance = GetBalance();
     if (pwalletMain->IsMasternodeController()) {
         nBalance = GetSpendableBalance();
@@ -2691,7 +2691,7 @@ int CWallet::ComputeTxSize(size_t numIn, size_t numOut, size_t ringSize)
 
 //compute the amount that let users send reserve balance
 CAmount CWallet::ComputeReserveUTXOAmount() {
-    SetRingSize();
+    SetRingSize(0);
     CAmount fee = ComputeFee(1, 2, MAX_RING_SIZE);
     return nReserveBalance + fee;
 }
@@ -2731,7 +2731,7 @@ bool CWallet::IsAutoConsolidateOn()
 bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey& recipientViewKey, const std::vector<std::pair<CScript, CAmount> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay, int ringSize, bool tomyself)
 {
     if (useIX && nFeePay < CENT) nFeePay = CENT;
-    SetRingSize();
+    SetRingSize(0);
 
     //randomize ring size
     unsigned char rand_seed[16];
@@ -3177,7 +3177,7 @@ bool CWallet::makeRingCT(CTransaction& wtxNew, int ringSize, std::string& strFai
         }
     }
 
-    SetRingSize();
+    SetRingSize(0);
     const size_t MAX_VIN = MAX_TX_INPUTS;
     const size_t MAX_DECOYS = MAX_RING_SIZE; //padding 1 for safety reasons
     const size_t MAX_VOUT = 5;
@@ -4911,7 +4911,7 @@ bool CWallet::SendAll(std::string des)
         throw std::runtime_error("Wallet is locked! Please unlock it to make transactions.");
     }
 
-    SetRingSize();
+    SetRingSize(0);
     int estimateTxSize = ComputeTxSize(1, 1, MIN_RING_SIZE);
     CAmount nFeeNeeded = GetMinimumFee(estimateTxSize, nTxConfirmTarget, mempool);
     if (GetSpendableBalance() <= nFeeNeeded) {
@@ -5219,7 +5219,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                     }
                 }
             }
-            SetRingSize();
+            SetRingSize(0);
             int ringSize = MIN_RING_SIZE + secp256k1_rand32() % (MAX_RING_SIZE - MIN_RING_SIZE + 1);
             if (vCoins.size() <= 1) return false;
             CAmount estimatedFee = ComputeFee(vCoins.size(), 1, ringSize);

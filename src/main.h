@@ -240,7 +240,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlr
 CAmount GetBlockValue(int nHeight);
 
 void RemoveInvalidTransactionsFromMempool();
-void SetRingSize();
+void SetRingSize(int nHeight);
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);

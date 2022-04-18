@@ -485,7 +485,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             } else if (stt == UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH) {
                 errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. This is due to your reserve balance being too high. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.";
             } else {
-                SetRingSize();
+                SetRingSize(0);
                 CAmount totalFee = maxFee + pwalletMain->ComputeFee(1, 2, MAX_RING_SIZE);
                 errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. This is due to your reserve balance of " + FormatMoney(nReserveBalance) + " PRCY being too high. The wallet software has tried to consolidate your funds with the reserve balance but without success because of a consolidation fee of " + FormatMoney(totalFee) + " PRCY. Please wait around 10 minutes for the wallet to resolve the reserve to enable staking.";
             }

@@ -371,7 +371,7 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
     if (tx.nTxFee < 0) return false;
     if (IsInitialBlockDownload()) return true;
     const size_t MAX_VIN = MAX_TX_INPUTS;
-    SetRingSize();
+    SetRingSize(pindex->nHeight);
     const size_t MAX_DECOYS = MAX_RING_SIZE; //padding 1 for safety reasons
     const size_t MAX_VOUT = 5;
 
@@ -2299,12 +2299,15 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
     return ret;
 }
 
-void SetRingSize()
+void SetRingSize(int nHeight)
 {
+    if (chainActive.Tip() == NULL) return;
+    if (nHeight == 0) {
+        nHeight = chainActive.Tip()->nHeight;
+    }
     MIN_RING_SIZE = 11;
     MAX_RING_SIZE = 15;
-    if (chainActive.Tip() == NULL) return;
-    int nHeight = chainActive.Tip()->nHeight;
+
     if (nHeight >= Params().HardForkRingSize()) {
         MIN_RING_SIZE = 27;
         MAX_RING_SIZE = 32;
