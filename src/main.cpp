@@ -432,12 +432,12 @@ bool VerifyRingSignatureWithTxFee(const CTransaction& tx, CBlockIndex* pindex)
             //verify that tip and hashBlock must be in the same fork
             CBlockIndex* atTheblock = mapBlockIndex[hashBlock];
             if (!atTheblock) {
-                LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", decoysForIn[j].hash.GetHex(), tip->GetBlockHash().GetHex());
+                LogPrintf("%s: Decoy for transaction %s not in the same chain as block height=%s hash=%s\n", __func__, decoysForIn[j].hash.GetHex(), tip->nHeight, tip->GetBlockHash().GetHex());
                 return false;
             } else {
                 CBlockIndex* ancestor = tip->GetAncestor(atTheblock->nHeight);
                 if (ancestor != atTheblock) {
-                    LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", decoysForIn[j].hash.GetHex(), tip->GetBlockHash().GetHex());
+                    LogPrintf("%s: Decoy for transaction %s not in the same chain as block height=%s hash=%s\n", __func__, decoysForIn[j].hash.GetHex(), tip->nHeight, tip->GetBlockHash().GetHex());
                     return false;
                 }
             }
@@ -625,21 +625,21 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
 
         size_t numUTXO = coinstake.vout.size();
         if (mapBlockIndex.count(block.hashPrevBlock) < 1) {
-            LogPrintf("%s: Previous block not found, received block %s, previous %s, current tip %s", __func__, block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex());
+            LogPrintf("%s: Previous block not found, received block %s, previous %s, current tip %s\n", __func__, block.GetHash().GetHex(), block.hashPrevBlock.GetHex(), chainActive.Tip()->GetBlockHash().GetHex());
             return false;
         }
         CAmount blockValue = GetBlockValue(mapBlockIndex[block.hashPrevBlock]->nHeight);
         const CTxOut& mnOut = coinstake.vout[numUTXO - 1];
         std::string mnsa(mnOut.masternodeStealthAddress.begin(), mnOut.masternodeStealthAddress.end());
         if (!VerifyDerivedAddress(mnOut, mnsa)) {
-            LogPrintf("%s: Incorrect derived address for masternode rewards", __func__);
+            LogPrintf("%s: Incorrect derived address for masternode rewards\n", __func__);
             return false;
         }
 
         // track money supply and mint amount info
         CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
         pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn - nFees;
-        LogPrint(BCLog::SUPPLY, "%s: nMoneySupplyPrev=%d, pindex->nMoneySupply=%d, nFees = %d", __func__, nMoneySupplyPrev, pindex->nMoneySupply, nFees);
+        LogPrint(BCLog::SUPPLY, "%s: nMoneySupplyPrev=%d, pindex->nMoneySupply=%d, nFees = %d\n", __func__, nMoneySupplyPrev, pindex->nMoneySupply, nFees);
         pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
 
         //PoW phase redistributed fees to miner. PoS stage destroys fees.
@@ -647,7 +647,7 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         nExpectedMint += nFees;
 
         if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
-            LogPrintf("%s: reward pays too much (actual=%s vs limit=%s)", __func__, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
+            LogPrintf("%s: reward pays too much (actual=%s vs limit=%s)\n", __func__, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
             return false;
         }
         return true;
@@ -1444,19 +1444,19 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
                 //verify that tip and hashBlock must be in the same fork
                 CBlockIndex* atTheblock = mapBlockIndex[bh];
                 if (!atTheblock) {
-                    LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", alldecoys[j].hash.GetHex(), tip->GetBlockHash().GetHex());
+                    LogPrintf("%s: Decoy for transaction %s not in the same chain as block height=%s hash=%s\n", __func__, alldecoys[j].hash.GetHex(), tip->nHeight, tip->GetBlockHash().GetHex());
                     return false;
                 } else {
                     CBlockIndex* ancestor = tip->GetAncestor(atTheblock->nHeight);
                     if (ancestor != atTheblock) {
-                        LogPrintf("Decoy for transactions %s not in the same chain with block %s\n", alldecoys[j].hash.GetHex(), tip->GetBlockHash().GetHex());
+                        LogPrintf("%s: Decoy for transaction %s not in the same chain as block height=%s hash=%s\n", __func__, alldecoys[j].hash.GetHex(), tip->nHeight, tip->GetBlockHash().GetHex());
                         return false;
                     }
                 }
             }
             if (!tx.IsCoinStake()) {
                 if (tx.vin[i].decoys.size() != tx.vin[0].decoys.size()) {
-                    LogPrintf("Transaction does not have the same ring size for inputs\n");
+                    LogPrintf("%s: Transaction does not have the same ring size for inputs\n", __func__);
                     return false;
                 }
             }
@@ -1464,7 +1464,7 @@ bool CheckHaveInputs(const CCoinsViewCache& view, const CTransaction& tx)
 
         if (tx.IsCoinStake()) {
             if (!VerifyShnorrKeyImageTx(tx)) {
-                LogPrintf("Failed to verify correctness of key image of staking transaction\n");
+                LogPrintf("%s: Failed to verify correctness of key image of staking transaction\n", __func__);
                 return false;
             }
         }
@@ -1540,7 +1540,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             for (const CTxIn& txin : tx.vin) {
                 const CKeyImage& keyImage = txin.keyImage;
                 if (IsSpentKeyImage(keyImage.GetHex(), UINT256_ZERO)) {
-                    return state.Invalid(error("AcceptToMemoryPool : key image already spent"),
+                    return state.Invalid(error("AcceptToMemoryPool : key image already spent %s", keyImage.GetHex()),
                         REJECT_DUPLICATE, "bad-txns-inputs-spent");
                 }
             }
@@ -5251,7 +5251,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
                     }
                 }
             } catch (const std::exception& e) {
-                LogPrintf("%s : Deserialize or I/O error - %s", __func__, e.what());
+                LogPrintf("%s : Deserialize or I/O error - %s\n", __func__, e.what());
             }
         }
     } catch (const std::runtime_error& e) {
@@ -5563,9 +5563,13 @@ void static ProcessGetData(CNode* pfrom)
                         send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
                                (chainActive.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
                         if (!send) {
+                            std::string remoteAddr;
+                            if (fLogIPs)
+                                remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
+
                             LogPrintf(
-                                "ProcessGetData(): ignoring request from peer=%i for old block that isn't in the main chain\n",
-                                pfrom->GetId());
+                                "ProcessGetData(): ignoring request from peer=%i%s for old block that is not in the main chain\n",
+                                pfrom->GetId(), remoteAddr);
                         }
                     }
                 }
@@ -6364,7 +6368,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 //disconnect this node if its old protocol version
                 pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand);
                 if (mapBlockIndex.count(block.GetHash())) {
-                    LogPrint(BCLog::NET, "Added block %s to block index map", block.GetHash().GetHex());
+                    LogPrint(BCLog::NET, "Added block %s to block index map\n", block.GetHash().GetHex());
                 }
             } else {
                 LogPrint(BCLog::NET, "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__,
