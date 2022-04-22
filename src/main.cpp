@@ -2305,12 +2305,28 @@ void SetRingSize(int nHeight)
     if (nHeight == 0) {
         nHeight = chainActive.Tip()->nHeight;
     }
+
+    // Original Ring Sizes on all networks
     MIN_RING_SIZE = 11;
     MAX_RING_SIZE = 15;
 
+    // Ring Sizes after the Hard Fork block
+    // Add any Ring Size increases as the last check
     if (nHeight >= Params().HardForkRingSize()) {
         MIN_RING_SIZE = 27;
         MAX_RING_SIZE = 32;
+    }
+
+    // Testnet Hard Forks were different
+    if (Params().NetworkID() == CBaseChainParams::TESTNET) {
+        if (nHeight >= Params().HardForkRingSize()) {
+            MIN_RING_SIZE = 25;
+            MAX_RING_SIZE = 30;
+        }
+        if (nHeight >= Params().HardForkRingSize2()) {
+            MIN_RING_SIZE = 30;
+            MAX_RING_SIZE = 32;
+        }
     }
 
     LogPrint(BCLog::SELECTCOINS, "%s: height %d: min ring size %d, max ring size: %d\n", __func__, nHeight, MIN_RING_SIZE, MAX_RING_SIZE);

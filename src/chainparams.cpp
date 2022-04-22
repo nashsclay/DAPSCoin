@@ -129,6 +129,7 @@ public:
         nPoAPadding = 10; // Current PoA Padding
         nHardForkBlock = 375000; // Add hard fork block for Consensus/PoA Padding
         nHardForkBlockRingSize = 750000; // Add hard fork block for Ring Size bump
+        nHardForkBlockRingSize2 = nHardForkBlockRingSize; // For testnet & compile purposes
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -282,7 +283,8 @@ public:
         nPoAPaddingBlock = 0;
         nPoAPadding = 5; // Current PoA Padding
         nHardForkBlock = 700; // Add hard fork block for Consensus/PoA Padding
-        nHardForkBlockRingSize = 16000; // Add hard fork block for Ring Size bump
+        nHardForkBlockRingSize = 16000; // Add hard fork block for Ring Size bump to 25-30
+        nHardForkBlockRingSize2 = 126000; // Add hard fork block for Ring Size bump to 30-32
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1608422400;
