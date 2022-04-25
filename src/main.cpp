@@ -4647,9 +4647,9 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 if(hasPRCYInputs)
                     // Check if coinstake input is double spent inside the same block
                     for (const CTxIn& prcyIn : prcyInputs){
-                        if(prcyIn.prevout == in.prevout){
+                        if (IsSpentKeyImage(prcyIn.keyImage.GetHex(), block.GetHash())) {
                             // double spent coinstake input inside block
-                            return error("%s: double spent coinstake input inside block", __func__);
+                            return error("%s: double spent coinstake input: %s, KeyImage: %s inside block: %s", __func__, prcyIn.prevout.hash.GetHex(), prcyIn.keyImage.GetHex(), block.GetHash().GetHex());
                         }
                     }
             }
@@ -4685,8 +4685,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
                             // First regular staking check
                             if(hasPRCYInputs) {
-                                if (stakeIn.prevout == in.prevout) {
-                                    return state.DoS(100, error("%s: input already spent on a previous block", __func__));
+                                if (IsSpentKeyImage(stakeIn.keyImage.GetHex(), bl.GetHash())) {
+                                    return state.DoS(100, error("%s: input: %s already spent on a previous block: %s", __func__, stakeIn.keyImage.GetHex(), bl.GetHash().GetHex()));
                                 }
                             }
                         }
