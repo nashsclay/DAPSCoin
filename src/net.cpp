@@ -127,7 +127,7 @@ bool IsUnsupportedVersion(std::string strSubVer, int nHeight) {
     /*if (nHeight >= Params().HardFork()) {
         return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/" || strSubVer == "/PRCY:1.0.0.6/" || strSubVer == "/PRCY:1.0.0.7/");
     }*/
-    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/" || strSubVer == "/PRCY:1.0.0.6/" || strSubVer == "/PRCY:1.0.0.7/");
+    return (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" || strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/" || strSubVer == "/PRCY:1.0.0.6/" || strSubVer == "/PRCY:1.0.0.7/" || strSubVer == "/PRCY:1.0.0.8/" || strSubVer == "/PRCY:1.0.0.9/");
 }
 
 // find 'best' local address for a particular peer
