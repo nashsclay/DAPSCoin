@@ -719,7 +719,7 @@ Confirmations: %5
     </message>
     <message>
         <location line="-241"/>
-        <source>PRCY Coin</source>
+        <source>PRivaCY Coin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4255,12 +4255,12 @@ https://www.transifex.com/prcycoin-project/prcycoin-project-translations</source
     <name>SplashScreen</name>
     <message>
         <location filename="../splashscreen.cpp" line="+37"/>
-        <source>PRCY Coin Keychain Wallet</source>
+        <source>PRivaCY Coin Keychain Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>PRCY Coin Lite Mode Wallet</source>
+        <source>PRivaCY Coin Lite Mode Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

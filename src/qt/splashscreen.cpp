@@ -34,10 +34,10 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     float fontFactor = 1.0;
 
     // define text to place
-    QString titleText = tr("PRCY Coin Keychain Wallet");
+    QString titleText = tr("PRivaCY Coin Keychain Wallet");
     fLiteMode = GetBoolArg("-litemode", false);
     if (fLiteMode) {
-        titleText = tr("PRCY Coin Lite Mode Wallet");
+        titleText = tr("PRivaCY Coin Lite Mode Wallet");
     }
     QString versionText = QString(tr("Version %1")).arg(QString::fromStdString(FormatFullVersion()));
     QString copyrightTextBtc = QChar(0xA9) + QString(" 2009-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Bitcoin Core developers"));
