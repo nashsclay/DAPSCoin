@@ -44,12 +44,6 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
     ui->pushButtonOpenTXID->setStyleSheet("background:transparent;");
     ui->pushButtonOpenTXID->setIcon(QIcon(":/icons/eye"));
     connect(ui->pushButtonOpenTXID, SIGNAL(clicked()), this, SLOT(openTXinExplorer()));
-
-    // Hide View in Explorer on any other network but Main
-    bool fMainNet = Params().NetworkID() == CBaseChainParams::MAIN;
-    if (!fMainNet) {
-        ui->pushButtonOpenTXID->hide();
-    }
 }
 
 RevealTxDialog::~RevealTxDialog()
@@ -141,6 +135,12 @@ void RevealTxDialog::copyTxRingSize(){
 
 void RevealTxDialog::openTXinExplorer()
 {
-    QString URL = "https://explorer.prcycoin.com/tx/";
+    QString URL;
+    // Adjust link depending on Network
+    if (Params().NetworkID() == CBaseChainParams::MAIN) {
+        URL = "https://explorer.prcycoin.com/tx/";
+    } else if (Params().NetworkID() == CBaseChainParams::TESTNET){
+        URL = "https://testnet.prcycoin.com/tx/";
+    }
     QDesktopServices::openUrl(QUrl(URL.append(ui->lblTxID->text())));
 }

@@ -10,6 +10,7 @@
 #include "addresstablemodel.h"
 #include "askpassphrasedialog.h"
 #include "bitcoinunits.h"
+#include "chainparams.h"
 #include "clientmodel.h"
 #include "coincontroldialog.h"
 #include "guiutil.h"
@@ -33,6 +34,8 @@
 #include <QTextDocument>
 #include <QDateTime>
 #include <QDebug>
+#include <QDesktopServices>
+#include <QUrl>
 
 
 SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
@@ -352,15 +355,26 @@ void SendCoinsDialog::sendTx() {
         WalletUtil::getTx(pwalletMain, resultTx.GetHash());
         QString txhash = resultTx.GetHash().GetHex().c_str();
         QMessageBox msgBox;
+        QPushButton *viewButton = msgBox.addButton(tr("View on Explorer"), QMessageBox::ActionRole);
         QPushButton *copyButton = msgBox.addButton(tr("Copy"), QMessageBox::ActionRole);
         QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
-        copyButton->setStyleSheet("background:transparent;");
-        copyButton->setIcon(QIcon(":/icons/editcopy"));
         msgBox.setWindowTitle("Transaction Initialized");
         msgBox.setText("Transaction initialized.\n\n" + txhash);
         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
         msgBox.setIcon(QMessageBox::Information);
         msgBox.exec();
+
+        if (msgBox.clickedButton() == viewButton) {
+            QString URL;
+            // Adjust link depending on Network
+            if (Params().NetworkID() == CBaseChainParams::MAIN) {
+                URL = "https://explorer.prcycoin.com/tx/";
+            } else if (Params().NetworkID() == CBaseChainParams::TESTNET){
+                URL = "https://testnet.prcycoin.com/tx/";
+            }
+            // Open the link
+            QDesktopServices::openUrl(QUrl(URL.append(txhash)));
+        }
 
         if (msgBox.clickedButton() == copyButton) {
         //Copy txhash to clipboard
