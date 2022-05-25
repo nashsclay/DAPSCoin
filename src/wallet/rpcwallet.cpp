@@ -1861,7 +1861,7 @@ UniValue walletlock(const UniValue& params, bool fHelp)
             "\nExamples:\n"
             "\nSet the passphrase for 2 minutes to perform a transaction\n" +
             HelpExampleCli("unlockwallet", "\"my pass phrase\" 120") +
-            "\nPerform a send (requires passphrase set)\n" + HelpExampleCli("sendtoaddress", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\" 1.0") +
+            "\nPerform a send (requires passphrase set)\n" + HelpExampleCli("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 1.0") +
             "\nClear the passphrase since we are done before 2 minutes is up\n" + HelpExampleCli("walletlock", "") +
             "\nAs json rpc call\n" + HelpExampleRpc("walletlock", ""));
 
