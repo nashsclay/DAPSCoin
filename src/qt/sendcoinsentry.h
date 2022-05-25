@@ -61,7 +61,8 @@ private Q_SLOTS:
     void on_payTo_textChanged(const QString& address);
     void on_addressBookButton_clicked();
     //void on_pasteButton_clicked();
-    //void on_clearAllButton_clicked();
+    void on_clearAllButton_clicked();
+    void on_useAllSpendableButton_clicked();
     void updateDisplayUnit();
 
 private:

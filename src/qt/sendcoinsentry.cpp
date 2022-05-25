@@ -10,6 +10,7 @@
 
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
+#include "bitcoinunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "walletmodel.h"
@@ -75,14 +76,14 @@ void SendCoinsEntry::on_addressBookButton_clicked()
     }
 }
 
-/*void SendCoinsEntry::on_clearAllButton_clicked()
+void SendCoinsEntry::on_clearAllButton_clicked()
 {
     ui->payTo->clear();
     ui->addAsLabel->clear();
     ui->payAmount->clear();
     ui->payTo->setStyleSheet(GUIUtil::loadStyleSheet());
     ui->payAmount->setStyleSheet(GUIUtil::loadStyleSheet());
-}*/
+}
 
 void SendCoinsEntry::on_payTo_textChanged(const QString& address)
 {
@@ -245,4 +246,9 @@ void SendCoinsEntry::errorAmount(bool valid){
     if (valid)
         ui->payAmount->setStyleSheet(GUIUtil::loadStyleSheet());
     else ui->payAmount->setStyleSheet("border-color: red;");
+}
+
+void SendCoinsEntry::on_useAllSpendableButton_clicked()
+{
+    ui->payAmount->setText(BitcoinUnits::format(BitcoinUnits::PRCY, pwalletMain->GetSpendableBalance(), false, BitcoinUnits::separatorNever));
 }
