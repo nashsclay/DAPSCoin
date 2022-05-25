@@ -10,6 +10,7 @@
 
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
+#include "bitcoinunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "walletmodel.h"
@@ -245,4 +246,9 @@ void SendCoinsEntry::errorAmount(bool valid){
     if (valid)
         ui->payAmount->setStyleSheet(GUIUtil::loadStyleSheet());
     else ui->payAmount->setStyleSheet("border-color: red;");
+}
+
+void SendCoinsEntry::on_useAllSpendableButton_clicked()
+{
+    ui->payAmount->setText(BitcoinUnits::format(BitcoinUnits::PRCY, pwalletMain->GetSpendableBalance(), false, BitcoinUnits::separatorNever));
 }

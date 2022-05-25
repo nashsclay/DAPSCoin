@@ -167,6 +167,19 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="useAllSpendableButton">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Use Spendable Balance</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
