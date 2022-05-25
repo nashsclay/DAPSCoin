@@ -430,8 +430,6 @@ static const CRPCCommand vRPCCommands[] =
         // {"wallet", "multisend", &multisend, false, false, true},
         // {"wallet", "sendfrom", &sendfrom, false, false, true},
         // {"wallet", "sendmany", &sendmany, false, false, true},
-        // {"wallet", "sendtoaddress", &sendtoaddress, false, false, true},
-        // {"wallet", "sendtoaddressix", &sendtoaddressix, false, false, true},
         // {"wallet", "setaccount", &setaccount, true, false, true},
         // {"wallet", "setstakesplitthreshold", &setstakesplitthreshold, false, false, true},
         // {"wallet", "settxfee", &settxfee, true, false, true},
