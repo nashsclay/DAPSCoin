@@ -2811,6 +2811,9 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
                 "\nExamples:\n" +
                 HelpExampleCli("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1") + HelpExampleCli("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1 \"donation\" \"seans outpost\"") + HelpExampleRpc("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\", 0.1, \"donation\", \"seans outpost\""));
 
+    EnsureWalletIsUnlocked();
+
+    // Stealth Address
     std::string stealthAddr = params[0].get_str();
 
     // Amount
@@ -2818,8 +2821,6 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
 
     // Wallet comments
     CWalletTx wtx;
-
-    EnsureWalletIsUnlocked();
 
     if (!pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx)) {
         throw JSONRPCError(RPC_WALLET_ERROR,
@@ -2840,11 +2841,13 @@ UniValue sendalltostealthaddress(const UniValue& params, bool fHelp)
                 "\nResult:\n"
                 "\"transactionid\"  (string) The transaction id.\n"
                 "\nExamples:\n" +
-                HelpExampleCli("sendalltostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1"));
-
-    std::string stealthAddr = params[0].get_str();
+                HelpExampleCli("sendalltostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\""));
 
     EnsureWalletIsUnlocked();
+
+    // Stealth Address
+    std::string stealthAddr = params[0].get_str();
+
 
     // Wallet comments
     CWalletTx wtx;
