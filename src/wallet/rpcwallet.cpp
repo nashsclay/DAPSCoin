@@ -373,70 +373,6 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 }
 
-UniValue sendtoaddress(const UniValue& params, bool fHelp)
-{
-    if (fHelp || params.size() != 2)
-        throw std::runtime_error(
-            "sendtoaddress \"prcycoinaddress\" amount \n"
-            "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-            HelpRequiringPassphrase() +
-            "\nArguments:\n"
-            "1. \"prcycoinaddress\"  (string, required) The prcycoin address to send to.\n"
-            "2. \"amount\"      (numeric, required) The amount in PRCY to send. eg 0.1\n"
-            "\nResult:\n"
-            "\"transactionid\"  (string) The transaction id.\n"
-            "\nExamples:\n" +
-            HelpExampleCli("sendtoaddress", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\" 0.1") + HelpExampleCli("sendtoaddress", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\" 0.1 \"donation\" \"seans outpost\"") + HelpExampleRpc("sendtoaddress", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\", 0.1, \"donation\", \"seans outpost\""));
-
-    std::string stealthAddr = params[0].get_str();
-
-    // Amount
-    CAmount nAmount = AmountFromValue(params[1]);
-
-    // Wallet comments
-    CWalletTx wtx;
-
-    EnsureWalletIsUnlocked();
-
-    if (!pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx)) {
-        throw JSONRPCError(RPC_WALLET_ERROR,
-                           "Failed to create transaction.");
-    }
-    return wtx.GetHash().GetHex();
-}
-
-UniValue sendtoaddressix(const UniValue& params, bool fHelp)
-{
-    if (fHelp || params.size() < 2 || params.size() > 4)
-        throw std::runtime_error(
-            "sendtoaddressix \"prcycoinaddress\" amount\n"
-            "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-            HelpRequiringPassphrase() +
-            "\nArguments:\n"
-            "1. \"prcycoinaddress\"  (string, required) The prcycoin address to send to.\n"
-            "2. \"amount\"      (numeric, required) The amount in PRCY to send. eg 0.1\n"
-            "\nResult:\n"
-            "\"transactionid\"  (string) The transaction id.\n"
-            "\nExamples:\n" +
-            HelpExampleCli("sendtoaddressix", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\" 0.1") + HelpExampleCli("sendtoaddressix", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\" 0.1 \"donation\" \"seans outpost\"") + HelpExampleRpc("sendtoaddressix", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\", 0.1, \"donation\", \"seans outpost\""));
-
-    std::string stealthAddr = params[0].get_str();
-
-    // Amount
-    CAmount nAmount = AmountFromValue(params[1]);
-
-    // Wallet comments
-    CWalletTx wtx;
-
-    EnsureWalletIsUnlocked();
-
-    if (!pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx)) {
-        throw JSONRPCError(RPC_WALLET_ERROR,
-                           "Failed to create transaction.");
-    }
-    return wtx.GetHash().GetHex();
-}
-
 UniValue listaddressgroupings(const UniValue& params, bool fHelp)
 {
     if (fHelp)
@@ -1925,7 +1861,7 @@ UniValue walletlock(const UniValue& params, bool fHelp)
             "\nExamples:\n"
             "\nSet the passphrase for 2 minutes to perform a transaction\n" +
             HelpExampleCli("unlockwallet", "\"my pass phrase\" 120") +
-            "\nPerform a send (requires passphrase set)\n" + HelpExampleCli("sendtoaddress", "\"DEQsu2RRB5iphm9tKXiP4iWSRMC17gseW5\" 1.0") +
+            "\nPerform a send (requires passphrase set)\n" + HelpExampleCli("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 1.0") +
             "\nClear the passphrase since we are done before 2 minutes is up\n" + HelpExampleCli("walletlock", "") +
             "\nAs json rpc call\n" + HelpExampleRpc("walletlock", ""));
 
@@ -2875,6 +2811,9 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
                 "\nExamples:\n" +
                 HelpExampleCli("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1") + HelpExampleCli("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1 \"donation\" \"seans outpost\"") + HelpExampleRpc("sendtostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\", 0.1, \"donation\", \"seans outpost\""));
 
+    EnsureWalletIsUnlocked();
+
+    // Stealth Address
     std::string stealthAddr = params[0].get_str();
 
     // Amount
@@ -2882,8 +2821,6 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
 
     // Wallet comments
     CWalletTx wtx;
-
-    EnsureWalletIsUnlocked();
 
     if (!pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx)) {
         throw JSONRPCError(RPC_WALLET_ERROR,
@@ -2904,11 +2841,13 @@ UniValue sendalltostealthaddress(const UniValue& params, bool fHelp)
                 "\nResult:\n"
                 "\"transactionid\"  (string) The transaction id.\n"
                 "\nExamples:\n" +
-                HelpExampleCli("sendalltostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\" 0.1"));
-
-    std::string stealthAddr = params[0].get_str();
+                HelpExampleCli("sendalltostealthaddress", "\"Pap5WCV4SjVMGLyYf98MEX82ErBEMVpg9ViQ1up3aBib6Fz4841SahrRXG6eSNSLBSNvEiGuQiWKXJC3RDfmotKv15oCrh6N2Ym\""));
 
     EnsureWalletIsUnlocked();
+
+    // Stealth Address
+    std::string stealthAddr = params[0].get_str();
+
 
     // Wallet comments
     CWalletTx wtx;
