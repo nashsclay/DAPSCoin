@@ -123,7 +123,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
             this
     );
 
-    QString windowTitle = tr("PRCY Coin") + " ";
+    QString windowTitle = tr("PRivaCY Coin") + " ";
     fLiteMode = GetBoolArg("-litemode", false);
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */

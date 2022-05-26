@@ -8,7 +8,7 @@
 # /etc/prcycoin/prcycoin.conf
 
 [Unit]
-Description=PRCY Coin daemon
+Description=PRivaCY Coin daemon
 After=network.target
 
 [Service]

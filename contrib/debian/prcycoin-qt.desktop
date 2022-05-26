@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Name=PRCYCoin Core
-Comment=PRCY Coin, P2P Cryptocurrency
-Comment[fr]=PRCY Coin, monnaie virtuelle cryptographique pair à pair
-Comment[tr]=PRCY Coin, eşten eşe kriptografik sanal para birimi
+Comment=PRivaCY Coin, P2P Cryptocurrency
+Comment[fr]=PRivaCY Coin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=PRivaCY Coin, eşten eşe kriptografik sanal para birimi
 Exec=prcycoin-qt %u
 Terminal=false
 Type=Application
