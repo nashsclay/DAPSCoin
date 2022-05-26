@@ -2848,11 +2848,10 @@ UniValue sendalltostealthaddress(const UniValue& params, bool fHelp)
     // Stealth Address
     std::string stealthAddr = params[0].get_str();
 
-
     // Wallet comments
     CWalletTx wtx;
 
-    if (!pwalletMain->SendAll(stealthAddr)) {
+    if (!pwalletMain->SendAll(stealthAddr, wtx)) {
         throw JSONRPCError(RPC_WALLET_ERROR,
                            "Cannot create transaction.");
     }
