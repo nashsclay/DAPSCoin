@@ -2021,8 +2021,6 @@ bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::v
             }
             if (!found) continue;
 
-            if (value <= DUST) continue; //dust
-
             isminetype mine = IsMine(pcoin->vout[i]);
             if (mine == ISMINE_NO)
                 continue;
@@ -2252,7 +2250,6 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
                                 continue;
                             }
                         }
-                        if (value <= DUST) continue; //dust
 
                         isminetype mine = IsMine(pcoin->vout[i]);
                         if (mine == ISMINE_NO)
