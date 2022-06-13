@@ -4902,7 +4902,7 @@ bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, c
     return true;
 }
 
-bool CWallet::SendAll(std::string des)
+bool CWallet::SendAll(std::string des, CWalletTx& wtxNew)
 {
     if (this->IsLocked()) {
         throw std::runtime_error("Wallet is locked! Please unlock it to make transactions.");
@@ -4978,7 +4978,6 @@ bool CWallet::SendAll(std::string des)
 
             if (ret) {
                 // Generate transaction public key
-                CWalletTx wtxNew;
                 CKey secret;
                 secret.MakeNewKey(true);
                 SetMinVersion(FEATURE_COMPRPUBKEY);
