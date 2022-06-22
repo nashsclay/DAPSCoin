@@ -91,6 +91,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel
     connect(ui->passEdit1, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
     connect(ui->passEdit2, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
     connect(ui->passEdit3, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
+    connect(ui->showPassphraseCheckBox, SIGNAL(clicked()), this, SLOT(on_showPassphraseCheckBox_clicked()));
 }
 
 AskPassphraseDialog::~AskPassphraseDialog()
@@ -279,3 +280,11 @@ bool AskPassphraseDialog::eventFilter(QObject* object, QEvent* event)
     }
     return QDialog::eventFilter(object, event);
 }
+
+void AskPassphraseDialog::on_showPassphraseCheckBox_clicked()
+{
+    ui->passEdit1->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password );
+    ui->passEdit2->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password );
+    ui->passEdit3->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password );
+}
+
