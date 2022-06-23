@@ -397,7 +397,7 @@ void OverviewPage::onAnimTick()
     } else {
         blockSyncCircle->setStyleSheet("image:url(':/images/syncb')");
         blockAnimSyncCircle->setVisible(false);
-        ui->lblHelp->setVisible(false);
+        ui->lblHelp->setText(ui->lblHelp->text().remove("It is advised not to send or receive coins until your current sync is complete."));
     }
     if (isSyncingBalance){
         moveSyncCircle(balanceSyncCircle, balanceAnimSyncCircle, 3, -100, 130);
@@ -513,6 +513,15 @@ void OverviewPage::updateRecentTransactions() {
 
                     if (i % 2 == 0) {
                         entry->setObjectName("secondaryTxEntry");
+                    }
+                }
+                if (latestTxes.size() >= 10000) {
+                    QString txWarning = "Your wallet has more than 10,000 Transactions. It may run slowly. It's recommended to send your funds to a new wallet.";
+                    QString kbURL = "https://prcycoin.com/knowledge-base/wallets/sluggish-large-wallet-dat-solution/";
+                    QString kbTitle = "Need Help?";
+                    txWarning.append(" <a href=\"" + kbURL + "\">" + kbTitle + "</a>");
+                    if (!ui->lblHelp->text().contains(txWarning)) {
+                        ui->lblHelp->setText(ui->lblHelp->text() + "\n" + txWarning);
                     }
                 }
 
