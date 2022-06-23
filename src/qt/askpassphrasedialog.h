@@ -57,6 +57,7 @@ private:
 
 private Q_SLOTS:
     void textChanged();
+    void on_showPassphraseCheckBox_clicked();
 
 protected:
     bool event(QEvent* event);
