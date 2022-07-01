@@ -24,6 +24,7 @@ private Q_SLOTS:
     void on_acceptPassphrase();
     void validateNewPass();
     void validateNewPassRepeat();
+    void on_showPassphraseCheckBox_clicked();
 
 private:
     Ui::EncryptDialog *ui;

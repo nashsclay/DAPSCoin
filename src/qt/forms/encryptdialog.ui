@@ -83,6 +83,13 @@ lowercase letters, numbers, symbols) </string>
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="showPassphraseCheckBox">
+       <property name="text">
+        <string>Show passphrase</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

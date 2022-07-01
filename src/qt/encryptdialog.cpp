@@ -18,6 +18,7 @@ EncryptDialog::EncryptDialog(QWidget *parent) :
     connect(ui->linePwdConfirm, SIGNAL(textChanged(const QString &)), this, SLOT(validateNewPassRepeat()));
     connect(ui->btnOK, SIGNAL(clicked()), this, SLOT(on_acceptPassphrase()));
     connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(on_btnCancel()));
+    connect(ui->showPassphraseCheckBox, SIGNAL(clicked()), this, SLOT(on_showPassphraseCheckBox_clicked()));
 }
 
 EncryptDialog::~EncryptDialog()
@@ -154,3 +155,10 @@ bool EncryptDialog::matchNewPasswords()
         return false;
     }
 }
+
+void EncryptDialog::on_showPassphraseCheckBox_clicked()
+{
+    ui->linePwd->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password);
+    ui->linePwdConfirm->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password);
+}
+
