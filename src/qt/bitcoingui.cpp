@@ -132,7 +132,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     enableWallet = false;
 #endif // ENABLE_WALLET
     if (enableWallet) {
-        windowTitle += tr("Keychain Wallet");
+        windowTitle += tr("Wallet");
     } else {
         windowTitle += tr("Node");
     }
