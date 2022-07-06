@@ -107,6 +107,7 @@ private Q_SLOTS:
     void checkForUnlock();
     void displayCurrencyValue_clicked(int);
     void setDefaultCurrency(int);
+    void on_showPassphraseCheckBox_clicked();
 };
 
 #endif // BITCOIN_QT_OPTIONSPAGE_H

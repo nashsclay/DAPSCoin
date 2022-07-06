@@ -168,6 +168,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     connect(ui->lockSendStaking, SIGNAL(stateChanged(int)), this, SLOT(lockSendStaking_clicked(int)));
     connect(ui->displayCurrencyValue, SIGNAL(stateChanged(int)), this, SLOT(displayCurrencyValue_clicked(int)));
     connect(ui->defaultCurrency, SIGNAL(currentIndexChanged(int)), this, SLOT(setDefaultCurrency(int)));
+    connect(ui->showPassphraseCheckBox, SIGNAL(clicked()), this, SLOT(on_showPassphraseCheckBox_clicked()));
 }
 
 void OptionsPage::setStakingToggle()
@@ -1100,4 +1101,11 @@ void OptionsPage::checkForUnlock()
         msgBox.exec();
         return;
     }
+}
+
+void OptionsPage::on_showPassphraseCheckBox_clicked()
+{
+    ui->lineEditOldPass->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password);
+    ui->lineEditNewPass->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password);
+    ui->lineEditNewPassRepeat->setEchoMode(ui->showPassphraseCheckBox->checkState() == Qt::Checked ? QLineEdit::Normal : QLineEdit::Password);
 }
