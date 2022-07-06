@@ -34,7 +34,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     float fontFactor = 1.0;
 
     // define text to place
-    QString titleText = tr("PRivaCY Coin Keychain Wallet");
+    QString titleText = tr("PRivaCY Coin Wallet");
     fLiteMode = GetBoolArg("-litemode", false);
     if (fLiteMode) {
         titleText = tr("PRivaCY Coin Lite Mode Wallet");
@@ -44,7 +44,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     QString copyrightTextDash = QChar(0xA9) + QString(" 2014-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Dash Core developers"));
     QString copyrightTextPivx = QChar(0xA9) + QString(" 2015-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The PIVX Core developers"));
     QString copyrightTextDAPS = QChar(0xA9) + QString(" 2018-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The DAPS Project developers"));
-    QString copyrightTextPRCY = QChar(0xA9) + QString(" 2020-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The PRCY developers"));
+    QString copyrightTextPRCY = QChar(0xA9) + QString(" 2020-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The PRivaCY Coin developers"));
     QString titleAddText = networkStyle->getTitleAddText();
 
     QString font = QApplication::font().toString();

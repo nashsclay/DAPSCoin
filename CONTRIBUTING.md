@@ -1,7 +1,7 @@
 Contributing to PRCY
 ============================
 
-The PRCY Developers operates an open contributor model where anyone is
+The PRivaCY Coin Developers operates an open contributor model where anyone is
 welcome to contribute towards development in the form of peer review, testing
 and patches. This document explains the practical process and guidelines for
 contributing.

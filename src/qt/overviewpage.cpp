@@ -547,7 +547,7 @@ void OverviewPage::on_lockUnlock() {
     }
     else {
         QMessageBox::StandardButton msgReply;
-        msgReply = QMessageBox::question(this, "Lock Keychain Wallet", "Would you like to lock your keychain wallet now?\n\n(Staking will also be stopped)", QMessageBox::Yes|QMessageBox::No);
+        msgReply = QMessageBox::question(this, "Lock Wallet", "Would you like to lock your wallet now?\n\n(Staking will also be stopped)", QMessageBox::Yes|QMessageBox::No);
         if (msgReply == QMessageBox::Yes) {
             walletModel->setWalletLocked(true);
             ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/lock) 0 0 0 0 stretch stretch; width: 20px;");
