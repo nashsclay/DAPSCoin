@@ -33,7 +33,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Cannot obtain a lock on data directory %s. PRCY is probably already running."),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Change automatic finalized budget voting behavior. mode=auto: Vote for only "
-"exact finalized budget match to my generated budget. (std::string, default: auto)"),
+"exact finalized budget match to my generated budget. (string, default: auto)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Connect only to the specified node(s); -noconnect or -connect=0 alone to "
 "disable automatic connections"),
@@ -64,6 +64,10 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Error: Unsupported argument -socks found. Setting SOCKS version isn't "
 "possible anymore, only SOCKS5 proxies are supported."),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Exclude debugging information for a category. Can be used in conjunction "
+"with -debug=1 to output debug logs for all categories except one or more "
+"specified categories."),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Execute command when a relevant alert is received or we see a really long "
 "fork (%s in cmd is replaced by message)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
@@ -76,10 +80,10 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Execute command when the best block changes and its size is over (%s in cmd "
 "is replaced by block hash, %d with the block size)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
-"Fees (in PRCY/Kb) smaller than this are considered zero fee for relaying "
+"Fees (in %s/Kb) smaller than this are considered zero fee for relaying "
 "(default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
-"Fees (in PRCY/Kb) smaller than this are considered zero fee for transaction "
+"Fees (in %s/Kb) smaller than this are considered zero fee for transaction "
 "creation (default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Flush database activity from memory pool to disk log every <n> megabytes "
@@ -137,6 +141,13 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Show N confirmations for a successfully locked transaction (0-9999, default: "
 "%u)"),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Specify custom backup path to add a copy of any wallet backup. If set as "
+"dir, every backup generates a timestamped file. If set as file, will rewrite "
+"to that file every backup."),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Specify location of debug log file: this can be an absolute path or a path "
+"relative to the data directory (default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Support filtering of blocks and transaction with bloom filters (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
@@ -206,10 +217,9 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "You must specify a masternodeprivkey in the configuration. Please see "
 "documentation for help."),
-QT_TRANSLATE_NOOP("prcycoin-core", "(59682 could be used only on mainnet)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "(default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "(default: 1)"),
-QT_TRANSLATE_NOOP("prcycoin-core", "(must be 59682 for mainnet)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "(must be %d for %s-net)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "<category> can be:"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Accept command line and JSON-RPC commands"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Accept public REST requests (default: %u)"),
@@ -240,6 +250,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Copyright (C) 2009-%i The Bitcoin Core Devel
 QT_TRANSLATE_NOOP("prcycoin-core", "Copyright (C) 2014-%i The Dash Core Developers"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Copyright (C) 2015-%i The PIVX Core Developers"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Copyright (C) 2018-%i The DAPS Project developers"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Copyright (C) 2020-%i The PRivaCY Coin Developers"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Corrupted block database detected"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Could not parse masternode.conf"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Currently the Number of supported recipients must be 1"),
@@ -273,9 +284,11 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Error opening block database"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error reading from database, shutting down."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error recovering public key."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Error: -listen must be true if -masternode is set."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: A fatal internal error occured, see debug.log for details"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: A fatal internal error occurred, see debug.log for details"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: Disk space is low!"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Error: Invalid port %d for running a masternode."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: Unsupported argument -tor found, use -onion."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate RingCT for Sweeping transaction"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate bulletproof for Sweeping transaction"),
@@ -283,7 +296,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate bulletproof"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to listen on any port. Use -listen=0 if you want this."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to parse host:port string"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to read block"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Fee (in PRCY/kB) to add to transactions you send (default: %s)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Fee (in %s/kB) to add to transactions you send (default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Force safe mode (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Generate coins (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "How many blocks to check at startup (default: %u, 0 = all)"),
@@ -296,13 +309,15 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Information"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Initialization sanity check failed. PRCY is shutting down."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Input commitments are not correct"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Insufficient funds."),
+QT_TRANSLATE_NOOP("prcycoin-core", "Invalid -masternodeaddr address: %s"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Invalid -masternodeaddr port %d, only %d is supported on %s-net."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid -onion address or hostname: '%s'"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid amount for -%s=<amount>: '%s'"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid amount for -reservebalance=<amount>"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid masternodeprivkey. Please see documenation."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid netmask specified in -whitelist: '%s'"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Invalid port detected in masternode.conf"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Invalid port %d detected in masternode.conf"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid private key."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Limit size of signature cache to <n> entries (default: %u)"),
@@ -319,6 +334,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Lock masternodes from masternode configurati
 QT_TRANSLATE_NOOP("prcycoin-core", "Lookup(): Invalid -proxy address or hostname: '%s'"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Maintain at most <n> connections to peers (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Masternode options:"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Masternodes are required to run on port %d for %s-net"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Maximum per-connection receive buffer, <n>*1000 bytes (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Maximum per-connection send buffer, <n>*1000 bytes (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Need to specify a port with -whitebind: '%s'"),
@@ -337,8 +353,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Randomly drop 1 of every <n> network message
 QT_TRANSLATE_NOOP("prcycoin-core", "Randomly fuzz 1 of every <n> network messages"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Rebuild block chain index from current blk000??.dat files"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Recalculating PRCY supply..."),
-QT_TRANSLATE_NOOP("prcycoin-core", "Reindex the PRCY money supply statistics"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Reindex the accumulator database"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Reindex the %s money supply statistics"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Relay and mine data carrier transactions (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Relay non-P2SH multisig (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Rescan the block chain for missing wallet transactions"),
@@ -392,6 +407,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Transaction too large"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Unable to bind to %s on this computer (bind returned error %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Unable to start HTTP server. See debug log for details."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Unknown network specified in -onlynet: '%s'"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Unsupported logging category %s=%s."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Upgrade wallet to latest format"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Use UPnP to map the listening port (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Use UPnP to map the listening port (default: 1 when listening)"),
