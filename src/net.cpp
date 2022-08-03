@@ -2210,7 +2210,7 @@ unsigned int SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000)
 
 CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) :
     ssSend(SER_NETWORK, INIT_PROTO_VERSION),
-    addrKnown(5000, 0.001, 0),
+    addrKnown(5000, 0.001),
     setInventoryKnown(SendBufferSize() / 1000)
 {
     nServices = NODE_NONE;
