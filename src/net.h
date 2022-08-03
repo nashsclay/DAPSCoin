@@ -768,7 +768,7 @@ public:
     bool Write(const banmap_t& banSet);
     bool Read(banmap_t& banSet);
 };
-void DumpBanlist();
+
 bool IsUnsupportedVersion(std::string strSubVer, int nHeight);
 
 struct AddedNodeInfo {
