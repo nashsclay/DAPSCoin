@@ -436,17 +436,13 @@ UniValue setban(const UniValue& params, bool fHelp)
         if (params.size() == 4)
             absolute = params[3].get_bool();
         isSubnet ? CNode::Ban(subNet, BanReasonManuallyAdded, banTime, absolute) : CNode::Ban(netAddr, BanReasonManuallyAdded, banTime, absolute);
-        //disconnect possible nodes
-        while(CNode *bannedNode = (isSubnet ? FindNode(subNet) : FindNode(netAddr)))
-            bannedNode->CloseSocketDisconnect();
     }
     else if(strCommand == "remove")
     {
         if (!( isSubnet ? CNode::Unban(subNet) : CNode::Unban(netAddr) ))
             throw JSONRPCError(RPC_MISC_ERROR, "Error: Unban failed");
     }
-    DumpBanlist(); //store banlist to disk
-    uiInterface.BannedListChanged();
+
     return "Done";
 }
 
@@ -487,7 +483,6 @@ UniValue clearbanned(const UniValue& params, bool fHelp)
                 + HelpExampleRpc("clearbanned", "")
         );
     CNode::ClearBanned();
-    DumpBanlist(); //store banlist to disk
-    uiInterface.BannedListChanged();
+
     return "Done";
 }
