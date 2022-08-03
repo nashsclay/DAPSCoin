@@ -2208,9 +2208,8 @@ unsigned int ReceiveFloodSize() { return 1000 * GetArg("-maxreceivebuffer", 5 * 
 
 unsigned int SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000); }
 
-CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) : ssSend(SER_NETWORK,
-                                                                                                  INIT_PROTO_VERSION),
-                                                                                           setAddrKnown(5000) {
+CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), addrKnown(5000, 0.001, insecure_rand())
+{
     nServices = NODE_NONE;
     nServicesExpected = NODE_NONE;
     hSocket = hSocketIn;
