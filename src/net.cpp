@@ -38,6 +38,8 @@
 
 #include <boost/thread.hpp>
 
+#include <math.h>
+
 // Dump addresses to peers.dat and banlist.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 
@@ -1672,11 +1674,6 @@ void ThreadMessageHandler() {
             }
         }
 
-        // Poll the connected nodes for messages
-        CNode *pnodeTrickle = NULL;
-        if (!vNodesCopy.empty())
-            pnodeTrickle = vNodesCopy[GetRand(vNodesCopy.size())];
-
         bool fSleep = true;
         for (CNode * pnode : vNodesCopy)
         {   
@@ -1703,7 +1700,7 @@ void ThreadMessageHandler() {
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
                 if (lockSend)
-                    GetNodeSignals().SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+                    GetNodeSignals().SendMessages(pnode);
             }
             boost::this_thread::interruption_point();
         }
@@ -2240,6 +2237,9 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     hashContinue = UINT256_ZERO;
     nStartingHeight = -1;
     fGetAddr = false;
+    nNextLocalAddrSend = 0;
+    nNextAddrSend = 0;
+    nNextInvSend = 0;
     fRelayTxes = false;
     pfilter = new CBloomFilter();
     nPingNonceSent = 0;
@@ -2458,4 +2458,8 @@ bool validateMasternodeIP(const std::string& addrStr)
                 (Params().IsRegTestNet() && resolved.IsValid()));
     }
     return false;
+}
+
+int64_t PoissonNextSend(int64_t nNow, int average_interval_seconds) {
+    return nNow + (int64_t)(log1p(GetRand(1ULL << 48) * -0.0000000000000035527136788 /* -1/2^48 */) * average_interval_seconds * -1000000.0 + 0.5);
 }
