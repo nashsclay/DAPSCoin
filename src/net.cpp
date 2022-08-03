@@ -780,12 +780,23 @@ void SocketSendData(CNode *pnode) {
 
 static std::list<CNode*> vNodesDisconnected;
 
-static bool ReverseCompareNodeMinPingTime(CNode *a, CNode *b)
+class CNodeRef {
+public:
+    CNodeRef(CNode *pnode) : _pnode(pnode)  {_pnode->AddRef();}
+    ~CNodeRef() {_pnode->Release();}
+
+    CNode& operator *() const {return *_pnode;};
+    CNode* operator ->() const {return _pnode;};
+private:
+    CNode *_pnode;
+};
+
+static bool ReverseCompareNodeMinPingTime(const CNodeRef &a, const CNodeRef &b)
 {
     return a->nMinPingUsecTime > b->nMinPingUsecTime;
 }
 
-static bool ReverseCompareNodeTimeConnected(CNode *a, CNode *b)
+static bool ReverseCompareNodeTimeConnected(const CNodeRef &a, const CNodeRef &b)
 {
     return a->nTimeConnected > b->nTimeConnected;
 }
@@ -800,7 +811,7 @@ public:
         GetRandBytes(vchSecretKey.data(), vchSecretKey.size());
     }
 
-    bool operator()(CNode *a, CNode *b)
+    bool operator()(const CNodeRef &a, const CNodeRef &b)
     {
         std::vector<unsigned char> vchGroupA, vchGroupB;
         CSHA256 hashA, hashB;
@@ -823,7 +834,7 @@ public:
 };
 
 static bool AttemptToEvictConnection(bool fPreferNewConnection) {
-    std::vector<CNode*> vEvictionCandidates;
+    std::vector<CNodeRef> vEvictionCandidates;
     {
         LOCK(cs_vNodes);
 
@@ -836,7 +847,7 @@ static bool AttemptToEvictConnection(bool fPreferNewConnection) {
                 continue;
             if (node->addr.IsLocal())
                 continue;
-            vEvictionCandidates.push_back(node);
+            vEvictionCandidates.push_back(CNodeRef(node));
         }
     }
 
@@ -864,8 +875,8 @@ static bool AttemptToEvictConnection(bool fPreferNewConnection) {
     // Identify CNetAddr with the most connections
     CNetAddr naMostConnections;
     unsigned int nMostConnections = 0;
-    std::map<CNetAddr, std::vector<CNode*> > mapAddrCounts;
-    for (CNode *node : vEvictionCandidates) {
+    std::map<CNetAddr, std::vector<CNodeRef> > mapAddrCounts;
+    for (const CNodeRef& node : vEvictionCandidates) {
         mapAddrCounts[node->addr].push_back(node);
 
         if (mapAddrCounts[node->addr].size() > nMostConnections) {
