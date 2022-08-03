@@ -1718,7 +1718,7 @@ void ThreadMessageHandler() {
 
         bool fSleep = true;
         for (CNode * pnode : vNodesCopy)
-        {   
+        {
             if (!pnode) continue;
             if (pnode->fDisconnect)
                 continue;
@@ -1928,7 +1928,7 @@ void StartNode(boost::thread_group &threadGroup, CScheduler &scheduler) {
     // Initialize random numbers. Even when rand() is only usable for trivial use-cases most nodes should have a different
     // seed after all the file-IO done at this point. Should be good enough even when nodes are started via scripts.
     srand(time(NULL));
-    
+
     fAddressesInitialized = true;
 
     if (semOutbound == NULL) {
@@ -2289,6 +2289,7 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     nPingUsecStart = 0;
     nPingUsecTime = 0;
     fPingQueued = false;
+    nMinPingUsecTime = std::numeric_limits<int64_t>::max();
 
     {
         LOCK(cs_nLastNodeId);
