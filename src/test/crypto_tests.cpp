@@ -19,8 +19,6 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/test/unit_test.hpp>
-#include <openssl/aes.h>
-#include <openssl/evp.h>
 
 #ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(crypto_tests, BasicTestingSetup)
