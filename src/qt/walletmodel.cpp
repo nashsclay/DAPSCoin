@@ -868,7 +868,6 @@ std::map<QString, QString> getTx(CWallet* wallet, CWalletTx tx)
         case 0:
         case TransactionRecord::RecvWithAddress:
         case TransactionRecord::RecvFromOther:
-        case TransactionRecord::RecvWithObfuscation:
             txData["type"] = QString("Received");
             break;
         case 2:

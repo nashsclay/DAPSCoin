@@ -9,9 +9,10 @@
 #include "activemasternode.h"
 #include "base58.h"
 #include "key.h"
+#include "masternode-sync.h"
 #include "masternodeman.h"
+#include "messagesigner.h"
 #include "net.h"
-#include "obfuscation.h"
 #include "protocol.h"
 #include "sync.h"
 #include "util.h"
@@ -37,7 +38,7 @@ int nCompleteTXLocks;
 
 void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all obfuscation/masternode related functionality
+    if (fLiteMode) return; //disable all masternode related functionality
     if (!masternodeSync.IsBlockchainSynced()) return;
 
     if (strCommand == NetMsgType::IX) {
@@ -468,7 +469,7 @@ uint256 CConsensusVote::GetHash() const
 
 bool CConsensusVote::SignatureValid()
 {
-    std::string errorMessage;
+    std::string strError = "";
     std::string strMessage = Hash(txHash.begin(), txHash.end(), BEGIN(nBlockHeight), END(nBlockHeight)).ToString();
 
     CMasternode* pmn = mnodeman.Find(vinMasternode);
@@ -478,8 +479,8 @@ bool CConsensusVote::SignatureValid()
         return false;
     }
 
-    if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchMasterNodeSignature, strMessage, errorMessage)) {
-        LogPrintf("SwiftX::CConsensusVote::SignatureValid() - Verify message failed\n");
+    if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode, vchMasterNodeSignature, strMessage, strError)) {
+        LogPrintf("SwiftX::CConsensusVote::SignatureValid() - Verify message failed, error: %s\n", strError);
         return false;
     }
 
@@ -488,25 +489,22 @@ bool CConsensusVote::SignatureValid()
 
 bool CConsensusVote::Sign()
 {
-    std::string errorMessage;
+    std::string strError = "";
 
     CKey key2;
     CPubKey pubkey2;
     std::string strMessage = Hash(txHash.begin(), txHash.end(), BEGIN(nBlockHeight), END(nBlockHeight)).GetHex();
 
-    if (!obfuScationSigner.SetKey(strMasterNodePrivKey, errorMessage, key2, pubkey2)) {
-        LogPrintf("CConsensusVote::Sign() - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage.c_str());
-        return false;
+    if (!CMessageSigner::GetKeysFromSecret(strMasterNodePrivKey, key2, pubkey2)) {
+        return error("%s : Invalid masternodeprivkey", __func__);
     }
 
-    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, vchMasterNodeSignature, key2)) {
-        LogPrintf("CConsensusVote::Sign() - Sign message failed");
-        return false;
+    if (!CMessageSigner::SignMessage(strMessage, vchMasterNodeSignature, key2)) {
+        return error("%s : Sign message failed", __func__);
     }
 
-    if (!obfuScationSigner.VerifyMessage(pubkey2, vchMasterNodeSignature, strMessage, errorMessage)) {
-        LogPrintf("CConsensusVote::Sign() - Verify message failed");
-        return false;
+    if (!CMessageSigner::VerifyMessage(pubkey2, vchMasterNodeSignature, strMessage, strError)) {
+        return error("%s : Verify message failed, error: %s", __func__, strError);
     }
 
     return true;

@@ -5,13 +5,18 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "masternode.h"
+
 #include "addrman.h"
+#include "init.h"
+#include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "masternodeman.h"
+#include "messagesigner.h"
 #include "netbase.h"
-#include "obfuscation.h"
 #include "sync.h"
 #include "util.h"
 #include "streams.h"
+#include "wallet/wallet.h"
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
@@ -206,6 +211,14 @@ void CMasternode::Check(bool forceCheck)
             TRY_LOCK(cs_main, lockMain);
             if (!lockMain) return;
 
+            CCoins coins;
+            if (!pcoinsTip->GetCoins(vin.prevout.hash, coins) ||
+               (unsigned int)vin.prevout.n>=coins.vout.size() ||
+               coins.vout[vin.prevout.n].IsNull()) {
+                nActiveState = MASTERNODE_OUTPOINT_SPENT;
+                LogPrint(BCLog::MASTERNODE, "CMasternode::Check -- Failed to find Masternode UTXO, masternode=%s\n", vin.prevout.ToStringShort());
+                return;
+            }
             if (IsSpentKeyImage(vin.keyImage.GetHex(), UINT256_ZERO)) {
                 activeState = MASTERNODE_VIN_SPENT;
                 return;
@@ -263,7 +276,7 @@ int64_t CMasternode::GetLastPaid()
 
         if (masternodePayments.mapMasternodeBlocks.count(BlockReading->nHeight)) {
             /*
-                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network 
+                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
                 to converge on the same payees quickly, then keep the same schedule.
             */
             if (masternodePayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2)) {
@@ -309,6 +322,34 @@ bool CMasternode::IsValidNetAddr()
     // should probably be a bit smarter if one day we start to implement tests for this
     return Params().IsRegTestNet() ||
            (IsReachable(addr) && addr.IsRoutable());
+}
+
+bool CMasternode::IsInputAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey) const
+{
+    CScript payee2;
+    payee2 = GetScriptForDestination(pubkey);
+
+    CTransaction txVin;
+    uint256 hash;
+    if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
+        if (vin.prevout.n >= txVin.vout.size()) return false;
+        CTxOut out = txVin.vout[vin.prevout.n];
+        CAmount amount;
+        CKey decodedMask;
+        CPubKey sharedSec(vin.encryptionKey.begin(), vin.encryptionKey.end());
+        ECDHInfo::Decode(out.maskValue.mask.begin(), out.maskValue.amount.begin(), sharedSec, decodedMask, amount);
+        std::vector<unsigned char> commitment;
+        CWallet::CreateCommitment(decodedMask.begin(), amount, commitment);
+        if (commitment != out.commitment) {
+            return false;
+        }
+
+        if (amount == Params().MNCollateralAmt()) {
+            if (out.scriptPubKey == payee2) return true;
+        }
+    }
+
+    return false;
 }
 
 CMasternodeBroadcast::CMasternodeBroadcast()
@@ -386,7 +427,7 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
         return false;
     }
 
-    if (!obfuScationSigner.GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew)) {
+    if (!CMessageSigner::GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew)) {
         strErrorRet = strprintf("Invalid masternode key %s", strKeyMasternode);
         LogPrint(BCLog::MASTERNODE,"CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
@@ -566,7 +607,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
 
     // incorrect ping or its sigTime
     if(lastPing == CMasternodePing() || !lastPing.CheckAndUpdate(nDoS, false, true)) return false;
-    
+
     // search existing Masternode list
     CMasternode* pmn = mnodeman.Find(vin);
 
@@ -578,12 +619,6 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             mnodeman.Remove(pmn->vin);
     }
 
-    CValidationState state;
-    CMutableTransaction tx = CMutableTransaction();
-    CTxOut vout = CTxOut(9999.99 * COIN, obfuScationPool.collateralPubKey);
-    tx.vin.push_back(vin);
-    tx.vout.push_back(vout);
-
     {
         TRY_LOCK(cs_main, lockMain);
         if (!lockMain) {
@@ -593,9 +628,11 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             return false;
         }
 
-        if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL)) {
-            //set nDos
-            state.IsInvalid(nDoS);
+        CCoins coins;
+        if (!pcoinsTip->GetCoins(vin.prevout.hash, coins) ||
+           (unsigned int)vin.prevout.n>=coins.vout.size() ||
+           coins.vout[vin.prevout.n].IsNull()) {
+            LogPrint(BCLog::MASTERNODE, "CMasternodeBroadcast::CheckInputsAndAdd -- Failed to find Masternode UTXO, masternode=%s\n", vin.prevout.ToStringShort());
             return false;
         }
     }
@@ -651,7 +688,7 @@ void CMasternodeBroadcast::Relay()
 
 bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
 {
-    std::string errorMessage;
+    std::string strError = "";
 
     std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
     std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
@@ -660,25 +697,21 @@ bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
     std::string ss = addr.ToString();
     std::string strMessage = GetStrMessage();
 
-    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
-        LogPrint(BCLog::MASTERNODE,"CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
-        return false;
-    }
+    if (!CMessageSigner::SignMessage(strMessage, sig, keyCollateralAddress))
+        return error("CMasternodeBroadcast::Sign() - Error.");
 
-    if (!obfuScationSigner.VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
-        LogPrint(BCLog::MASTERNODE,"CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
-        return false;
-    }
+    if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, strError))
+        return error("CMasternodeBroadcast::Sign() - Error: %s", strError);
 
     return true;
 }
 
 bool CMasternodeBroadcast::VerifySignature()
 {
-    std::string errorMessage;
+    std::string strError;
 
-    if(!obfuScationSigner.VerifyMessage(pubKeyCollateralAddress, sig, GetStrMessage(), errorMessage))
-        return error("CMasternodeBroadcast::VerifySignature() - Error: %s", errorMessage);
+    if(!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, sig, GetStrMessage(), strError))
+        return error("CMasternodeBroadcast::VerifySignature() - Error: %s", strError);
 
     return true;
 }
@@ -710,20 +743,20 @@ CMasternodePing::CMasternodePing(CTxIn& newVin)
 
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {
-    std::string errorMessage;
+    std::string strError = "";
     std::string strMasterNodeSignMessage;
 
     sigTime = GetAdjustedTime();
     HEX_DATA_STREAM_PROTOCOL(PROTOCOL_VERSION) << vin.ToString() << blockHash.ToString() << sigTime;
     std::string strMessage = HEX_STR(ser);
 
-    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
-        LogPrint(BCLog::MASTERNODE,"CMasternodePing::Sign() - Error: %s\n", errorMessage);
+    if (!CMessageSigner::SignMessage(strMessage, vchSig, keyMasternode)) {
+        LogPrint(BCLog::MASTERNODE,"%s : SignMessage() - Error.", __func__);
         return false;
     }
 
-    if (!obfuScationSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-        LogPrint(BCLog::MASTERNODE,"CMasternodePing::Sign() - Error: %s\n", errorMessage);
+    if (!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)) {
+        LogPrint(BCLog::MASTERNODE,"%s : VerifyMessage() - Error: %s\n", __func__, strError);
         return false;
     }
 
@@ -731,13 +764,13 @@ bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 }
 
 bool CMasternodePing::VerifySignature(CPubKey& pubKeyMasternode, int &nDos) {
+    std::string strError = "";
     HEX_DATA_STREAM_PROTOCOL(PROTOCOL_VERSION) << vin.ToString() << blockHash.ToString() << sigTime;
     std::string strMessage = HEX_STR(ser);
-    std::string errorMessage = "";
 
-    if(!obfuScationSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)){
+    if(!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, strError)){
         nDos = 33;
-        return error("CMasternodePing::VerifySignature - Got bad Masternode ping signature %s Error: %s", vin.ToString(), errorMessage);
+        return error("CMasternodePing::VerifySignature - Got bad Masternode ping signature %s Error: %s", vin.ToString(), strError);
     }
     return true;
 }
@@ -777,7 +810,7 @@ bool CMasternodePing::CheckAndUpdate(int& nDos, bool fRequireEnabled, bool fChec
             std::string strMessage = HEX_STR(ser);
 
             std::string errorMessage = "";
-            if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+            if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
                 LogPrint(BCLog::MNPING, "%s: Got bad Masternode address signature %s\n", __func__, vin.prevout.hash.ToString());
                 nDos = 33;
                 return false;

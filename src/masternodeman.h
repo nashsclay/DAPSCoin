@@ -7,6 +7,7 @@
 #ifndef MASTERNODEMAN_H
 #define MASTERNODEMAN_H
 
+#include "activemasternode.h"
 #include "base58.h"
 #include "key.h"
 #include "main.h"
@@ -20,8 +21,12 @@
 
 
 class CMasternodeMan;
+class CActiveMasternode;
 
 extern CMasternodeMan mnodeman;
+extern CActiveMasternode activeMasternode;
+extern std::string strMasterNodePrivKey;
+
 void DumpMasternodes();
 
 /** Access to the MN database (mncache.dat)
@@ -73,6 +78,7 @@ public:
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
     // keep track of dsq count to prevent masternodes from gaming obfuscation queue
+    // TODO: Remove this from serialization
     int64_t nDsqCount;
 
     ADD_SERIALIZE_METHODS;
@@ -139,8 +145,6 @@ public:
     int GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol = 0, bool fOnlyActive = true);
     CMasternode* GetMasternodeByRank(int nRank, int64_t nBlockHeight, int minProtocol = 0, bool fOnlyActive = true);
 
-    void ProcessMasternodeConnections();
-
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     /// Return the number of (unique) Masternodes
@@ -156,5 +160,7 @@ public:
     /// Update masternode list and maps using provided CMasternodeBroadcast
     void UpdateMasternodeList(CMasternodeBroadcast mnb);
 };
+
+void ThreadCheckMasternodes();
 
 #endif
