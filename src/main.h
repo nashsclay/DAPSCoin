@@ -105,6 +105,13 @@ static const unsigned int MAX_REJECT_MESSAGE_LENGTH = 111;
 /** Enable bloom filter */
  static const bool DEFAULT_PEERBLOOMFILTERS = true;
 
+ /** Default for -blockspamfilter, use header spam filter */
+ static const bool DEFAULT_BLOCK_SPAM_FILTER = true;
+ /** Default for -blockspamfiltermaxsize, maximum size of the list of indexes in the block spam filter */
+ static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_SIZE = COINBASE_MATURITY;
+ /** Default for -blockspamfiltermaxavg, maximum average size of an index occurrence in the block spam filter */
+ static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_AVG = 10;
+
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 static const int64_t DEFAULT_MAX_TIP_AGE = 24 * 60 * 60;
 
