@@ -3815,6 +3815,13 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             wlIdx = 0;
         }
 
+        CKey view, spend;
+        myViewPrivateKey(view);
+        mySpendPrivateKey(spend);
+        CPubKey sharedSec;
+        CPubKey viewPub = view.GetPubKey();
+        CPubKey spendPub = spend.GetPubKey();
+
         for (std::map<uint256, CWalletTx>::const_iterator it = std::next(mapWallet.begin(), wlIdx); it != mapWallet.end(); ++it) {
             wlIdx = (wlIdx + 1) % mapWallet.size();
             const uint256& wtxid = it->first;
@@ -3886,10 +3893,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
                 nTxNewTime = GetAdjustedTime();
 
-                CKey view, spend;
-                myViewPrivateKey(view);
-                mySpendPrivateKey(spend);
-                CPubKey sharedSec;
                 computeSharedSec(*pcoin.first, pcoin.first->vout[pcoin.second], sharedSec);
                 //iterates each utxo inside of CheckStakeKernelHash()
                 if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, sharedSec.begin(), nTxNewTime, nHashDrift, false, hashProofOfStake, true)) {
@@ -3951,7 +3954,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     myTxPriv.MakeNewKey(true);
                     CPubKey txPub = myTxPriv.GetPubKey();
                     CPubKey newPub;
-                    ComputeStealthDestination(myTxPriv, view.GetPubKey(), spend.GetPubKey(), newPub);
+                    ComputeStealthDestination(myTxPriv, viewPub, spendPub, newPub);
                     scriptPubKeyOut = GetScriptForDestination(newPub);
                     CTxOut out(0, scriptPubKeyOut);
                     std::copy(txPub.begin(), txPub.end(), std::back_inserter(out.txPub));
@@ -3963,7 +3966,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     myTxPrivStaking.MakeNewKey(true);
                     CPubKey txPubStaking = myTxPrivStaking.GetPubKey();
                     CPubKey newPubStaking;
-                    ComputeStealthDestination(myTxPrivStaking, view.GetPubKey(), spend.GetPubKey(), newPubStaking);
+                    ComputeStealthDestination(myTxPrivStaking, viewPub, spendPub, newPubStaking);
                     CScript scriptPubKeyOutStaking = GetScriptForDestination(newPubStaking);
                     CTxOut outStaking(0, scriptPubKeyOutStaking);
                     std::copy(txPubStaking.begin(), txPubStaking.end(), std::back_inserter(outStaking.txPub));
