@@ -10,7 +10,7 @@ env:
 jobs:
   create-source-distribution:
     name: Create Source Distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     if: "contains(github.event.head_commit.message, '[debug]')"
     env:
       ARTIFACT_DIR: source
@@ -59,7 +59,7 @@ jobs:
   build-x86_64-linux:
     name: Build for x86 Linux 64bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-x86_64-linux-debug
       TEST_LOG_ARTIFACT_DIR: test-logs
@@ -105,7 +105,7 @@ jobs:
   build-win64:
     name: Build for Win64
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-win64-debug
     steps:
@@ -154,7 +154,7 @@ jobs:
   build-osx64:
     name: Build for MacOSX
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-macosx-debug
       SDK_URL: https://bitcoincore.org/depends-sources/sdks
@@ -217,7 +217,7 @@ jobs:
   build-aarch64-linux:
     name: Build for ARM Linux 64bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-aarch64-linux-debug
     steps:
@@ -261,7 +261,7 @@ jobs:
   build-arm-linux-gnueabihf:
     name: Build for ARM Linux 32bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-arm32-debug
     steps:
@@ -305,7 +305,7 @@ jobs:
   build-riscv64-linux-gnu:
     name: Build for RISC-V 64-bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-riscv64-debug
     steps:
