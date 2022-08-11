@@ -513,7 +513,7 @@ void BitcoinApplication::initializeResult(int retval)
             window, SLOT(message(QString, QString, unsigned int)));
         QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
         if (pwalletMain) {
-            if (walletModel->getEncryptionStatus() == WalletModel::Locked && !GetBoolArg("-min", false)) {
+            if (walletModel->getEncryptionStatus() == WalletModel::Locked && !GetBoolArg("-min", false) && !GetBoolArg("-bypasslogin", false)) {
                 WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
                 if (ctx.isValid()) {
                     walletUnlocked = true;
