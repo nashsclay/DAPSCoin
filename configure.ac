@@ -417,8 +417,6 @@ AC_ARG_WITH([daemon],
   [build_bitcoind=$withval],
   [build_bitcoind=yes])
 
-#AX_CXX_CHECK_LIB([boost_regex-mt],[boost::regex::generic_category()],[BOOST_LIB_SUFFIX="-mt"],[BOOST_LIB_SUFFIX=""])
-
 use_pkgconfig=yes
 case $host in
   *mingw*)
@@ -868,7 +866,6 @@ AX_BOOST_FILESYSTEM
 AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_THREAD
 AX_BOOST_CHRONO
-AX_BOOST_REGEX
 
 dnl Boost 1.56 through 1.62 allow using std::atomic instead of its own atomic
 dnl counter implementations. In 1.63 and later the std::atomic approach is default.
