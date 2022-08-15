@@ -13,7 +13,6 @@
 #include "hash.h"
 #include "fs.h"
 #include "limitedmap.h"
-#include "mruset.h"
 #include "netaddress.h"
 #include "protocol.h"
 #include "random.h"
@@ -45,6 +44,8 @@ class thread_group;
 static const int PING_INTERVAL = 2 * 60;
 /** Time after which to disconnect, after waiting for a ping response (or inactivity). */
 static const int TIMEOUT_INTERVAL = 20 * 60;
+/** Run the feeler connection loop once every 2 minutes or 120 seconds. **/
+static const int FEELER_INTERVAL = 120;
 /** The maximum number of entries in an 'inv' protocol message */
 static const unsigned int MAX_INV_SZ = 50000;
 /** The maximum number of entries in a locator */
@@ -79,8 +80,7 @@ CNode* FindNode(const CNetAddr& ip);
 CNode* FindNode(const CSubNet& subNet);
 CNode* FindNode(const std::string& addrName);
 CNode* FindNode(const CService& ip);
-CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool fCountFailure = false);
-bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
+bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false, bool fFeeler = false);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
 bool BindListenPort(const CService& bindAddr, std::string& strError, bool fWhitelisted = false);
@@ -90,13 +90,28 @@ void SocketSendData(CNode* pnode);
 
 typedef int64_t NodeId;
 
+struct CombinerAll {
+    typedef bool result_type;
+
+    template <typename I>
+    bool operator()(I first, I last) const
+    {
+        while (first != last) {
+            if (!(*first)) return false;
+            ++first;
+        }
+        return true;
+    }
+};
+
 // Signals for message handling
-struct CNodeSignals {
-    boost::signals2::signal<int()> GetHeight;
-    boost::signals2::signal<bool(CNode*)> ProcessMessages;
-    boost::signals2::signal<bool(CNode*, bool)> SendMessages;
-    boost::signals2::signal<void(NodeId, const CNode*)> InitializeNode;
-    boost::signals2::signal<void(NodeId)> FinalizeNode;
+struct CNodeSignals
+{
+    boost::signals2::signal<int ()> GetHeight;
+    boost::signals2::signal<bool (CNode*), CombinerAll> ProcessMessages;
+    boost::signals2::signal<bool (CNode*), CombinerAll> SendMessages;
+    boost::signals2::signal<void (NodeId, const CNode*)> InitializeNode;
+    boost::signals2::signal<void (NodeId)> FinalizeNode;
 };
 
 
@@ -321,6 +336,7 @@ public:
     // the network or wire types and the cleaned string used when displayed or logged.
     std::string strSubVer, cleanSubVer;
     bool fWhitelisted; // This peer can bypass DoS banning.
+    bool fFeeler;      // If true this node is being used as a short lived feeler.
     bool fOneShot;
     bool fClient;
     bool fInbound;
@@ -361,16 +377,19 @@ public:
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
-    mruset<CAddress> setAddrKnown;
+    CRollingBloomFilter addrKnown;
     bool fGetAddr;
     std::set<uint256> setKnown;
+    int64_t nNextAddrSend;
+    int64_t nNextLocalAddrSend;
 
     // inventory based relay
-    mruset<CInv> setInventoryKnown;
+    CRollingBloomFilter filterInventoryKnown;
     std::vector<CInv> vInventoryToSend;
     RecursiveMutex cs_inventory;
     std::multimap<int64_t, CInv> mapAskFor;
     std::vector<uint256> vBlockRequested;
+    int64_t nNextInvSend;
 
     // Ping time measurement:
     // The pong reply we're expecting, or 0 if no pong expected.
@@ -379,6 +398,8 @@ public:
     int64_t nPingUsecStart;
     // Last measured round-trip time.
     int64_t nPingUsecTime;
+    // Best measured round-trip time.
+    int64_t nMinPingUsecTime;
     // Whether a ping is requested.
     bool fPingQueued;
 
@@ -441,7 +462,7 @@ public:
 
     void AddAddressKnown(const CAddress& addr)
     {
-        setAddrKnown.insert(addr);
+        addrKnown.insert(addr.GetKey());
     }
 
     void PushAddress(const CAddress& _addr, FastRandomContext &insecure_rand)
@@ -449,7 +470,7 @@ public:
         // Known checking here is only to save space from duplicates.
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
-        if (_addr.IsValid() && !setAddrKnown.count(_addr)) {
+        if (_addr.IsValid() && !addrKnown.contains(_addr.GetKey())) {
             if (vAddrToSend.size() >= MAX_ADDR_TO_SEND) {
                 vAddrToSend[insecure_rand.randrange(vAddrToSend.size())] = _addr;
             } else {
@@ -463,7 +484,7 @@ public:
     {
         {
             LOCK(cs_inventory);
-            setInventoryKnown.insert(inv);
+            filterInventoryKnown.insert(inv.hash);
         }
     }
 
@@ -471,8 +492,9 @@ public:
     {
         {
             LOCK(cs_inventory);
-            if (!setInventoryKnown.count(inv))
-                vInventoryToSend.push_back(inv);
+            if (inv.type == MSG_TX && filterInventoryKnown.contains(inv.hash))
+                return;
+            vInventoryToSend.push_back(inv);
         }
     }
 
@@ -766,7 +788,7 @@ public:
     bool Write(const banmap_t& banSet);
     bool Read(banmap_t& banSet);
 };
-void DumpBanlist();
+
 bool IsUnsupportedVersion(std::string strSubVer, int nHeight);
 
 struct AddedNodeInfo {
@@ -777,5 +799,8 @@ struct AddedNodeInfo {
 };
 
 std::vector<AddedNodeInfo> GetAddedNodeInfo();
+
+/** Return a timestamp in the future (in microseconds) for exponentially distributed events. */
+int64_t PoissonNextSend(int64_t nNow, int average_interval_seconds);
 
 #endif // BITCOIN_NET_H

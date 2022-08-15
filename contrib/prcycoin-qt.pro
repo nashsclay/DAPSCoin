@@ -110,7 +110,6 @@ HEADERS += src/activemasternode.h \
            src/masternodeman.h \
            src/merkleblock.h \
            src/miner.h \
-           src/mruset.h \
            src/net.h \
            src/netbase.h \
            src/noui.h \
@@ -598,7 +597,6 @@ SOURCES += src/activemasternode.cpp \
            src/test/main_tests.cpp \
            src/test/mempool_tests.cpp \
            src/test/miner_tests.cpp \
-           src/test/mruset_tests.cpp \
            src/test/netbase_tests.cpp \
            src/test/pmt_tests.cpp \
            src/test/rpc_tests.cpp \

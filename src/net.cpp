@@ -38,8 +38,13 @@
 
 #include <boost/thread.hpp>
 
+#include <math.h>
+
 // Dump addresses to peers.dat and banlist.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
+
+// We add a random period time (0 to 1 seconds) to feeler connections to prevent synchronization.
+#define FEELER_SLEEP_WINDOW 1
 
 #if !defined(HAVE_MSG_NOSIGNAL) && !defined(MSG_NOSIGNAL)
 #define MSG_NOSIGNAL 0
@@ -59,6 +64,7 @@
 
 namespace {
     const int MAX_OUTBOUND_CONNECTIONS = 16;
+    const int MAX_FEELER_CONNECTIONS = 1;
 
     struct ListenSocket {
         SOCKET socket;
@@ -97,9 +103,6 @@ limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
 
 static std::deque<std::string> vOneShots;
 RecursiveMutex cs_vOneShots;
-
-std::set<CNetAddr> setservAddNodeAddresses;
-RecursiveMutex cs_setservAddNodeAddresses;
 
 std::vector<std::string> vAddedNodes;
 RecursiveMutex cs_vAddedNodes;
@@ -410,6 +413,26 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool fCountFailure
     return NULL;
 }
 
+static void DumpBanlist()
+{
+    CNode::SweepBanned(); // clean unused entries (if bantime has expired)
+
+    if (!CNode::BannedSetIsDirty())
+        return;
+
+    int64_t nStart = GetTimeMillis();
+
+    CBanDB bandb;
+    banmap_t banmap;
+    CNode::SetBannedSetDirty(false);
+    CNode::GetBanned(banmap);
+    if (!bandb.Write(banmap))
+        CNode::SetBannedSetDirty(true);
+
+    LogPrint(BCLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
+        banmap.size(), GetTimeMillis() - nStart);
+}
+
 void CNode::CloseSocketDisconnect() {
     fDisconnect = true;
     if (hSocket != INVALID_SOCKET) {
@@ -436,7 +459,7 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
 }
 
 void CNode::PushVersion() {
-    int nBestHeight = g_signals.GetHeight().get_value_or(0);
+    int nBestHeight = GetNodeSignals().GetHeight().get_value_or(0);
 
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
@@ -780,6 +803,207 @@ void SocketSendData(CNode *pnode) {
 
 static std::list<CNode*> vNodesDisconnected;
 
+struct NodeEvictionCandidate
+{
+    NodeId id;
+    int64_t nTimeConnected;
+    int64_t nMinPingUsecTime;
+    CAddress addr;
+};
+
+static bool ReverseCompareNodeMinPingTime(const NodeEvictionCandidate &a, const NodeEvictionCandidate &b)
+{
+    return a.nMinPingUsecTime > b.nMinPingUsecTime;
+}
+
+static bool ReverseCompareNodeTimeConnected(const NodeEvictionCandidate &a, const NodeEvictionCandidate &b)
+{
+    return a.nTimeConnected > b.nTimeConnected;
+}
+
+class CompareNetGroupKeyed
+{
+    std::vector<unsigned char> vchSecretKey;
+public:
+    CompareNetGroupKeyed()
+    {
+        vchSecretKey.resize(32, 0);
+        GetRandBytes(vchSecretKey.data(), vchSecretKey.size());
+    }
+
+    bool operator()(const NodeEvictionCandidate &a, const NodeEvictionCandidate &b)
+    {
+        std::vector<unsigned char> vchGroupA, vchGroupB;
+        CSHA256 hashA, hashB;
+        std::vector<unsigned char> vchA(32), vchB(32);
+
+        vchGroupA = a.addr.GetGroup();
+        vchGroupB = b.addr.GetGroup();
+
+        hashA.Write(begin_ptr(vchGroupA), vchGroupA.size());
+        hashB.Write(begin_ptr(vchGroupB), vchGroupB.size());
+
+        hashA.Write(begin_ptr(vchSecretKey), vchSecretKey.size());
+        hashB.Write(begin_ptr(vchSecretKey), vchSecretKey.size());
+
+        hashA.Finalize(begin_ptr(vchA));
+        hashB.Finalize(begin_ptr(vchB));
+
+        return vchA < vchB;
+    }
+};
+
+/** Try to find a connection to evict when the node is full.
+ *  Extreme care must be taken to avoid opening the node to attacker
+ *   triggered network partitioning.
+ *  The strategy used here is to protect a small number of peers
+ *   for each of several distinct characteristics which are difficult
+ *   to forge.  In order to partition a node the attacker must be
+ *   simultaneously better at all of them than honest peers.
+ */
+static bool AttemptToEvictConnection(bool fPreferNewConnection) {
+    std::vector<NodeEvictionCandidate> vEvictionCandidates;
+    {
+        LOCK(cs_vNodes);
+
+        for (CNode *node : vNodes) {
+            if (node->fWhitelisted)
+                continue;
+            if (!node->fInbound)
+                continue;
+            if (node->fDisconnect)
+                continue;
+            NodeEvictionCandidate candidate = {node->id, node->nTimeConnected, node->nMinPingUsecTime, node->addr};
+            vEvictionCandidates.push_back(candidate);
+        }
+    }
+
+    if (vEvictionCandidates.empty()) return false;
+
+    // Protect connections with certain characteristics
+
+    // Deterministically select 4 peers to protect by netgroup.
+    // An attacker cannot predict which netgroups will be protected.
+    static CompareNetGroupKeyed comparerNetGroupKeyed;
+    std::sort(vEvictionCandidates.begin(), vEvictionCandidates.end(), comparerNetGroupKeyed);
+    vEvictionCandidates.erase(vEvictionCandidates.end() - std::min(4, static_cast<int>(vEvictionCandidates.size())), vEvictionCandidates.end());
+
+    if (vEvictionCandidates.empty()) return false;
+
+    // Protect the 8 nodes with the lowest minimum ping time.
+    // An attacker cannot manipulate this metric without physically moving nodes closer to the target.
+    std::sort(vEvictionCandidates.begin(), vEvictionCandidates.end(), ReverseCompareNodeMinPingTime);
+    vEvictionCandidates.erase(vEvictionCandidates.end() - std::min(8, static_cast<int>(vEvictionCandidates.size())), vEvictionCandidates.end());
+
+    if (vEvictionCandidates.empty()) return false;
+
+    // Protect the half of the remaining nodes which have been connected the longest.
+    // This replicates the non-eviction implicit behavior, and precludes attacks that start later.
+    std::sort(vEvictionCandidates.begin(), vEvictionCandidates.end(), ReverseCompareNodeTimeConnected);
+    vEvictionCandidates.erase(vEvictionCandidates.end() - static_cast<int>(vEvictionCandidates.size() / 2), vEvictionCandidates.end());
+
+    if (vEvictionCandidates.empty()) return false;
+
+    // Identify the network group with the most connections and youngest member.
+    // (vEvictionCandidates is already sorted by reverse connect time)
+    std::vector<unsigned char> naMostConnections;
+    unsigned int nMostConnections = 0;
+    int64_t nMostConnectionsTime = 0;
+    std::map<std::vector<unsigned char>, std::vector<NodeEvictionCandidate> > mapAddrCounts;
+    for (const NodeEvictionCandidate &node : vEvictionCandidates) {
+        mapAddrCounts[node.addr.GetGroup()].push_back(node);
+        int64_t grouptime = mapAddrCounts[node.addr.GetGroup()][0].nTimeConnected;
+        size_t groupsize = mapAddrCounts[node.addr.GetGroup()].size();
+
+        if (groupsize > nMostConnections || (groupsize == nMostConnections && grouptime > nMostConnectionsTime)) {
+            nMostConnections = groupsize;
+            nMostConnectionsTime = grouptime;
+            naMostConnections = node.addr.GetGroup();
+        }
+    }
+
+    // Reduce to the network group with the most connections
+    vEvictionCandidates = mapAddrCounts[naMostConnections];
+
+    // Do not disconnect peers if there is only 1 connection from their network group
+    if (vEvictionCandidates.size() <= 1)
+        // unless we prefer the new connection (for whitelisted peers)
+        if (!fPreferNewConnection)
+            return false;
+
+    // Disconnect from the network group with the most connections
+    NodeId evicted = vEvictionCandidates.front().id;
+    LOCK(cs_vNodes);
+    for(std::vector<CNode*>::const_iterator it(vNodes.begin()); it != vNodes.end(); ++it) {
+        if ((*it)->GetId() == evicted) {
+            (*it)->fDisconnect = true;
+            return true;
+        }
+    }
+    return false;
+}
+
+static void AcceptConnection(const ListenSocket& hListenSocket) {
+    struct sockaddr_storage sockaddr;
+    socklen_t len = sizeof(sockaddr);
+    SOCKET hSocket = accept(hListenSocket.socket, (struct sockaddr*)&sockaddr, &len);
+    CAddress addr;
+    int nInbound = 0;
+    int nMaxInbound = nMaxConnections - (MAX_OUTBOUND_CONNECTIONS + MAX_FEELER_CONNECTIONS);
+    assert(nMaxInbound > 0);
+
+    if (hSocket != INVALID_SOCKET)
+        if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
+            LogPrintf("Warning: Unknown socket family\n");
+
+    bool whitelisted = hListenSocket.whitelisted || CNode::IsWhitelistedRange(addr);
+    {
+        LOCK(cs_vNodes);
+        for (CNode* pnode : vNodes)
+            if (pnode->fInbound)
+                nInbound++;
+    }
+
+    if (hSocket == INVALID_SOCKET) {
+        int nErr = WSAGetLastError();
+        if (nErr != WSAEWOULDBLOCK)
+            LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
+        return;
+    }
+
+    if (!IsSelectableSocket(hSocket)) {
+        LogPrintf("connection from %s dropped: non-selectable socket\n", addr.ToString());
+        CloseSocket(hSocket);
+        return;
+    }
+
+    if (CNode::IsBanned(addr) && !whitelisted) {
+        LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
+        CloseSocket(hSocket);
+        return;
+    }
+
+    if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS) {
+        if (!AttemptToEvictConnection(whitelisted)) {
+            // No connection to evict, disconnect the new connection
+            LogPrint(BCLog::NET, "failed to find an eviction candidate - connection dropped (full)\n");
+            CloseSocket(hSocket);
+            return;
+        }
+    }
+
+    CNode* pnode = new CNode(hSocket, addr, "", true);
+    pnode->AddRef();
+    pnode->fWhitelisted = whitelisted;
+
+    LogPrint(BCLog::NET, "connection from %s accepted\n", addr.ToString());
+
+    {
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);
+    }
+}
+
 void ThreadSocketHandler() {
     unsigned int nPrevNodeCount = 0;
     while (true) {
@@ -931,47 +1155,7 @@ void ThreadSocketHandler() {
         //
         for (const ListenSocket &hListenSocket : vhListenSocket) {
             if (hListenSocket.socket != INVALID_SOCKET && FD_ISSET(hListenSocket.socket, &fdsetRecv)) {
-                struct sockaddr_storage sockaddr;
-                socklen_t len = sizeof(sockaddr);
-                SOCKET hSocket = accept(hListenSocket.socket, (struct sockaddr *) &sockaddr, &len);
-                CAddress addr;
-                int nInbound = 0;
-
-                if (hSocket != INVALID_SOCKET)
-                    if (!addr.SetSockAddr((const struct sockaddr *) &sockaddr))
-                        LogPrintf("Warning: Unknown socket family\n");
-
-                bool whitelisted = hListenSocket.whitelisted || CNode::IsWhitelistedRange(addr);
-                {
-                    LOCK(cs_vNodes);
-                    for (CNode * pnode : vNodes)
-                    if (pnode->fInbound)
-                        nInbound++;
-                }
-
-                if (hSocket == INVALID_SOCKET) {
-                    int nErr = WSAGetLastError();
-                    if (nErr != WSAEWOULDBLOCK)
-                        LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
-                } else if (!IsSelectableSocket(hSocket)) {
-                    LogPrintf("connection from %s dropped: non-selectable socket\n", addr.ToString());
-                    CloseSocket(hSocket);
-                } else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS) {
-                    LogPrint(BCLog::NET, "connection from %s dropped (full)\n", addr.ToString());
-                    CloseSocket(hSocket);
-                } else if (CNode::IsBanned(addr) && !whitelisted) {
-                    LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
-                    CloseSocket(hSocket);
-                } else {
-                    CNode *pnode = new CNode(hSocket, addr, "", true);
-                    pnode->AddRef();
-                    pnode->fWhitelisted = whitelisted;
-
-                    {
-                        LOCK(cs_vNodes);
-                        vNodes.push_back(pnode);
-                    }
-                }
+                AcceptConnection(hListenSocket);
             }
         }
 
@@ -1294,6 +1478,9 @@ void ThreadOpenConnections() {
 
     // Initiate network connections
     int64_t nStart = GetTime();
+
+    // Minimum time before next feeler connection (in microseconds).
+    int64_t nNextFeeler = PoissonNextSend(nStart * 1000 * 1000, FEELER_INTERVAL);
     while (true) {
         ProcessOneShot();
 
@@ -1333,12 +1520,35 @@ void ThreadOpenConnections() {
                 }
             }
         }
+        assert(nOutbound <= (MAX_OUTBOUND_CONNECTIONS + MAX_FEELER_CONNECTIONS));
+
+        // Feeler Connections
+        //
+        // Design goals:
+        //  * Increase the number of connectable addresses in the tried table.
+        //
+        // Method:
+        //  * Choose a random address from new and attempt to connect to it if we can connect
+        //    successfully it is added to tried.
+        //  * Start attempting feeler connections only after node finishes making outbound
+        //    connections.
+        //  * Only make a feeler connection once every few minutes.
+        //
+        bool fFeeler = false;
+        if (nOutbound >= MAX_OUTBOUND_CONNECTIONS) {
+            int64_t nTime = GetTimeMicros(); // The current time right now (in microseconds).
+            if (nTime > nNextFeeler) {
+                nNextFeeler = PoissonNextSend(nTime, FEELER_INTERVAL);
+                fFeeler = true;
+            } else {
+                continue;
+            }
+        }
 
         int64_t nANow = GetAdjustedTime();
-
         int nTries = 0;
         while (true) {
-            CAddrInfo addr = addrman.Select();
+            CAddrInfo addr = addrman.Select(fFeeler);
 
             // if we selected an invalid address, restart
             if (!addr.IsValid() || setConnected.count(addr.GetGroup()) || IsLocal(addr))
@@ -1370,8 +1580,16 @@ void ThreadOpenConnections() {
             break;
         }
 
-        if (addrConnect.IsValid())
-            OpenNetworkConnection(addrConnect, (int)setConnected.size() >= std::min(nMaxConnections - 1, 2), &grant);
+        if (addrConnect.IsValid()) {
+            if (fFeeler) {
+                // Add small amount of random noise before connection to avoid synchronization.
+                int randsleep = GetRandInt(FEELER_SLEEP_WINDOW * 1000);
+                MilliSleep(randsleep);
+                LogPrint(BCLog::NET, "Making feeler connection to %s\n", addrConnect.ToString());
+            }
+
+            OpenNetworkConnection(addrConnect, (int)setConnected.size() >= std::min(nMaxConnections - 1, 2), &grant, nullptr, false, fFeeler);
+        }
     }
 }
 
@@ -1452,7 +1670,7 @@ void ThreadOpenAddedConnections()
 }
 
 // if successful, this moves the passed grant to the constructed node
-bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant* grantOutbound, const char* pszDest, bool fOneShot)
+bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant* grantOutbound, const char* pszDest, bool fOneShot, bool fFeeler)
 {
     //
     // Initiate outbound network connection
@@ -1476,6 +1694,8 @@ bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSem
     pnode->fNetworkNode = true;
     if (fOneShot)
         pnode->fOneShot = true;
+    if (fFeeler)
+        pnode->fFeeler = true;
 
     return true;
 }
@@ -1496,14 +1716,9 @@ void ThreadMessageHandler() {
             }
         }
 
-        // Poll the connected nodes for messages
-        CNode *pnodeTrickle = NULL;
-        if (!vNodesCopy.empty())
-            pnodeTrickle = vNodesCopy[GetRand(vNodesCopy.size())];
-
         bool fSleep = true;
         for (CNode * pnode : vNodesCopy)
-        {   
+        {
             if (!pnode) continue;
             if (pnode->fDisconnect)
                 continue;
@@ -1511,7 +1726,7 @@ void ThreadMessageHandler() {
             {
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv) {
-                    if (!g_signals.ProcessMessages(pnode)) {
+                    if (!GetNodeSignals().ProcessMessages(pnode)) {
                         pnode->CloseSocketDisconnect();
                     }
                     if (pnode->nSendSize < SendBufferSize()) {
@@ -1527,7 +1742,7 @@ void ThreadMessageHandler() {
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
                 if (lockSend)
-                    g_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+                    GetNodeSignals().SendMessages(pnode);
             }
             boost::this_thread::interruption_point();
         }
@@ -1713,12 +1928,12 @@ void StartNode(boost::thread_group &threadGroup, CScheduler &scheduler) {
     // Initialize random numbers. Even when rand() is only usable for trivial use-cases most nodes should have a different
     // seed after all the file-IO done at this point. Should be good enough even when nodes are started via scripts.
     srand(time(NULL));
-    
+
     fAddressesInitialized = true;
 
     if (semOutbound == NULL) {
         // initialize semaphore
-        int nMaxOutbound = std::min(MAX_OUTBOUND_CONNECTIONS, nMaxConnections);
+        int nMaxOutbound = std::min((MAX_OUTBOUND_CONNECTIONS + MAX_FEELER_CONNECTIONS), nMaxConnections);
         semOutbound = new CSemaphore(nMaxOutbound);
     }
 
@@ -1763,7 +1978,7 @@ bool StopNode() {
     LogPrintf("StopNode()\n");
     MapPort(false);
     if (semOutbound)
-        for (int i = 0; i < MAX_OUTBOUND_CONNECTIONS; i++)
+        for (int i = 0; i < (MAX_OUTBOUND_CONNECTIONS + MAX_FEELER_CONNECTIONS); i++)
             semOutbound->post();
 
     if (fAddressesInitialized) {
@@ -2032,9 +2247,11 @@ unsigned int ReceiveFloodSize() { return 1000 * GetArg("-maxreceivebuffer", 5 * 
 
 unsigned int SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000); }
 
-CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) : ssSend(SER_NETWORK,
-                                                                                                  INIT_PROTO_VERSION),
-                                                                                           setAddrKnown(5000) {
+CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) :
+    ssSend(SER_NETWORK, INIT_PROTO_VERSION),
+    addrKnown(5000, 0.001),
+    filterInventoryKnown(50000, 0.000001)
+{
     nServices = NODE_NONE;
     nServicesExpected = NODE_NONE;
     hSocket = hSocketIn;
@@ -2061,14 +2278,18 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     nSendOffset = 0;
     hashContinue = UINT256_ZERO;
     nStartingHeight = -1;
+    filterInventoryKnown.reset();
     fGetAddr = false;
+    nNextLocalAddrSend = 0;
+    nNextAddrSend = 0;
+    nNextInvSend = 0;
     fRelayTxes = false;
-    setInventoryKnown.max_size(SendBufferSize() / 1000);
     pfilter = new CBloomFilter();
     nPingNonceSent = 0;
     nPingUsecStart = 0;
     nPingUsecTime = 0;
     fPingQueued = false;
+    nMinPingUsecTime = std::numeric_limits<int64_t>::max();
 
     {
         LOCK(cs_nLastNodeId);
@@ -2272,23 +2493,6 @@ bool CBanDB::Read(banmap_t &banSet) {
     return true;
 }
 
-void DumpBanlist() {
-    CNode::SweepBanned(); //clean unused entires (if bantime has expired)
-
-    if (!CNode::BannedSetIsDirty())
-        return;
-    int64_t nStart = GetTimeMillis();
-
-    CBanDB bandb;
-    banmap_t banmap;
-    CNode::GetBanned(banmap);
-    if (bandb.Write(banmap))
-        CNode::SetBannedSetDirty(false);
-
-    LogPrint(BCLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
-             banmap.size(), GetTimeMillis() - nStart);
-}
-
 // valid, reachable and routable address (except for RegTest)
 bool validateMasternodeIP(const std::string& addrStr)
 {
@@ -2298,4 +2502,8 @@ bool validateMasternodeIP(const std::string& addrStr)
                 (Params().IsRegTestNet() && resolved.IsValid()));
     }
     return false;
+}
+
+int64_t PoissonNextSend(int64_t nNow, int average_interval_seconds) {
+    return nNow + (int64_t)(log1p(GetRand(1ULL << 48) * -0.0000000000000035527136788 /* -1/2^48 */) * average_interval_seconds * -1000000.0 + 0.5);
 }
