@@ -81,16 +81,43 @@ uint256 CBlockHeader::ComputeMinedHash() const
 uint256 CBlockHeader::GetHash() const
 {
     if (IsPoABlockByVersion()) {
-        //Only hash necessary fields for PoA block header
-        //Dont add nAccumulatorCheckpoint to the hash
+#if defined(WORDS_BIGENDIAN)
+        // TODO: Big Endian PoA hashing
+#else // Can take shortcut for little endian
         return Hash(BEGIN(hashPrevBlock), END(hashPrevBlock),
             BEGIN(minedHash), END(minedHash));
+#endif
     }
-    if(nVersion < 4) {
+    if (nVersion >= 5)  {
+#if defined(WORDS_BIGENDIAN)
+        uint8_t data[80];
+        WriteLE32(&data[0], nVersion);
+        memcpy(&data[4], hashPrevBlock.begin(), hashPrevBlock.size());
+        memcpy(&data[36], hashMerkleRoot.begin(), hashMerkleRoot.size());
+        WriteLE32(&data[68], nTime);
+        WriteLE32(&data[72], nBits);
+        WriteLE32(&data[76], nAccumulatorCheckpoint);
+        return Hash(data, data + 80);
+#else // Can take shortcut for little endian
+        return Hash(BEGIN(nVersion), END(nAccumulatorCheckpoint));
+#endif
+    }
+    if (nVersion < 4)  {
+#if defined(WORDS_BIGENDIAN)
+        uint8_t data[80];
+        WriteLE32(&data[0], nVersion);
+        memcpy(&data[4], hashPrevBlock.begin(), hashPrevBlock.size());
+        memcpy(&data[36], hashMerkleRoot.begin(), hashMerkleRoot.size());
+        WriteLE32(&data[68], nTime);
+        WriteLE32(&data[72], nBits);
+        WriteLE32(&data[76], nNonce);
+        return HashQuark(data, data + 80);
+#else // Can take shortcut for little endian
         return HashQuark(BEGIN(nVersion), END(nNonce));
+#endif
     }
-
-    return Hash(BEGIN(nVersion), END(nAccumulatorCheckpoint));
+    // version >= 6
+    return SerializeHash(*this);
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const
