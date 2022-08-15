@@ -115,6 +115,7 @@ HEADERS += src/activemasternode.h \
            src/netbase.h \
            src/noui.h \
            src/poa.h \
+           src/prevector.h \
            src/protocol.h \
            src/pubkey.h \
            src/random.h \
