@@ -85,6 +85,7 @@ HEADERS += src/activemasternode.h \
            src/compat.h \
            src/compressor.h \
            src/core_io.h \
+           src/cuckoocache.h \
            src/crypter.h \
            src/eccryptoverify.h \
            src/ecdhutil.h \
