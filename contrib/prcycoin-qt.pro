@@ -589,6 +589,7 @@ SOURCES += src/activemasternode.cpp \
            src/test/coins_tests.cpp \
            src/test/compress_tests.cpp \
            src/test/crypto_tests.cpp \
+           src/test/cuckoocache_tests.cpp \
            src/test/DoS_tests.cpp \
            src/test/getarg_tests.cpp \
            src/test/hash_tests.cpp \
