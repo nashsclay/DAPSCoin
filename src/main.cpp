@@ -6418,8 +6418,6 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                         RelayTransaction(orphanTx);
                         vWorkQueue.push_back(orphanHash);
                         vEraseQueue.push_back(orphanHash);
-                        assert(recentRejects);
-                        recentRejects->insert(orphanHash);
                     } else if (!fMissingInputs2) {
                         int nDos = 0;
                         if (stateDummy.IsInvalid(nDos) && nDos > 0) {
@@ -6432,6 +6430,8 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                         // Probably non-standard or insufficient fee/priority
                         LogPrint(BCLog::MEMPOOL, "   removed orphan tx %s\n", orphanHash.ToString());
                         vEraseQueue.push_back(orphanHash);
+                        assert(recentRejects);
+                        recentRejects->insert(orphanHash);
                     }
                     mempool.check(pcoinsTip);
                 }
