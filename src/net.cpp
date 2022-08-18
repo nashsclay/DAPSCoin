@@ -2269,6 +2269,7 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     fWhitelisted = false;
     fOneShot = false;
     fClient = false; // set by version message
+    fFeeler = false;
     fInbound = fInboundIn;
     fNetworkNode = false;
     fSuccessfullyConnected = false;
