@@ -5683,7 +5683,6 @@ void CWallet::SetNull()
     nTimeFirstKey = 0;
     fWalletUnlockStakingOnly = false;
     walletStakingInProgress = false;
-    fBackupMints = false;
 
     // Stake Settings
     nHashDrift = 45;

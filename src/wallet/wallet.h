@@ -281,7 +281,6 @@ public:
     bool fFileBacked;
     bool fWalletUnlockStakingOnly;
     std::string strWalletFile;
-    bool fBackupMints;
 
     std::set<int64_t> setKeyPool;
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
