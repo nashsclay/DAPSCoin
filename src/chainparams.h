@@ -102,6 +102,8 @@ public:
     CBaseChainParams::Network NetworkID() const { return networkID; }
     bool IsRegTestNet() const { return NetworkID() == CBaseChainParams::REGTEST; }
     int ExtCoinType() const { return nExtCoinType; }
+    int StealthPrefix() const { return nStealthPrefix; }
+    int IntegratedPrefix() const { return nIntegratedPrefix; }
 
     /** Height or Time Based Activations **/
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
@@ -132,6 +134,8 @@ protected:
     //! Raw pub key bytes for the broadcast alert signing key.
     int nDefaultPort;
     int nExtCoinType;
+    int nStealthPrefix;
+    int nIntegratedPrefix;
     uint256 bnProofOfWorkLimit;
     mutable int nMaxReorganizationDepth;
     int nSubsidyHalvingInterval;

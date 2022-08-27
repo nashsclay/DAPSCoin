@@ -222,6 +222,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x57)(0x41)(0x71)(0x65).convert_to_container<std::vector<unsigned char> >();
         //  BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
         nExtCoinType = 0x80000355;
+        nStealthPrefix = 135; // Stealth Addresses start with a P
+        nIntegratedPrefix = 136; // Integrated Addresses start with a Pk
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
@@ -339,6 +341,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x3a)(0x80)(0x58)(0x37).convert_to_container<std::vector<unsigned char> >();
         // Testnet prcycoin BIP44 coin type is '1' (All coin's testnet default)
         nExtCoinType = 0x80000001;
+        nStealthPrefix = 135; // Stealth Addresses start with a P
+        nIntegratedPrefix = 136; // Integrated Addresses start with a Pk
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 

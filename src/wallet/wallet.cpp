@@ -6003,7 +6003,7 @@ bool CWallet::encodeStealthBase58(const std::vector<unsigned char>& raw, std::st
 bool CWallet::EncodeStealthPublicAddress(const std::vector<unsigned char>& pubViewKey, const std::vector<unsigned char>& pubSpendKey, std::string& pubAddrb58)
 {
     std::vector<unsigned char> pubAddr;
-    pubAddr.push_back(135);                                                                 //1 byte
+    pubAddr.push_back(Params().StealthPrefix());                                                                 //1 byte
     std::copy(pubSpendKey.begin(), pubSpendKey.begin() + 33, std::back_inserter(pubAddr)); //copy 33 bytes
     std::copy(pubViewKey.begin(), pubViewKey.begin() + 33, std::back_inserter(pubAddr));   //copy 33 bytes
     uint256 h = Hash(pubAddr.begin(), pubAddr.end());
@@ -6019,7 +6019,7 @@ bool CWallet::EncodeStealthPublicAddress(const std::vector<unsigned char>& pubVi
 bool CWallet::EncodeIntegratedAddress(const std::vector<unsigned char>& pubViewKey, const std::vector<unsigned char>& pubSpendKey, uint64_t paymentID, std::string& pubAddrb58)
 {
     std::vector<unsigned char> pubAddr;
-    pubAddr.push_back(136);                                                                            //1 byte 19 for integrated address
+    pubAddr.push_back(Params().IntegratedPrefix());                                                                            //1 byte 19 for integrated address
     std::copy(pubSpendKey.begin(), pubSpendKey.begin() + 33, std::back_inserter(pubAddr));            //copy 33 bytes
     std::copy(pubViewKey.begin(), pubViewKey.begin() + 33, std::back_inserter(pubAddr));              //copy 33 bytes
     std::copy((char*)&paymentID, (char*)&paymentID + sizeof(paymentID), std::back_inserter(pubAddr)); //8 bytes of payment id
