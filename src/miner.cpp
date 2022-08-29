@@ -659,8 +659,7 @@ int nMintableLastCheck = 0;
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
-    nDefaultMinerSleep = GetArg("-minersleep", 45000);
-    LogPrintf("PRCYcoinMiner started with %sms sleep time\n", nDefaultMinerSleep);
+    LogPrintf("PRCYcoinMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     util::ThreadRename("prcycoin-miner");
     fGeneratePrcycoins = true;
@@ -716,7 +715,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 }
             }
         }
-        MilliSleep(nDefaultMinerSleep);
         //
         // Create new block
         //
