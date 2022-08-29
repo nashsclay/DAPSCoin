@@ -2126,28 +2126,26 @@ bool CWallet::SelectStakeCoins(std::list<CStakeInput*>& listInputs, CAmount nTar
 
 bool CWallet::MintableCoins()
 {
-    std::vector<COutput> vCoins;
+    CAmount nBalance = GetBalance();
 
-    {
-        LOCK2(cs_main, cs_wallet);
-        CAmount nBalance = GetBalance();
+    // Regular PRCY
+    if (nBalance > 0) {
+        if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
+            return error("%s : invalid reserve balance amount", __func__);
+        if (nBalance <= nReserveBalance)
+            return false;
 
-        for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
-            const uint256& wtxid = it->first;
-            const CWalletTx* pcoin = &(*it).second;
-            {
-                AvailableCoins(wtxid, pcoin, vCoins, true);
-                if (!vCoins.empty()) {
-                    for (const COutput& out : vCoins) {
-                        int64_t nTxTime = out.tx->GetTxTime();
-                        //add in-wallet minimum staking
-                        CAmount nVal = getCOutPutValue(out);
-                        //nTxTime <= nTime: only stake with UTXOs that are received before nTime time
-                        if ((GetAdjustedTime() > nStakeMinAge + nTxTime) && (nVal >= Params().MinimumStakeAmount()))
-                            return true;
-                    }
-                }
-            }
+        std::vector<COutput> vCoins;
+        AvailableCoins(vCoins, true);
+
+        for (const COutput& out : vCoins) {
+            int64_t nTxTime = out.tx->GetTxTime();
+
+            //add in-wallet minimum staking
+            CAmount nVal = getCOutPutValue(out);
+            //nTxTime <= nTime: only stake with UTXOs that are received before nTime time
+            if ((GetAdjustedTime() > nStakeMinAge + nTxTime) && (nVal >= Params().MinimumStakeAmount()))
+                return true;
         }
     }
 
@@ -3741,7 +3739,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
-    if (nBalance <= nReserveBalance)
+    if (nBalance > 0 && nBalance <= nReserveBalance)
         return false;
 
     // Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
