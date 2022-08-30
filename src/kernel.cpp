@@ -385,7 +385,6 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
     uint64_t nStakeModifier = 0;
     if (!stake->GetModifier(nStakeModifier))
         return error("%s failed to get modifier for stake input\n", __func__);
-    LogPrintf("%s: nStakeModifier=%d\n", __func__, nStakeModifier);
 
     unsigned int nBlockFromTime = blockprev.nTime;
     unsigned int nTxTime = block.nTime;
