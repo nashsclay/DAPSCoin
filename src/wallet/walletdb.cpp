@@ -1037,6 +1037,12 @@ void ThreadFlushWalletDB(const std::string& strFile)
     }
 }
 
+void NotifyBacked(const CWallet& wallet, bool fSuccess, std::string strMessage)
+{
+    LogPrintf("%s\n", strMessage);
+    wallet.NotifyWalletBacked(fSuccess, strMessage);
+}
+
 bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCustom)
 {
     fs::path pathCustom;
@@ -1048,17 +1054,15 @@ bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCu
         if(!pathWithFile.empty()) {
             if(!pathWithFile.has_extension()) {
                 pathCustom = pathWithFile;
-                fs::create_directories(pathCustom);
-                if(access(pathCustom.string().data(), W_OK) != 0) {
-                    std::string msg = strprintf("Error: failed to backup wallet to %s - Access denied\n", pathCustom.string());
-                    LogPrintf(msg.data());
-                    pathCustom = "";
-                    wallet.NotifyWalletBacked(false, msg);
-                } else {
-                    pathWithFile /= wallet.GetUniqueWalletBackupName();
-                }
+                pathWithFile /= wallet.GetUniqueWalletBackupName();
             } else {
                 pathCustom = pathWithFile.parent_path();
+            }
+            try {
+                fs::create_directories(pathCustom);
+            } catch(const fs::filesystem_error& e) {
+                NotifyBacked(wallet, false, strprintf("%s\n", e.what()));
+                pathCustom = "";
             }
         }
     }
@@ -1104,7 +1108,7 @@ bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCu
                             }
                         }
 
-                        int counter = 0;
+                        int counter = 0; //TODO: add seconds to avoid naming conflicts
                         for (auto entry : folderSet) {
                             counter++;
                             if(entry.second == pathWithFile) {
@@ -1127,7 +1131,8 @@ bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCu
                                     LogPrintf("Old backup deleted: %s\n", (*entry).second);
                                 }
                             } catch (fs::filesystem_error& error) {
-                                LogPrintf("Failed to delete backup %s\n", error.what());
+                                std::string strMessage = strprintf("Failed to delete backup %s\n", error.what());
+                                NotifyBacked(wallet, false, strMessage);
                             }
                         }
                     }
@@ -1145,6 +1150,7 @@ bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCu
 bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc, const fs::path& pathDest)
 {
     bool retStatus;
+    std::string strMessage;
     try {
         if (fs::equivalent(pathSrc, pathDest)) {
             LogPrintf("cannot backup to wallet source file %s\n", pathDest.string());
@@ -1160,13 +1166,15 @@ bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc, const f
         src.close();
         dst.close();
 #endif
-        LogPrintf("copied wallet.dat to %s\n", pathDest.string());
+        strMessage = strprintf("copied wallet.dat to %s\n", pathDest.string());
+        LogPrintf("%s : %s\n", __func__, strMessage);
         retStatus = true;
     } catch (const fs::filesystem_error& e) {
         retStatus = false;
-        LogPrintf("error copying wallet.dat to %s - %s\n", pathDest, e.what());
+        strMessage = strprintf("%s\n", e.what());
+        LogPrintf("%s : %s\n", __func__, strMessage);
     }
-    wallet.NotifyWalletBacked(retStatus, pathDest.string());
+    NotifyBacked(wallet, retStatus, strMessage);
     return retStatus;
 }
 
