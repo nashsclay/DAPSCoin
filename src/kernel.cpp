@@ -340,7 +340,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, CStakeInput*& stake)
+bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::unique_ptr<CStakeInput>& stake)
 {
     const CTransaction tx = block.vtx[1]; //coinstake
     CAmount nValueIn;
@@ -368,7 +368,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, CStakeInpu
 
     CPrcyStake* prcyInput = new CPrcyStake();
     prcyInput->SetInput(txPrev, txin.prevout.n);
-    stake = prcyInput;
+    stake = std::unique_ptr<CStakeInput>(prcyInput);
 
     CBlockIndex* pindex = stake->GetIndexFrom();
     if (!pindex)
