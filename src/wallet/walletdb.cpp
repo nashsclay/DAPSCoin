@@ -1082,10 +1082,8 @@ bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCu
                 bool defaultPath = AttemptBackupWallet(wallet, pathSrc.string(), pathDest.string());
 
                 if(defaultPath && !pathCustom.empty()) {
-                    std::string strThreshold = GetArg("-custombackupthreshold", "");
-                    int nThreshold = 0;
-                    if (strThreshold != "") {
-                        nThreshold = atoi(strThreshold);
+                    int nThreshold = GetArg("-custombackupthreshold", DEFAULT_CUSTOMBACKUPTHRESHOLD);
+                    if (nThreshold > 0) {
 
                         typedef std::multimap<std::time_t, fs::path> folder_set_t;
                         folder_set_t folderSet;
