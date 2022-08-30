@@ -376,11 +376,11 @@ public:
     {
         networkID = CBaseChainParams::REGTEST;
         strNetworkID = "regtest";
-        strNetworkID = "regtest";
         pchMessageStart[0] = 0xc6;
         pchMessageStart[1] = 0xb3;
         pchMessageStart[2] = 0x97;
         pchMessageStart[3] = 0xd1;
+        nDefaultPort = 59686;
         nSubsidyHalvingInterval = 150;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
@@ -389,6 +389,12 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Prcycoin: 1 day
         nTargetSpacing = 1 * 60;        // Prcycoin: 1 minutes
         bnProofOfWorkLimit = ~UINT256_ZERO >> 1;
+        nLastPOWBlock = 500;
+        nMaturity = 100;
+        nMasternodeCountDrift = 4;
+        nModifierUpdateBlock = 0; //approx Mon, 17 Apr 2017 04:00:00 GMT
+
+        //! Modify the regtest genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1608422399;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12361;
@@ -423,8 +429,6 @@ public:
         }
 
         hashGenesisBlock = genesis.GetHash();
-        nDefaultPort = 51476;
-
         assert(hashGenesisBlock == uint256S("690cbb5c7ae999de1de49948a3c109d3b15fe4de4297980de8ff0cbfe3c7823a"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
@@ -436,6 +440,7 @@ public:
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
         fMineBlocksOnDemand = true;
+        fSkipProofOfWorkCheck = true;
         fTestnetToBeDeprecatedFieldRPC = false;
     }
     const Checkpoints::CCheckpointData& Checkpoints() const

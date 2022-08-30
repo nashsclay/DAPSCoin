@@ -166,11 +166,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
 
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
+    pblock->nVersion = 5;   // Supports CLTV activation
+
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
-    pblock->nVersion = 5;   // Supports CLTV activation
 
     // Create coinbase tx
     CMutableTransaction txNew;
@@ -401,6 +402,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             //Make payee
             if (txNew.vout.size() > 1) {
                 pblock->payee = txNew.vout[1].scriptPubKey;
+            } else {
+                CBlockIndex* pindexPrev = chainActive.Tip();
+                CAmount blockValue = nFees + GetBlockValue(pindexPrev->nHeight);
+                txNew.vout[0].nValue = blockValue;
+                txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
             }
         }
 
