@@ -55,7 +55,7 @@ CAmount CPrcyStake::GetValue()
     return pwalletMain->getCTxOutValue(*pWalletTx, pWalletTx->vout[nPosition]);
 }
 
-bool CPrcyStake::CreateTxOuts(CWallet* pwallet, std::vector<CTxOut>& vout)
+bool CPrcyStake::CreateTxOuts(CWallet* pwallet, std::vector<CTxOut>& vout, CAmount nTotal)
 {
     std::vector<valtype> vSolutions;
     txnouttype whichType;
@@ -110,6 +110,10 @@ bool CPrcyStake::CreateTxOuts(CWallet* pwallet, std::vector<CTxOut>& vout)
     CTxOut outStaking(0, scriptPubKeyOutStaking);
     std::copy(txPubStaking.begin(), txPubStaking.end(), std::back_inserter(outStaking.txPub));
     vout.emplace_back(outStaking);
+
+    // Calculate if we need to split the output
+    /*if (nTotal / 2 > (CAmount)(pwallet->nStakeSplitThreshold * COIN))
+        vout.emplace_back(CTxOut(0, scriptPubKey));*/
 
     return true;
 }
