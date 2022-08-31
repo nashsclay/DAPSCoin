@@ -11,6 +11,7 @@
 #include "miner.h"
 
 #include "amount.h"
+#include "blocksignature.h"
 #include "consensus/tx_verify.h"
 #include "hash.h"
 #include "main.h"
@@ -738,13 +739,15 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         //Stake miner main
         if (fProofOfStake) {
             LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
-            if (!pblock->SignBlock(*pwallet)) {
+            if (!SignBlock(*pblock, *pwallet)) {
                 LogPrintf("BitcoinMiner(): Signing new block failed, computing private key \n");
                 if (pblock->vtx.size() > 1 && pblock->vtx[1].vout.size() > 1) {
                     pwallet->AddComputedPrivateKey(pblock->vtx[1].vout[1]);
                 }
-                if (!pblock->SignBlock(*pwallet))
+                if (!SignBlock(*pblock, *pwallet)) {
+                    LogPrintf("BitcoinMiner(): Signing new block with UTXO key failed \n");
                     continue;
+                }
             }
 
             LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", pblock->GetHash().ToString().c_str());
