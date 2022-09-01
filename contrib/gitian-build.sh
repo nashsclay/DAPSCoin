@@ -314,6 +314,7 @@ then
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit prcycoin=${COMMIT} --url prcycoin=${url} ../prcycoin/contrib/gitian-descriptors/gitian-aarch64.yml
 	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-aarch64 --destination ../gitian.sigs/ ../prcycoin/contrib/gitian-descriptors/gitian-aarch64.yml
 	    mv build/out/prcycoin-*.tar.gz build/out/src/prcycoin-*.tar.gz ../prcycoin-binaries/${VERSION}
+	fi
 	popd
 
         if [[ $commitFiles = true ]]
