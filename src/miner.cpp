@@ -902,9 +902,9 @@ void static ThreadPrcycoinMiner(void* parg)
         }
         boost::this_thread::interruption_point();
     } catch (const std::exception& e) {
-        LogPrintf("ThreadBitcoinMiner() exception\n");
+        LogPrintf("ThreadBitcoinMiner() exception: %s \n", e.what());
     } catch (...) {
-        LogPrintf("ThreadBitcoinMiner() exception\n");
+        LogPrintf("ThreadBitcoinMiner() error \n");
     }
 
     LogPrintf("ThreadBitcoinMiner exiting\n");
@@ -961,7 +961,7 @@ void ThreadStakeMinter()
         BitcoinMiner(pwallet, true);
         boost::this_thread::interruption_point();
     } catch (const std::exception& e) {
-        LogPrintf("ThreadStakeMinter() exception \n");
+        LogPrintf("ThreadStakeMinter() exception: %s \n", e.what());
     } catch (...) {
         LogPrintf("ThreadStakeMinter() error \n");
     }
