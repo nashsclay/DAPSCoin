@@ -166,6 +166,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
 
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
+    // Tip
+    CBlockIndex* pindexPrev;
+    {   // Don't keep cs_main locked
+        LOCK(cs_main);
+        pindexPrev = chainActive.Tip();
+    }
+    const int nHeight = pindexPrev->nHeight + 1;
+
     pblock->nVersion = 5;   // Supports CLTV activation
 
     // -regtest only: allow overriding block.nVersion with
@@ -196,7 +204,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
         pblock->nTime = GetAdjustedTime();
-        CBlockIndex* pindexPrev = chainActive.Tip();
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
 
         int64_t nSearchTime = pblock->nTime; // search to current time
@@ -242,8 +249,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
     {
         LOCK2(cs_main, mempool.cs);
 
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
         // Priority order to process transactions
@@ -403,7 +408,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             if (txNew.vout.size() > 1) {
                 pblock->payee = txNew.vout[1].scriptPubKey;
             } else {
-                CBlockIndex* pindexPrev = chainActive.Tip();
                 CAmount blockValue = nFees + GetBlockValue(pindexPrev->nHeight);
                 txNew.vout[0].nValue = blockValue;
                 txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
@@ -469,6 +473,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
         uint256 nCheckpoint = 0;
         pblock->nAccumulatorCheckpoint = nCheckpoint;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
+
+        if (fProofOfStake) {
+            unsigned int nExtraNonce = 0;
+            IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+            if (!SignBlock(*pblock, *pwallet)) {
+                LogPrintf("CreateNewBlock(): Signing new block with UTXO key failed \n");
+            }
+        }
     }
 
     return pblocktemplate.release();

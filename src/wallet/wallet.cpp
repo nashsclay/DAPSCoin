@@ -2176,7 +2176,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
             int64_t nTxTime = out.tx->GetTxTime();
 
             //check for min age
-            if (GetAdjustedTime() - nTxTime < nStakeMinAge)
+            if ((GetAdjustedTime() - nTxTime < nStakeMinAge ) && !Params().IsRegTestNet())
                 continue;
 
             //check that it is matured
