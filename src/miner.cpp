@@ -225,7 +225,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
         }
 
         if (!fStakeFound) {
-            LogPrintf("CreateNewBlock(): stake not found\n");
+            LogPrint(BCLog::STAKING, "CreateNewBlock(): stake not found\n");
             return NULL;
         }
     }

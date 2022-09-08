@@ -3839,7 +3839,7 @@ bool CWallet::CreateCoinStake(
     }
 
     if (listInputs.empty()) {
-        LogPrintf("CreateCoinStake(): listInputs empty\n");
+        LogPrint(BCLog::STAKING, "CreateCoinStake(): listInputs empty\n");
         MilliSleep(50000);
         return false;
     }
@@ -3924,7 +3924,7 @@ bool CWallet::CreateCoinStake(
         if (fKernelFound)
             break; // if kernel is found stop searching
     }
-    LogPrintf("%s: attempted staking %d times\n", __func__, nAttempts);
+    LogPrint(BCLog::STAKING, "%s: attempted staking %d times\n", __func__, nAttempts);
     if (!fKernelFound)
         return false;
 
