@@ -223,8 +223,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             nLastCoinStakeSearchTime = nSearchTime;
         }
 
-        if (!fStakeFound)
+        if (!fStakeFound) {
+            LogPrintf("CreateNewBlock(): stake not found\n");
             return NULL;
+        }
     }
 
     // Largest block you're willing to create:
