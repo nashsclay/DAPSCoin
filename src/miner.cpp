@@ -477,8 +477,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
         if (fProofOfStake) {
             unsigned int nExtraNonce = 0;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+            LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
             if (!SignBlock(*pblock, *pwallet)) {
-                LogPrintf("CreateNewBlock(): Signing new block with UTXO key failed \n");
+                LogPrintf("BitcoinMiner(): Signing new block failed, computing private key \n");
+                if (pblock->vtx.size() > 1 && pblock->vtx[1].vout.size() > 1) {
+                    pwallet->AddComputedPrivateKey(pblock->vtx[1].vout[1]);
+                }
+                if (!SignBlock(*pblock, *pwallet)) {
+                    LogPrintf("BitcoinMiner(): Signing new block with UTXO key failed \n");
+                    return NULL;
+                }
             }
         }
     }
