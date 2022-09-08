@@ -19,7 +19,7 @@
 
 #include <boost/unordered_map.hpp>
 
-extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow);
+extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow, CBlockIndex* blockIndex);
 
 /** 
 
