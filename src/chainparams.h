@@ -61,6 +61,7 @@ public:
     int RejectBlockOutdatedMajority() const { return nRejectBlockOutdatedMajority; }
     int ToCheckBlockUpgradeMajority() const { return nToCheckBlockUpgradeMajority; }
     int MaxReorganizationDepth() const { return nMaxReorganizationDepth; }
+    int StakeMinAge() const { return nStakeMinAge; }
 
     /** Used if GeneratePrcycoins is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
@@ -137,6 +138,7 @@ protected:
     int nStealthPrefix;
     int nIntegratedPrefix;
     uint256 bnProofOfWorkLimit;
+    int nStakeMinAge;
     mutable int nMaxReorganizationDepth;
     int nSubsidyHalvingInterval;
     int nEnforceBlockUpgradeMajority;
