@@ -389,7 +389,7 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Prcycoin: 1 day
         nTargetSpacing = 1 * 60;        // Prcycoin: 1 minutes
         bnProofOfWorkLimit = ~UINT256_ZERO >> 1;
-        nLastPOWBlock = 500;
+        nLastPOWBlock = 250;
         nMaturity = 100;
         nMasternodeCountDrift = 4;
         nModifierUpdateBlock = 0; //approx Mon, 17 Apr 2017 04:00:00 GMT
