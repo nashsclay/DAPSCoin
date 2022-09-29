@@ -4827,7 +4827,7 @@ bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, c
     return true;
 }
 
-bool CWallet::SendAll(std::string des, CWalletTx& wtxNew)
+bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
 {
     if (this->IsLocked()) {
         throw std::runtime_error("Wallet is locked! Please unlock it to make transactions.");
@@ -4885,6 +4885,9 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew)
                     {
                         COutPoint outpoint(wtxid, i);
                         if (inSpendQueueOutpoints.count(outpoint)) {
+                            continue;
+                        }
+                        if (!inclLocked && IsCollateralized(outpoint)) {
                             continue;
                         }
                     }

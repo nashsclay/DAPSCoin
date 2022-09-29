@@ -298,7 +298,8 @@ void SendCoinsDialog::sendTx() {
             // Send All
             success = pwalletMain->SendAll(
                 send_address.toStdString(),
-                resultTx
+                resultTx,
+                false
             );
         } else {
             // Send
