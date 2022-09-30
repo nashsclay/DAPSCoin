@@ -1,6 +1,7 @@
 ---
-name: "prcycoin-win-3.0"
+name: "prcycoin-win-2.0.0.2"
 enable_cache: true
+distro: "ubuntu"
 suites:
 - "bionic"
 architectures:
@@ -20,13 +21,15 @@ packages:
 - "nsis"
 - "zip"
 - "ca-certificates"
-- "python"
+- "python3"
 - "rename"
 remotes:
 - "url": "https://github.com/prcycoin/prcycoin.git"
   "dir": "prcycoin"
 files: []
 script: |
+  set -e -o pipefail
+
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-w64-mingw32"
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests"
