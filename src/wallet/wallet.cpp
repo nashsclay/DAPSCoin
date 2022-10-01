@@ -4929,7 +4929,12 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew)
                         strFailReason = "Invalid Destination Address!";
                     } else {
                         wtxNew.txPrivM.Set(secret.begin(), secret.end(), true);
+
                         wtxNew.hasPaymentID = 0;
+                        if (hasPaymentID) {
+                            wtxNew.hasPaymentID = 1;
+                            wtxNew.paymentID = paymentID;
+                        }
 
                         //Compute stealth destination
                         CPubKey stealthDes;
