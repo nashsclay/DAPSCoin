@@ -310,7 +310,7 @@ public:
     CAmount nAutoCombineThreshold;
     CAmount nAutoCombineTarget;
     bool CreateSweepingTransaction(CAmount target, CAmount threshold, uint32_t nTimeBefore);
-    bool SendAll(std::string des, CWalletTx& wtxNew);
+    bool SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked);
 
     CWallet();
     CWallet(std::string strWalletFileIn);
