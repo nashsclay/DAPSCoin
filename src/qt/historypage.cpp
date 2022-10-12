@@ -264,7 +264,7 @@ void HistoryPage::updateFilter()
 
     for (int row = 0; row < ui->tableView->rowCount(); row++) {
         bool hide = false;
-        QDateTime date = QDateTime::fromString(ui->tableView->item(row, 0)->text(), "M/d/yyyy h:m");
+        QDateTime date = QDateTime::fromString(ui->tableView->item(row, 0)->text(), "yyyy-MM-ddThh:mm:ss");
         QString type = ui->tableView->item(row, 1)->text();
         QString address = ui->tableView->item(row, 2)->text();
         auto amount = ui->tableView->item(row, 3)->text().toFloat();
@@ -277,21 +277,22 @@ void HistoryPage::updateFilter()
             hide = true;
         if (selectedType != tr("All Types")) {
             if (selectedType == tr("Received")) {
-                hide = !(type == tr("Received"));
+                hide = hide || !(type == tr("Received"));
             } else if (selectedType == tr("Sent")) {
-                hide = !(type == tr("Sent"));
+                hide = hide || !(type == tr("Sent"));
             } else if (selectedType == tr("Mined")) {
-                hide = !(type == tr("Mined"));
+                hide = hide || !(type == tr("Mined"));
             } else if (selectedType == tr("Minted")) {
-                hide = !(type == tr("Minted"));
+                hide = hide || !(type == tr("Minted"));
             } else if (selectedType == tr("Masternode")) {
-                hide = !(type == tr("Masternode"));
+                hide = hide || !(type == tr("Masternode"));
             } else if (selectedType == tr("Payment to yourself")) {
-                hide = !(type == tr("Payment to yourself"));
+                hide = hide || !(type == tr("Payment to yourself"));
             }
         } else {
-            hide = !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode")) && !(type == tr("Payment to yourself"));
+            hide= hide || !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode")) && !(type == tr("Payment to yourself"));
         }
+
         if (ui->lineEditDesc->currentText() != allAddressString) {
             bool found = false;
             for (QString selectedAddress : selectedAddresses)
