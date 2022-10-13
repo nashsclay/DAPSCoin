@@ -385,11 +385,10 @@ UniValue startmasternode (const UniValue& params, bool fHelp)
 
     bool fLock = (params[1].get_str() == "true" ? true : false);
 
+    EnsureWalletIsUnlocked();
+
     if (strCommand == "local") {
         if (!fMasterNode) throw std::runtime_error("you must set masternode=1 in the configuration\n");
-
-        if (pwalletMain->IsLocked())
-            throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with unlockwallet first.");
 
         if (activeMasternode.status != ACTIVE_MASTERNODE_STARTED) {
             activeMasternode.status = ACTIVE_MASTERNODE_INITIAL; // TODO: consider better way
@@ -402,8 +401,6 @@ UniValue startmasternode (const UniValue& params, bool fHelp)
     }
 
     if (strCommand == "all" || strCommand == "many" || strCommand == "missing" || strCommand == "disabled") {
-        if (pwalletMain->IsLocked())
-            throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with unlockwallet first.");
 
         if ((strCommand == "missing" || strCommand == "disabled") &&
             (masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST ||
@@ -461,9 +458,6 @@ UniValue startmasternode (const UniValue& params, bool fHelp)
 
     if (strCommand == "alias") {
         std::string alias = params[2].get_str();
-
-        if (pwalletMain->IsLocked())
-            throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with unlockwallet first.");
 
         bool found = false;
         int successful = 0;

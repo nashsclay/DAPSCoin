@@ -77,8 +77,7 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with unlockwallet first.");
+    EnsureWalletIsUnlocked();
 
     std::string strProposalName = SanitizeString(params[0].get_str());
     if (strProposalName.size() > 20)
