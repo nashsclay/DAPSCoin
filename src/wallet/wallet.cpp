@@ -4780,21 +4780,25 @@ bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, c
 
 bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
 {
+    std::string strFailReason;
     if (this->IsLocked()) {
-        throw std::runtime_error("Wallet is locked! Please unlock it to make transactions.");
+        strFailReason = "Wallet is locked! Please unlock it to make transactions.";
+        LogPrintf("%s: %s\n", __func__, strFailReason);
+        throw std::runtime_error(strFailReason);
     }
 
     SetRingSize(0);
     int estimateTxSize = ComputeTxSize(1, 1, MIN_RING_SIZE);
     CAmount nFeeNeeded = GetMinimumFee(estimateTxSize, nTxConfirmTarget, mempool);
     if (GetSpendableBalance() <= nFeeNeeded) {
-        throw std::runtime_error("Not enough balance to pay minimum transaction Fee: " + ValueFromAmountToString(nFeeNeeded));
+        strFailReason = "Not enough balance to pay minimum transaction fee: " + ValueFromAmountToString(nFeeNeeded);
+        LogPrintf("%s: %s\n", __func__, strFailReason);
+        throw std::runtime_error(strFailReason);
     }
 
     CAmount total = 0;
     std::vector<COutput> vCoins;
     vCoins.clear();
-    std::string strFailReason;
     bool ret = true;
     {
         LOCK2(cs_main, cs_wallet);
@@ -4850,10 +4854,11 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
             }
 
             if (vCoins.size() > MAX_TX_INPUTS) {
-                strFailReason = "Transaction size too large, please try again later";
+                strFailReason = "Transaction size too large. Please combine/consolidate UTXOs and try again.";
                 ret = false;
+                LogPrintf("%s: %s\n", __func__, strFailReason);
+                throw std::runtime_error(strFailReason);
             }
-
 
             if (ret) {
                 // Generate transaction public key
@@ -4871,6 +4876,8 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
                 if (total < nFeeNeeded) {
                     strFailReason = "Not enough balance to pay minimum transaction Fee: " + ValueFromAmountToString(nFeeNeeded);
                     ret = false;
+                    LogPrintf("%s: %s\n", __func__, strFailReason);
+                    throw std::runtime_error(strFailReason);
                 } else {
                     //Parse stealth address
                     CPubKey pubViewKey, pubSpendKey;
@@ -4881,6 +4888,8 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
                         //should never happen
                         ret = false;
                         strFailReason = "Invalid Destination Address!";
+                        LogPrintf("%s: %s\n", __func__, strFailReason);
+                        throw std::runtime_error(strFailReason);
                     } else {
                         wtxNew.txPrivM.Set(secret.begin(), secret.end(), true);
 
@@ -4939,13 +4948,17 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
                             }
 
                             if (!makeRingCT(wtxNew, ringSize, strFailReason)) {
-                                strFailReason = _("Failed to generate RingCT for Sweeping transaction");
+                                strFailReason = _("Failed to generate RingCT");
                                 ret = false;
+                                LogPrintf("%s: %s\n", __func__, strFailReason);
+                                throw std::runtime_error(strFailReason);
                             }
 
                             if (ret && !generateBulletProofAggregate(wtxNew)) {
-                                strFailReason = _("Failed to generate bulletproof for Sweeping transaction");
+                                strFailReason = _("Failed to generate bulletproof");
                                 ret = false;
+                                LogPrintf("%s: %s\n", __func__, strFailReason);
+                                throw std::runtime_error(strFailReason);
                             }
 
                             if (ret) {
@@ -4957,6 +4970,8 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
                                     inSpendQueueOutpointsPerSession.clear();
                                     strFailReason = "Internal error! Please try again later!";
                                     ret = false;
+                                    LogPrintf("%s: %s\n", __func__, strFailReason);
+                                    throw std::runtime_error(strFailReason);
                                 }
                                 if (ret) {
                                     for (size_t i = 0; i < inSpendQueueOutpointsPerSession.size(); i++) {
