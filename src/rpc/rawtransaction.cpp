@@ -444,6 +444,80 @@ UniValue listunspent(const UniValue& params, bool fHelp)
 
     return results;
 }
+
+UniValue getunspentcount(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() > 3)
+        throw std::runtime_error(
+            "getunspentcount ( minconf maxconf  [\"address\",...] )\n"
+            "\nReturns the number of unspent transactions\n"
+            "Optionally filter to only include txouts paid to specified addresses.\n"
+            "\nArguments:\n"
+            "1. minconf          (numeric, optional, default=1) The minimum confirmations to filter\n"
+            "2. maxconf          (numeric, optional, default=9999999) The maximum confirmations to filter\n"
+            "3. \"addresses\"    (string) A json array of prcycoin addresses to filter\n"
+            "    [\n"
+            "      \"address\"   (string) prcycoin address\n"
+            "      ,...\n"
+            "    ]\n"
+            "\nResult\n"
+            "[                   (array of json object)\n"
+            "  {\n"
+            "    \"unspentcount\" : x.xxx,         (numeric) the number of unspent transactions\n"
+            "  }\n"
+            "  ,...\n"
+            "]\n"
+
+            "\nExamples\n" +
+            HelpExampleCli("getunspentcount", "") + HelpExampleCli("getunspentcount", "6 9999999 \"[\\\"1PGFqEzfmQch1gKD3ra4k18PNj3tTUUSqg\\\",\\\"1LtvqCaApEdUGFkpKMM4MstjcaL4dKg8SP\\\"]\"") + HelpExampleRpc("getunspentcount", "6, 9999999 \"[\\\"1PGFqEzfmQch1gKD3ra4k18PNj3tTUUSqg\\\",\\\"1LtvqCaApEdUGFkpKMM4MstjcaL4dKg8SP\\\"]\""));
+
+    RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM)(UniValue::VNUM)(UniValue::VARR));
+
+    int nMinDepth = 1;
+    if (params.size() > 0)
+        nMinDepth = params[0].get_int();
+
+    int nMaxDepth = 9999999;
+    if (params.size() > 1)
+        nMaxDepth = params[1].get_int();
+
+    std::set<CBitcoinAddress> setAddress;
+    if (params.size() > 2) {
+        UniValue inputs = params[2].get_array();
+        for (unsigned int inx = 0; inx < inputs.size(); inx++) {
+            const UniValue& input = inputs[inx];
+            CBitcoinAddress address(input.get_str());
+            if (!address.IsValid())
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid PRCY address: ") + input.get_str());
+            if (setAddress.count(address))
+                throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + input.get_str());
+            setAddress.insert(address);
+        }
+    }
+
+    int count = 0;
+    std::vector<COutput> vecOutputs;
+    assert(pwalletMain != NULL);
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+    pwalletMain->AvailableCoins(vecOutputs, false);
+    for (const COutput& out : vecOutputs) {
+        if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth)
+            continue;
+
+        if (setAddress.size()) {
+            CTxDestination address;
+            if (!ExtractDestination(out.tx->vout[out.i].scriptPubKey, address))
+                continue;
+
+            if (!setAddress.count(address))
+                continue;
+        }
+        ++count;
+    }
+    UniValue obj(UniValue::VOBJ);
+    obj.push_back(Pair("unspentcount", count));
+    return obj;
+}
 #endif
 
 UniValue createrawtransaction(const UniValue& params, bool fHelp)
