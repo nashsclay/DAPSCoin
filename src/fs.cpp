@@ -5,6 +5,7 @@
 
 #include "fs.h"
 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
 namespace fsbridge {
