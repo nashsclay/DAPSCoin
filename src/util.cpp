@@ -394,17 +394,13 @@ void ClearDatadirCache()
 fs::path GetConfigFile()
 {
     fs::path pathConfigFile(GetArg("-conf", "prcycoin.conf"));
-    if (!pathConfigFile.is_complete())
-        pathConfigFile = GetDataDir(false) / pathConfigFile;
-
-    return pathConfigFile;
+    return AbsPathForConfigVal(pathConfigFile, false);
 }
 
 fs::path GetMasternodeConfigFile()
 {
     fs::path pathConfigFile(GetArg("-mnconf", "masternode.conf"));
-    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
-    return pathConfigFile;
+    return AbsPathForConfigVal(pathConfigFile);
 }
 
 void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
@@ -447,13 +443,7 @@ fs::path AbsPathForConfigVal(const fs::path& path, bool net_specific)
 fs::path GetPidFile()
 {
     fs::path pathPidFile(GetArg("-pid", "prcycoind.pid"));
-    if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
-
-    if (fs::is_directory(fs::status(pathPidFile)) ||
-        fs::exists(fs::status(pathPidFile)))
-        pathPidFile = GetDataDir() / fs::path("prcycoind.pid");
-    
-    return pathPidFile;
+    return AbsPathForConfigVal(pathPidFile);
 }
 
 void CreatePidFile(const fs::path& path, pid_t pid)
