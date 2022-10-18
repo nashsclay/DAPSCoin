@@ -62,9 +62,7 @@
 
 void ForceActivation();
 
-#if BOOST_FILESYSTEM_VERSION >= 3
 static fs::detail::utf8_codecvt_facet utf8;
-#endif
 
 #define URI_SCHEME "prcycoin"
 
@@ -800,7 +798,6 @@ void setClipboard(const QString& str)
     QApplication::clipboard()->setText(str, QClipboard::Selection);
 }
 
-#if BOOST_FILESYSTEM_VERSION >= 3
 fs::path qstringToBoostPath(const QString& path)
 {
     return fs::path(path.toStdString(), utf8);
@@ -810,18 +807,6 @@ QString boostPathToQString(const fs::path& path)
 {
     return QString::fromStdString(path.string(utf8));
 }
-#else
-#warning Conversion between boost path and QString can use invalid character encoding with boost_filesystem v2 and older
-fs::path qstringToBoostPath(const QString& path)
-{
-    return fs::path(path.toStdString());
-}
-
-QString boostPathToQString(const fs::path& path)
-{
-    return QString::fromStdString(path.string());
-}
-#endif
 
 QString formatDurationStr(int secs)
 {
