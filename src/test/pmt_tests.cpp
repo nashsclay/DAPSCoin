@@ -27,7 +27,6 @@ public:
     }
 };
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(pmt_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(pmt_test1)
@@ -107,4 +106,3 @@ BOOST_AUTO_TEST_CASE(pmt_test1)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

@@ -11,7 +11,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#ifdef DISABLE_PASSED_TEST
 extern CWallet* pwalletMain;
 
 BOOST_FIXTURE_TEST_SUITE(accounting_tests, TestingSetup)
@@ -139,4 +138,3 @@ BOOST_AUTO_TEST_CASE(acc_orderupgrade)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

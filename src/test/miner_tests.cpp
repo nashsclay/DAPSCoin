@@ -13,7 +13,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(miner_tests, TestingSetup)
 
 static
@@ -268,4 +267,3 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

@@ -22,7 +22,6 @@
 // amounts 50 .. 21000000
 #define NUM_MULTIPLES_50BTC 420000
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(compress_tests, BasicTestingSetup)
 
 bool static TestEncode(uint64_t in) {
@@ -64,4 +63,3 @@ BOOST_AUTO_TEST_CASE(compress_amounts)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

@@ -12,7 +12,6 @@
 
 #define SKIPLIST_LENGTH 300000
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(skiplist_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(skiplist_test)
@@ -101,4 +100,3 @@ BOOST_AUTO_TEST_CASE(getlocator_test)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

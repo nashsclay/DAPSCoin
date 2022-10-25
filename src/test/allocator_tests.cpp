@@ -9,7 +9,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(allocator_tests, BasicTestingSetup)
 
 // Dummy memory page locker for platform independent tests
@@ -119,4 +118,3 @@ BOOST_AUTO_TEST_CASE(test_LockedPageManagerBase)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

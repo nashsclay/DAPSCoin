@@ -20,7 +20,6 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/test/unit_test.hpp>
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(crypto_tests, BasicTestingSetup)
 
 template<typename Hasher, typename In, typename Out>
@@ -540,4 +539,3 @@ BOOST_AUTO_TEST_CASE(aes_cbc_testvectors) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif
