@@ -10,7 +10,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(scriptnum_tests, BasicTestingSetup)
 
 static const long values[] = \
@@ -198,4 +197,3 @@ BOOST_AUTO_TEST_CASE(operators)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

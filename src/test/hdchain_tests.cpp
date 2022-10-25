@@ -4,13 +4,14 @@
 
 #include "keystore.h"
 #include "chainparams.h"
+#include "test_prcycoin.h"
 
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
 
 
-BOOST_AUTO_TEST_SUITE(hd_tests)
+BOOST_FIXTURE_TEST_SUITE(hd_tests, TestingSetup)
 
 BOOST_AUTO_TEST_CASE(hd_test1)
 {

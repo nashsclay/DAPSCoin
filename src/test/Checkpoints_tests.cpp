@@ -14,7 +14,6 @@
 #include <boost/test/unit_test.hpp>
 
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(Checkpoints_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(sanity)
@@ -37,4 +36,3 @@ BOOST_AUTO_TEST_CASE(sanity)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

@@ -22,7 +22,6 @@
 #include <boost/tuple/tuple.hpp>
 
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(bloom_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize)
@@ -538,4 +537,3 @@ BOOST_AUTO_TEST_CASE(merkle_block_4_test_update_none)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

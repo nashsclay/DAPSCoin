@@ -108,7 +108,6 @@ void RunTest(const TestVector &test) {
     }
 }
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(bip32_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(bip32_test1) {
@@ -120,4 +119,3 @@ BOOST_AUTO_TEST_CASE(bip32_test2) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

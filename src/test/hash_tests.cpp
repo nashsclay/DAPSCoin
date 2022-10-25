@@ -11,7 +11,6 @@
 #include <boost/test/unit_test.hpp>
 
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(hash_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(murmurhash3)
@@ -48,4 +47,3 @@ BOOST_AUTO_TEST_CASE(murmurhash3)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

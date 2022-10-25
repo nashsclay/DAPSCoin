@@ -11,7 +11,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(getarg_tests, BasicTestingSetup)
 
 static void ResetArgs(const std::string& strArg)
@@ -160,4 +159,3 @@ BOOST_AUTO_TEST_CASE(boolargno)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif

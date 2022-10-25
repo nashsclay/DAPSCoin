@@ -15,14 +15,13 @@
 
 
 // Helpers:
-/*static std::vector<unsigned char>
+static std::vector<unsigned char>
 Serialize(const CScript& s)
 {
     std::vector<unsigned char> sSerialized(s.begin(), s.end());
     return sSerialized;
-}*/
+}
 
-#ifdef DISABLE_PASSED_TEST
 BOOST_FIXTURE_TEST_SUITE(sigopcount_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(GetSigOpCount)
@@ -64,4 +63,3 @@ BOOST_AUTO_TEST_CASE(GetSigOpCount)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif
