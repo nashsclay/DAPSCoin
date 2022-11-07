@@ -186,7 +186,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     frameBlocksLayout->setSpacing(3);
     unitDisplayControl = new UnitDisplayStatusBarControl();
     labelStakingIcon = new QLabel();
-    labelEncryptionIcon = new QPushButton(this);
+    labelEncryptionIcon = new QPushButton();
     labelEncryptionIcon->setFlat(true); // Make the button look like a label, but clickable
     labelEncryptionIcon->setStyleSheet(".QPushButton { background-color: rgba(255, 255, 255, 0);}");
     labelEncryptionIcon->setMaximumSize(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE);
@@ -375,16 +375,19 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 #endif
     tabGroup->addAction(optionsAction);
 
-    stakingAction = new QAction(QIcon(":/icons/options"), tr("&Staking"), this);
-    stakingAction->setText(tr("Staking Status"));
-    stakingAction->setIconText("   Staking Status");
-    stakingAction->setMenuRole(QAction::NoRole);
-    stakingState = new QLabel(this);
-    stakingState->setObjectName("stakingState");
-    networkAction = new QAction(QIcon(":/icons/options"), tr("&Network"), this);
-    networkAction->setMenuRole(QAction::NoRole);
-    networkAction->setText("Network Status");
-    networkAction->setIconText("   Network Status");
+    if (walletFrame) {
+        stakingAction = new QAction(QIcon(":/icons/options"), tr("&Staking"), this);
+        stakingAction->setText(tr("Staking Status"));
+        stakingAction->setIconText("   Staking Status");
+        stakingAction->setMenuRole(QAction::NoRole);
+        stakingState = new QLabel(this);
+        stakingState->setObjectName("stakingState");
+
+        networkAction = new QAction(QIcon(":/icons/options"), tr("&Network"), this);
+        networkAction->setMenuRole(QAction::NoRole);
+        networkAction->setText("Network Status");
+        networkAction->setIconText("   Network Status");
+    }
     connectionCount = new QLabel(this);
     connectionCount->setObjectName("connectionCount");
     blockCount = new QLabel(this);
@@ -1118,11 +1121,13 @@ void BitcoinGUI::setNumConnections(int count)
         break;
     }
 
-    connectionCount->setText(tr("%n Active Connections", "", count));
-    if (count < 1)
-        networkAction->setIcon(QIcon(":icons/staking_disabled"));
-    else
-        networkAction->setIcon(QIcon(":icons/staking_active"));
+    if (walletFrame) {
+        connectionCount->setText(tr("%n Active Connections", "", count));
+        if (count < 1)
+            networkAction->setIcon(QIcon(":icons/staking_disabled"));
+        else
+            networkAction->setIcon(QIcon(":icons/staking_active"));
+    }
 }
 
 void BitcoinGUI::setNumBlocks(int count)
@@ -1203,14 +1208,16 @@ void BitcoinGUI::setNumBlocks(int count)
         tooltip += QString("<br>");
         tooltip += tr("Transactions after this will not yet be visible.");
     }
-    if (count == 0) {
-        blockCount->setText(tr("Loading Blocks..."));
-    } else if (clientModel->inInitialBlockDownload()) {
-        blockCount->setText(tr("Syncing Blocks..."));
-    } else {
-        blockCount->setText(tr("%n Blocks", "", count));
+    if (walletFrame) {
+        if (count == 0) {
+            blockCount->setText(tr("Loading Blocks..."));
+        } else if (clientModel->inInitialBlockDownload()) {
+            blockCount->setText(tr("Syncing Blocks..."));
+        } else {
+            blockCount->setText(tr("%n Blocks", "", count));
+        }
+        blockCount->setToolTip(tooltip);
     }
-    blockCount->setToolTip(tooltip);
 }
 
 void BitcoinGUI::message(const QString& title, const QString& message, unsigned int style, bool* ret)
@@ -1405,14 +1412,16 @@ void BitcoinGUI::setStakingStatus()
 
 void BitcoinGUI::setStakingInProgress(bool inProgress)
 {
-    if (inProgress) {
-        stakingState->setText(tr("Enabling Staking..."));
-        stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
-        stakingAction->setIcon(QIcon(":/icons/staking_active"));
-    } else {
-        stakingState->setText(tr("Disabling Staking..."));
-        stakingState->setToolTip("Disabling Staking...");
-        stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
+    if (walletFrame) {
+        if (inProgress) {
+            stakingState->setText(tr("Enabling Staking..."));
+            stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
+            stakingAction->setIcon(QIcon(":/icons/staking_active"));
+        } else {
+            stakingState->setText(tr("Disabling Staking..."));
+            stakingState->setToolTip("Disabling Staking...");
+            stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
+        }
     }
 }
 
