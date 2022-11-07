@@ -1347,59 +1347,62 @@ void BitcoinGUI::dropEvent(QDropEvent* event)
 
 void BitcoinGUI::setStakingStatus()
 {
-    bool stkStatus = false;
-    if (pwalletMain) {
-        fMultiSend = pwalletMain->isMultiSendEnabled();
-        stkStatus = pwalletMain->ReadStakingStatus();
-    }
-    if (!stkStatus || pwalletMain->IsLocked()) {
-        LogPrint(BCLog::STAKING,"Checking Staking Status: Disabled.\n");
-        stakingState->setText(tr("Staking Disabled"));
-        stakingState->setToolTip("Staking Disabled");
-        stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
-        return;
-    }
-    if (vNodes.empty()) {
-        LogPrint(BCLog::STAKING,"Checking Staking Status: No Active Peers...\n");
-        stakingState->setText(tr("No Active Peers"));
-        stakingState->setToolTip("No Active Peers");
-        stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
-        return;
-    }
-    if (clientModel->inInitialBlockDownload()) {
-        LogPrint(BCLog::STAKING,"Checking Staking Status: Syncing...\n");
-        stakingState->setText(tr("Syncing Blocks..."));
-        stakingState->setToolTip("Syncing Blocks");
-        stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
-        return;
-    }
-    if (!masternodeSync.IsSynced()) {
-        LogPrint(BCLog::STAKING,"Checking Staking Status: Syncing MN List...\n");
-        stakingState->setText(tr("Syncing MN List..."));
-        stakingState->setToolTip("Syncing Masternode List");
-        stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
-        return;
-    }
-    if (stakingState->text().contains("Enabling")) {
-        if (!nLastCoinStakeSearchInterval) return;
-    }
-    if (nLastCoinStakeSearchInterval) {
-        LogPrint(BCLog::STAKING,"Checking Staking Status: Enabled.\n");
-        stakingState->setText(tr("Staking Enabled"));
-        stakingState->setToolTip("Staking Enabled");
-        stakingAction->setIcon(QIcon(":/icons/staking_active"));
-    /*} else if (nConsolidationTime > 0) {
-        nConsolidationTime --;
-        stakingState->setText(tr("Consolidating Transactions…"));
-        stakingState->setToolTip("Consolidating Transactions… Please wait few minutes for it to be consolidated.");
-        stakingAction->setIcon(QIcon(":/icons/staking_active"));*/
-    } else {
-        LogPrint(BCLog::STAKING,"Checking Staking Status: Enabling...\n");
-        stakingState->setText(tr("Enabling Staking..."));
-        stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
-        stakingAction->setIcon(QIcon(":/icons/staking_active"));
+    if (walletFrame) {
+        bool stkStatus = false;
+        if (pwalletMain) {
+            fMultiSend = pwalletMain->isMultiSendEnabled();
+            stkStatus = pwalletMain->ReadStakingStatus();
+        }
+        if (!stkStatus || pwalletMain->IsLocked()) {
+            LogPrint(BCLog::STAKING,"Checking Staking Status: Disabled.\n");
+            stakingState->setText(tr("Staking Disabled"));
+            stakingState->setToolTip("Staking Disabled");
+            stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
+            return;
+        }
+        if (vNodes.empty()) {
+            LogPrint(BCLog::STAKING,"Checking Staking Status: No Active Peers...\n");
+            stakingState->setText(tr("No Active Peers"));
+            stakingState->setToolTip("No Active Peers");
+            stakingAction->setIcon(QIcon(":/icons/staking_inactive"));
+            return;
+        }
+        if (clientModel->inInitialBlockDownload()) {
+            LogPrint(BCLog::STAKING,"Checking Staking Status: Syncing...\n");
+            stakingState->setText(tr("Syncing Blocks..."));
+            stakingState->setToolTip("Syncing Blocks");
+            stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
+            return;
+        }
+        if (!masternodeSync.IsSynced()) {
+            LogPrint(BCLog::STAKING,"Checking Staking Status: Syncing MN List...\n");
+            stakingState->setText(tr("Syncing MN List..."));
+            stakingState->setToolTip("Syncing Masternode List");
+            stakingAction->setIcon(QIcon(":/icons/staking_waiting"));
+            return;
+        }
+        if (stakingState->text().contains("Enabling")) {
+            if (!nLastCoinStakeSearchInterval) return;
+        }
+        if (nLastCoinStakeSearchInterval) {
+            LogPrint(BCLog::STAKING,"Checking Staking Status: Enabled.\n");
+            stakingState->setText(tr("Staking Enabled"));
+            stakingState->setToolTip("Staking Enabled");
+            stakingAction->setIcon(QIcon(":/icons/staking_active"));
+        /*} else if (nConsolidationTime > 0) {
+            nConsolidationTime --;
+            stakingState->setText(tr("Consolidating Transactions…"));
+            stakingState->setToolTip("Consolidating Transactions… Please wait few minutes for it to be consolidated.");
+            stakingAction->setIcon(QIcon(":/icons/staking_active"));*/
+        } else {
+            LogPrint(BCLog::STAKING,"Checking Staking Status: Enabling...\n");
+            stakingState->setText(tr("Enabling Staking..."));
+            stakingState->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
+            stakingAction->setIcon(QIcon(":/icons/staking_active"));
+        }
     }
 }
+
 void BitcoinGUI::setStakingInProgress(bool inProgress)
 {
     if (inProgress) {
