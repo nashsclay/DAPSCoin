@@ -189,6 +189,9 @@ public:
 
     bool AppendStealthAccountList(const std::string& accountName);
     bool ReadStealthAccountList(std::string& accountList);
+
+    static void IncrementUpdateCounter();
+    static unsigned int GetUpdateCounter();
 private:
     CWalletDB(const CWalletDB&);
     void operator=(const CWalletDB&);
