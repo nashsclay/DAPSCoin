@@ -189,6 +189,9 @@ public:
 
     bool AppendStealthAccountList(const std::string& accountName);
     bool ReadStealthAccountList(std::string& accountList);
+
+    static void IncrementUpdateCounter();
+    static unsigned int GetUpdateCounter();
 private:
     CWalletDB(const CWalletDB&);
     void operator=(const CWalletDB&);
@@ -198,5 +201,6 @@ private:
 
 bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCustom = true);
 bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc, const fs::path& pathDest);
+void ThreadFlushWalletDB(const std::string& strFile);
 
 #endif // BITCOIN_WALLETDB_H
