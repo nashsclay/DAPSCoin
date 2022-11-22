@@ -1947,16 +1947,14 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
             const uint256& wtxid = it->first;
             const CWalletTx* pcoin = &(*it).second;
 
-            int cannotSpend = 0;
-            AvailableCoins(wtxid, pcoin, vCoins, cannotSpend, fOnlyConfirmed, coinControl, fIncludeZeroValue, nCoinType, fUseIX);
+            AvailableCoins(wtxid, pcoin, vCoins, fOnlyConfirmed, coinControl, fIncludeZeroValue, nCoinType, fUseIX);
         }
     }
 }
 
-bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::vector<COutput>& vCoins, int cannotSpend, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX)
+bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX)
 {
     if (IsLocked()) return false;
-    cannotSpend = 0;
     {
         if (!CheckFinalTx(*pcoin))
             return false;
@@ -1976,7 +1974,6 @@ bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::v
             return false;
         for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
             if (pcoin->vout[i].IsEmpty()) {
-                cannotSpend++;
                 continue;
             }
             bool found = false;
@@ -2010,7 +2007,6 @@ bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::v
                 fIsSpendable = true;
 
             if (IsSpent(wtxid, i)) {
-                cannotSpend++;
                 continue;
             }
 
@@ -2128,10 +2124,8 @@ bool CWallet::MintableCoins()
         for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
             const uint256& wtxid = it->first;
             const CWalletTx* pcoin = &(*it).second;
-
-            int cannotSpend = 0;
             {
-                AvailableCoins(wtxid, pcoin, vCoins, cannotSpend, true);
+                AvailableCoins(wtxid, pcoin, vCoins, true);
                 if (!vCoins.empty()) {
                     for (const COutput& out : vCoins) {
                         int64_t nTxTime = out.tx->GetTxTime();
@@ -3781,9 +3775,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             if (IsLocked() || ShutdownRequested())
                     return false;
             std::vector<COutput> vCoins;
-            int cannotSpend = 0;
             {
-                AvailableCoins(wtxid, pcoin, vCoins, cannotSpend, true, NULL, false, STAKABLE_COINS, false);
+                AvailableCoins(wtxid, pcoin, vCoins, true, NULL, false, STAKABLE_COINS, false);
             }
 
             CAmount nAmountSelected = 0;
