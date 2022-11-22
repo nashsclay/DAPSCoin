@@ -3175,6 +3175,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     if (block.IsProofOfStake()) {
+        const CAmount minStakingAmount = Params().MinimumStakeAmount();
         const CTransaction coinstake = block.vtx[1];
         size_t numUTXO = coinstake.vout.size();
         if (mapBlockIndex.count(block.hashPrevBlock) < 1) {
@@ -3186,8 +3187,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!VerifyDerivedAddress(mnOut, mnsa))
             return state.DoS(100, error("ConnectBlock() : Incorrect derived address for masternode rewards"));
 
-        if (nHeight >= Params().HardFork() && nValueIn < Params().MinimumStakeAmount())
-            return state.DoS(100, error("ConnectBlock() : Incorrect Minimum Stake Amount"));
+        if (nHeight >= Params().HardFork() && nValueIn < minStakingAmount)
+            return state.DoS(100, error("ConnectBlock() : amount (%d) not allowed for staking. Min amount: %d",
+                    __func__, nValueIn, minStakingAmount), REJECT_INVALID, "bad-txns-stake");
     }
 
     // track money supply and mint amount info

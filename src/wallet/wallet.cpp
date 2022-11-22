@@ -2155,13 +2155,14 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
     maxFee = 0;
     SetRingSize(0);
     CAmount nBalance = GetBalance();
+    const CAmount minStakingAmount = Params().MinimumStakeAmount();
     if (IsMasternodeController()) {
         nBalance = GetSpendableBalance();
     }
-    if (nBalance < Params().MinimumStakeAmount()) {
+    if (nBalance < minStakingAmount) {
         return StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW;
     }
-    if (nBalance - nReserveBalance < Params().MinimumStakeAmount()) {
+    if (nBalance - nReserveBalance < minStakingAmount) {
         return StakingStatusError::UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH;
     }
 
@@ -2224,7 +2225,7 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
                             }
                         }
                         COutput out(pcoin, i, nDepth, true);
-                        if (value >= Params().MinimumStakeAmount()) {
+                        if (value >= minStakingAmount) {
                             coinsOverThreshold.push_back(out);
                         } else {
                             coinsUnderThreshold.push_back(out);
@@ -2251,7 +2252,7 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
                 if (coinsUnderThreshold.size() == 0) {
                     return StakingStatusError::STAKING_OK;
                 } else {
-                    if (nBalance < Params().MinimumStakeAmount() + maxFee) {
+                    if (nBalance < minStakingAmount + maxFee) {
                         return StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW_CONSOLIDATION_FAILED;
                     }
                     return StakingStatusError::STAKABLE_NEED_CONSOLIDATION;
@@ -2273,14 +2274,14 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
                 return StakingStatusError::STAKABLE_NEED_CONSOLIDATION_WITH_RESERVE_BALANCE;
             }
 
-            /* if (nReserveBalance == 0 && coinsOverThreshold.empty() && nBalance > Params().MinimumStakeAmount()) {
-                if (nSpendableBalance < Params().MinimumStakeAmount()) {
+            /* if (nReserveBalance == 0 && coinsOverThreshold.empty() && nBalance > minStakingAmount) {
+                if (nSpendableBalance < minStakingAmount) {
                     return StakingStatusError::UNSTAKABLE_DUE_TO_CONSILIDATION_FAILED;  //not enough spendable balance
                 }
                 std::set<std::pair<const CWalletTx*, unsigned int> > setCoinsRet;
                 CAmount nValueRet;
                 int ringSize = MIN_RING_SIZE + secp256k1_rand32() % (MAX_RING_SIZE - MIN_RING_SIZE + 1);
-                bool selectCoinRet = SelectCoins(true, ringSize, 1, Params().MinimumStakeAmount(), setCoinsRet, nValueRet, NULL, AvailableCoinsType::ALL_COINS, false);
+                bool selectCoinRet = SelectCoins(true, ringSize, 1, minStakingAmount, setCoinsRet, nValueRet, NULL, AvailableCoinsType::ALL_COINS, false);
                 if (!selectCoinRet) {
                     return StakingStatusError::UNSTAKABLE_DUE_TO_CONSILIDATION_FAILED;  //not enough spendable balance
                 }
@@ -2293,7 +2294,6 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
             }*/
         }
     }
-
 
     return ret;
 }
@@ -5284,6 +5284,7 @@ void CWallet::AutoCombineDust()
 bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee) {
     //finding all spendable UTXOs < MIN_STAKING
     CAmount total = 0;
+    const CAmount minStakingAmount = Params().MinimumStakeAmount();
     std::vector<COutput> vCoins, underStakingThresholdCoins;
     {
         LOCK2(cs_main, cs_wallet);
@@ -5330,7 +5331,7 @@ bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee)
                     }
                     vCoins.push_back(COutput(pcoin, i, nDepth, true));
                     total += decodedAmount;
-                    if (decodedAmount < Params().MinimumStakeAmount()) underStakingThresholdCoins.push_back(COutput(pcoin, i, nDepth, true));
+                    if (decodedAmount < minStakingAmount) underStakingThresholdCoins.push_back(COutput(pcoin, i, nDepth, true));
                 }
             }
         }
@@ -5338,7 +5339,7 @@ bool CWallet::estimateStakingConsolidationFees(CAmount& minFee, CAmount& maxFee)
 
     minFee = 0;
     maxFee = 0;
-    if (total < Params().MinimumStakeAmount()) return false; //no staking sweeping will be created
+    if (total < minStakingAmount) return false; //no staking sweeping will be created
     size_t numUTXOs = vCoins.size();
     return true;
 }
