@@ -710,19 +710,20 @@ StakingStatusError WalletModel::getStakingStatusError(QString& error)
     /* {
         bool fMintable = wallet->MintableCoins();
         CAmount balance = wallet->GetSpendableBalance();
+        const CAmount minStakingAmount = Params().MinimumStakeAmount();
         if (!fMintable || nReserveBalance > balance) {
-            if (balance < Params().MinimumStakeAmount()) {
-                error = "\nBalance is under the minimum 400,000 staking threshold.\nPlease send more PRCY to this wallet.\n";
+            if (balance < minStakingAmount) {
+                error = "\nBalance is under the minimum 2,5000 staking threshold.\nPlease send more PRCY to this wallet.\n";
                 return StakingStatusError::STAKING_OK;
             }
-            if (nReserveBalance > balance || (balance > nReserveBalance && balance - nReserveBalance < Params().MinimumStakeAmount())) {
+            if (nReserveBalance > balance || (balance > nReserveBalance && balance - nReserveBalance < minStakingAmount)) {
                 error = "Reserve balance is too high.\nPlease lower it in order to turn staking on.";
                 return StakingStatusError::RESERVE_TOO_HIGH;
             }
             if (!fMintable) {
-                if (balance > Params().MinimumStakeAmount()) {
-                    //10 is to cover transaction fees
-                    if (balance >= Params().MinimumStakeAmount() + 10*COIN) {
+                if (balance > minStakingAmount) {
+                    //1 is to cover transaction fees
+                    if (balance >= minStakingAmount + 1*COIN) {
                         error = "Not enough mintable coins.\nDo you want to merge & make a sent-to-yourself transaction to make the wallet stakable?";
                         return StakingStatusError::UTXO_UNDER_THRESHOLD;
                     }

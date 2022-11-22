@@ -531,12 +531,13 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             pwalletMain->combineMode = CombineMode::ON;
             saveConsolidationSettingTime(ui->addNewFunds->isChecked());
             bool success = false;
+            const CAmount minStakingAmount = Params().MinimumStakeAmount();
             try {
                 uint32_t nTime = pwalletMain->ReadAutoConsolidateSettingTime();
                 nTime = (nTime == 0)? GetAdjustedTime() : nTime;
                 success = model->getCWallet()->CreateSweepingTransaction(
-                                Params().MinimumStakeAmount(),
-                                Params().MinimumStakeAmount(), nTime);
+                                minStakingAmount,
+                                minStakingAmount, nTime);
                 if (success) {
                     //nConsolidationTime = 1800;
                     QString msg = "Consolidation transaction created!";
@@ -589,7 +590,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                     try {
                         success = model->getCWallet()->SendToStealthAddress(
                                 masterAddr,
-                                Params().MinimumStakeAmount(),
+                                minStakingAmount,
                                 resultTx,
                                 false
                         );
