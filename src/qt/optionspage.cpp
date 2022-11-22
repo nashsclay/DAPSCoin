@@ -531,7 +531,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             pwalletMain->combineMode = CombineMode::ON;
             saveConsolidationSettingTime(ui->addNewFunds->isChecked());
             bool success = false;
-            const CAmount minStakingAmount = Params().MinimumStakeAmount();
+            const CAmount minStakingAmount = model->getMinStakingAmount();;
             try {
                 uint32_t nTime = pwalletMain->ReadAutoConsolidateSettingTime();
                 nTime = (nTime == 0)? GetAdjustedTime() : nTime;

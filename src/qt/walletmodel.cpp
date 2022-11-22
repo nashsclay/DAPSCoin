@@ -69,6 +69,11 @@ WalletModel::~WalletModel()
     unsubscribeFromCoreSignals();
 }
 
+CAmount WalletModel::getMinStakingAmount() const
+{
+    return Params().MinimumStakeAmount();
+}
+
 CAmount WalletModel::getBalance(const CCoinControl* coinControl) const
 {
     if (coinControl) {
