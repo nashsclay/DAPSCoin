@@ -18,7 +18,7 @@ These are the dependencies currently used by PRCYCoin. You can find instructions
 | libjpeg |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L65) |
 | libpng |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L64) |
 | librsvg | |  |  |  |  |
-| MiniUPnPc | [2.0.20180203](http://miniupnp.free.fr/files) |  | No |  |  |
+| MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
 | OpenSSL | [1.0.1k](https://www.openssl.org/source) |  | Yes |  |  |
 | PCRE |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L66) |
 | protobuf | [2.6.1](https://github.com/google/protobuf/releases) |  | No |  |  |
