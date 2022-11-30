@@ -713,6 +713,7 @@ public:
     void CancelSubscribe(unsigned int nChannel);
     void CloseSocketDisconnect();
     bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
+    bool DisconnectOldVersion(std::string strSubVer, int nHeight, std::string strLastCommand = "");
 
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving
@@ -791,8 +792,6 @@ public:
     bool Write(const banmap_t& banSet);
     bool Read(banmap_t& banSet);
 };
-
-bool IsUnsupportedVersion(std::string strSubVer, int nHeight);
 
 struct AddedNodeInfo {
     std::string strAddedNode;

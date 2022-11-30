@@ -6043,6 +6043,9 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         if (pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand))
             return false;
 
+        if (pfrom->DisconnectOldVersion(pfrom->strSubVer, chainActive.Height(), strCommand))
+            return false;
+
         if (pfrom->nVersion == 10300)
             pfrom->nVersion = 300;
         if (!vRecv.empty())
@@ -6050,12 +6053,6 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         if (!vRecv.empty()) {
             vRecv >> LIMITED_STRING(pfrom->strSubVer, MAX_SUBVERSION_LENGTH);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
-        }
-        if (IsUnsupportedVersion(pfrom->strSubVer, chainActive.Height())) {
-                // disconnect from peers other than these sub versions
-                LogPrintf("peer %s using unsupported version %s; disconnecting and banning\n", pfrom->addr.ToString().c_str(), pfrom->strSubVer.c_str());
-                pfrom->fDisconnect = true;
-                return false;
         }
         if (!vRecv.empty())
             vRecv >> pfrom->nStartingHeight;
@@ -6571,6 +6568,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 }
                 //disconnect this node if its old protocol version
                 pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand);
+                pfrom->DisconnectOldVersion(pfrom->strSubVer, chainActive.Height(), strCommand);
                 if (mapBlockIndex.count(block.GetHash())) {
                     LogPrint(BCLog::NET, "Added block %s to block index map\n", block.GetHash().GetHex());
                 }
