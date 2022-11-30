@@ -522,7 +522,7 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         } else {
             errorMessage = "In order to enable staking with 100% of your current balance except the reserve balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY.\n\nWould you like to do this?";
         }
-        reply = QMessageBox::question(this, "Staking Needs Consolidation", QString::fromStdString(errorMessage), QMessageBox::Yes|QMessageBox::No);
+        reply = QMessageBox::question(this, "Staking Needs Consolidation", QString::fromStdString(errorMessage), QMessageBox::Yes|QMessageBox::No|QMessageBox::Ignore);
         if (reply == QMessageBox::Yes) { 
             pwalletMain->WriteStakingStatus(true);
             Q_EMIT model->stakingStatusChanged(true);
@@ -552,12 +552,17 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                 LogPrintf("Sweeping failed, will be done automatically when coins become mature");
             }            
             return;
-        } else {
+        } else if (reply == QMessageBox::No) {
             nLastCoinStakeSearchInterval = 0;
             model->generateCoins(false, 0);
             Q_EMIT model->stakingStatusChanged(false);
             pwalletMain->walletStakingInProgress = false;
             pwalletMain->WriteStakingStatus(false);
+            return;
+        } else {
+            pwalletMain->WriteStakingStatus(true);
+            Q_EMIT model->stakingStatusChanged(true);
+            model->generateCoins(true, 1);
             return;
         }
         /* if (!error.length()) {
