@@ -1242,9 +1242,7 @@ bool AppInit2(bool isDaemon)
     }  // (!fDisableWallet)
 #endif // ENABLE_WALLET
     // ********************************************************* Step 6: network initialization
-    //run daemon only
-    if (isDaemon)
-        RegisterNodeSignals(GetNodeSignals());       // block first after unlock/lock retry register
+    RegisterNodeSignals(GetNodeSignals());
 
     // sanitize comments per BIP-0014, format user agent and check total size
     std::vector<std::string> uacomments;
