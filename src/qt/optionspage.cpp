@@ -155,6 +155,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     ui->minimizeToTray->setChecked(settings.value("fMinimizeToTray", false).toBool());
     ui->minimizeOnClose->setChecked(settings.value("fMinimizeOnClose", false).toBool());
     ui->alwaysRequest2FA->setChecked(settings.value("fAlwaysRequest2FA", false).toBool());
+    ui->alwaysRequestPassphrase->setChecked(settings.value("fAlwaysRequestPassphrase", false).toBool());
     ui->hideBalanceStaking->setChecked(settings.value("fHideBalance", false).toBool());
     ui->lockSendStaking->setChecked(settings.value("fLockSendStaking", false).toBool());
     ui->displayCurrencyValue->setChecked(settings.value("fDisplayCurrencyValue", false).toBool());
@@ -1000,6 +1001,16 @@ void OptionsPage::alwaysRequest2FA_clicked(int state)
         settings.setValue("fAlwaysRequest2FA", true);
     } else {
         settings.setValue("fAlwaysRequest2FA", false);
+    }
+}
+
+void OptionsPage::alwaysRequestPassphrase_clicked(int state)
+{
+    checkForUnlock();
+    if (ui->alwaysRequestPassphrase->isChecked()) {
+        settings.setValue("fAlwaysRequestPassphrase", true);
+    } else {
+        settings.setValue("fAlwaysRequestPassphrase", false);
     }
 }
 

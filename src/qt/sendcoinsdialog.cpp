@@ -160,6 +160,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     bool isValidAddresss = (regex_match(address.toStdString(), std::regex("[a-zA-z0-9]+")))&&(address.length()==99||address.length()==110);
     bool isValidAmount = ((recipient.amount>0) && (recipient.amount<=balance));
     bool fAlwaysRequest2FA = settings.value("fAlwaysRequest2FA").toBool();
+    bool fAlwaysRequestPassphrase = settings.value("fAlwaysRequestPassphrase").toBool();
 
     form->errorAddress(isValidAddresss);
     form->errorAmount(isValidAmount);
@@ -189,7 +190,7 @@ void SendCoinsDialog::on_sendButton_clicked(){
     // and make many transactions while unlocking through this dialog
     // will call relock
     WalletModel::EncryptionStatus encStatus = model->getEncryptionStatus();
-    if (encStatus == model->Locked || encStatus == model->UnlockedForStakingOnly) {
+    if (encStatus == model->Locked || encStatus == model->UnlockedForStakingOnly || fAlwaysRequestPassphrase) {
         WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Send, true));
         if (!ctx.isValid()) {
             // Unlock wallet was cancelled

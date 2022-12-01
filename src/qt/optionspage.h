@@ -102,6 +102,7 @@ private Q_SLOTS:
     void minimizeOnClose_clicked(int);
     void changeDigits(int);
     void alwaysRequest2FA_clicked(int);
+    void alwaysRequestPassphrase_clicked(int);
     void hideBalanceStaking_clicked(int);
     void lockSendStaking_clicked(int);
     void checkForUnlock();
