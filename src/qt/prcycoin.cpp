@@ -181,7 +181,6 @@ public:
 
 public Q_SLOTS:
     void initialize();
-    void registerNodeSignal();
     void shutdown();
     void restart(QStringList args);
 
@@ -238,7 +237,6 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void requestedInitialize();
-    void requestedRegisterNodeSignal();
     void requestedRestart(QStringList args);
     void requestedShutdown();
     void stopThread();
@@ -269,11 +267,6 @@ void BitcoinCore::handleRunawayException(const std::exception* e)
 {
     PrintExceptionContinue(e, "Runaway exception");
     Q_EMIT runawayException(QString::fromStdString(strMiscWarning));
-}
-
-void BitcoinCore::registerNodeSignal()
-{
-    RegisterNodeSignals(GetNodeSignals());
 }
 
 void BitcoinCore::initialize()
@@ -410,7 +403,6 @@ void BitcoinApplication::startThread()
     connect(executor, SIGNAL(initializeResult(int)), this, SLOT(initializeResult(int)));
     connect(executor, SIGNAL(shutdownResult(int)), this, SLOT(shutdownResult(int)));
     connect(executor, SIGNAL(runawayException(QString)), this, SLOT(handleRunawayException(QString)));
-    connect(this, SIGNAL(requestedRegisterNodeSignal()), executor, SLOT(registerNodeSignal()));
     connect(this, SIGNAL(requestedInitialize()), executor, SLOT(initialize()));
     connect(this, SIGNAL(requestedShutdown()), executor, SLOT(shutdown()));
     connect(window, SIGNAL(requestedRestart(QStringList)), executor, SLOT(restart(QStringList)));
@@ -531,7 +523,6 @@ void BitcoinApplication::initializeResult(int retval)
 
                 walletModel->updateStatus();
             }
-            Q_EMIT requestedRegisterNodeSignal();
         }
 #endif
         pollShutdownTimer->start(200);
