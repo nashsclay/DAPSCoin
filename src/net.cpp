@@ -1725,7 +1725,6 @@ void ThreadMessageHandler() {
         bool fSleep = true;
         for (CNode * pnode : vNodesCopy)
         {
-            if (!pnode) continue;
             if (pnode->fDisconnect)
                 continue;
             // Receive messages
