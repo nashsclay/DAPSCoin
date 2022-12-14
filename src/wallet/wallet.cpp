@@ -1985,6 +1985,9 @@ bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::v
                 if (IsCollateralized(outpoint)) {
                     continue;
                 }
+                if (inSpendQueueOutpoints.count(outpoint)) {
+                    continue;
+                }
                 found = true;
             }
             if (!found) continue;
