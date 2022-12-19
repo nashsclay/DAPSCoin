@@ -360,7 +360,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
 
             CTxUndo txundo;
             if (tx.IsCoinStake()) {
-                UpdateCoins(tx, state, view, txundo, nHeight);
+                UpdateCoins(tx, view, txundo, nHeight);
             }
 
             // Added
