@@ -1312,22 +1312,6 @@ bool CWalletDB::WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& key
     return Write(std::make_pair(std::string("hdpubkey"), hdPubKey.extPubKey.pubkey), hdPubKey, false);
 }
 
-// Just get the Serial Numbers
-std::list<CBigNum> CWalletDB::ListMintedCoinsSerial()
-{
-    std::list<CBigNum> listPubCoin;
-    
-    return listPubCoin;
-}
-
-// Just get the Serial Numbers
-std::list<CBigNum> CWalletDB::ListSpentCoinsSerial()
-{
-    std::list<CBigNum> listPubCoin;
-    
-    return listPubCoin;
-}
-
 void CWalletDB::IncrementUpdateCounter()
 {
     nWalletDBUpdateCounter++;
