@@ -17,6 +17,9 @@
 #include "rpc/client.h"
 #include "rpc/server.h"
 #include "util.h"
+#ifdef ENABLE_WALLET
+#include "wallet/wallet.h"
+#endif // ENABLE_WALLET
 
 #include <univalue.h>
 
@@ -286,6 +289,21 @@ RPCConsole::RPCConsole(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHi
     // set library version labels
     ui->openSSLVersion->setText(SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
+    std::string strPathCustom = GetArg("-backuppath", "");
+    int nCustomBackupThreshold = GetArg("-custombackupthreshold", DEFAULT_CUSTOMBACKUPTHRESHOLD);
+
+    if(!strPathCustom.empty()) {
+        ui->wallet_custombackuppath->setText(QString::fromStdString(strPathCustom));
+        ui->wallet_custombackuppath_label->show();
+        ui->wallet_custombackuppath->show();
+    }
+
+    if(!strPathCustom.empty() && nCustomBackupThreshold > 0) {
+        ui->wallet_custombackupthreshold->setText(QString::fromStdString(std::to_string(nCustomBackupThreshold)));
+        ui->wallet_custombackupthreshold_label->setVisible(true);
+        ui->wallet_custombackupthreshold->setVisible(true);
+    }
+
     ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));
     ui->wallet_path->setText(QString::fromStdString(GetDataDir().string() + QDir::separator().toLatin1() + GetArg("-wallet", "wallet.dat")));
 #else

@@ -66,6 +66,8 @@ static const CAmount DEFAULT_TRANSACTION_MAXFEE = 1 * COIN;
 static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
 //! Largest (in bytes) free transaction we're willing to create
 static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
+//! -custombackupthreshold default
+static const int DEFAULT_CUSTOMBACKUPTHRESHOLD = 1;
 
 // 6666 = 1*5000 + 1*1000 + 1*500 + 1*100 + 1*50 + 1*10 + 1*5 + 1
 static const int ZQ_6666 = 6666;
@@ -258,7 +260,7 @@ public:
     bool RescanAfterUnlock(int fromHeight);
     bool MintableCoins();
     StakingStatusError StakingCoinStatus(CAmount& minFee, CAmount& maxFee);
-    bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) ;
+    bool SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInputs, CAmount nTargetAmount);
     bool IsMasternodeController();
     bool checkPassPhraseRule(const char *pass);
     COutPoint findMyOutPoint(const CTxIn& txin) const;

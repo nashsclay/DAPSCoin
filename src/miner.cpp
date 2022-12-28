@@ -11,6 +11,7 @@
 #include "miner.h"
 
 #include "amount.h"
+#include "blocksignature.h"
 #include "consensus/tx_verify.h"
 #include "hash.h"
 #include "main.h"
@@ -651,13 +652,14 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 }
 
 bool fGeneratePrcycoins = false;
+bool fMintableCoins = false;
+int nMintableLastCheck = 0;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
-    nDefaultMinerSleep = GetArg("-minersleep", 45000);
-    LogPrintf("PRCYcoinMiner started with %sms sleep time\n", nDefaultMinerSleep);
+    LogPrintf("PRCYcoinMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     util::ThreadRename("prcycoin-miner");
     fGeneratePrcycoins = true;
@@ -665,19 +667,16 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
-    //control the amount of times the client will check for mintable coins
-    static bool fMintableCoins = false;
-    static int nMintableLastCheck = 0;
-
-    if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
-    {
-        nMintableLastCheck = GetTime();
-        fMintableCoins = pwallet->MintableCoins();
-    }
-
     while (fGeneratePrcycoins || fProofOfStake) {
         if (chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK()) fProofOfStake = true;
         if (fProofOfStake) {
+            //control the amount of times the client will check for mintable coins
+            if ((GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
+            {
+                nMintableLastCheck = GetTime();
+                fMintableCoins = pwallet->MintableCoins();
+            }
+
             if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
                 MilliSleep(5000);
                 continue;
@@ -685,6 +684,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
             while (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || !masternodeSync.IsSynced()) {
                 nLastCoinStakeSearchInterval = 0;
+                // Do a separate 1 minute check here to ensure fMintableCoins is updated
                 if (!fMintableCoins) {
                     if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time
                     {
@@ -715,7 +715,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 }
             }
         }
-        MilliSleep(nDefaultMinerSleep);
         //
         // Create new block
         //
@@ -738,13 +737,15 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         //Stake miner main
         if (fProofOfStake) {
             LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
-            if (!pblock->SignBlock(*pwallet)) {
+            if (!SignBlock(*pblock, *pwallet)) {
                 LogPrintf("BitcoinMiner(): Signing new block failed, computing private key \n");
                 if (pblock->vtx.size() > 1 && pblock->vtx[1].vout.size() > 1) {
                     pwallet->AddComputedPrivateKey(pblock->vtx[1].vout[1]);
                 }
-                if (!pblock->SignBlock(*pwallet))
+                if (!SignBlock(*pblock, *pwallet)) {
+                    LogPrintf("BitcoinMiner(): Signing new block with UTXO key failed \n");
                     continue;
+                }
             }
 
             LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", pblock->GetHash().ToString().c_str());
