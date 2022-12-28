@@ -933,7 +933,11 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp)
             HelpExampleCli("getfeeinfo", "5") + HelpExampleRpc("getfeeinfo", "5"));
 
     int nBlocks = params[0].get_int();
-    int nBestHeight = chainActive.Height();
+    int nBestHeight;
+    {
+        LOCK(cs_main);
+        nBestHeight = chainActive.Height();
+    }
     int nStartHeight = nBestHeight - nBlocks;
     if (nBlocks < 0 || nStartHeight <= 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid start height");
@@ -1352,7 +1356,11 @@ void validaterange(const UniValue& params, int& heightStart, int& heightEnd, int
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Not enough parameters in validaterange");
     }
 
-    const int nBestHeight = chainActive.Height();
+    int nBestHeight;
+    {
+        LOCK(cs_main);
+        nBestHeight = chainActive.Height();
+    }
 
     heightStart = params[0].get_int();
     if (heightStart > nBestHeight) {
@@ -1404,8 +1412,6 @@ UniValue getblockindexstats(const UniValue& params, bool fHelp) {
                 HelpExampleCli("getblockindexstats", "1200000 1000") +
                 HelpExampleRpc("getblockindexstats", "1200000, 1000"));
 
-    LOCK(cs_main);
-
     int heightStart, heightEnd;
     validaterange(params, heightStart, heightEnd);
     // return object
@@ -1424,7 +1430,14 @@ UniValue getblockindexstats(const UniValue& params, bool fHelp) {
     int64_t nTxCount = 0;
     int64_t nTxCount_all = 0;
 
-    CBlockIndex* pindex = chainActive[heightStart];
+    CBlockIndex* pindex = nullptr;
+    {
+        LOCK(cs_main);
+        pindex = chainActive[heightStart];
+    }
+
+    if (!pindex)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid block height");
 
     while (true) {
         CBlock block;
@@ -1465,6 +1478,7 @@ UniValue getblockindexstats(const UniValue& params, bool fHelp) {
         }
 
         if (pindex->nHeight < heightEnd) {
+            LOCK(cs_main);
             pindex = chainActive.Next(pindex);
         } else {
             break;
