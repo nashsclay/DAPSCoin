@@ -86,8 +86,6 @@ size_t nCoinCacheUsage = 5000 * 300;
 /* If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 
-unsigned int nStakeMinAge = 60 * 60;
-
 int MIN_RING_SIZE;
 int MAX_RING_SIZE;
 const int MAX_TX_INPUTS = 50;

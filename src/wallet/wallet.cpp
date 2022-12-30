@@ -2185,7 +2185,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
             int64_t nTxTime = out.tx->GetTxTime();
 
             //check for min age
-            if ((GetAdjustedTime() - nTxTime < nStakeMinAge ) && !Params().IsRegTestNet())
+            if (GetAdjustedTime() - nTxTime < Params().StakeMinAge() && !Params().IsRegTestNet())
                 continue;
 
             //check that it is matured
@@ -2227,7 +2227,7 @@ bool CWallet::MintableCoins()
             //add in-wallet minimum staking
             CAmount nVal = getCOutPutValue(out);
             //nTxTime <= nTime: only stake with UTXOs that are received before nTime time
-            if ((GetAdjustedTime() > nStakeMinAge + nTxTime) && (nVal >= Params().MinimumStakeAmount()))
+            if (Params().IsRegTestNet() || (GetAdjustedTime() > Params().StakeMinAge() + nTxTime) && (nVal >= Params().MinimumStakeAmount()))
                 return true;
         }
     }
