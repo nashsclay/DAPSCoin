@@ -2027,7 +2027,16 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
     }
 }
 
-bool CWallet::AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX)
+bool CWallet::AvailableCoins(
+        const uint256 wtxid,
+        const CWalletTx* pcoin,
+        std::vector<COutput>& vCoins,
+        bool fOnlyConfirmed,
+        const CCoinControl* coinControl,
+        bool fIncludeZeroValue,
+        AvailableCoinsType nCoinType,
+        bool fUseIX
+        )
 {
     if (IsLocked()) return false;
     {
@@ -2176,7 +2185,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
             int64_t nTxTime = out.tx->GetTxTime();
 
             //check for min age
-            if (GetAdjustedTime() - nTxTime < nStakeMinAge)
+            if ((GetAdjustedTime() - nTxTime < nStakeMinAge ) && !Params().IsRegTestNet())
                 continue;
 
             //check that it is matured
@@ -3792,7 +3801,13 @@ void CWallet::AddComputedPrivateKey(const CTxOut& out)
 }
 
 // ppcoin: create coin stake transaction
-bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime)
+bool CWallet::CreateCoinStake(
+        const CKeyStore& keystore,
+        unsigned int nBits,
+        int64_t nSearchInterval,
+        CMutableTransaction& txNew,
+        unsigned int& nTxNewTime
+        )
 {
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
@@ -3818,14 +3833,25 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Get the list of stakable inputs
     std::list<std::unique_ptr<CStakeInput> > listInputs;
-    if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance))
+    if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance)) {
+        LogPrintf("CreateCoinStake(): selectStakeCoins failed\n");
         return false;
+    }
 
-    if (listInputs.empty())
+    if (listInputs.empty()) {
+        LogPrintf("CreateCoinStake(): listInputs empty\n");
         return false;
+    }
 
-    if (GetAdjustedTime() - chainActive.Tip()->GetBlockTime() < 60)
-        MilliSleep(10000);
+    if (GetAdjustedTime() - chainActive.Tip()->GetBlockTime() < 60){
+
+        if(!Params().IsRegTestNet()){
+            MilliSleep(10000);
+        }else{
+            MilliSleep(1000);
+        }
+
+    }
 
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
@@ -3838,7 +3864,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         //make sure that enough time has elapsed between
         CBlockIndex* pindex = stakeInput->GetIndexFrom();
         if (!pindex || pindex->nHeight < 1) {
-            LogPrintf("*** no pindexfrom\n");
+            LogPrintf("CreateCoinStake(): no pindexfrom\n");
             continue;
         }
 
@@ -3851,7 +3877,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (Stake(stakeInput.get(), nBits, block.GetBlockTime(), nTxNewTime, hashProofOfStake)) {
             LOCK(cs_main);
             //Double check that this will pass time requirements
-            if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) {
+            if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast() && !Params().IsRegTestNet()) {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
                 continue;
             }

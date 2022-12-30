@@ -130,6 +130,8 @@ uint256 ParseHashV(const UniValue& v, std::string strName) {
         strHex = v.get_str();
     if (!IsHex(strHex)) // Note: IsHex("") is false
         throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
+    if (64 != strHex.length())
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("%s must be of length %d (not %d)", strName, 64, strHex.length()));
     uint256 result;
     result.SetHex(strHex);
     return result;
@@ -327,6 +329,7 @@ static const CRPCCommand vRPCCommands[] =
         {"generating", "getgenerate", &getgenerate, true, false, false},
         {"generating", "gethashespersec", &gethashespersec, true, false, false},
         {"generating", "setgenerate", &setgenerate, true, true, false},
+        {"generating", "generate", &generate, true, true, false},
         {"generating", "generatepoa", &generatepoa, true, true, false},
 #endif
 

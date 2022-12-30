@@ -77,6 +77,7 @@
         <file alias="twitter">res/icons/twitter.png</file>
         <file alias="onion">res/icons/onion.png</file>
         <file alias="checkmark">res/icons/checkmark.png</file>
+        <file alias="bitcoin_regtest">res/icons/bitcoin_regtest.png</file>
     </qresource>
     <qresource prefix="/css">
         <file alias="dark">res/css/Dark.css</file>
@@ -98,6 +99,7 @@
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
         <file alias="lock">res/images/lock.png</file>
         <file alias="unlock">res/images/unlock.png</file>
+        <file alias="splash_regtest">res/images/splash_regtest.png</file>
     </qresource>
     <qresource prefix="/movies">
         <file alias="spinner-000">res/movies/spinner-000.png</file>

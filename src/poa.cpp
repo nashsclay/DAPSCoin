@@ -23,6 +23,9 @@ unsigned int N_BITS_PD = 0x1e02b2dc; // Params().PoANewDiff()
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
+    if (Params().IsRegTestNet())
+        return pindexLast->nBits;
+
     if (N_BITS != 0 && pblock->IsPoABlockByVersion()) {
         if (pindexLast->nHeight < Params().SoftFork()) {
             LogPrint(BCLog::POA, "%s: returning N_BITS\n", __func__);
@@ -155,8 +158,12 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
         return error("CheckProofOfWork(): nBits below minimum work");
 
     // Check proof of work matches claimed amount
-    if (hash > bnTarget)
-        return error("CheckProofOfWork(): hash doesn't match nBits");
+    if (hash > bnTarget) {
+        if (Params().MineBlocksOnDemand())
+            return false;
+        else
+            return error("CheckProofOfWork() : hash doesn't match nBits");
+    }
 
     return true;
 }

@@ -356,6 +356,9 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
+    fs::path filepath = params[0].get_str().c_str();
+    filepath = fs::absolute(filepath);
+
     std::ofstream file;
     file.open(params[0].get_str().c_str());
     if (!file.is_open())
@@ -398,7 +401,11 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     file << "\n";
     file << "# End of dump\n";
     file.close();
-    return NullUniValue;
+
+    UniValue reply(UniValue::VOBJ);
+    reply.push_back(Pair("filename", filepath.string()));
+
+    return reply;
 }
 
 UniValue bip38encrypt(const UniValue& params, bool fHelp)

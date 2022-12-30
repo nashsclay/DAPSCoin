@@ -1595,6 +1595,13 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     if (tx.IsCoinStake())
         return state.DoS(100, error("%s : coinstake as individual tx (id=%s): %s",
                 __func__, tx.GetHash().GetHex(), tx.ToString()), REJECT_INVALID, "coinstake");
+
+    // Only accept nLockTime-using transactions that can be mined in the next
+    // block; we don't want our mempool filled up with transactions that can't
+    // be mined yet.
+    if (!CheckFinalTx(tx, STANDARD_LOCKTIME_VERIFY_FLAGS))
+        return state.DoS(0, false, REJECT_NONSTANDARD, "non-final");
+
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
     std::string reason;
     if (Params().RequireStandard() && !IsStandardTx(tx, reason))
@@ -1949,15 +1956,15 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
 }
 
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
-bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
+bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow, CBlockIndex* blockIndex)
 {
-    CBlockIndex* pindexSlow = NULL;
-    {
-        LOCK(cs_main);
-        {
-            if (mempool.lookup(hash, txOut)) {
-                return true;
-            }
+    CBlockIndex* pindexSlow = blockIndex;
+
+    LOCK(cs_main);
+
+    if (!blockIndex) {
+        if (mempool.lookup(hash, txOut)) {
+            return true;
         }
 
         if (fTxIndex) {
@@ -2100,6 +2107,12 @@ double ConvertBitsToDouble(unsigned int nBits)
 CAmount GetBlockValue(int nHeight)
 {
     LOCK(cs_main);
+
+    if (Params().IsRegTestNet()) {
+        if (nHeight == 0)
+            return 250 * COIN;
+    }
+
     int64_t nSubsidy = 0;
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
 
@@ -3219,7 +3232,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     if (!control.Wait())
-        return state.DoS(100, false);
+        return state.DoS(100, error("%s: CheckQueue failed", __func__), REJECT_INVALID, "block-validation-failed");
     int64_t nTime2 = GetTimeMicros();
     nTimeVerify += nTime2 - nTimeStart;
     LogPrint(BCLog::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1,
@@ -4172,7 +4185,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     // Check timestamp
     //LogPrint("debug", "%s: block=%s  is proof of stake=%d, is proof of audit=%d\n", __func__, block.GetHash().ToString().c_str(),
         //block.IsProofOfStake(), block.IsProofOfAudit());
-    if (!block.IsPoABlockByVersion() && block.GetBlockTime() >
+    if (!Params().IsRegTestNet() && !block.IsPoABlockByVersion() && block.GetBlockTime() >
                                             GetAdjustedTime() + (block.IsProofOfStake() ? 180 : 7200)) // 3 minute future drift for PoS
         return state.Invalid(error("CheckBlock() : block timestamp too far in the future"),
             REJECT_INVALID, "time-too-new");
@@ -4327,7 +4340,7 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev)
     if (pindexPrev == NULL)
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash().ToString().c_str());
     unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block);
-    if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
+    if (!Params().IsRegTestNet() && block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
         double n1 = ConvertBitsToDouble(block.nBits);
         double n2 = ConvertBitsToDouble(nBitsRequired);
 
@@ -4355,13 +4368,18 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     const int nHeight = pindexPrev->nHeight + 1;
     const int chainHeight = chainActive.Height();
 
+    if ((Params().IsRegTestNet() && block.nBits != GetNextWorkRequired(pindexPrev, &block)))
+        return state.DoS(100, error("%s : incorrect proof of work", __func__),
+                REJECT_INVALID, "bad-diffbits");
+
+
     //If this is a reorg, check that it is not too deep
     int nMaxReorgDepth = GetArg("-maxreorg", Params().MaxReorganizationDepth());
     if (chainHeight - nHeight >= nMaxReorgDepth)
         return state.DoS(1, error("%s: forked chain older than max reorganization depth (height %d)", __func__, chainHeight - nHeight));
 
     // Check timestamp against prev
-    if (!block.IsPoABlockByVersion() && block.GetBlockTime() <= pindexPrev->GetMedianTimePast()) {
+    if (!block.IsPoABlockByVersion() && block.GetBlockTime() <= pindexPrev->GetMedianTimePast() && !Params().IsRegTestNet()) {
         LogPrintf("Block time = %d , GetMedianTimePast = %d \n", block.GetBlockTime(), pindexPrev->GetMedianTimePast());
         return state.Invalid(error("%s : block's timestamp is too early", __func__),
             REJECT_INVALID, "time-too-old");
