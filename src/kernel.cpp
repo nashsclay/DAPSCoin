@@ -350,7 +350,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::unique_ptr<CStakeInput>& stake)
+bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::unique_ptr<CStakeInput>& stake, int nPreviousBlockHeight)
 {
     const CTransaction tx = block.vtx[1]; //coinstake
     CAmount nValueIn;
@@ -380,13 +380,14 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
     prcyInput->SetInput(txPrev, txin.prevout.n);
     stake = std::unique_ptr<CStakeInput>(prcyInput);
 
-    CBlockIndex* pindex = stake->GetIndexFrom();
-    if (!pindex)
-        return error("%s: Failed to find the block index", __func__);
+    //Get the
+    CBlockIndex* pindexfrom = stake->GetIndexFrom();
+    if (!pindexfrom)
+        return error("%s: Failed to find the block index for stake origin", __func__);
 
     // Read block header
-    CBlock blockprev;
-    if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos()))
+    CBlock blockfrom;
+    if (!ReadBlockFromDisk(blockfrom, pindexfrom->GetBlockPos()))
         return error("CheckProofOfStake(): INFO: failed to find block");
 
     uint256 bnTargetPerCoinDay;
@@ -396,8 +397,13 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
     if (!stake->GetModifier(nStakeModifier))
         return error("%s failed to get modifier for stake input\n", __func__);
 
-    unsigned int nBlockFromTime = blockprev.nTime;
+    unsigned int nBlockFromTime = blockfrom.nTime;
     unsigned int nTxTime = block.nTime;
+
+    if (nTxTime < nBlockFromTime) // Transaction timestamp nTxTime
+        return error("CheckStakeKernelHash() : nTime violation - nBlockFromTime=%d nTimeTx=%d", nBlockFromTime, nTxTime);
+    if (nBlockFromTime + nStakeMinAge > nTxTime) // Min age requirement
+        return error("CheckStakeKernelHash() : min age violation - nBlockFromTime=%d nStakeMinAge=%d nTimeTx=%d", nBlockFromTime, nStakeMinAge, nTxTime);
 
     if (!CheckStake(stake->GetUniqueness(), nValueIn, nStakeModifier, bnTargetPerCoinDay, nBlockFromTime,
                     nTxTime, hashProofOfStake)) {

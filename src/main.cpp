@@ -4575,7 +4575,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         uint256 hashProofOfStake = 0;
         std::unique_ptr<CStakeInput> stake;
 
-        if (!CheckProofOfStake(block, hashProofOfStake, stake))
+        if (!CheckProofOfStake(block, hashProofOfStake, stake, pindexPrev->nHeight))
             return state.DoS(100, error("%s: proof of stake check failed", __func__));
 
         if (!stake)
