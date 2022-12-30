@@ -3839,23 +3839,21 @@ bool CWallet::CreateCoinStake(
     }
 
     if (listInputs.empty()) {
-        LogPrintf("CreateCoinStake(): listInputs empty\n");
+        LogPrint(BCLog::STAKING, "CreateCoinStake(): listInputs empty\n");
+        MilliSleep(50000);
         return false;
     }
 
-    if (GetAdjustedTime() - chainActive.Tip()->GetBlockTime() < 60){
-
-        if(!Params().IsRegTestNet()){
-            MilliSleep(10000);
-        }else{
+    if (GetAdjustedTime() - chainActive.Tip()->GetBlockTime() < 60) {
+        if (Params().IsRegTestNet()) {
             MilliSleep(1000);
         }
-
     }
 
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
     bool fKernelFound = false;
+    int nAttempts = 0;
     for (std::unique_ptr<CStakeInput>& stakeInput : listInputs) {
         // Make sure the wallet is unlocked and shutdown hasn't been requested
         if (IsLocked() || ShutdownRequested())
@@ -3873,9 +3871,9 @@ bool CWallet::CreateCoinStake(
         uint256 hashProofOfStake = 0;
         nTxNewTime = GetAdjustedTime();
 
+        nAttempts++;
         //iterates each utxo inside of CheckStakeKernelHash()
         if (Stake(stakeInput.get(), nBits, block.GetBlockTime(), nTxNewTime, hashProofOfStake)) {
-            LOCK(cs_main);
             //Double check that this will pass time requirements
             if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast() && !Params().IsRegTestNet()) {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
@@ -3926,6 +3924,7 @@ bool CWallet::CreateCoinStake(
         if (fKernelFound)
             break; // if kernel is found stop searching
     }
+    LogPrint(BCLog::STAKING, "%s: attempted staking %d times\n", __func__, nAttempts);
     if (!fKernelFound)
         return false;
 

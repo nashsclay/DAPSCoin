@@ -167,11 +167,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
     // Tip
-    CBlockIndex* pindexPrev;
+    CBlockIndex* pindexPrev = nullptr;
     {   // Don't keep cs_main locked
         LOCK(cs_main);
         pindexPrev = chainActive.Tip();
     }
+
     const int nHeight = pindexPrev->nHeight + 1;
 
     pblock->nVersion = 5;   // Supports CLTV activation
@@ -224,7 +225,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
         }
 
         if (!fStakeFound) {
-            LogPrintf("CreateNewBlock(): stake not found\n");
+            LogPrint(BCLog::STAKING, "CreateNewBlock(): stake not found\n");
             return NULL;
         }
     }
@@ -251,6 +252,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
     {
         LOCK2(cs_main, mempool.cs);
 
+        CBlockIndex* pindexPrev = chainActive.Tip();
+        const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
         // Priority order to process transactions
@@ -694,7 +697,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
-
+    bool fLastLoopOrphan = false;
     while (fGeneratePrcycoins || fProofOfStake) {
         if (chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK()) fProofOfStake = true;
         if (fProofOfStake) {
@@ -734,7 +737,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 break;
             }
 
-            if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
+            if (mapHashedBlocks.count(chainActive.Tip()->nHeight) && !fLastLoopOrphan) //search our map of hashed blocks, see if bestblock has been hashed yet
             {
                 if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < std::max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
                 {
@@ -743,6 +746,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 }
             }
         }
+
         //
         // Create new block
         //
@@ -785,7 +789,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
             continue;
         }
-        GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
+
         LogPrint(BCLog::STAKING, "Running PRCYcoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
             ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
@@ -804,6 +808,10 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                     // Found a solution
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
                     ProcessBlockFound(pblock, *pwallet, reservekey);
+                    if (!ProcessBlockFound(pblock, *pwallet, reservekey)) {
+                        fLastLoopOrphan = true;
+                        continue;
+                    }
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
                     // In regression test mode, stop mining after a block is found. This
@@ -897,9 +905,9 @@ void static ThreadPrcycoinMiner(void* parg)
         }
         boost::this_thread::interruption_point();
     } catch (const std::exception& e) {
-        LogPrintf("ThreadBitcoinMiner() exception\n");
+        LogPrintf("ThreadBitcoinMiner() exception: %s \n", e.what());
     } catch (...) {
-        LogPrintf("ThreadBitcoinMiner() exception\n");
+        LogPrintf("ThreadBitcoinMiner() error \n");
     }
 
     LogPrintf("ThreadBitcoinMiner exiting\n");
@@ -956,7 +964,7 @@ void ThreadStakeMinter()
         BitcoinMiner(pwallet, true);
         boost::this_thread::interruption_point();
     } catch (const std::exception& e) {
-        LogPrintf("ThreadStakeMinter() exception \n");
+        LogPrintf("ThreadStakeMinter() exception: %s \n", e.what());
     } catch (...) {
         LogPrintf("ThreadStakeMinter() error \n");
     }
