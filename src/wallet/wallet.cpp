@@ -6155,11 +6155,11 @@ bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount
 {
     LOCK2(cs_main, cs_wallet);
 
-    std::string strError;
+    std::string strFailReason;
     if (this->IsLocked()) {
-        strError = "Error: Wallet locked, unable to create transaction!";
-        LogPrintf("%s: %s\n", __func__, strError);
-        throw std::runtime_error(strError);
+        strFailReason = "Error: Wallet locked, unable to create transaction!";
+        LogPrintf("%s: %s\n", __func__, strFailReason);
+        throw std::runtime_error(strFailReason);
     }
 
     std::string myAddress;
@@ -6207,12 +6207,11 @@ bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount
     control.txPriv = secretChange;
     CAmount nFeeRequired;
     if (!CreateTransactionBulletProof(secret, pubViewKey, scriptPubKey, nValue, wtxNew, reservekey,
-            nFeeRequired, strError, &control, ALL_COINS, fUseIX, (CAmount)0, 6, tomyself)) {
-        strError = "Not enough spendable balance!";
+            nFeeRequired, strFailReason, &control, ALL_COINS, fUseIX, (CAmount)0, 6, tomyself)) {
         if (nValue + nFeeRequired > GetBalance())
-            strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!, nfee=%d, nValue=%d", FormatMoney(nFeeRequired), nFeeRequired, nValue);
-        LogPrintf("%s: %s\n", __func__, strError);
-        throw std::runtime_error(strError);
+            strFailReason = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!, nfee=%d, nValue=%d", FormatMoney(nFeeRequired), nFeeRequired, nValue);
+        LogPrintf("%s: %s\n", __func__, strFailReason);
+        throw std::runtime_error(strFailReason);
     }
     return true;
 }
