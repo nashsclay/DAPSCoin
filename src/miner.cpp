@@ -484,12 +484,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
             LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
             if (!SignBlock(*pblock, *pwallet)) {
-                LogPrintf("BitcoinMiner(): Signing new block failed, computing private key \n");
+                LogPrintf("%s: Signing new block failed, computing private key \n", __func__);
                 if (pblock->vtx.size() > 1 && pblock->vtx[1].vout.size() > 1) {
                     pwallet->AddComputedPrivateKey(pblock->vtx[1].vout[1]);
                 }
                 if (!SignBlock(*pblock, *pwallet)) {
-                    LogPrintf("BitcoinMiner(): Signing new block with UTXO key failed \n");
+                    LogPrintf("%s: Signing new block with UTXO key failed \n", __func__);
                     return NULL;
                 }
             }
@@ -630,7 +630,18 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
     CPubKey pubkey, txPub;
     CKey priv;
     if (!pwallet->GenerateAddress(pubkey, txPub, priv))
-        return NULL;
+        return nullptr;
+
+    const int nHeightNext = chainActive.Tip()->nHeight + 1;
+    static int nLastPOWBlock = Params().LAST_POW_BLOCK();
+
+    // If we're building a late PoW block, don't continue
+    if ((nHeightNext > nLastPOWBlock) && !fProofOfStake) {
+        LogPrintf("%s: Aborting PoW block creation during PoS phase\n", __func__);
+        // sleep 1/2 a block time so we don't go into a tight loop.
+        MilliSleep((Params().TargetSpacing() * 1000) >> 1);
+        return nullptr;
+    }
 
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey, txPub, priv, pwallet, fProofOfStake);
@@ -708,27 +719,19 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 fMintableCoins = pwallet->MintableCoins();
             }
 
-            if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
-                MilliSleep(5000);
-                continue;
-            }
-
-            while (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || !masternodeSync.IsSynced()) {
+            while (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins ||
+                   nReserveBalance >= pwallet->GetBalance() || !masternodeSync.IsSynced()) {
                 nLastCoinStakeSearchInterval = 0;
-                // Do a separate 1 minute check here to ensure fMintableCoins is updated
-                if (!fMintableCoins) {
-                    if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time
-                    {
-                        nMintableLastCheck = GetTime();
-                        fMintableCoins = pwallet->MintableCoins();
-                    }
-                }
                 MilliSleep(5000);
+                // Do a separate 1 minute check here to ensure fMintableCoins is updated
+                if (!fMintableCoins && (GetTime() - nMintableLastCheck > 1 * 60)) // 1 minute check time
+                {
+                    nMintableLastCheck = GetTime();
+                    fMintableCoins = pwallet->MintableCoins();
+                }
                 if (!fGeneratePrcycoins) {
                     break;
                 }
-                if (!fGeneratePrcycoins && !fProofOfStake)
-                    continue;
             }
 
             if (!fGeneratePrcycoins) {
@@ -737,15 +740,25 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 break;
             }
 
-            if (mapHashedBlocks.count(chainActive.Tip()->nHeight) && !fLastLoopOrphan) //search our map of hashed blocks, see if bestblock has been hashed yet
+            //search our map of hashed blocks, see if bestblock has been hashed yet
+            if (mapHashedBlocks.count(chainActive.Tip()->nHeight) && !fLastLoopOrphan)
             {
-                if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < std::max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
+                // wait half of the nHashDrift with max wait of 3 minutes
+                if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < std::max(pwallet->nHashInterval, (unsigned int)1))
                 {
                     MilliSleep(5000);
                     continue;
                 }
             }
-        }
+        } else { // PoW
+            if ((chainActive.Tip()->nHeight - 6) > Params().LAST_POW_BLOCK())
+            {
+                // Run for a little while longer, just in case there is a rewind on the chain.
+                LogPrintf("%s: Exiting Proof of Work Mining Thread at height: %d\n",
+                          __func__, chainActive.Tip()->nHeight);
+                return;
+            }
+       }
 
         //
         // Create new block
@@ -770,12 +783,12 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         if (fProofOfStake) {
             LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
             if (!SignBlock(*pblock, *pwallet)) {
-                LogPrintf("BitcoinMiner(): Signing new block failed, computing private key \n");
+                LogPrintf("%s: Signing new block failed, computing private key \n", __func__);
                 if (pblock->vtx.size() > 1 && pblock->vtx[1].vout.size() > 1) {
                     pwallet->AddComputedPrivateKey(pblock->vtx[1].vout[1]);
                 }
                 if (!SignBlock(*pblock, *pwallet)) {
-                    LogPrintf("BitcoinMiner(): Signing new block with UTXO key failed \n");
+                    LogPrintf("%s: Signing new block with UTXO key failed \n", __func__);
                     continue;
                 }
             }
@@ -886,12 +899,12 @@ void static ThreadBitcoinMiner(void* parg)
         }
         boost::this_thread::interruption_point();
     } catch (const std::exception& e) {
-        LogPrintf("ThreadBitcoinMiner() exception\n");
+        LogPrintf("PRCYcoinMiner exception\n");
     } catch (...) {
-        LogPrintf("ThreadBitcoinMiner() exception\n");
+        LogPrintf("PRCYcoinMiner exception\n");
     }
 
-    LogPrintf("ThreadBitcoinMiner exiting\n");
+    LogPrintf("PRCYcoinMiner exiting\n");
 }
 
 void static ThreadPrcycoinMiner(void* parg)
