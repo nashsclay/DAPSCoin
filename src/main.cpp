@@ -4175,6 +4175,9 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
 
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig)
 {
+    if (block.fChecked)
+        return true;
+
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
     if (!CheckBlockHeader(block, state, block.IsProofOfWork()))

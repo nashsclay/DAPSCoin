@@ -832,7 +832,7 @@ UniValue getpoablocktemplate(const UniValue& params, bool fHelp)
             posBlocksAudited.push_back(entry);
         }
 
-        uint256 poaMerkleRoot = pblock->BuildPoAMerkleTree();
+        uint256 poaMerkleRoot = pblock->ComputePoAMerkleTree();
         uint256 hashTarget;
         hashTarget.SetCompact(pblock->nBits);
 
