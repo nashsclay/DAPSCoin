@@ -12,6 +12,7 @@
 
 #include "amount.h"
 #include "blocksignature.h"
+#include "consensus/merkle.h"
 #include "consensus/tx_verify.h"
 #include "hash.h"
 #include "main.h"
@@ -591,7 +592,7 @@ CBlockTemplate* CreateNewPoABlock(const CScript& scriptPubKeyIn, const CPubKey& 
     assert(txCoinbase.vin[0].scriptSig.size() <= 100);
 
     pblock->vtx[0] = txCoinbase;
-    pblock->hashMerkleRoot = pblock->ComputeMerkleRoot();
+    pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
 
     pblock->hashPoAMerkleRoot = pblock->ComputePoAMerkleTree();
     pblock->minedHash = pblock->ComputeMinedHash();
@@ -614,7 +615,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
     assert(txCoinbase.vin[0].scriptSig.size() <= 100);
 
     pblock->vtx[0] = txCoinbase;
-    pblock->hashMerkleRoot = pblock->ComputeMerkleRoot();
+    pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
 }
 
 #ifdef ENABLE_WALLET
