@@ -389,7 +389,7 @@ bool CheckPrevPoABlockHash(const CBlockHeader& block)
 //Check whether the poa merkle root is correctly computed
 bool CheckPoAMerkleRoot(const CBlock& block, bool* fMutate)
 {
-    uint256 expected = block.BuildPoAMerkleTree(fMutate);
+    uint256 expected = block.ComputePoAMerkleTree(fMutate);
     if (expected == block.hashPoAMerkleRoot) {
         return true;
     }
