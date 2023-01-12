@@ -6270,7 +6270,6 @@ bool CWallet::IsTransactionForMe(const CTransaction& tx)
                 }
 
                 if (ret) {
-                    LOCK(cs_wallet);
                     //Compute private key to spend
                     //x = Hs(aR) + b, b = spend private key
                     unsigned char HStemp[32];

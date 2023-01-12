@@ -95,7 +95,6 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                     decoy.push_back(Pair("txid", allDecoys[i].hash.GetHex()));
                     decoy.push_back(Pair("vout", (int64_t)allDecoys[i].n));
 #ifdef ENABLE_WALLET
-                    LOCK(pwalletMain->cs_wallet);
                     std::map<uint256, CWalletTx>::const_iterator mi = pwalletMain->mapWallet.find(allDecoys[i].hash);
                     if (mi != pwalletMain->mapWallet.end()) {
                         const CWalletTx& prev = (*mi).second;
