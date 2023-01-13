@@ -2026,25 +2026,7 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
 /**
  * populate vCoins with vector of available COutputs.
  */
-void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX)
-{
-    if (IsLocked()) return;
-    vCoins.clear();
-
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
-            const uint256& wtxid = it->first;
-            const CWalletTx* pcoin = &(*it).second;
-
-            AvailableCoins(wtxid, pcoin, vCoins, fOnlyConfirmed, coinControl, fIncludeZeroValue, nCoinType, fUseIX);
-        }
-    }
-}
-
 bool CWallet::AvailableCoins(
-        const uint256 wtxid,
-        const CWalletTx* pcoin,
         std::vector<COutput>& vCoins,
         bool fOnlyConfirmed,
         const CCoinControl* coinControl,
@@ -2054,65 +2036,70 @@ bool CWallet::AvailableCoins(
         )
 {
     if (IsLocked()) return false;
+    vCoins.clear();
+    const bool fCoinsSelected = (coinControl != nullptr) && coinControl->HasSelected();
+
     {
-        if (!CheckFinalTx(*pcoin))
-            return false;
+        LOCK2(cs_main, cs_wallet);
+        for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
+            const uint256& wtxid = it->first;
+            const CWalletTx* pcoin = &(*it).second;
 
-        if (fOnlyConfirmed && !pcoin->IsTrusted())
-            return false;
+            if (!CheckFinalTx(*pcoin)) continue;
+            if (fOnlyConfirmed && !pcoin->IsTrusted()) continue;
+            if (pcoin->GetBlocksToMaturity() > 0) continue;
 
-        if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
-            return false;
-        int nDepth = pcoin->GetDepthInMainChain(false);
-        // do not use IX for inputs that have less then 6 blockchain confirmations
-        if (fUseIX && nDepth < 6)
-            return false;
-        // We should not consider coins which aren't at least in our mempool
-        // It's possible for these to be conflicted via ancestors which we may never be able to detect
-        if (nDepth <= 0)
-            return false;
-        for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
-            if (pcoin->vout[i].IsEmpty()) {
-                continue;
-            }
-            bool found = false;
-            CAmount value = getCTxOutValue(*pcoin, pcoin->vout[i]);
-            if (nCoinType == ONLY_5000) {
-                found = value == Params().MNCollateralAmt();
-            } else {
-                COutPoint outpoint(pcoin->GetHash(), i);
-                if (IsCollateralized(outpoint)) {
+            int nDepth = pcoin->GetDepthInMainChain(false);
+            // do not use IX for inputs that have less then 6 blockchain confirmations
+            if (fUseIX && nDepth < 6) continue;
+
+            // We should not consider coins which aren't at least in our mempool
+            // It's possible for these to be conflicted via ancestors which we may never be able to detect
+            if (nDepth == 0 && !pcoin->InMempool()) continue;
+
+            for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
+                if (pcoin->vout[i].IsEmpty()) {
                     continue;
                 }
-                if (inSpendQueueOutpoints.count(outpoint)) {
+                bool found = false;
+                CAmount value = getCTxOutValue(*pcoin, pcoin->vout[i]);
+                if (nCoinType == ONLY_5000) {
+                    found = value == Params().MNCollateralAmt();
+                } else {
+                    COutPoint outpoint(pcoin->GetHash(), i);
+                    if (IsCollateralized(outpoint)) {
+                        continue;
+                    }
+                    if (inSpendQueueOutpoints.count(outpoint)) {
+                        continue;
+                    }
+                    found = true;
+                }
+                if (!found) continue;
+
+                isminetype mine = IsMine(pcoin->vout[i]);
+                if (mine == ISMINE_NO)
+                    continue;
+                if (mine == ISMINE_WATCH_ONLY)
+                    continue;
+                if (IsLockedCoin(wtxid, i) && nCoinType != ONLY_5000)
+                    continue;
+                if (value <= 0 && !fIncludeZeroValue)
+                    continue;
+                if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs &&
+                        !coinControl->IsSelected(wtxid, i))
+                    continue;
+
+                bool fIsSpendable = false;
+                if ((mine & ISMINE_SPENDABLE) != ISMINE_NO)
+                    fIsSpendable = true;
+
+                if (IsSpent(wtxid, i)) {
                     continue;
                 }
-                found = true;
+
+                vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
             }
-            if (!found) continue;
-
-            isminetype mine = IsMine(pcoin->vout[i]);
-            if (mine == ISMINE_NO)
-                continue;
-            if (mine == ISMINE_WATCH_ONLY)
-                continue;
-            if (IsLockedCoin(wtxid, i) && nCoinType != ONLY_5000)
-                continue;
-            if (value <= 0 && !fIncludeZeroValue)
-                continue;
-            if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs &&
-                !coinControl->IsSelected(wtxid, i))
-                continue;
-
-            bool fIsSpendable = false;
-            if ((mine & ISMINE_SPENDABLE) != ISMINE_NO)
-                fIsSpendable = true;
-
-            if (IsSpent(wtxid, i)) {
-                continue;
-            }
-
-            vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
         }
     }
     return true;
