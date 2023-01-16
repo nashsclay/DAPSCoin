@@ -250,7 +250,7 @@ libbitcoin_zmq_a_SOURCES = \
   zmq/zmqpublishnotifier.cpp
 endif
 
-libbitcoin_zxcvbn_a_CPPFLAGS = $(BITCOIN_INCLUDES)
+libbitcoin_zxcvbn_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(PIE_FLAGS)
 libbitcoin_zxcvbn_a_CXXFLAGS = $(AM_CXXFLAGS)
 libbitcoin_zxcvbn_a_SOURCES = \
   zxcvbn/_frequency_lists.cpp \
