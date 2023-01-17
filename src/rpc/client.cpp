@@ -40,6 +40,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"rescan", 0},
         {"rescanwallettransactions", 0},
         {"sendtostealthaddress", 1},
+        {"sendtostealthaddress", 2},
         {"sendalltostealthaddress", 1},
         {"settxfee", 0},
         {"getreceivedbyaddress", 1},

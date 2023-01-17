@@ -2802,14 +2802,15 @@ UniValue decodestealthaddress(const UniValue& params, bool fHelp)
 
 UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() != 2)
+    if (fHelp || params.size() < 2 || params.size() > 3)
         throw std::runtime_error(
                 "sendtostealthaddress \"prcystealthaddress\" amount\n"
                 "\nSend an amount to a given prcy stealth address address. The amount is a real and is rounded to the nearest 0.00000001\n" +
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
                 "1. \"prcystealthaddress\"  (string, required) The prcycoin stealth address to send to.\n"
-                "2. \"amount\"      (numeric, required) The amount in PRCY to send. eg 0.1\n"
+                "2. \"amount\"              (numeric, required) The amount in PRCY to send. eg 0.1\n"
+                "3. \"lock_output\"         (bool, optional, default=false) Whether to lock the output or not.\n"
                 "\nResult:\n"
                 "\"transactionid\"  (string) The transaction id.\n"
                 "\nExamples:\n" +
@@ -2826,9 +2827,35 @@ UniValue sendtostealthaddress(const UniValue& params, bool fHelp)
     // Wallet comments
     CWalletTx wtx;
 
+    // Lock the output, ignored if not to ourself
+    bool lockOutput = false;
+    if (params.size() > 2)
+        lockOutput = params[2].get_bool();
+
     if (!pwalletMain->SendToStealthAddress(stealthAddr, nAmount, wtx)) {
         throw JSONRPCError(RPC_WALLET_ERROR,
                            "Cannot create transaction.");
+    }
+
+    std::string myAddress;
+    pwalletMain->ComputeStealthPublicAddress("masteraccount", myAddress);
+    int indexOut = -1;
+    if (stealthAddr == myAddress) {
+        if (lockOutput) {
+            for (int i=0; i < (int)wtx.vout.size(); i++) {
+                UniValue obj(UniValue::VOBJ);
+                CTxOut& out = wtx.vout[i];
+                CAmount value = pwalletMain->getCTxOutValue(wtx, out);
+                if (value == nAmount) {
+                    indexOut = i;
+
+                    // Lock output
+                    COutPoint collateralOut(wtx.GetHash(), indexOut);
+                    pwalletMain->LockCoin(collateralOut);
+                    LogPrintf("Output transaction: %s:%i has been locked\n", wtx.GetHash().GetHex().c_str(), indexOut);
+                }
+            }
+        }
     }
     return wtx.GetHash().GetHex();
 }
