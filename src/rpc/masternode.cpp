@@ -528,6 +528,64 @@ UniValue startmasternode (const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
+UniValue createmasternode(const UniValue& params, bool fHelp)
+{
+    if (fHelp || (params.size() != 0))
+        throw std::runtime_error(
+            "createmasternode\n"
+            "\nCreate a new masternode collteral transaction, genkey, and locks the output\n"
+
+            "\nResult:\n"
+            "\"txhash\"       (string) output transaction hash\n"
+            "\"outputidx\"    (numeric) output index numberh\n"
+            "\"genkey\"       (string) Masternode private key\n"
+            "\nExamples:\n" +
+            HelpExampleCli("createmasternode", "") + HelpExampleRpc("createmasternode", ""));
+
+    EnsureWalletIsUnlocked();
+
+    // Stealth Address
+    std::string myAddress;
+    pwalletMain->ComputeStealthPublicAddress("masteraccount", myAddress);
+
+    // Amount
+    CAmount nAmount = AmountFromValue(5000);
+
+    // Wallet comments
+    CWalletTx wtx;
+
+    if (!pwalletMain->SendToStealthAddress(myAddress, nAmount, wtx)) {
+        throw JSONRPCError(RPC_WALLET_ERROR,
+                           "Cannot create Masternode colltaeral transaction.");
+    }
+
+    CKey secret;
+    secret.MakeNewKey(false);
+
+    UniValue ret(UniValue::VARR);
+    int indexOut = -1;
+    for (int i=0; i < (int)wtx.vout.size(); i++) {
+        UniValue obj(UniValue::VOBJ);
+        CTxOut& out = wtx.vout[i];
+        CAmount value = pwalletMain->getCTxOutValue(wtx, out);
+        if (value == Params().MNCollateralAmt()) {
+            indexOut = i;
+
+            // Lock collateral output
+            COutPoint collateralOut(wtx.GetHash(), indexOut);
+            pwalletMain->LockCoin(collateralOut);
+            LogPrintf("Masternode transaction: %s:%i has been locked\n", wtx.GetHash().GetHex().c_str(), indexOut);
+
+            obj.push_back(Pair("txhash", wtx.GetHash().GetHex().c_str()));
+            obj.push_back(Pair("outputidx", indexOut));
+            obj.push_back(Pair("genkey", CBitcoinSecret(secret).ToString()));
+            ret.push_back(obj);
+        }
+    }
+
+    return ret;
+}
+
 UniValue createmasternodekey (const UniValue& params, bool fHelp)
 {
     if (fHelp || (params.size() != 0))
