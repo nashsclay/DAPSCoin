@@ -550,6 +550,9 @@
        <property name="text">
         <string>It is advised not to send or receive coins until your current sync is complete.</string>
        </property>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
        <property name="openExternalLinks">
         <bool>true</bool>
        </property>
