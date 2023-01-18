@@ -195,7 +195,6 @@ QGroupBox::title {
 QAbstractSpinBox,
 QComboBox,
 /* QListView, */
-QComboBox QAbstractItemView,
 QCalendar QCalendarWidget QWidget,
 QCalendarWidget,
 QCalendarWidget QWidget#qt_calendar_navigationbar,
@@ -208,10 +207,19 @@ QTextEdit {
   border-width: 1px;
   border-color: #83faff;
   border-style: solid;
-  background: rgb(20,20,62);
+  background: transparent;
   background-color: rgb(20,20,62);
   alternate-background-color: #1e223a;
+  box-shadow: transparent;
   margin: 5px;
+  combobox-popup: 0;
+}
+QComboBox QAbstractItemView {
+    border-radius: 10px;
+    background: rgb(20,20,62);
+    border: 1px solid gray;
+    box-shadow: transparent;
+    padding: 5px;
 }
 /* QCalendarWidget QWidget { alternate-background-color: green; } */
 .QValidatedLineEdit:focus,
