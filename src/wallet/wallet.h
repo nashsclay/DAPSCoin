@@ -371,7 +371,7 @@ public:
     bool generateKeyImage(const CPubKey& pub, CKeyImage& img) const;
     bool generateKeyImage(const CScript& scriptKey, CKeyImage& img) const;
 
-    void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed = true, const CCoinControl* coinControl = NULL, bool fIncludeZeroValue = false, AvailableCoinsType nCoinType = ALL_COINS, bool fUseIX = false);
+    bool AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed = true, const CCoinControl* coinControl = NULL, bool fIncludeZeroValue = false, AvailableCoinsType nCoinType = ALL_COINS, bool fUseIX = false);
     std::map<CBitcoinAddress, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true, CAmount maxCoinValue = 0);
     bool SelectCoinsMinConf(bool needFee, CAmount& estimatedFee, int ringSize, int numOut, const CAmount& nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet);
 
@@ -614,7 +614,6 @@ public:
     CAmount getCOutPutValue(const COutput& output) const;
     CAmount getCTxOutValue(const CTransaction &tx, const CTxOut &out) const;
     bool findCorrespondingPrivateKey(const CTxOut &txout, CKey &key) const;
-    bool AvailableCoins(const uint256 wtxid, const CWalletTx* pcoin, std::vector<COutput>& vCoins, bool fOnlyConfirmed = true, const CCoinControl* coinControl = NULL, bool fIncludeZeroValue = false, AvailableCoinsType nCoinType = ALL_COINS, bool fUseIX = false);
     void CreatePrivacyAccount(bool force = false);
     bool mySpendPrivateKey(CKey& spend) const;
     bool myViewPrivateKey(CKey& view) const;
