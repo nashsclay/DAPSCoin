@@ -305,8 +305,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
             return error("%s : nTime violation", __func__);
 
         if (nTimeBlockFrom + Params().StakeMinAge() > nTimeTx) // Min age requirement
-            return error("%s : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d",
-                         __func__, nTimeBlockFrom, Params().StakeMinAge(), nTimeTx);
+            return false;
     }
 
     //grab difficulty
