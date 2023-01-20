@@ -591,7 +591,8 @@ UniValue getmasternodeoutputs (const UniValue& params, bool fHelp)
             HelpExampleCli("getmasternodeoutputs", "") + HelpExampleRpc("getmasternodeoutputs", ""));
 
     // Find possible candidates
-    std::vector<COutput> possibleCoins = activeMasternode.SelectCoinsMasternode();
+    std::vector<COutput> possibleCoins;
+    pwalletMain->AvailableCoins(possibleCoins, false, nullptr, false, ONLY_5000);
 
     UniValue ret(UniValue::VARR);
     for (COutput& out : possibleCoins) {

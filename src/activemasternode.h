@@ -30,10 +30,6 @@ private:
     /// Ping Masternode
     bool SendMasternodePing(std::string& errorMessage);
 
-    /// Get 5000 PRCY input that can be used for the Masternode
-    bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
-    bool GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
-
 public:
     // Initialized by init.cpp
     // Keys for the main Masternode
@@ -54,10 +50,6 @@ public:
     /// Manage status of main Masternode
     void ManageStatus();
     std::string GetStatus();
-
-    /// Get 5000 PRCY input that can be used for the Masternode
-    bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
-    std::vector<COutput> SelectCoinsMasternode();
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
