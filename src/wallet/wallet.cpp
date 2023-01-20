@@ -939,22 +939,72 @@ bool CWallet::GetVinAndKeysFromOutput(COutput out, CTxIn& txinRet, CPubKey& pubK
     txinRet = CTxIn(out.tx->GetHash(), out.i);
     pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
 
+    findCorrespondingPrivateKey(out.tx->vout[out.i], keyRet);
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
     CBitcoinAddress address2(address1);
+    CPubKey sharedSec;
+    computeSharedSec(*out.tx, out.tx->vout[out.i], sharedSec);
+    txinRet.encryptionKey.clear();
+    std::copy(sharedSec.begin(), sharedSec.end(), std::back_inserter(txinRet.encryptionKey));
 
     CKeyID keyID;
     if (!address2.GetKeyID(keyID)) {
-        LogPrintf("CWallet::GetVinAndKeysFromOutput -- Address does not refer to a key\n");
+        LogPrintf("%s: Address does not refer to a key\n", __func__);
         return false;
     }
 
     if (!GetKey(keyID, keyRet)) {
-        LogPrintf("CWallet::GetVinAndKeysFromOutput -- Private key for address is not known\n");
+        LogPrintf("%s: Private key for address is not known\n", __func__);
         return false;
     }
 
     pubKeyRet = keyRet.GetPubKey();
+    std::string mnsa;
+    ComputeStealthPublicAddress("masteraccount", mnsa);
+    std::copy(mnsa.begin(), mnsa.end(), std::back_inserter(txinRet.masternodeStealthAddress));
+    if (!generateKeyImage(out.tx->vout[out.i].scriptPubKey, txinRet.keyImage)) {
+        LogPrintf("%s: Failed to generate key image\n", __func__);
+        return false;
+    }
+    if (!MakeShnorrSignatureTxIn(txinRet, GetTxInSignatureHash(txinRet))) {
+        LogPrintf("%s: Failed to make Shnorr signature\n", __func__);
+        return false;
+    }
+
+    //test verification masternode broadcast
+    if (!VerifyShnorrKeyImageTxIn(txinRet, GetTxInSignatureHash(txinRet))) {
+        LogPrintf("%s: Failed to verify Shnorr signature\n", __func__);
+        return false;
+    }
+
+    //Test the commitment and decoded value, if everything goes right, other nodes can verify it as well
+    COutPoint prevout = txinRet.prevout;
+    CTransaction prev;
+    uint256 bh;
+    if (!GetTransaction(prevout.hash, prev, bh, true)) {
+        LogPrintf("%s: failed to read transaction hash %s\n", __func__, txinRet.prevout.hash.ToString());
+        return false;
+    }
+
+    CTxOut txout = prev.vout[prevout.n];
+    CPubKey sharedSec1(txinRet.encryptionKey.begin(), txinRet.encryptionKey.end());
+    CKey mask;
+    CAmount amount;
+    ECDHInfo::Decode(txout.maskValue.mask.begin(), txout.maskValue.amount.begin(), sharedSec1, mask, amount);
+
+    std::vector<unsigned char> commitment;
+    CWallet::CreateCommitment(mask.begin(), amount, commitment);
+    if (commitment != txout.commitment) {
+        LogPrintf("%s: decoded masternode commitment does not match %s\n", __func__, txinRet.prevout.hash.ToString());
+        return false;
+    }
+
+    if (amount != Params().MNCollateralAmt()) {
+        LogPrintf("%s: masternode collateralization not equal to 5K %s\n", __func__, txinRet.prevout.hash.ToString());
+        return false;
+    }
+
     return true;
 }
 
