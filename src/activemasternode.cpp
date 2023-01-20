@@ -29,7 +29,7 @@ void CActiveMasternode::ManageStatus()
     //need correct blocks to send ping
     if (!Params().IsRegTestNet() && !masternodeSync.IsBlockchainSynced()) {
         status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
-        LogPrint(BCLog::MASTERNODE, "CActiveMasternode::ManageStatus() - %s\n", GetStatus());
+        LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatusMessage());
         return;
     }
 
@@ -95,7 +95,13 @@ void CActiveMasternode::ManageStatus()
     }
 }
 
-std::string CActiveMasternode::GetStatus()
+void CActiveMasternode::ResetStatus()
+{
+    status = ACTIVE_MASTERNODE_INITIAL;
+    ManageStatus();
+}
+
+std::string CActiveMasternode::GetStatusMessage() const
 {
     switch (status) {
     case ACTIVE_MASTERNODE_INITIAL:

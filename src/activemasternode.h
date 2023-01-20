@@ -29,7 +29,16 @@ private:
     /// Ping Masternode
     bool SendMasternodePing(std::string& errorMessage);
 
+    int status;
+    std::string notCapableReason;
+
 public:
+
+    CActiveMasternode()
+    {
+        status = ACTIVE_MASTERNODE_INITIAL;
+    }
+
     // Initialized by init.cpp
     // Keys for the main Masternode
     CPubKey pubKeyMasternode;
@@ -38,17 +47,11 @@ public:
     CTxIn vin;
     CService service;
 
-    int status;
-    std::string notCapableReason;
-
-    CActiveMasternode()
-    {
-        status = ACTIVE_MASTERNODE_INITIAL;
-    }
-
     /// Manage status of main Masternode
     void ManageStatus();
-    std::string GetStatus();
+    void ResetStatus();
+    std::string GetStatusMessage() const;
+    int GetStatus() const { return status; }
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
