@@ -23,9 +23,6 @@
 class CActiveMasternode
 {
 private:
-    // critical section to protect the inner data structures
-    mutable RecursiveMutex cs;
-
     /// Ping Masternode
     bool SendMasternodePing(std::string& errorMessage);
 
