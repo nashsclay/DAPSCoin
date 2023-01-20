@@ -1993,6 +1993,7 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
  */
 bool CheckTXAvailability(const CWalletTx* pcoin, bool fOnlyConfirmed, bool fUseIX, int& nDepth)
 {
+    AssertLockHeld(cs_main);
     if (!CheckFinalTx(*pcoin)) return false;
     if (fOnlyConfirmed && !pcoin->IsTrusted()) return false;
     if (pcoin->GetBlocksToMaturity() > 0) return false;
@@ -2053,9 +2054,12 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
 
     // Check availability
     int nDepth = 0;
-    if (!CheckTXAvailability(&wtx, true, false, nDepth)) {
-        strError = "Not available collateral transaction";
-        return error("%s: tx %s not available", __func__, strTxHash);
+    {
+        LOCK(cs_main);
+        if (!CheckTXAvailability(&wtx, true, false, nDepth)) {
+            strError = "Not available collateral transaction";
+            return error("%s: tx %s not available", __func__, strTxHash);
+        }
     }
     // Skip spent coins
     if (IsSpent(txHash, nOutputIndex)) {
