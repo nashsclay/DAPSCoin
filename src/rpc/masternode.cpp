@@ -89,15 +89,6 @@ UniValue masternode(const UniValue& params, bool fHelp)
         return masternodecurrent(newParams, fHelp);
     }
 
-    if (strCommand == "debug") {
-        UniValue newParams(UniValue::VARR);
-        // forward params but skip command
-        for (unsigned int i = 1; i < params.size(); i++) {
-            newParams.push_back(params[i]);
-        }
-        return masternodedebug(newParams, fHelp);
-    }
-
     if (strCommand == "start" || strCommand == "start-alias" || strCommand == "start-many" || strCommand == "start-all" || strCommand == "start-missing" || strCommand == "start-disabled") {
         return startmasternode(params, fHelp);
     }
@@ -312,30 +303,6 @@ UniValue masternodecurrent (const UniValue& params, bool fHelp)
     }
 
     throw std::runtime_error("unknown");
-}
-
-UniValue masternodedebug (const UniValue& params, bool fHelp)
-{
-    if (fHelp || (params.size() != 0))
-        throw std::runtime_error(
-            "masternodedebug\n"
-            "\nPrint masternode status\n"
-
-            "\nResult:\n"
-            "\"status\"     (string) Masternode status message\n"
-            "\nExamples:\n" +
-            HelpExampleCli("masternodedebug", "") + HelpExampleRpc("masternodedebug", ""));
-
-    if (activeMasternode.status != ACTIVE_MASTERNODE_INITIAL || !masternodeSync.IsSynced())
-        return activeMasternode.GetStatus();
-
-    CTxIn vin = CTxIn();
-    CPubKey pubkey;
-    CKey key;
-    if (!activeMasternode.GetMasterNodeVin(vin, pubkey, key))
-        throw std::runtime_error("Missing masternode input, please look at the documentation for instructions on masternode creation\n");
-    else
-        return activeMasternode.GetStatus();
 }
 
 bool StartMasternodeEntry(UniValue& statusObjRet, CMasternodeBroadcast& mnbRet, bool& fSuccessRet, const CMasternodeConfig::CMasternodeEntry& mne, std::string& errorMessage, std::string strCommand = "")
