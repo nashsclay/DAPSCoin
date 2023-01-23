@@ -260,41 +260,11 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
     CPubKey mnPaymentPubTx = mnPaymentPrivTx.GetPubKey();
 
     masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payeeAddr);
-    if (payeeAddr.size() != 0) {
-        bool isNotSpent = false;
-        std::vector<CMasternode> mns = mnodeman.GetFullMasternodeVector();
-        for (CMasternode& mn : mns) {
-            if (mn.vin.masternodeStealthAddress == payeeAddr && mn.IsEnabled()) {
-                isNotSpent = true;
-                break;
-            }
-        }
-        if (!isNotSpent) payeeAddr.clear();
-    }
-    if (payeeAddr.size() == 0) {
-        //no masternode detected
-        CMasternode* winningNode = mnodeman.GetCurrentMasterNode(1);
-        if (winningNode) {
-            //generate payee based on masternodeStealthAddress
-            payeeAddr = winningNode->vin.masternodeStealthAddress;
-        }
-
-        if (payeeAddr.size() != 0) {
-            bool isNotSpent = false;
-            std::vector<CMasternode> mns = mnodeman.GetFullMasternodeVector();
-            for (CMasternode& mn : mns) {
-                if (mn.vin.masternodeStealthAddress == payeeAddr && mn.IsEnabled()) {
-                    isNotSpent = true;
-                    break;
-                }
-            }
-            if (!isNotSpent) payeeAddr.clear();
-        }
-    }
-    /*std::string mnaddress = "41im5B4oiZ6WxMrQfXivfpZ5sMsPwbqhSSpDkvxxATq2QMvBa5nppNCYcESvLhGyEiZoEXyc8F5AJE3LymkrX24i17JicpNRAq8";
-    std::vector<unsigned char> temp(mnaddress.begin(), mnaddress.end());
-    payeeAddr = temp;*/
-    if (payeeAddr.size() != 0) {
+    //no masternode detected
+    CMasternode* winningNode = mnodeman.GetCurrentMasterNode(1);
+    if (winningNode) {
+        //generate payee based on masternodeStealthAddress
+        payeeAddr = winningNode->vin.masternodeStealthAddress;
         std::string mnsa(payeeAddr.begin(), payeeAddr.end());
 
         //Parse stealth address
