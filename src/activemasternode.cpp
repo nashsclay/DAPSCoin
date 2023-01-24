@@ -20,8 +20,6 @@
 //
 void CActiveMasternode::ManageStatus()
 {
-    std::string errorMessage;
-
     if (!fMasterNode) return;
 
     LogPrint(BCLog::MASTERNODE, "CActiveMasternode::ManageStatus() - Begin\n");
@@ -50,18 +48,6 @@ void CActiveMasternode::ManageStatus()
         status = ACTIVE_MASTERNODE_NOT_CAPABLE;
         notCapableReason = "";
 
-        if (pwalletMain->IsLocked()) {
-            notCapableReason = "Wallet is locked.";
-            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
-        }
-
-        if (pwalletMain->GetBalance() == 0) {
-            notCapableReason = "Hot node, waiting for remote activation.";
-            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
-        }
-
         if (strMasterNodeAddr.empty()) {
             if (!GetLocal(service)) {
                 notCapableReason = "Can't detect external address. Please use the masternodeaddr configuration option.";
@@ -76,8 +62,9 @@ void CActiveMasternode::ManageStatus()
         }
 
         // The service needs the correct default port to work properly
-        if(!CMasternodeBroadcast::CheckDefaultPort(service, errorMessage, "CActiveMasternode::ManageStatus()"))
+        if (!CMasternodeBroadcast::CheckDefaultPort(service, notCapableReason, "CActiveMasternode::ManageStatus()")) {
             return;
+        }
 
         LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
 
@@ -87,9 +74,13 @@ void CActiveMasternode::ManageStatus()
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
             return;
         }
+
+        notCapableReason = "Waiting for start message from controller.";
+        return;
     }
 
     //send to all peers
+    std::string errorMessage;
     if (!SendMasternodePing(errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
     }
