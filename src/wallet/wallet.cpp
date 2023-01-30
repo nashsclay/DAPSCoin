@@ -3716,7 +3716,7 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
         CTransaction txPrev;
         uint256 hashBlock;
         if (!GetTransaction(tx.vin[i].prevout.hash, txPrev, hashBlock)) {
-            LogPrintf("Selected transaction is not in the main chain\n");
+            LogPrintf("Selected transaction: %s is not in the main chain\n", tx.vin[i].prevout.hash.GetHex().c_str());
             return false;
         }
 
