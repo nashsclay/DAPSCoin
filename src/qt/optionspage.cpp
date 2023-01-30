@@ -149,7 +149,7 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
         QFont font = ui->addNewFunds->font();
         font.setStrikeOut(true);
         ui->addNewFunds->setFont(font);
-        ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a minimum 1 PRCY fee each time you receive a new deposit that needs to be consolidated for staking.");
+        ui->addNewFunds->setToolTip("Disabled by default due to controlling Masternode(s) from this wallet.\nEnabling this will incur a maximum 0.1 PRCY fee each time you receive a new deposit that needs to be consolidated for staking.");
     }
     ui->mapPortUpnp->setChecked(settings.value("fUseUPnP", false).toBool());
     ui->minimizeToTray->setChecked(settings.value("fMinimizeToTray", false).toBool());
