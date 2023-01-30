@@ -5746,7 +5746,7 @@ void CWallet::SetNull()
     vDisabledAddresses.clear();
 
     //Auto Combine Dust
-    fCombineDust;
+    fCombineDust = GetBoolArg("-combinedust", true);
     nAutoCombineThreshold = 150;
     nAutoCombineTarget = GetArg("-autocombinetarget", 15);
 }
