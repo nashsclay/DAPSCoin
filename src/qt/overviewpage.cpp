@@ -187,15 +187,9 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
         ui->labelBalance->setText("Hidden");
         ui->labelUnconfirmed->setText("Hidden");
     } else {
-        if (stkStatus && !nLastCoinStakeSearchInterval && !fLiteMode) {
-            ui->labelBalance_2->setText("Enabling Staking...");
-            ui->labelBalance_2->setToolTip("Enabling Staking... Please wait up to 1.5 hours for it to be properly enabled after consolidation.");
-            ui->labelBalance->setText("Enabling Staking...");
-        } else {
-            ui->labelBalance_2->setText(BitcoinUnits::formatHtmlWithUnit(0, balance, false, BitcoinUnits::separatorAlways));
-            ui->labelBalance_2->setToolTip("Your current balance");
-            ui->labelBalance->setText(BitcoinUnits::formatHtmlWithUnit(0, nSpendableDisplayed, false, BitcoinUnits::separatorAlways));
-        }
+        ui->labelBalance_2->setText(BitcoinUnits::formatHtmlWithUnit(0, balance, false, BitcoinUnits::separatorAlways));
+        ui->labelBalance_2->setToolTip("Your current balance");
+        ui->labelBalance->setText(BitcoinUnits::formatHtmlWithUnit(0, nSpendableDisplayed, false, BitcoinUnits::separatorAlways));
         ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, unconfirmedBalance, false, BitcoinUnits::separatorAlways));
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
     }
