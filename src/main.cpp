@@ -669,7 +669,7 @@ bool ReVerifyPoSBlock(CBlockIndex* pindex)
         CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
         nExpectedMint += nFees;
 
-        if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
+        if (!IsBlockValueValid(pindex->nHeight, nExpectedMint, pindex->nMint)) {
             LogPrintf("%s: reward pays too much (actual=%s vs limit=%s)\n", __func__, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
             return false;
         }
@@ -3225,7 +3225,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     nExpectedMint += nFees;
 
     //Check that the block does not overmint
-    if (!block.IsPoABlockByVersion() && !IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
+    if (!block.IsPoABlockByVersion() && !IsBlockValueValid(pindex->nHeight, nExpectedMint, pindex->nMint)) {
         return state.DoS(100, error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                 FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)), REJECT_INVALID, "bad-cb-amount");
     }
