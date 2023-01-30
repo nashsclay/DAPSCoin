@@ -1287,6 +1287,7 @@ void CWallet::EraseFromWallet(const uint256& hash)
         LOCK(cs_wallet);
         if (mapWallet.erase(hash))
             CWalletDB(strWalletFile).EraseTx(hash);
+        LogPrintf("%s: Erased wtx %s from wallet\n", __func__, hash.GetHex());
     }
     return;
 }
