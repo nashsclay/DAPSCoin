@@ -3095,3 +3095,28 @@ UniValue revealmnemonicphrase(const UniValue& params, bool fHelp)
 
     return mPhrase;
 }
+
+UniValue erasefromwallet(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw std::runtime_error(
+            "erasefromwallet\n"
+            "\nErase a transaction from the wallet.\n"
+            "\nResult:\n"
+            "n    (result) Done\n"
+            "\nExamples:\n" +
+            HelpExampleCli("erasefromwallet", "") + HelpExampleRpc("erasefromwallet", ""));
+
+    EnsureWalletIsUnlocked();
+
+    uint256 hash;
+    hash.SetHex(params[0].get_str());
+
+    if (!pwalletMain->mapWallet.count(hash))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
+
+    pwalletMain->EraseFromWallet(hash);
+
+    return "Done";
+}
+
