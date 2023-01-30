@@ -288,6 +288,8 @@ void HistoryPage::updateFilter()
                 hide = hide || !(type == tr("Masternode"));
             } else if (selectedType == tr("Payment to yourself")) {
                 hide = hide || !(type == tr("Payment to yourself"));
+            } else if (selectedType == tr("Rewards")) {
+                hide = hide || !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode"));
             }
         } else {
             hide= hide || !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode")) && !(type == tr("Payment to yourself"));

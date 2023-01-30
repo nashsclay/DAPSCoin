@@ -114,6 +114,11 @@
              <string>Payment to yourself</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>Rewards</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item>
