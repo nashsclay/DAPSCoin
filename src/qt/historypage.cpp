@@ -91,7 +91,7 @@ void HistoryPage::connectWidgets() //add functions to widget signals
     connect(timeEditTo, SIGNAL(timeChanged(const QTime&)), this, SLOT(updateFilter()));
 }
 
-void HistoryPage::on_cellClicked(int row, int column) 
+void HistoryPage::on_cellClicked(int row, int column)
 {
     if (pwalletMain->IsLocked()) return;
     //1 is column index for type
@@ -158,13 +158,13 @@ void HistoryPage::on_cellClicked(int row, int column)
         if (stdType == "Minted") {
             privkeyFound = false;
             txdlgMsg = "Minted transactions do not have a PrivKey";
-        }    
+        }
         if (pwalletMain->IsLocked()) {
             privkeyFound = false;
             txdlgMsg = "Wallet must be unlocked to view PrivKey";
         }
         if (!privkeyFound) txdlg.setTxPrivKey(std::string(txdlgMsg).c_str());
-        
+
         txdlg.exec();
     }
 }
@@ -288,9 +288,11 @@ void HistoryPage::updateFilter()
                 hide = hide || !(type == tr("Masternode"));
             } else if (selectedType == tr("Payment to yourself")) {
                 hide = hide || !(type == tr("Payment to yourself"));
+            } else if (selectedType == tr("Rewards")) {
+                hide = hide || !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode"));
             }
         } else {
-            hide= hide || !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode")) && !(type == tr("Payment to yourself"));
+            hide = hide || !(type == tr("Received")) && !(type == tr("Sent")) && !(type == tr("Mined")) && !(type == tr("Minted")) && !(type == tr("Masternode")) && !(type == tr("Payment to yourself"));
         }
 
         if (ui->lineEditDesc->currentText() != allAddressString) {
