@@ -62,9 +62,7 @@ Q_SIGNALS:
     void transactionClicked(const QModelIndex& index);
 
 private:
-    QTimer* timer;
     QTimer* pingNetworkInterval;
-    QTimer* checkCurrencyValueInterval;
     Ui::OverviewPage* ui;
     ClientModel* clientModel;
     WalletModel* walletModel;
@@ -88,11 +86,16 @@ private:
     QWidget* balanceAnimSyncCircle;
     bool isSyncingBalance=true;
     QSettings settings;
-    bool isRuninngQuery=false;
 
     void initSyncCircle(float percentOfParent);
     void moveSyncCircle(QWidget* anchor, QWidget* animated, int deltaRadius, float degreesPerSecond, float angleOffset=0);
     QRect getCircleGeometry(QWidget* parent, float ratioToParent);
+
+    // Check Currency Value via CoinGecko.com API
+    QNetworkAccessManager* manager;
+    QNetworkReply* reply;
+    QTimer* checkCurrencyValueInterval;
+    bool isRuninngQuery = false;
 
 private Q_SLOTS:
     void updateDisplayUnit();
@@ -101,6 +104,7 @@ private Q_SLOTS:
     void updateWatchOnlyLabels(bool showWatchOnly);
     void on_lockUnlock();
     void updateLockStatus(int status);
+    // Check Currency Value via CoinGecko.com API
     void checkCurrencyValue();
     void checkCurrencyValueserviceRequestFinished(QNetworkReply* reply);
 };
