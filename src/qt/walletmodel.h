@@ -118,7 +118,7 @@ public:
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
         TransactionCommitFailed,
-        AnonymizeOnlyUnlocked,
+        StakingOnlyUnlocked,
         InsaneFee
     };
 
@@ -174,7 +174,7 @@ public:
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const SecureString& passphrase);
     // Passphrase only needed when unlocking
-    bool setWalletLocked(bool locked, const SecureString& passPhrase = SecureString(), bool anonymizeOnly = false);
+    bool setWalletLocked(bool locked, const SecureString& passPhrase = SecureString(), bool stakingOnly = false);
 
     // Method used to "lock" the wallet only for staking purposes. Just a flag that should prevent possible movements in the wallet.
     // Passphrase only needed when unlocking.
@@ -182,7 +182,7 @@ public:
 
     bool changePassphrase(const SecureString& oldPass, const SecureString& newPass);
     // Is wallet unlocked for staking only?
-    bool isAnonymizeOnlyUnlocked();
+    bool isStakingOnlyUnlocked();
     // Wallet backup
     bool backupWallet(const QString& filename);
 
