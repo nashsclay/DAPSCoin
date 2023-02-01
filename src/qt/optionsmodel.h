@@ -44,7 +44,6 @@ public:
         DatabaseCache,       // int
         SpendZeroConfChange, // bool
         HideOrphans,    // bool
-        AnonymizePrcycoinAmount, //int
         ShowMasternodesTab,  // bool
         Listen,              // bool
         OptionIDRowCount,
