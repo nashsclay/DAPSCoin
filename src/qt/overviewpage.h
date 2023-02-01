@@ -94,7 +94,7 @@ private:
     // Check Currency Value via CoinGecko.com API
     QNetworkAccessManager* manager;
     QNetworkReply* reply;
-    QTimer* checkCurrencyValueInterval;
+    QTimer* getCurrencyValueInterval;
     bool isRuninngQuery = false;
 
 private Q_SLOTS:
@@ -105,8 +105,8 @@ private Q_SLOTS:
     void on_lockUnlock();
     void updateLockStatus(int status);
     // Check Currency Value via CoinGecko.com API
-    void checkCurrencyValue();
-    void checkCurrencyValueserviceRequestFinished(QNetworkReply* reply);
+    void getCurrencyValue();
+    void setCurrencyValue(QNetworkReply* reply);
 };
 
 #endif // BITCOIN_QT_OVERVIEWPAGE_H

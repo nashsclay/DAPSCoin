@@ -122,13 +122,13 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
     pingNetworkInterval->setInterval(3000);
     pingNetworkInterval->start();
 
-    // Init checkCurrencyValueInterval
-    checkCurrencyValueInterval = new QTimer(this);
+    // Init getCurrencyValueInterval
+    getCurrencyValueInterval = new QTimer(this);
     manager = new QNetworkAccessManager(this);
-    connect(checkCurrencyValueInterval, SIGNAL(timeout()), this, SLOT(checkCurrencyValue()));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkCurrencyValueserviceRequestFinished(QNetworkReply*)));
-    checkCurrencyValueInterval->setInterval(300000);
-    checkCurrencyValueInterval->start();
+    connect(getCurrencyValueInterval, SIGNAL(timeout()), this, SLOT(getCurrencyValue()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(setCurrencyValue(QNetworkReply*)));
+    getCurrencyValueInterval->setInterval(300000);
+    getCurrencyValueInterval->start();
 
     initSyncCircle(.8);
 
@@ -200,7 +200,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelBalance_2->setFont(font);   
 
     updateRecentTransactions();
-    checkCurrencyValue();
+    getCurrencyValue();
 }
 
 // show/hide watch-only labels
@@ -534,7 +534,7 @@ void OverviewPage::on_lockUnlock() {
             ui->labelBalance->setText(BitcoinUnits::formatHtmlWithUnit(0, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
             ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
             pwalletMain->combineMode = CombineMode::ON;
-            checkCurrencyValue();
+            getCurrencyValue();
         }
     }
     else {
@@ -546,7 +546,7 @@ void OverviewPage::on_lockUnlock() {
             ui->labelBalance_2->setText("Locked; Hidden");
             ui->labelBalance->setText("Locked; Hidden");
             ui->labelUnconfirmed->setText("Locked; Hidden");
-            checkCurrencyValue();
+            getCurrencyValue();
         }
     }
 }
@@ -562,7 +562,7 @@ void OverviewPage::updateLockStatus(int status) {
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
 }
 
-void OverviewPage::checkCurrencyValue()
+void OverviewPage::getCurrencyValue()
 {
     // Get Default Currency from Settings
     bool fDisplayCurrencyValue = settings.value("fDisplayCurrencyValue").toBool();
@@ -585,7 +585,7 @@ void OverviewPage::checkCurrencyValue()
     reply->ignoreSslErrors();
 }
 
-void OverviewPage::checkCurrencyValueserviceRequestFinished(QNetworkReply* reply)
+void OverviewPage::setCurrencyValue(QNetworkReply* reply)
 {
     // Get Default Currency from Settings
     QString defaultCurrency = settings.value("strDefaultCurrency").toString();
