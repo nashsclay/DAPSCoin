@@ -276,8 +276,8 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
         return OK;
     }
 
-    if (isAnonymizeOnlyUnlocked()) {
-        return AnonymizeOnlyUnlocked;
+    if (isStakingOnlyUnlocked()) {
+        return StakingOnlyUnlocked;
     }
 
     QSet<QString> setAddress; // Used to detect duplicates
@@ -409,7 +409,7 @@ bool WalletModel::setWalletEncrypted(bool encrypted, const SecureString& passphr
     }
 }
 
-bool WalletModel::setWalletLocked(bool locked, const SecureString& passPhrase, bool anonymizeOnly)
+bool WalletModel::setWalletLocked(bool locked, const SecureString& passPhrase, bool stakingOnly)
 {
     if (locked) {
         // Lock
@@ -417,7 +417,7 @@ bool WalletModel::setWalletLocked(bool locked, const SecureString& passPhrase, b
         return wallet->Lock();
     } else {
         // Unlock
-        return wallet->Unlock(passPhrase, anonymizeOnly);
+        return wallet->Unlock(passPhrase, stakingOnly);
     }
 }
 
@@ -432,7 +432,7 @@ bool WalletModel::lockForStakingOnly(const SecureString& passPhrase)
     return false;
 }
 
-bool WalletModel::isAnonymizeOnlyUnlocked()
+bool WalletModel::isStakingOnlyUnlocked()
 {
     return wallet->fWalletUnlockStakingOnly;
 }
@@ -562,7 +562,7 @@ WalletModel::UnlockContext WalletModel::requestUnlock(AskPassphraseDialog::Conte
 {
     bool was_locked = getEncryptionStatus() == Locked;
 
-    if (!was_locked && isAnonymizeOnlyUnlocked()) {
+    if (!was_locked && isStakingOnlyUnlocked()) {
         setWalletLocked(true);
         wallet->fWalletUnlockStakingOnly = false;
         was_locked = getEncryptionStatus() == Locked;

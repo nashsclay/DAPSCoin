@@ -1744,13 +1744,13 @@ UniValue unlockwallet(const UniValue& params, bool fHelp)
 {
     if (pwalletMain->IsCrypted() && (fHelp || params.size() < 2 || params.size() > 3))
         throw std::runtime_error(
-            "unlockwallet \"passphrase\" timeout ( anonymizeonly )\n"
+            "unlockwallet \"passphrase\" timeout ( stakingonly )\n"
             "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
             "This is needed prior to performing transactions related to private keys such as sending PRCYs\n"
             "\nArguments:\n"
             "1. \"passphrase\"     (string, required) The wallet passphrase\n"
             "2. timeout            (numeric, required) The time to keep the decryption key in seconds.\n"
-            "3. anonymizeonly      (boolean, optional, default=false) If is true sending functions are disabled."
+            "3. stakingonly      (boolean, optional, default=false) If is true sending functions are disabled."
             "\nNote:\n"
             "Issuing the unlockwallet command while the wallet is already unlocked will set a new unlock\n"
             "time that overrides the old one. A timeout of \"0\" unlocks until the wallet is closed.\n"
@@ -1775,11 +1775,11 @@ UniValue unlockwallet(const UniValue& params, bool fHelp)
     // Alternately, find a way to make params[0] mlock()'d to begin with.
     strWalletPass = params[0].get_str().c_str();
 
-    bool anonymizeOnly = false;
+    bool stakingOnly = false;
     if (params.size() == 3)
-        anonymizeOnly = params[2].get_bool();
+        stakingOnly = params[2].get_bool();
 
-    if (!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockStakingOnly && anonymizeOnly)
+    if (!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockStakingOnly && stakingOnly)
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
 
     // Get the timeout
@@ -1794,7 +1794,7 @@ UniValue unlockwallet(const UniValue& params, bool fHelp)
         nSleepTime = MAX_SLEEP_TIME;
     }
 
-    if (!pwalletMain->Unlock(strWalletPass, anonymizeOnly))
+    if (!pwalletMain->Unlock(strWalletPass, stakingOnly))
         throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
 
     pwalletMain->TopUpKeyPool();
