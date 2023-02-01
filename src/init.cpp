@@ -1935,6 +1935,8 @@ bool AppInit2(bool isDaemon)
         // Run a thread to flush wallet periodically
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
 		
+        // Check if there is a combinedust setting in the .conf file
+        pwalletMain->fCombineDust = GetBoolArg("-combinedust", true);
         if (pwalletMain->fCombineDust){
             LogPrintf("Autocombinedust is enabled\n");
         } else {
