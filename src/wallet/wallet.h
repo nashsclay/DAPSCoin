@@ -55,6 +55,11 @@ extern bool bdisableSystemnotifications;
 extern bool fSendFreeTransactions;
 extern bool fPayAtLeastCustomFee;
 extern int64_t nReserveBalance;
+extern bool fTxDeleteEnabled;
+extern bool fTxConflictDeleteEnabled;
+extern int fDeleteInterval;
+extern unsigned int fDeleteTransactionsAfterNBlocks;
+extern unsigned int fKeepLastNTransactions;
 
 //! -paytxfee default
 static const CAmount DEFAULT_TRANSACTION_FEE = 0.1 * COIN;//
@@ -68,6 +73,18 @@ static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWa
 static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 //! -custombackupthreshold default
 static const int DEFAULT_CUSTOMBACKUPTHRESHOLD = 1;
+
+//Default Transaction Retention N-BLOCKS
+static const int DEFAULT_TX_DELETE_INTERVAL = 1000;
+
+//Default Transaction Retention N-BLOCKS
+static const unsigned int DEFAULT_TX_RETENTION_BLOCKS = 10000;
+
+//Default Retenion Last N-Transactions
+static const unsigned int DEFAULT_TX_RETENTION_LASTTX = 200;
+
+//Amount of transactions to delete per run while syncing
+static const int MAX_DELETE_TX_SIZE = 50000;
 
 // 6666 = 1*5000 + 1*1000 + 1*500 + 1*100 + 1*50 + 1*10 + 1*5 + 1
 static const int ZQ_6666 = 6666;
@@ -382,6 +399,7 @@ public:
     bool GetVinAndKeysFromOutput(COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet);
 
     bool IsSpent(const uint256& hash, unsigned int n);
+    unsigned int GetSpendDepth(const uint256& hash, unsigned int n) const;
 
     bool IsLockedCoin(uint256 hash, unsigned int n) const;
     void LockCoin(COutPoint& output);
@@ -459,6 +477,10 @@ public:
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate);
     void EraseFromWallet(const uint256& hash);
+    void ReorderWalletTransactions(std::map<std::pair<int,int>, CWalletTx> &mapSorted, int64_t &maxOrderPos);
+    void UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletTx> &mapSorted, bool resetOrder);
+    void DeleteTransactions(std::vector<uint256> &removeTxs);
+    void DeleteWalletTransactions(const CBlockIndex* pindex);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, bool fromStartup = false, int height = -1);
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();

@@ -54,6 +54,11 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();
 int64_t nReserveBalance = 0;
+bool fTxDeleteEnabled = false;
+bool fTxConflictDeleteEnabled = false;
+int fDeleteInterval = DEFAULT_TX_DELETE_INTERVAL;
+unsigned int fDeleteTransactionsAfterNBlocks = DEFAULT_TX_RETENTION_BLOCKS;
+unsigned int fKeepLastNTransactions = DEFAULT_TX_RETENTION_LASTTX;
 
 #include "uint256.h"
 
@@ -858,6 +863,22 @@ bool CWallet::IsSpent(const uint256& hash, unsigned int n)
     }
 
     return false;
+}
+
+unsigned int CWallet::GetSpendDepth(const uint256& hash, unsigned int n) const
+{
+    const COutPoint outpoint(hash, n);
+    std::pair<TxSpends::const_iterator, TxSpends::const_iterator> range;
+    range = mapTxSpends.equal_range(outpoint);
+
+    for (TxSpends::const_iterator it = range.first; it != range.second; ++it)
+    {
+        const uint256& wtxid = it->second;
+        std::map<uint256, CWalletTx>::const_iterator mit = mapWallet.find(wtxid);
+        if (mit != mapWallet.end() && mit->second.GetDepthInMainChain() >= 0)
+            return mit->second.GetDepthInMainChain(); // Spent
+    }
+    return 0;
 }
 
 void CWallet::AddToSpends(const COutPoint& outpoint, const uint256& wtxid)
@@ -1726,6 +1747,228 @@ bool CWalletTx::WriteToDisk(CWalletDB *pwalletdb)
     if (pwalletdb)
         return pwalletdb->WriteTx(GetHash(), *this);
     return CWalletDB(pwallet->strWalletFile).WriteTx(GetHash(), *this);
+}
+
+/**
+ * Reorder the transactions based on block hieght and block index.
+ * Transactions can get out of order when they are deleted and subsequently
+ * re-added during intial load rescan.
+ */
+void CWallet::ReorderWalletTransactions(std::map<std::pair<int,int>, CWalletTx> &mapSorted, int64_t &maxOrderPos)
+{
+    LOCK2(cs_main, cs_wallet);
+
+    int maxSortNumber = chainActive.Tip()->nHeight + 1;
+
+    for (std::map<uint256, CWalletTx>::iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+    {
+        CWalletTx wtx = it->second;
+        int confirms = wtx.GetDepthInMainChain();
+        maxOrderPos = std::max(maxOrderPos, wtx.nOrderPos);
+
+        if (confirms > 0) {
+            int wtxHeight = mapBlockIndex[wtx.hashBlock]->nHeight;
+            auto key = std::make_pair(wtxHeight, wtx.nIndex);
+            mapSorted.insert(make_pair(key, wtx));
+        }
+        else {
+          auto key = std::make_pair(maxSortNumber, 0);
+          mapSorted.insert(std::make_pair(key, wtx));
+          maxSortNumber++;
+        }
+    }
+}
+
+/**
+ * Update the nOrderPos with passed in ordered map.
+ */
+void CWallet::UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletTx> &mapSorted, bool resetOrder)
+{
+    LOCK2(cs_main, cs_wallet);
+
+    int64_t previousPosition = 0;
+    std::map<const uint256, CWalletTx> mapUpdatedTxs;
+
+    //Check the postion of each transaction relative to the previous one.
+    for (std::map<std::pair<int,int>, CWalletTx>::iterator it = mapSorted.begin(); it != mapSorted.end(); ++it) {
+        CWalletTx wtx = it->second;
+        const uint256 wtxid = wtx.GetHash();
+
+        if (wtx.nOrderPos <= previousPosition || resetOrder) {
+            previousPosition++;
+            wtx.nOrderPos = previousPosition;
+            mapUpdatedTxs.insert(std::make_pair(wtxid, wtx));
+        }
+        else {
+            previousPosition = wtx.nOrderPos;
+        }
+    }
+
+    //Update transactions nOrderPos for transactions that changed
+    CWalletDB walletdb(strWalletFile, "r+", false);
+    for (std::map<const uint256, CWalletTx>::iterator it = mapUpdatedTxs.begin(); it != mapUpdatedTxs.end(); ++it) {
+        CWalletTx wtx = it->second;
+        LogPrint(BCLog::DELETETX,"Reorder Tx - Updating Positon to %i for Tx %s\n ", wtx.nOrderPos, wtx.GetHash().ToString());
+        wtx.WriteToDisk(&walletdb);
+        mapWallet[wtx.GetHash()].nOrderPos = wtx.nOrderPos;
+    }
+
+    //Update Next Wallet Tx Positon
+    nOrderPosNext = previousPosition++;
+    CWalletDB(strWalletFile).WriteOrderPosNext(nOrderPosNext);
+    LogPrint(BCLog::DELETETX,"Reorder Tx - Total Transactions Reordered %i, Next Position %i\n ", mapUpdatedTxs.size(), nOrderPosNext);
+
+}
+
+/**
+ * Delete transactions from the Wallet
+ */
+void CWallet::DeleteTransactions(std::vector<uint256> &removeTxs)
+{
+    LOCK(cs_wallet);
+
+    CWalletDB walletdb(strWalletFile, "r+", false);
+
+    for (int i = 0; i< removeTxs.size(); i++) {
+        if (mapWallet.erase(removeTxs[i])) {
+            walletdb.EraseTx(removeTxs[i]);
+            LogPrint(BCLog::DELETETX,"Delete Tx - Deleting tx %s, %i.\n", removeTxs[i].ToString(),i);
+        } else {
+            LogPrint(BCLog::DELETETX,"Delete Tx - Deleting tx %failed.\n", removeTxs[i].ToString());
+            return;
+        }
+    }
+}
+
+void CWallet::DeleteWalletTransactions(const CBlockIndex* pindex)
+{
+    LOCK2(cs_main, cs_wallet);
+
+    int nDeleteAfter = (int)fDeleteTransactionsAfterNBlocks;
+    bool runCompact = false;
+
+    if (pindex && fTxDeleteEnabled) {
+
+        //Check for acentries - exit function if found
+        {
+            std::list<CAccountingEntry> acentries;
+            CWalletDB walletdb(strWalletFile);
+            walletdb.ListAccountCreditDebit("*", acentries);
+            if (acentries.size() > 0) {
+                LogPrintf("deletetx not compatible to account entries\n");
+                return;
+            }
+        }
+        //delete transactions
+
+        //Sort Transactions by block and block index
+        int64_t maxOrderPos = 0;
+        std::map<std::pair<int,int>, CWalletTx> mapSorted;
+        ReorderWalletTransactions(mapSorted, maxOrderPos);
+        if (maxOrderPos > int64_t(mapSorted.size())*10) {
+            //reset the postion when the max postion is 10x bigger than the
+            //number of transactions in the wallet
+            LogPrint(BCLog::DELETETX,"Reorder Tx - maxOrderPos %i mapSorted Size %i\n", maxOrderPos, int64_t(mapSorted.size())*10);
+            UpdateWalletTransactionOrder(mapSorted, true);
+        }
+        else {
+            UpdateWalletTransactionOrder(mapSorted, false);
+        }
+
+        //Process Transactions in sorted order
+        int txConflictCount = 0;
+        int txUnConfirmed = 0;
+        int txCount = 0;
+        int txSaveCount = 0;
+        std::vector<uint256> removeTxs;
+
+        for (auto & item : mapSorted)
+        {
+            CWalletTx& wtx = item.second;
+            const uint256& wtxid = wtx.GetHash();
+            bool deleteTx = true;
+            txCount += 1;
+            int wtxDepth = wtx.GetDepthInMainChain();
+
+            //Keep anything newer than N Blocks
+            if (wtxDepth == 0)
+                txUnConfirmed++;
+
+            if (wtxDepth < nDeleteAfter && wtxDepth >= 0) {
+                LogPrint(BCLog::DELETETX,"DeleteTx - Transaction above minimum depth, tx %s\n", wtx.GetHash().ToString());
+                deleteTx = false;
+                txSaveCount++;
+                continue;
+            } else if (wtxDepth == -1) {
+                //Enabled by default
+                if (!fTxConflictDeleteEnabled) {
+                    LogPrint(BCLog::DELETETX,"DeleteTx - Conflict delete is not enabled tx %s\n", wtx.GetHash().ToString());
+                    deleteTx = false;
+                    txSaveCount++;
+                    continue;
+                } else {
+                    txConflictCount++;
+                }
+            } else {
+                //Check for unspent inputs or spend less than N Blocks ago.
+                for (unsigned int i = 0; i < wtx.vout.size(); i++) {
+                    CTxDestination address;
+                    ExtractDestination(wtx.vout[i].scriptPubKey, address);
+                    if(IsMine(wtx.vout[i])) {
+                        if (pwalletMain->GetSpendDepth(wtx.GetHash(), i) <= fDeleteTransactionsAfterNBlocks) {
+                            LogPrint(BCLog::DELETETX,"DeleteTx - Unspent input tx %s\n", wtx.GetHash().ToString());
+                            deleteTx = false;
+                            continue;
+                        }
+                    }
+                }
+
+                if (!deleteTx) {
+                    txSaveCount++;
+                    continue;
+                }
+
+                //Chcek for output with that no longer have parents in the wallet.
+                for (int i = 0; i < wtx.vin.size(); i++) {
+                    const CTxIn& txin = wtx.vin[i];
+                    const uint256& parentHash = txin.prevout.hash;
+                    const CWalletTx* parent = pwalletMain->GetWalletTx(txin.prevout.hash);
+                    if (parent != NULL && parentHash != wtxid) {
+                        LogPrint(BCLog::DELETETX,"DeleteTx - Parent of tx %s found\n", wtx.GetHash().ToString());
+                        deleteTx = false;
+                        continue;
+                    }
+                }
+
+                if (!deleteTx) {
+                    txSaveCount++;
+                    continue;
+                }
+
+                //Keep Last N Transactions
+                if (mapSorted.size() - txCount < fKeepLastNTransactions + txConflictCount + txUnConfirmed) {
+                    LogPrint(BCLog::DELETETX,"DeleteTx - Transaction set position %i, tx %s\n", mapSorted.size() - txCount, wtxid.ToString());
+                    deleteTx = false;
+                    txSaveCount++;
+                    continue;
+                }
+            }
+
+            //Collect everything else for deletion
+            if (deleteTx && int(removeTxs.size()) < MAX_DELETE_TX_SIZE) {
+                removeTxs.push_back(wtxid);
+                runCompact = true;
+            }
+        }
+
+        //Delete Transactions from wallet
+        DeleteTransactions(removeTxs);
+        LogPrintf("Delete Tx - Total Transaction Count %i, Transactions Deleted %i\n ", txCount, int(removeTxs.size()));
+
+        //Compress Wallet
+        if (runCompact)
+            CWalletDB::Compact(bitdb,strWalletFile);
+    }
 }
 
 /**
