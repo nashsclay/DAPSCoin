@@ -477,8 +477,8 @@ public:
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate);
     void EraseFromWallet(const uint256& hash);
-    void ReorderWalletTransactions(std::map<std::pair<int,int>, CWalletTx> &mapSorted, int64_t &maxOrderPos);
-    void UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletTx> &mapSorted, bool resetOrder);
+    void ReorderWalletTransactions(std::map<std::pair<int,int>, CWalletTx*> &mapSorted, int64_t &maxOrderPos);
+    void UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletTx*> &mapSorted, bool resetOrder);
     void DeleteTransactions(std::vector<uint256> &removeTxs);
     void DeleteWalletTransactions(const CBlockIndex* pindex);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, bool fromStartup = false, int height = -1);
