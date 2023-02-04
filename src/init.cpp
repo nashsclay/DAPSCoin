@@ -1673,6 +1673,19 @@ bool AppInit2(bool isDaemon)
         RegisterValidationInterface(pwalletMain);
         int height = -1;
         CBlockIndex* pindexRescan = chainActive.Tip();
+
+        {
+            //Sort Transactions by block and block index, then reorder
+            LOCK2(cs_main, pwalletMain->cs_wallet);
+            if (chainActive.Tip()) {
+                LogPrintf("Runnning transaction reorder\n");
+                int64_t maxOrderPos = 0;
+                std::map<std::pair<int,int>, CWalletTx*> mapSorted;
+                pwalletMain->ReorderWalletTransactions(mapSorted, maxOrderPos);
+                pwalletMain->UpdateWalletTransactionOrder(mapSorted, true);
+            }
+        }
+
         if (GetBoolArg("-rescan", false)) {
             pindexRescan = chainActive.Genesis();
         } else {

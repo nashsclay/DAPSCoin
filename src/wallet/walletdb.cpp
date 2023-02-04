@@ -832,12 +832,6 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     if (wss.nFileVersion < CLIENT_VERSION) // Update
         WriteVersion(CLIENT_VERSION);
 
-    //Sort Transactions by block and block index, then reorder
-    int64_t maxOrderPos = 0;
-    std::map<std::pair<int,int>, CWalletTx*> mapSorted;
-    pwallet->ReorderWalletTransactions(mapSorted, maxOrderPos);
-    pwallet->UpdateWalletTransactionOrder(mapSorted, true);
-
     pwallet->laccentries.clear();
     ListAccountCreditDebit("*", pwallet->laccentries);
     for(CAccountingEntry& entry : pwallet->laccentries) {
