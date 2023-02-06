@@ -4280,6 +4280,14 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             if (!VerifyZeroBlindCommitment(coinstake.vout[i]))
                 return state.DoS(100, error("CheckBlock() : PoS rewards commitment not correct"));
         }
+
+        std::set<COutPoint> vInOutPoints;
+        for (const CTxIn& txin : block.vtx[1].vin) {
+            if (vInOutPoints.count(txin.prevout))
+                return state.DoS(100, error("CheckBlock() : duplicate inputs"),
+                    REJECT_INVALID, "bad-txns-inputs-duplicate");
+                vInOutPoints.insert(txin.prevout);
+        }
     }
 
     if (block.IsProofOfAudit() || block.IsProofOfWork()) {
