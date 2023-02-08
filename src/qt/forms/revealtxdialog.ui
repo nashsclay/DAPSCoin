@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayoutTXID" stretch="0,1,5">
+    <layout class="QHBoxLayout" name="horizontalLayoutTXID" stretch="0,1,5,0">
      <item>
       <widget class="QPushButton" name="pushButtonCopyID">
        <property name="toolTip">
@@ -349,7 +349,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
      </property>
     </widget>
    </item>
