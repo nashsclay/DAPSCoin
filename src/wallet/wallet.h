@@ -75,7 +75,7 @@ static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 static const int DEFAULT_CUSTOMBACKUPTHRESHOLD = 1;
 
 //Default Transaction Retention N-BLOCKS
-static const int DEFAULT_TX_DELETE_INTERVAL = 1000;
+static const int DEFAULT_TX_DELETE_INTERVAL = 10000;
 
 //Default Transaction Retention N-BLOCKS
 static const unsigned int DEFAULT_TX_RETENTION_BLOCKS = 10000;
