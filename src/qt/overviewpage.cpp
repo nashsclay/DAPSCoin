@@ -20,9 +20,7 @@
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
-#include <QTimer>
 #include <QtMath>
-#include <QNetworkAccessManager>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -124,10 +122,13 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
     pingNetworkInterval->setInterval(3000);
     pingNetworkInterval->start();
 
-    checkCurrencyValueInterval = new QTimer(this);
-    connect(checkCurrencyValueInterval, SIGNAL(timeout()), this, SLOT(checkCurrencyValue()));
-    checkCurrencyValueInterval->setInterval(300000);
-    checkCurrencyValueInterval->start();
+    // Init getCurrencyValueInterval
+    getCurrencyValueInterval = new QTimer(this);
+    manager = new QNetworkAccessManager(this);
+    connect(getCurrencyValueInterval, SIGNAL(timeout()), this, SLOT(getCurrencyValue()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(setCurrencyValue(QNetworkReply*)));
+    getCurrencyValueInterval->setInterval(300000);
+    getCurrencyValueInterval->start();
 
     initSyncCircle(.8);
 
@@ -199,7 +200,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelBalance_2->setFont(font);   
 
     updateRecentTransactions();
-    checkCurrencyValue();
+    getCurrencyValue();
 }
 
 // show/hide watch-only labels
@@ -533,7 +534,7 @@ void OverviewPage::on_lockUnlock() {
             ui->labelBalance->setText(BitcoinUnits::formatHtmlWithUnit(0, walletModel->getSpendableBalance(), false, BitcoinUnits::separatorAlways));
             ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, walletModel->getUnconfirmedBalance(), false, BitcoinUnits::separatorAlways));
             pwalletMain->combineMode = CombineMode::ON;
-            checkCurrencyValue();
+            getCurrencyValue();
         }
     }
     else {
@@ -545,7 +546,7 @@ void OverviewPage::on_lockUnlock() {
             ui->labelBalance_2->setText("Locked; Hidden");
             ui->labelBalance->setText("Locked; Hidden");
             ui->labelUnconfirmed->setText("Locked; Hidden");
-            checkCurrencyValue();
+            getCurrencyValue();
         }
     }
 }
@@ -561,15 +562,14 @@ void OverviewPage::updateLockStatus(int status) {
         ui->btnLockUnlock->setStyleSheet("border-image: url(:/images/unlock) 0 0 0 0 stretch stretch; width: 30px;");
 }
 
-void OverviewPage::checkCurrencyValue()
+void OverviewPage::getCurrencyValue()
 {
-    QSettings settings;
     // Get Default Currency from Settings
     bool fDisplayCurrencyValue = settings.value("fDisplayCurrencyValue").toBool();
     QString defaultCurrency = settings.value("strDefaultCurrency").toString();
 
     // Don't check value if wallet is locked, balance is 0, or fDisplayCurrencyValue is set to false
-    if (pwalletMain->IsLocked() || pwalletMain->GetBalance() == 0 || !fDisplayCurrencyValue) {
+    if (pwalletMain->IsLocked() || currentBalance == 0 || !fDisplayCurrencyValue) {
         ui->labelCurrencyValue->setText("");
         return;
     }
@@ -577,17 +577,16 @@ void OverviewPage::checkCurrencyValue()
         return;
     }
     isRuninngQuery = true;
-    QUrl serviceUrl = QUrl("https://api.coingecko.com/api/v3/simple/price?ids=prcy-coin&vs_currencies=" + defaultCurrency + "&include_market_cap=false&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkCurrencyValueserviceRequestFinished(QNetworkReply*)));
     QNetworkRequest request;
-    request.setUrl(serviceUrl);
-    QNetworkReply* reply = manager->get(request);
+    QUrl coinGeckoUrl = QUrl("https://api.coingecko.com/api/v3/simple/price?ids=prcy-coin&vs_currencies=" + defaultCurrency + "&include_market_cap=false&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
+    request.setUrl(coinGeckoUrl);
+    request.setHeader(QNetworkRequest::ServerHeader, "application/json");
+    reply = manager->get(request);
+    reply->ignoreSslErrors();
 }
 
-void OverviewPage::checkCurrencyValueserviceRequestFinished(QNetworkReply* reply)
+void OverviewPage::setCurrencyValue(QNetworkReply* reply)
 {
-    QSettings settings;
     // Get Default Currency from Settings
     QString defaultCurrency = settings.value("strDefaultCurrency").toString();
     QString defaultCurrencySymbol;
@@ -611,23 +610,24 @@ void OverviewPage::checkCurrencyValueserviceRequestFinished(QNetworkReply* reply
 
     reply->deleteLater();
     if(reply->error() == QNetworkReply::NoError) {
-        // Parse data
-        QByteArray data = reply->readAll();
-        QJsonDocument jsonDocument(QJsonDocument::fromJson(data));
-        const QJsonObject item  = jsonDocument.object();
-        const QJsonObject currency  = item["prcy-coin"].toObject();
-        auto currencyValue = currency[defaultCurrency.toLower()].toDouble();
+        try {
+            // Parse data
+            QByteArray data = reply->readAll();
+            QJsonDocument jsonDocument(QJsonDocument::fromJson(data));
+            const QJsonObject item  = jsonDocument.object();
+            const QJsonObject currency  = item["prcy-coin"].toObject();
+            auto currencyValue = currency[defaultCurrency.toLower()].toDouble();
 
-        // Get current balance
-        int balance = pwalletMain->GetBalance() / COIN;
+            // Calculate value
+            double currentValue = (currentBalance / COIN) * currencyValue;
 
-        // Calculate value
-        double currentValue = balance *  currencyValue;
-
-        // Set value
-        ui->labelCurrencyValue->setText(defaultCurrency + " Value: " + defaultCurrencySymbol + QString::number(currentValue, 'f', 2));
+            // Set value
+            ui->labelCurrencyValue->setText(defaultCurrency + " Value: " + defaultCurrencySymbol + QString::number(currentValue, 'f', 2));
+        } catch (...) {
+            LogPrintf("%s: Error parsing CoinGecko API JSON\n", __func__);
+        }
     } else {
-        LogPrintf("%s: Error checking for Alternative Currency value.\n", __func__);
+        LogPrintf("%s: Error checking for Alternative Currency value: %d\n", __func__, reply->error());
     }
     isRuninngQuery = false;
 }
