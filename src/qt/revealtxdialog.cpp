@@ -2,9 +2,13 @@
 #include "ui_revealtxdialog.h"
 #include "bitcoinunits.h"
 #include "chainparams.h"
+#include "guiutil.h"
+#include "wallet/wallet.h"
 
 #include <QClipboard>
 #include <QDesktopServices>
+#include <QKeyEvent>
+#include <QPushButton>
 #include <QUrl>
 
 RevealTxDialog::RevealTxDialog(QWidget *parent) :
@@ -44,6 +48,9 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
     ui->pushButtonOpenTXID->setStyleSheet("background:transparent;");
     ui->pushButtonOpenTXID->setIcon(QIcon(":/icons/eye"));
     connect(ui->pushButtonOpenTXID, SIGNAL(clicked()), this, SLOT(openTXinExplorer()));
+
+    ui->buttonBox->button(QDialogButtonBox::Reset)->setText("Delete Transaction?");
+    connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(deleteTransaction()));
 }
 
 RevealTxDialog::~RevealTxDialog()
@@ -95,7 +102,7 @@ void RevealTxDialog::setTxRingSize(int64_t ringSize)
 
 void RevealTxDialog::on_buttonBox_accepted()
 {
-
+    //We currently don't do anything on accept
 }
 
 void RevealTxDialog::copyID(){
@@ -143,4 +150,81 @@ void RevealTxDialog::openTXinExplorer()
         URL = "https://testnet.prcycoin.com/tx/";
     }
     QDesktopServices::openUrl(QUrl(URL.append(ui->lblTxID->text())));
+}
+
+void RevealTxDialog::deleteTransaction()
+{
+    bool hideSuccess = settings.value("fHideDeleteSuccess", false).toBool();
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, tr("Are You Sure?"),
+                                  tr("Are you sure you would like to delete this transaction from the local wallet?\n\nNote: They can only be restored from backup or rescan."),
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        // If it might be a Masternode collateral by value, double check
+        if (ui->lblTxAmount->text() == "5000.00000000 PRCY") {
+            QMessageBox::StandardButton doubleCheck;
+            doubleCheck = QMessageBox::question(this, tr("Potential Masternode Collateral Detected!"),
+                                                tr("Potential Masternode Collateral Detected!\nAre you sure?\n\nNote: They can only be restored from backup or rescan."),
+                                                QMessageBox::Yes|QMessageBox::No);
+            if (doubleCheck == QMessageBox::No) {
+                return;
+            }
+        }
+
+        // Get the hash from the TXID
+        uint256 hash;
+        hash.SetHex(ui->lblTxID->text().toStdString().c_str());
+
+        // Check it exists
+        if (!pwalletMain->mapWallet.count(hash)) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle(tr("Invalid or non-wallet transaction id"));
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setText(tr("Invalid or non-wallet transaction id."));
+            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+            msgBox.exec();
+            return;
+        }
+        // Erase it
+        pwalletMain->EraseFromWallet(hash);
+
+        // Display Success! dialog if not disabled
+        QMessageBox msgBox;
+        QCheckBox *cb = new QCheckBox(tr("Do not show successful confirmation again"));
+        QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
+        msgBox.setCheckBox(cb);
+
+        if (!hideSuccess) {
+            msgBox.setWindowTitle(tr("Success!"));
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText(tr("Transaction ID successfully deleted."));
+            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+            msgBox.exec();
+            if (msgBox.clickedButton() == okButton) {
+                if (cb->isChecked()) {
+                    settings.setValue("fHideDeleteSuccess", true);
+                } else {
+                    settings.setValue("fHideDeleteSuccess", false);
+                }
+            }
+        }
+        accept();
+    } else {
+        return;
+    }
+}
+
+void RevealTxDialog::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete) { // press backspace/delete -> delete transaction
+        event->ignore();
+        deleteTransaction();
+    } else if (event->key() == Qt::Key_Escape) { // press escape -> reject
+        event->ignore();
+        reject();
+    } else if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) { // press enter/return -> accept
+        event->ignore();
+        accept();
+    }
 }

@@ -1,8 +1,11 @@
 #ifndef REVEALTXDIALOG_H
 #define REVEALTXDIALOG_H
 
-#include <QDialog>
 #include "amount.h"
+
+#include <QCheckBox>
+#include <QDialog>
+#include <QSettings>
 
 namespace Ui {
 class RevealTxDialog;
@@ -34,9 +37,14 @@ private Q_SLOTS:
     void copyTxPaymentID();
     void copyTxRingSize();
     void openTXinExplorer();
+    void deleteTransaction();
 
 private:
     Ui::RevealTxDialog *ui;
+    QSettings settings;
+
+protected:
+    void keyPressEvent(QKeyEvent* event);
 };
 
 #endif // REVEALTXDIALOG_H
