@@ -1812,7 +1812,7 @@ void CWallet::UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletT
     CWalletDB walletdb(strWalletFile, "r+", false);
     for (std::map<const uint256, CWalletTx*>::iterator it = mapUpdatedTxs.begin(); it != mapUpdatedTxs.end(); ++it) {
         CWalletTx* pwtx = it->second;
-        LogPrint(BCLog::DELETETX,"Reorder Tx - Updating Positon to %i for Tx %s\n ", pwtx->nOrderPos, pwtx->GetHash().ToString());
+        LogPrint(BCLog::DELETETX,"Reorder Tx - Updating Positon to %i for Tx %s\n", pwtx->nOrderPos, pwtx->GetHash().ToString());
         pwtx->WriteToDisk(&walletdb);
         const auto itmw = mapWallet.find(pwtx->GetHash());
         if (itmw != mapWallet.end()) {
@@ -1823,7 +1823,7 @@ void CWallet::UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletT
     //Update Next Wallet Tx Positon
     nOrderPosNext = previousPosition++;
     CWalletDB(strWalletFile).WriteOrderPosNext(nOrderPosNext);
-    LogPrint(BCLog::DELETETX,"Reorder Tx - Total Transactions Reordered %i, Next Position %i\n ", mapUpdatedTxs.size(), nOrderPosNext);
+    LogPrint(BCLog::DELETETX,"Reorder Tx - Total Transactions Reordered %i, Next Position %i\n", mapUpdatedTxs.size(), nOrderPosNext);
 
 }
 
@@ -1839,9 +1839,9 @@ void CWallet::DeleteTransactions(std::vector<uint256> &removeTxs)
     for (int i = 0; i< removeTxs.size(); i++) {
         if (mapWallet.erase(removeTxs[i])) {
             walletdb.EraseTx(removeTxs[i]);
-            LogPrint(BCLog::DELETETX,"Delete Tx - Deleting tx %s, %i.\n", removeTxs[i].ToString(),i);
+            LogPrint(BCLog::DELETETX,"DeleteTx - Deleting tx %s, %i.\n", removeTxs[i].ToString(),i);
         } else {
-            LogPrint(BCLog::DELETETX,"Delete Tx - Deleting tx %failed.\n", removeTxs[i].ToString());
+            LogPrint(BCLog::DELETETX,"DeleteTx - Deleting tx %failed.\n", removeTxs[i].ToString());
             return;
         }
     }
@@ -1858,6 +1858,7 @@ void CWallet::DeleteWalletTransactions(const CBlockIndex* pindex)
 
     int nDeleteAfter = (int)fDeleteTransactionsAfterNBlocks;
     bool runCompact = false;
+    auto startTime = GetTime();
 
     if (pindex && fTxDeleteEnabled) {
 
@@ -1880,12 +1881,13 @@ void CWallet::DeleteWalletTransactions(const CBlockIndex* pindex)
         if (maxOrderPos > int64_t(mapSorted.size())*10) {
             //reset the postion when the max postion is 10x bigger than the
             //number of transactions in the wallet
-            LogPrint(BCLog::DELETETX,"Reorder Tx - maxOrderPos %i mapSorted Size %i\n", maxOrderPos, int64_t(mapSorted.size())*10);
             UpdateWalletTransactionOrder(mapSorted, true);
         }
         else {
             UpdateWalletTransactionOrder(mapSorted, false);
         }
+        auto reorderTime = GetTime();
+        LogPrint(BCLog::DELETETX,"DeleteTx - Time to Reorder %s\n", DateTimeStrFormat("%H:%M:%S", reorderTime-startTime));
 
         //Process Transactions in sorted order
         int txConflictCount = 0;
@@ -1970,16 +1972,27 @@ void CWallet::DeleteWalletTransactions(const CBlockIndex* pindex)
             if (deleteTx && int(removeTxs.size()) < MAX_DELETE_TX_SIZE) {
                 removeTxs.push_back(wtxid);
                 runCompact = true;
+            } else {
+                break; //no need to continue with the loop
             }
         }
 
+        auto selectTime = GetTime();
+        LogPrint(BCLog::DELETETX,"DeleteTx - Time to Select %s\n", DateTimeStrFormat("%H:%M:%S", selectTime - reorderTime));
+
         //Delete Transactions from wallet
         DeleteTransactions(removeTxs);
-        LogPrintf("Delete Tx - Total Transaction Count %i, Transactions Deleted %i\n ", txCount, int(removeTxs.size()));
 
-        //Compress Wallet
-        if (runCompact)
+        auto deleteTime = GetTime();
+        LogPrint(BCLog::DELETETX,"DeleteTx - Time to Delete %s\n", DateTimeStrFormat("%H:%M:%S", deleteTime - selectTime));
+        LogPrintf("DeleteTx - Total Transaction Count %i, Transactions Deleted %i\n", txCount, int(removeTxs.size()));
+
+        if (runCompact) {
             CWalletDB::Compact(bitdb,strWalletFile);
+        }
+
+        auto totalTime = GetTime();
+        LogPrint(BCLog::DELETETX,"DeleteTx - Time to Run Total Function %s\n", DateTimeStrFormat("%H:%M:%S", totalTime - startTime));
     }
 }
 
