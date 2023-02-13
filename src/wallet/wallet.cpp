@@ -342,7 +342,6 @@ bool CWallet::IsHDEnabled()
 
 bool CWallet::WriteStakingStatus(bool status)
 {
-    walletStakingInProgress = true;
     return CWalletDB(strWalletFile).WriteStakingStatus(status);
 }
 bool CWallet::ReadStakingStatus()
@@ -5747,7 +5746,6 @@ void CWallet::SetNull()
     nLastResend = 0;
     nTimeFirstKey = 0;
     fWalletUnlockStakingOnly = false;
-    walletStakingInProgress = false;
 
     // Stake Settings
     nHashDrift = 45;

@@ -340,7 +340,6 @@ public:
     CPubKey vchDefaultKey;
 
     std::set<COutPoint> setLockedCoins;
-    bool walletStakingInProgress;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
 
     int64_t nTimeFirstKey;

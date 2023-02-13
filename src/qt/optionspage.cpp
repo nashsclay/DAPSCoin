@@ -67,7 +67,6 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     if (stkStatus && !fLiteMode){
         if (chainActive.Height() < Params().LAST_POW_BLOCK()) {
             stkStatus = false;
-            pwalletMain->walletStakingInProgress = false;
             pwalletMain->WriteStakingStatus(false);
             //Q_EMIT model->stakingStatusChanged(false);
         } else {
@@ -75,7 +74,6 @@ OptionsPage::OptionsPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
             StakingStatusError stt = model->getStakingStatusError(error);
             if (error.length()) {
                 stkStatus = false;
-                pwalletMain->walletStakingInProgress = false;
                 pwalletMain->WriteStakingStatus(false);
                 //Q_EMIT model->stakingStatusChanged(false);
             }
@@ -471,7 +469,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         }
         widget->setState(false);
         pwalletMain->WriteStakingStatus(false);
-        pwalletMain->walletStakingInProgress = false;
         return;
     }
     if (widget->getState()){
@@ -557,7 +554,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             nLastCoinStakeSearchInterval = 0;
             model->generateCoins(false, 0);
             Q_EMIT model->stakingStatusChanged(false);
-            pwalletMain->walletStakingInProgress = false;
             pwalletMain->WriteStakingStatus(false);
             return;
         } else {
@@ -641,7 +637,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
         nLastCoinStakeSearchInterval = 0;
         model->generateCoins(false, 0);
         Q_EMIT model->stakingStatusChanged(false);
-        pwalletMain->walletStakingInProgress = false;
         pwalletMain->WriteStakingStatus(false);
     }
 }
