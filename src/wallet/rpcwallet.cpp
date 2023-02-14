@@ -3065,6 +3065,27 @@ UniValue rescanwallettransactions(const UniValue& params, bool fHelp) {
     return "Done";
 }
 
+UniValue erasewallettransactions(const UniValue& params, bool fHelp) {
+    if (fHelp || params.size() != 0)
+        throw std::runtime_error(
+                "erasewallettransactions \n"
+                "\nErase wallet transactions based on prcycoin.conf parameters\n"
+                "\nResult:\n"
+                "\"erased wallet transactions\"    \n"
+                "\nExamples:\n" +
+                HelpExampleCli("erasewallettransactions", "") + HelpExampleCli("erasewallettransactions", "\"\"") +
+                HelpExampleRpc("erasewallettransactions", ""));
+
+    EnsureWallet();
+    EnsureWalletIsUnlocked();
+
+    CBlockIndex* pindex = chainActive.Tip();
+
+    pwalletMain->DeleteWalletTransactions(pindex);
+
+    return "Done";
+}
+
 UniValue revealmnemonicphrase(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
