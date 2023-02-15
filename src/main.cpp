@@ -4868,6 +4868,16 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
             }
             return error("%s : AcceptBlock FAILED", __func__);
         }
+        bool initialDownloadCheck = IsInitialBlockDownload();
+        if (!initialDownloadCheck &&
+            pblock->IsPoABlockByVersion()) // Run DeleteWalletTransactions on PoA blocks
+        {
+            pwalletMain->DeleteWalletTransactions(pindex);
+        } else {
+            if (initialDownloadCheck && pindex->nHeight % fDeleteInterval == 0) {
+                pwalletMain->DeleteWalletTransactions(pindex);
+            }
+        }
     }
 
     if (!ActivateBestChain(state, pblock, checked))

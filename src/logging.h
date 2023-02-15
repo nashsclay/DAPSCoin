@@ -64,6 +64,7 @@ namespace BCLog {
         MNPING      = (1 << 24),
         POA         = (1 << 25),
         SUPPLY      = (1 << 26),
+        DELETETX    = (1 << 27),
         ALL         = ~(uint32_t)0,
     };
 

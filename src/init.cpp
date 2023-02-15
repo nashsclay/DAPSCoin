@@ -432,6 +432,10 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-custombackupthreshold=<n>", strprintf(_("Number of custom location backups to retain (default: %d)"), DEFAULT_CUSTOMBACKUPTHRESHOLD));
     strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
     strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), 100));
+    strUsage += HelpMessageOpt("-deletetx", _("Enable Old Transaction Deletion"));
+    strUsage += HelpMessageOpt("-deleteinterval", strprintf(_("Delete transaction every <n> blocks during inital block download (default: %i)"), DEFAULT_TX_DELETE_INTERVAL));
+    strUsage += HelpMessageOpt("-keeptxnum", strprintf(_("Keep the last <n> transactions (default: %i)"), DEFAULT_TX_RETENTION_LASTTX));
+    strUsage += HelpMessageOpt("-keeptxfornblocks", strprintf(_("Keep transactions for at least <n> blocks (default: %i)"), DEFAULT_TX_RETENTION_BLOCKS));
     if (GetBoolArg("-help-debug", false))
         strUsage += HelpMessageOpt("-mintxfee=<amt>", strprintf(_("Fees (in %s/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
                 CURRENCY_UNIT, FormatMoney(CWallet::minTxFee.GetFeePerK())));
@@ -1619,6 +1623,27 @@ bool AppInit2(bool isDaemon)
             pwalletMain->SetMaxVersion(nMaxVersion);
         }
 
+        //Set Transaction Deletion Options
+        fTxDeleteEnabled = GetBoolArg("-deletetx", false);
+        fTxConflictDeleteEnabled = GetBoolArg("-deleteconflicttx", true);
+
+        fDeleteInterval = GetArg("-deleteinterval", DEFAULT_TX_DELETE_INTERVAL);
+        if (fDeleteInterval < 1)
+          return UIError("deleteinterval must be greater than 0");
+
+        fKeepLastNTransactions = GetArg("-keeptxnum", DEFAULT_TX_RETENTION_LASTTX);
+        if (fKeepLastNTransactions < 1)
+          return UIError("keeptxnum must be greater than 0");
+
+        fDeleteTransactionsAfterNBlocks = GetArg("-keeptxfornblocks", DEFAULT_TX_RETENTION_BLOCKS);
+        if (fDeleteTransactionsAfterNBlocks < 1)
+          return UIError("keeptxfornblocks must be greater than 0");
+
+        if (fDeleteTransactionsAfterNBlocks < Params().COINBASE_MATURITY() + 1 ) {
+          LogPrintf("keeptxfornblock is less than Params().COINBASE_MATURITY(), Setting to %i\n", Params().COINBASE_MATURITY() + 1);
+          fDeleteTransactionsAfterNBlocks = Params().COINBASE_MATURITY() + 1;
+        }
+
         if (fFirstRun) {
             // Create new keyUser and set as default key
             if (!pwalletMain->IsHDEnabled()) {
@@ -1648,6 +1673,19 @@ bool AppInit2(bool isDaemon)
         RegisterValidationInterface(pwalletMain);
         int height = -1;
         CBlockIndex* pindexRescan = chainActive.Tip();
+
+        {
+            //Sort Transactions by block and block index, then reorder
+            LOCK2(cs_main, pwalletMain->cs_wallet);
+            if (chainActive.Tip()) {
+                LogPrintf("Runnning transaction reorder\n");
+                int64_t maxOrderPos = 0;
+                std::map<std::pair<int,int>, CWalletTx*> mapSorted;
+                pwalletMain->ReorderWalletTransactions(mapSorted, maxOrderPos);
+                pwalletMain->UpdateWalletTransactionOrder(mapSorted, true);
+            }
+        }
+
         if (GetBoolArg("-rescan", false)) {
             pindexRescan = chainActive.Genesis();
         } else {
