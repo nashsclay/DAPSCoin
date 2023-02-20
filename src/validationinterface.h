@@ -33,6 +33,7 @@ class CValidationInterface {
 protected:
     virtual void UpdatedBlockTip(const CBlockIndex *pindex) {}
     virtual void SyncTransaction(const CTransaction &tx, const CBlock *pblock) {}
+    virtual bool EraseFromWallet(const uint256 &hash) { return false;}
     virtual void NotifyTransactionLock(const CTransaction &tx) {}
     virtual void SetBestChain(const CBlockLocator &locator) {}
     virtual bool UpdatedTransaction(const uint256 &hash) { return false;}

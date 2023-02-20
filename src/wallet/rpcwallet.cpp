@@ -3143,7 +3143,8 @@ UniValue erasefromwallet(const UniValue& params, bool fHelp)
     if (!pwalletMain->mapWallet.count(hash))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
 
-    pwalletMain->EraseFromWallet(hash);
+    if (!pwalletMain->mapWallet.count(hash))
+        return "Failed to delete transaction";
 
     return "Done";
 }

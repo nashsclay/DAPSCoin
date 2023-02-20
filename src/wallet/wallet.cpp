@@ -1317,17 +1317,16 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
     }
 }
 
-void CWallet::EraseFromWallet(const uint256& hash)
+bool CWallet::EraseFromWallet(const uint256& hash)
 {
     if (!fFileBacked)
-        return;
+        return false;
     {
         LOCK(cs_wallet);
         if (mapWallet.erase(hash))
-            CWalletDB(strWalletFile).EraseTx(hash);
-        LogPrintf("%s: Erased wtx %s from wallet\n", __func__, hash.GetHex());
+            return CWalletDB(strWalletFile).EraseTx(hash);
     }
-    return;
+    return false;
 }
 
 
@@ -1852,8 +1851,7 @@ void CWallet::DeleteTransactions(std::vector<uint256> &removeTxs)
     CWalletDB walletdb(strWalletFile, "r+", false);
 
     for (int i = 0; i< removeTxs.size(); i++) {
-        if (mapWallet.erase(removeTxs[i])) {
-            walletdb.EraseTx(removeTxs[i]);
+        if (EraseFromWallet(removeTxs[i])) {
             LogPrint(BCLog::DELETETX,"DeleteTx - Deleting tx %s, %i.\n", removeTxs[i].ToString(),i);
         } else {
             LogPrint(BCLog::DELETETX,"DeleteTx - Deleting tx %failed.\n", removeTxs[i].ToString());
