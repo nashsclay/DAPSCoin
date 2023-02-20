@@ -1767,6 +1767,25 @@ bool CWalletTx::WriteToDisk(CWalletDB *pwalletdb)
     return CWalletDB(pwallet->strWalletFile).WriteTx(GetHash(), *this);
 }
 
+void CWallet::RemoveFromSpends(const uint256& wtxid)
+{
+    if (mapTxSpends.size() > 0)
+    {
+        std::multimap<COutPoint, uint256>::const_iterator itr = mapTxSpends.cbegin();
+        while (itr != mapTxSpends.cend())
+        {
+            if (itr->second == wtxid)
+            {
+                itr = mapTxSpends.erase(itr);
+            }
+            else
+            {
+                ++itr;
+            }
+        }
+    }
+}
+
 /**
  * Reorder the transactions based on block hieght and block index.
  * Transactions can get out of order when they are deleted and subsequently
@@ -1851,7 +1870,11 @@ void CWallet::DeleteTransactions(std::vector<uint256> &removeTxs)
     CWalletDB walletdb(strWalletFile, "r+", false);
 
     for (int i = 0; i< removeTxs.size(); i++) {
+        bool fRemoveFromSpends = !(mapWallet.at(removeTxs[i]).IsCoinBase());
         if (EraseFromWallet(removeTxs[i])) {
+            if (fRemoveFromSpends) {
+                RemoveFromSpends(removeTxs[i]);
+            }
             LogPrint(BCLog::DELETETX,"DeleteTx - Deleting tx %s, %i.\n", removeTxs[i].ToString(),i);
         } else {
             LogPrint(BCLog::DELETETX,"DeleteTx - Deleting tx %failed.\n", removeTxs[i].ToString());
