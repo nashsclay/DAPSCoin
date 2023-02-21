@@ -401,6 +401,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     encryptWalletAction->setCheckable(true);
     backupWalletAction = new QAction(QIcon(":/icons/filesave"), tr("&Backup Wallet..."), this);
     backupWalletAction->setStatusTip(tr("Backup wallet to another location"));
+    showSeedAction = new QAction(QIcon(":/icons/seedphrase"), tr("&Show Seed Phrase"), this);
+    showSeedAction->setStatusTip(tr("Show 24 word wallet seed phrase"));
     changePassphraseAction = new QAction(QIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
     unlockWalletAction = new QAction(tr("&Unlock Wallet..."), this);
@@ -514,6 +516,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     if (walletFrame) {
         connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
         connect(backupWalletAction, SIGNAL(triggered()), walletFrame, SLOT(backupWallet()));
+        connect(showSeedAction, SIGNAL(triggered()), this, SLOT(showSeedPhrase()));
         connect(changePassphraseAction, SIGNAL(triggered()), walletFrame, SLOT(changePassphrase()));
         connect(unlockWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(unlockWallet(bool)));
         connect(lockWalletAction, SIGNAL(triggered()), walletFrame, SLOT(lockWallet()));
@@ -550,6 +553,7 @@ void BitcoinGUI::createMenuBar()
         //file->addAction(openAction);
         file->addAction(backupWalletAction);
         file->addSeparator();
+        file->addAction(showSeedAction);
         //file->addAction(usedSendingAddressesAction);
         //file->addAction(usedReceivingAddressesAction);
         //file->addSeparator();
@@ -776,6 +780,7 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     masternodeAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
+    showSeedAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
     usedSendingAddressesAction->setEnabled(enabled);
     usedReceivingAddressesAction->setEnabled(enabled);
@@ -1092,6 +1097,10 @@ void BitcoinGUI::gotoBlockExplorerPage()
     if (walletFrame) walletFrame->gotoBlockExplorerPage();
 }
 
+void BitcoinGUI::showSeedPhrase()
+{
+    if (walletFrame) walletFrame->showSeedPhrase();
+}
 #endif // ENABLE_WALLET
 
 void BitcoinGUI::setNumConnections(int count)

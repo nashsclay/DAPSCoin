@@ -3099,22 +3099,15 @@ UniValue revealmnemonicphrase(const UniValue& params, bool fHelp)
                 HelpExampleCli("revealmnemonicphrase", "") + HelpExampleCli("revealmnemonicphrase", "\"\"") +
                 HelpExampleCli("revealmnemonicphrase", "") + HelpExampleRpc("revealmnemonicphrase", ""));
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     EnsureWalletIsUnlocked();
-    
-    CHDChain hdChainCurrent;
-    if (!pwalletMain->GetDecryptedHDChain(hdChainCurrent))
-        throw JSONRPCError(RPC_WALLET_ERROR,
-                           "Error: There was a problem while getting mnemonic phrase.");
 
-    SecureString mnemonic;
-    SecureString mnemonicPass;
-    if (!hdChainCurrent.GetMnemonic(mnemonic, mnemonicPass))
-        throw JSONRPCError(RPC_WALLET_ERROR,
-                           "Error: There was a problem while getting mnemonic phrase.");
+    std::string phrase;
+    if (!pwalletMain->GetSeedPhrase(phrase))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: There was an error retrieving mnemonic phrase.");
 
-    std::string mPhrase = std::string(mnemonic.begin(), mnemonic.end()).c_str();
-
-    return mPhrase;
+    return phrase;
 }
 
 UniValue erasefromwallet(const UniValue& params, bool fHelp)
