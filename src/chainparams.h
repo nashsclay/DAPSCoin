@@ -119,6 +119,7 @@ public:
     int HardFork() const { return nHardForkBlock;}
     int HardForkRingSize() const { return nHardForkBlockRingSize;}
     int HardForkRingSize2() const { return nHardForkBlockRingSize2;}
+    int SyncFix() const { return nSyncFix;}
 
     //For PoA block time
     int POA_BLOCK_TIME() const { return nPoABlockTime; }
@@ -151,6 +152,7 @@ protected:
     int nHardForkBlock;
     int nHardForkBlockRingSize;
     int nHardForkBlockRingSize2;
+    int nSyncFix;
     int nPoANewDiff;
     int nPoAFixTime;
     int nPoAPaddingBlock;
