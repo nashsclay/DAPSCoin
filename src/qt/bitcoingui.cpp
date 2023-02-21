@@ -962,7 +962,7 @@ void BitcoinGUI::openTGMNSupportClicked()
 
 void BitcoinGUI::openDiscordSupportClicked()
 {
-    QDesktopServices::openUrl(QUrl("https://discord.gg/8vbXJMf"));
+    QDesktopServices::openUrl(QUrl("https://discord.prcycoin.com"));
 }
 
 void BitcoinGUI::openBridgeClicked()
