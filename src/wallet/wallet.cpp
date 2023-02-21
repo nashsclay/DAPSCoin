@@ -349,6 +349,21 @@ bool CWallet::IsHDEnabled()
     return GetHDChain(hdChainCurrent);
 }
 
+bool CWallet::GetSeedPhrase(std::string &phrase)
+{
+    CHDChain hdChainCurrent;
+    if (!GetDecryptedHDChain(hdChainCurrent))
+        return false;
+
+    SecureString mnemonic;
+    SecureString mnemonicPass;
+    if (!hdChainCurrent.GetMnemonic(mnemonic, mnemonicPass))
+        return false;
+
+    phrase = std::string(mnemonic.begin(), mnemonic.end()).c_str();
+    return true;
+}
+
 bool CWallet::WriteStakingStatus(bool status)
 {
     return CWalletDB(strWalletFile).WriteStakingStatus(status);

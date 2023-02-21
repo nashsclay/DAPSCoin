@@ -78,6 +78,7 @@
         <file alias="onion">res/icons/onion.png</file>
         <file alias="checkmark">res/icons/checkmark.png</file>
         <file alias="bitcoin_regtest">res/icons/bitcoin_regtest.png</file>
+        <file alias="seedphrase">res/icons/seedphrase.png</file>
     </qresource>
     <qresource prefix="/css">
         <file alias="dark">res/css/Dark.css</file>

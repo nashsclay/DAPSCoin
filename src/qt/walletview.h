@@ -93,6 +93,9 @@ public Q_SLOTS:
     /** Show MultiSend Dialog */
     void gotoMultiSendDialog();
 
+    /** Return 24 word seed phrase */
+    void showSeedPhrase();
+
     /** Show incoming transaction notification for new transactions.
 
         The new items are those between start and end inclusive, under the given parent item.
