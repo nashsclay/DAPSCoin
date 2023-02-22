@@ -4283,7 +4283,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
         std::set<COutPoint> vInOutPoints;
         for (const CTxIn& txin : block.vtx[1].vin) {
-            if (vInOutPoints.count(txin.prevout))
+            if (vInOutPoints.count(txin.prevout) && chainActive.Tip()->nHeight > Params().SyncFix())
                 return state.DoS(100, error("CheckBlock() : duplicate inputs"),
                     REJECT_INVALID, "bad-txns-inputs-duplicate");
                 vInOutPoints.insert(txin.prevout);
