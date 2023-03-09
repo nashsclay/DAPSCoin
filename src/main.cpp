@@ -3288,6 +3288,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (nHeight >= Params().HardFork() && nValueIn < minStakingAmount)
             return state.DoS(100, error("ConnectBlock() : amount (%d) not allowed for staking. Min amount: %d",
                     __func__, nValueIn, minStakingAmount), REJECT_INVALID, "bad-txns-stake");
+
+        if (coinstake.vin.size() > 1 && nHeight > Params().FixChecks())
+            return state.DoS(100, error("%s : multiple stake inputs not allowed", __func__), REJECT_INVALID, "bad-txns-stake");
     }
 
     // track money supply and mint amount info
@@ -4371,6 +4374,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                     REJECT_INVALID, "bad-txns-inputs-duplicate");
                 vInOutPoints.insert(txin.prevout);
         }
+
+        if (coinstake.vin.size() > 1 && chainActive.Tip()->nHeight > Params().FixChecks())
+            return state.DoS(100, error("%s : multiple stake inputs not allowed", __func__), REJECT_INVALID, "bad-txns-stake");
     }
 
     if (block.IsProofOfAudit() || block.IsProofOfWork()) {
@@ -4708,6 +4714,10 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
         // Coin stake
         CTransaction &stakeTxIn = block.vtx[1];
+
+        // Only one input is allowed
+        if (stakeTxIn.vin.size() > 1)
+            return state.DoS(100, error("%s : multiple stake inputs not allowed", __func__), REJECT_INVALID, "bad-txns-stake");
 
         // Inputs
         std::vector<CTxIn> prcyInputs;
