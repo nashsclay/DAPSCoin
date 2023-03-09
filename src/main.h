@@ -327,6 +327,7 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txund
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx, CTransaction& tx);
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
+bool ValidOutPoint(const COutPoint out, int nHeight = 1);
 bool RecalculatePRCYSupply(int nHeightStart);
 
 /**

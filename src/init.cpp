@@ -20,6 +20,7 @@
 #include "fs.h"
 #include "httpserver.h"
 #include "httprpc.h"
+#include "invalid.h"
 #include "key.h"
 #include "main.h"
 #include "masternode-budget.h"
@@ -1463,6 +1464,9 @@ bool AppInit2(bool isDaemon)
                     strLoadError = _("You need to rebuild the database using -reindex to change -txindex");
                     break;
                 }
+
+                // Populate list of invalid/fraudulent outpoints that are banned from the chain
+                invalid_out::LoadOutpoints();
 
                 // Recalculate money supply for blocks
                 if (GetBoolArg("-reindexmoneysupply", false)) {

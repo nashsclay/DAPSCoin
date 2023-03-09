@@ -453,17 +453,20 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
 
 bool CNode::DisconnectOldVersion(std::string strSubVer, int nHeight, std::string strLastCommand) {
     fDisconnect = false;
-    //if (nHeight >= Params().HardFork()) {
+    if (nHeight >= Params().FixChecks()) {
         if (strSubVer == "/PRCY:1.0.0.2/" || strSubVer == "/PRCY:1.0.0.3/" ||
                 strSubVer == "/PRCY:1.0.0.4/" || strSubVer == "/PRCY:1.0.0.5/" ||
                 strSubVer == "/PRCY:1.0.0.6/" || strSubVer == "/PRCY:1.0.0.7/" ||
-                strSubVer == "/PRCY:1.0.0.8/" || strSubVer == "/PRCY:1.0.0.9/") {
+                strSubVer == "/PRCY:1.0.0.8/" || strSubVer == "/PRCY:1.0.0.9/" ||
+                strSubVer == "/PRCY:2.0.0/" || strSubVer == "/PRCY:2.0.0.1/" ||
+                strSubVer == "/PRCY:2.0.0.2/" || strSubVer == "/PRCY:2.0.0.3/" ||
+                strSubVer == "/PRCY:2.0.0.4/") {
             LogPrintf("%s : peer=%d using unsupported version %i; disconnecting\n",  __func__, id, strSubVer);
             PushMessage(NetMsgType::REJECT, strLastCommand, REJECT_OBSOLETE,
                         strprintf("Using unsupported version %i; disconnecting\n", strSubVer));
             fDisconnect = true;
         }
-    //}
+    }
     return fDisconnect;
 }
 

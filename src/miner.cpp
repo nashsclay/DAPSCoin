@@ -15,6 +15,7 @@
 #include "consensus/merkle.h"
 #include "consensus/tx_verify.h"
 #include "hash.h"
+#include "invalid.h"
 #include "main.h"
 #include "masternode-sync.h"
 #include "net.h"
@@ -278,6 +279,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, const CPubKey& txP
                 const CKeyImage& keyImage = txin.keyImage;
                 if (IsSpentKeyImage(keyImage.GetHex(), UINT256_ZERO)) {
                     fKeyImageCheck = false;
+                    break;
+                }
+                //Check for invalid/fraudulent inputs. They shouldn't make it through mempool, but check anyways.
+                if (invalid_out::ContainsOutPoint(txin.prevout)) {
+                    LogPrintf("%s : found invalid input %s in tx %s", __func__, txin.prevout.ToString(), tx.GetHash().ToString());
                     break;
                 }
             }
