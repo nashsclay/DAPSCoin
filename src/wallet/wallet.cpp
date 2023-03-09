@@ -14,6 +14,7 @@
 #include "coincontrol.h"
 #include "guiinterfaceutil.h"
 #include "kernel.h"
+#include "invalid.h"
 #include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
@@ -3996,6 +3997,9 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                             if (coinbaseDecoysPool.count(newOutPoint) == 1) {
                                 continue;
                             }
+                            if (!ValidOutPoint(newOutPoint)) {
+                                break;
+                            }
                             //add new coinbase transaction to the pool
                             if (coinbaseDecoysPool.size() >= CWallet::MAX_DECOY_POOL) {
                                 int selected = secp256k1_rand32() % CWallet::MAX_DECOY_POOL;
@@ -4054,6 +4058,7 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
             if ((int)coinbaseDecoysPool.size() >= ringSize * 5) {
                 while (numDecoys < ringSize) {
                     bool duplicated = false;
+                    bool invalid = false;
                     std::map<COutPoint, uint256>::const_iterator it = std::next(coinbaseDecoysPool.begin(), secp256k1_rand32() % coinbaseDecoysPool.size());
                     if (mapBlockIndex.count(it->second) < 1) continue;
                     CBlockIndex* atTheblock = mapBlockIndex[it->second];
@@ -4064,10 +4069,15 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                     for (size_t d = 0; d < tx.vin[i].decoys.size(); d++) {
                         if (tx.vin[i].decoys[d] == outpoint) {
                             duplicated = true;
+                        }
+                        if (!ValidOutPoint(outpoint)) {
+                            invalid = true;
+                        }
+                        if (duplicated || invalid) {
                             break;
                         }
                     }
-                    if (duplicated) {
+                    if (duplicated || invalid) {
                         continue;
                     }
                     tx.vin[i].decoys.push_back(outpoint);
@@ -4082,6 +4092,9 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                     if (!chainActive.Contains(atTheblock)) continue;
                     if (1 + chainActive.Height() - atTheblock->nHeight < DecoyConfirmationMinimum) continue;
                     COutPoint outpoint = it->first;
+                    if (!ValidOutPoint(outpoint)) {
+                        break;
+                    }
                     tx.vin[i].decoys.push_back(outpoint);
                     numDecoys++;
                     if (numDecoys == ringSize) break;
@@ -4096,6 +4109,7 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
             if ((int)decoySet.size() >= ringSize * 5) {
                 while (numDecoys < ringSize) {
                     bool duplicated = false;
+                    bool invalid = false;
                     std::map<COutPoint, uint256>::const_iterator it = std::next(decoySet.begin(), secp256k1_rand32() % decoySet.size());
                     if (mapBlockIndex.count(it->second) < 1) continue;
                     CBlockIndex* atTheblock = mapBlockIndex[it->second];
@@ -4106,10 +4120,15 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                     for (size_t d = 0; d < tx.vin[i].decoys.size(); d++) {
                         if (tx.vin[i].decoys[d] == outpoint) {
                             duplicated = true;
+                        }
+                        if (!ValidOutPoint(outpoint)) {
+                            invalid = true;
+                        }
+                        if (duplicated || invalid) {
                             break;
                         }
                     }
-                    if (duplicated) {
+                    if (duplicated || invalid) {
                         continue;
                     }
                     tx.vin[i].decoys.push_back(outpoint);
@@ -4124,6 +4143,9 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
                     if (!chainActive.Contains(atTheblock)) continue;
                     if (1 + chainActive.Height() - atTheblock->nHeight < DecoyConfirmationMinimum) continue;
                     COutPoint outpoint = it->first;
+                    if (!ValidOutPoint(outpoint)) {
+                        break;
+                    }
                     tx.vin[i].decoys.push_back(outpoint);
                     numDecoys++;
                     if (numDecoys == ringSize) break;
@@ -4138,6 +4160,9 @@ bool CWallet::selectDecoysAndRealIndex(CTransaction& tx, int& myIndex, int ringS
 
     for (size_t i = 0; i < tx.vin.size(); i++) {
         COutPoint prevout = tx.vin[i].prevout;
+        if (!ValidOutPoint(prevout)) {
+            break;
+        }
         inSpendQueueOutpointsPerSession.push_back(prevout);
     }
     if (myIndex != -1) {
