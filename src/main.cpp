@@ -19,6 +19,7 @@
 #include "consensus/validation.h"
 #include "fs.h"
 #include "init.h"
+#include "invalid.h"
 #include "kernel.h"
 #include "masternode-budget.h"
 #include "masternode-payments.h"
@@ -1652,6 +1653,31 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                     return state.Invalid(error("AcceptToMemoryPool : key image already spent %s", keyImage.GetHex()),
                         REJECT_DUPLICATE, "bad-txns-inputs-spent");
                 }
+                // check for invalid/fraudulent inputs
+                if (!ValidOutPoint(txin.prevout)) {
+                    return state.Invalid(error("%s : tried to spend invalid input %s in tx %s", __func__, txin.prevout.ToString(),
+                                                tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
+                }
+            }
+            // check for invalid/fraudulent decoys
+            for (unsigned int i = 0; i < tx.vin.size(); i++) {
+                if (tx.IsCoinBase()) continue;
+                //check output and decoys
+                std::vector<COutPoint> alldecoys = tx.vin[i].decoys;
+
+                alldecoys.push_back(tx.vin[i].prevout);
+                for (size_t j = 0; j < alldecoys.size(); j++) {
+                    CTransaction prev;
+                    uint256 bh;
+                    if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
+                        return false;
+                    }
+                    if (mapBlockIndex.count(bh) < 1) return false;
+                    if (!ValidOutPoint(alldecoys[j])) {
+                        return state.DoS(100, error("%s : tried to spend invalid decoy %s in tx %s", __func__, alldecoys[j].ToString(),
+                                                    tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
+                    }
+                }
             }
 
             // Bring the best block into scope
@@ -1845,6 +1871,32 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                     if (pfMissingInputs)
                         *pfMissingInputs = true;
                     return false;
+                }
+                //Check for invalid/fraudulent inputs
+                if (!ValidOutPoint(txin.prevout)) {
+                    return state.Invalid(error("%s : tried to spend invalid input %s in tx %s", __func__, txin.prevout.ToString(),
+                                                tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
+                }
+            }
+
+            // check for invalid/fraudulent inputs
+            for (unsigned int i = 0; i < tx.vin.size(); i++) {
+                if (tx.IsCoinBase()) continue;
+                //check output and decoys
+                std::vector<COutPoint> alldecoys = tx.vin[i].decoys;
+
+                alldecoys.push_back(tx.vin[i].prevout);
+                for (size_t j = 0; j < alldecoys.size(); j++) {
+                    CTransaction prev;
+                    uint256 bh;
+                    if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
+                        return false;
+                    }
+                    if (mapBlockIndex.count(bh) < 1) return false;
+                    if (!ValidOutPoint(alldecoys[j])) {
+                        return state.DoS(100, error("%s : tried to spend invalid decoy %s in tx %s", __func__, alldecoys[j].ToString(),
+                                                    tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
+                    }
                 }
             }
 
@@ -2686,6 +2738,13 @@ std::map<COutPoint, COutPoint> mapInvalidOutPoints;
 CAmount nFilteredThroughBittrex = 0;
 bool fListPopulatedAfterLock = false;
 
+bool ValidOutPoint(const COutPoint out, int nHeight)
+{
+    bool isInvalid = invalid_out::ContainsOutPoint(out);
+
+    return !isInvalid;
+}
+
 CAmount GetInvalidUTXOValue()
 {
     CAmount nValue = 0;
@@ -3156,6 +3215,30 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                         pwalletMain->keyImagesSpends[keyImage.GetHex()] = true;
                     }
                     pwalletMain->pendingKeyImages.remove(keyImage.GetHex());
+                }
+                if (!ValidOutPoint(in.prevout)) {
+                    return state.DoS(100, error("%s : tried to spend invalid input %s in tx %s", __func__, in.prevout.ToString(),
+                                  tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
+                }
+            }
+
+            for (unsigned int i = 0; i < tx.vin.size(); i++) {
+                if (tx.IsCoinBase()) continue;
+                //check output and decoys
+                std::vector<COutPoint> alldecoys = tx.vin[i].decoys;
+
+                alldecoys.push_back(tx.vin[i].prevout);
+                for (size_t j = 0; j < alldecoys.size(); j++) {
+                    CTransaction prev;
+                    uint256 bh;
+                    if (!GetTransaction(alldecoys[j].hash, prev, bh, true)) {
+                        return false;
+                    }
+                    if (mapBlockIndex.count(bh) < 1) return false;
+                    if (!ValidOutPoint(alldecoys[j])) {
+                        return state.DoS(100, error("%s : tried to spend invalid decoy %s in tx %s", __func__, alldecoys[j].ToString(),
+                                                    tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
+                    }
                 }
             }
 

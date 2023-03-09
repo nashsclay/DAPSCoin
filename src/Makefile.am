@@ -126,6 +126,7 @@ BITCOIN_CORE_H = \
   httpserver.h \
   init.h \
   invalid.h \
+  invalid_outpoints.json.h \
   kernel.h \
   swifttx.h \
   key.h \
@@ -298,6 +299,7 @@ libbitcoin_wallet_a_SOURCES = \
   messagesigner.cpp \
   wallet/rpcdump.cpp \
   wallet/rpcwallet.cpp \
+  invalid.cpp \
   kernel.cpp \
   wallet/wallet.cpp \
   wallet/wallet_ismine.cpp \
