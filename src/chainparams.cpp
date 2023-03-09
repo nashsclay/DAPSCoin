@@ -134,6 +134,7 @@ public:
         nHardForkBlockRingSize = 750000; // Add hard fork block for Ring Size bump
         nHardForkBlockRingSize2 = nHardForkBlockRingSize; // For testnet & compile purposes
         nSyncFix = 1140466; // Fix sync from 0
+        nFixChecks = 1190000; // Fix checks for staking
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot

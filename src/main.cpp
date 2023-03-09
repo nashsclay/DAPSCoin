@@ -3216,7 +3216,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                     }
                     pwalletMain->pendingKeyImages.remove(keyImage.GetHex());
                 }
-                if (!ValidOutPoint(in.prevout)) {
+                if (!ValidOutPoint(in.prevout) && nHeight > Params().FixChecks()) {
                     return state.DoS(100, error("%s : tried to spend invalid input %s in tx %s", __func__, in.prevout.ToString(),
                                   tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
                 }
@@ -3235,7 +3235,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                         return false;
                     }
                     if (mapBlockIndex.count(bh) < 1) return false;
-                    if (!ValidOutPoint(alldecoys[j])) {
+                    if (!ValidOutPoint(alldecoys[j]) && nHeight > Params().FixChecks()) {
                         return state.DoS(100, error("%s : tried to spend invalid decoy %s in tx %s", __func__, alldecoys[j].ToString(),
                                                     tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
                     }
