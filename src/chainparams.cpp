@@ -60,6 +60,9 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     (370034, uint256S("2c98b9b6fc800b0ba9836669c1474a95d1e4afd2a91edbec25d3bc05636deab3"))
     (385916, uint256S("05c5ff466e345d9ab1a8a029b748f130c8707b8c4ce9dd315fc7f6760d1857c8"))
     (847850, uint256S("afae3a69feb6ac01b0382375e1db2a3dafea4d87321095581238858fcadbe050")) // Incorrectly marked invalid block
+    (1190000, uint256S("a530ab4a4b80ecc4db5b296f179e8de5d6ab45cd46d235484e3e79a88b195e2b")) // Hard Fork block where chain split
+    (1191000, uint256S("13dbce3262466b797537f130f1cae9a33bb62e5f63c31caff9ea12912ac598fa"))
+    (1192000, uint256S("5218ad9f37dbc42ba22e529ad2fb0b40a3c5ee46c26cc0b62736d125db3166b7"))
     ;
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
