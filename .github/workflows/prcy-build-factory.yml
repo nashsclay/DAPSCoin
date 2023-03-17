@@ -77,12 +77,12 @@ jobs:
       run: |
         export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    # May need qt and protobuf to configure qt and include prcycoin-qt.1 in distribution
+    # May need qt to configure qt and include prcycoin-qt.1 in distribution
     - name: Install Required Packages
       run: |
         sudo apt-get update
         sudo apt-get install -y libssl1.0-dev libevent-dev libboost-all-dev
-        sudo apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler libqrencode-dev
+        sudo apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libqrencode-dev
         sudo add-apt-repository ppa:pivx/pivx
         sudo apt-get update
         sudo apt-get install -y libdb4.8-dev libdb4.8++-dev

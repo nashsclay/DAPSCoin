@@ -215,7 +215,6 @@ HEADERS += src/activemasternode.h \
            src/qt/optionsmodel.h \
            src/qt/optionspage.h \
            src/qt/overviewpage.h \
-           src/qt/paymentrequestplus.h \
            src/qt/paymentserver.h \
            src/qt/peertablemodel.h \
            src/qt/qgoogleauth.h \
@@ -543,7 +542,6 @@ SOURCES += src/activemasternode.cpp \
            src/qt/optionsmodel.cpp \
            src/qt/optionspage.cpp \
            src/qt/overviewpage.cpp \
-           src/qt/paymentrequestplus.cpp \
            src/qt/paymentserver.cpp \
            src/qt/peertablemodel.cpp \
            src/qt/qgoogleauth.cpp \
