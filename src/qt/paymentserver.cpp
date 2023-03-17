@@ -173,8 +173,7 @@ PaymentServer::~PaymentServer()
 }
 
 //
-// OSX-specific way of handling prcycoin: URIs and
-// PaymentRequest mime types
+// OSX-specific way of handling prcycoin: URIs
 //
 bool PaymentServer::eventFilter(QObject* object, QEvent* event)
 {
