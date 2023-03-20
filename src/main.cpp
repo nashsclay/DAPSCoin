@@ -4716,7 +4716,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         CTransaction &stakeTxIn = block.vtx[1];
 
         // Only one input is allowed
-        if (stakeTxIn.vin.size() > 1)
+        if (stakeTxIn.vin.size() > 1 && nHeight > Params().FixChecks())
             return state.DoS(100, error("%s : multiple stake inputs not allowed", __func__), REJECT_INVALID, "bad-txns-stake");
 
         // Inputs
