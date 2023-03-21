@@ -5,7 +5,6 @@
 #include "allocators.h"
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN 1
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
