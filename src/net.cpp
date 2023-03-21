@@ -50,18 +50,6 @@
 #define MSG_NOSIGNAL 0
 #endif
 
-// Fix for ancient MinGW versions, that don't have defined these in ws2tcpip.h.
-// Todo: Can be removed when our pull-tester is upgraded to a modern MinGW version.
-#ifdef WIN32
-#ifndef PROTECTION_LEVEL_UNRESTRICTED
-#define PROTECTION_LEVEL_UNRESTRICTED 10
-#endif
-#ifndef IPV6_PROTECTION_LEVEL
-#define IPV6_PROTECTION_LEVEL 23
-#endif
-#endif
-
-
 namespace {
     const int MAX_OUTBOUND_CONNECTIONS = 16;
     const int MAX_FEELER_CONNECTIONS = 1;
