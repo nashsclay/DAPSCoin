@@ -11,6 +11,7 @@ define $(package)_set_vars
   $(package)_config_opts += --disable-libunwind --disable-radix-tree --without-gcov
   $(package)_config_opts_linux=--with-pic
   $(package)_config_opts_freebsd=--with-pic
+  $(package)_config_opts_netbsd=--with-pic
   $(package)_config_opts_android=--with-pic
   $(package)_cxxflags=-std=c++17
 endef
