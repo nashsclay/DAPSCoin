@@ -9,9 +9,8 @@ These are the dependencies currently used by PRCYCoin. You can find instructions
 | Boost | [1.71.0](https://www.boost.org/users/download/) | [1.57.0](https://github.com/PRCYCoin/PRCYCoin/pull/286) | No |  |  |
 | Clang |  | [3.3+](https://llvm.org/releases/download.html) (C++11 support) |  |  |  |
 | D-Bus | [1.10.18](https://cgit.freedesktop.org/dbus/dbus/tree/NEWS?h=dbus-1.10) |  | No | Yes |  |
-| Expat | [2.2.7](https://libexpat.github.io/) |  | No | Yes |  |
-| fontconfig | [2.12.1](https://www.freedesktop.org/software/fontconfig/release/) |  | No | Yes |  |
-| FreeType | [2.7.1](https://download.savannah.gnu.org/releases/freetype) |  | No |  |  |
+| Fontconfig | [2.12.6](https://www.freedesktop.org/software/fontconfig/release/) |  | No | Yes |  |
+| FreeType | [2.11.0](https://download.savannah.gnu.org/releases/freetype) |  | No |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Android only) |
 | GCC |  | [4.8+](https://gcc.gnu.org/) (C++11 support) |  |  |  |
 | HarfBuzz-NG |  |  |  |  |  |
 | libevent | [2.1.11-stable](https://github.com/libevent/libevent/releases) | [2.0.21](https://github.com/PRCYCoin/PRCYCoin/pull/385) | No |  |  |
