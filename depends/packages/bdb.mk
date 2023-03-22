@@ -12,6 +12,7 @@ $(package)_config_opts_mingw32=--enable-mingw
 $(package)_config_opts_linux=--with-pic
 $(package)_config_opts_freebsd=--with-pic
 $(package)_config_opts_netbsd=--with-pic
+$(package)_config_opts_openbsd=--with-pic
 $(package)_cxxflags=-std=c++17
 $(package)_cppflags_mingw32=-DUNICODE -D_UNICODE
 endef
