@@ -131,7 +131,7 @@ jobs:
 # Cross-Mac
     - stage: test
       env: >-
-        HOST=x86_64-apple-darwin16
+        HOST=x86_64-apple-darwin18
         PACKAGES="cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python-dev python3-setuptools-git"
         OSX_SDK=10.14
         RUN_UNIT_TESTS=false
