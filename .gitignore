@@ -88,6 +88,7 @@ src/qt/test/moc*.cpp
 *.log
 *.trs
 *.dmg
+*.iso
 
 *.raw.h
 
