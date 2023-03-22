@@ -261,12 +261,12 @@ jobs:
         fi
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build Dependencies
-      run: make -C depends HOST=x86_64-apple-darwin16 -j$(nproc)
+      run: make -C depends HOST=x86_64-apple-darwin18 -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build PRCY
       run: |
         ./autogen.sh
-        ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --prefix=$(realpath depends/x86_64-apple-darwin16) --enable-upnp-default --enable-reduce-exports
+        ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --prefix=$(realpath depends/x86_64-apple-darwin18) --enable-upnp-default --enable-reduce-exports
         make -j$(nproc)
         make deploy -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
