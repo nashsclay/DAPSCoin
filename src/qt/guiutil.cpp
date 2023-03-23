@@ -41,6 +41,7 @@
 #include <QDoubleValidator>
 #include <QFileDialog>
 #include <QFont>
+#include <QFontDatabase>
 #include <QLineEdit>
 #include <QObject>
 #include <QSettings>
@@ -79,9 +80,7 @@ QString dateTimeStr(qint64 nTime)
 
 QFont bitcoinAddressFont()
 {
-    QFont font("Monospace");
-    font.setStyleHint(QFont::Monospace);
-    return font;
+    return QFontDatabase::systemFont(QFontDatabase::FixedFont);
 }
 
 void setupAddressWidget(QValidatedLineEdit* widget, QWidget* parent)
