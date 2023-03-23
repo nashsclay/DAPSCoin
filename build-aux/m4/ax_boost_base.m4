@@ -10,10 +10,10 @@
 #
 #   Test for the Boost C++ libraries of a particular version (or newer)
 #
-#   If no path to the installed boost library is given the macro search
-#   under /usr, /usr/local, /opt, /opt/local, and /opt/homebrew and evaluates the
-#   $BOOST_ROOT environment variable. Further documentation is available at
-#   <http://randspringer.de/boost/index.html>.
+#   If no path to the installed boost library is given the macro searchs
+#   under /usr, /usr/local, /opt, /opt/local and /opt/homebrew and evaluates
+#   the $BOOST_ROOT environment variable. Further documentation is available
+#   at <http://randspringer.de/boost/index.html>.
 #
 #   This macro calls:
 #
@@ -33,7 +33,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 49
+#serial 52
 
 # example boost program (need to pass version)
 m4_define([_AX_BOOST_BASE_PROGRAM],
@@ -114,7 +114,7 @@ AC_DEFUN([_AX_BOOST_BASE_RUNDETECT],[
     AS_CASE([${host_cpu}],
       [x86_64],[libsubdirs="lib64 libx32 lib lib64"],
       [mips*64*],[libsubdirs="lib64 lib32 lib lib64"],
-      [ppc64|powerpc64|s390x|sparc64|aarch64|ppc64le|powerpc64le|riscv64],[libsubdirs="lib64 lib lib64"],
+      [ppc64|powerpc64|s390x|sparc64|aarch64|ppc64le|powerpc64le|riscv64|e2k|loongarch64],[libsubdirs="lib64 lib lib64"],
       [libsubdirs="lib"]
     )
 
@@ -123,14 +123,9 @@ AC_DEFUN([_AX_BOOST_BASE_RUNDETECT],[
     dnl are almost assuredly the ones desired.
     AS_CASE([${host_cpu}],
       [i?86],[multiarch_libsubdir="lib/i386-${host_os}"],
+      [armv7l],[multiarch_libsubdir="lib/arm-${host_os}"],
       [multiarch_libsubdir="lib/${host_cpu}-${host_os}"]
     )
-
-    dnl some arches may advertise a cpu type that doesn't line up with their
-    dnl prefix's cpu type. For example, uname may report armv7l while libs are
-    dnl installed to /usr/lib/arm-linux-gnueabihf. Try getting the compiler's
-    dnl value for an extra chance of finding the correct path.
-    libsubdirs="lib/`$CXX -dumpmachine 2>/dev/null` $libsubdirs"
 
     dnl first we check the system location for boost libraries
     dnl this location is chosen if boost libraries are installed with the --layout=system option
