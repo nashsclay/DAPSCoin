@@ -90,6 +90,7 @@ $(package)_config_opts += -no-feature-wizard
 $(package)_config_opts += -no-feature-xml
 
 $(package)_config_opts_darwin = -no-dbus
+$(package)_config_opts_darwin += -no-opengl
 $(package)_config_opts_darwin += -pch
 
 ifneq ($(build_os),darwin)
