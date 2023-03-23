@@ -101,7 +101,6 @@ src/qt/test/moc*.cpp
 Makefile
 prcycoin-qt
 PRCYcoin-Qt.app
-background.tiff*
 
 # Unit-tests
 Makefile.test
@@ -119,7 +118,6 @@ qrc_*.cpp
 build
 osx_volname
 dist/
-*.background.tiff
 
 #lcov
 *.gcno
