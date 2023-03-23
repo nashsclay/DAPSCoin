@@ -20,11 +20,7 @@ Dependencies
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
-If you want to build the disk image with `make deploy` (.dmg / optional), you need RSVG:
-
-    brew install librsvg
-
-and [`macdeployqtplus`](../contrib/macdeploy/README.md) dependencies:
+[`macdeployqtplus`](../contrib/macdeploy/README.md) dependencies:
 ```shell
 pip3 install ds_store mac_alias
 ```

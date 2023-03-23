@@ -16,7 +16,6 @@ These are the dependencies currently used by PRCYCoin. You can find instructions
 | libevent | [2.1.11-stable](https://github.com/libevent/libevent/releases) | [2.0.21](https://github.com/PRCYCoin/PRCYCoin/pull/385) | No |  |  |
 | libjpeg |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L65) |
 | libpng |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L64) |
-| librsvg | |  |  |  |  |
 | MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
 | OpenSSL | [1.0.1k](https://www.openssl.org/source) |  | Yes |  |  |
 | PCRE |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L66) |
@@ -40,4 +39,3 @@ Some dependencies are not needed in all configurations. The following are some f
 * ZeroMQ is needed only with the `--with-zmq` option.
 
 #### Other
-* librsvg is only needed if you need to run `make deploy` on (cross-compilation to) macOS.
