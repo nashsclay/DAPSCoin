@@ -2,6 +2,8 @@ UNIX BUILD NOTES
 ====================
 Some notes on how to build PRCYCoin in Unix.
 
+(For BSD specific instructions, see `build-*bsd.md` in this directory.)
+
 Note
 ---------------------
 Always use absolute paths to configure and compile PRCYCoin and the dependencies,
