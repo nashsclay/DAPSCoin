@@ -37,7 +37,7 @@ The paths are automatically configured and no other options are needed unless ta
 
 #### For macOS cross compilation
 
-    sudo apt-get install curl bsdmainutils cmake libcap-dev libz-dev libbz2-dev python3-setuptools
+    sudo apt-get install curl bsdmainutils cmake libcap-dev libz-dev libbz2-dev python3-setuptools libtinfo5
 
 Note: You must obtain the macOS SDK before proceeding with a cross-compile.
 Under the depends directory, create a subdirectory named `SDKs`.
