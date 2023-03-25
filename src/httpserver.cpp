@@ -182,6 +182,7 @@ static std::vector<CSubNet> rpc_allow_subnets;
 static WorkQueue<HTTPClosure>* workQueue = 0;
 //! Handlers for (sub)paths
 std::vector<HTTPPathHandler> pathHandlers;
+//! Bound listening sockets
 std::vector<evhttp_bound_socket *> boundSockets;
 
 /** Check if a network address is allowed to access the HTTP server */
@@ -315,6 +316,7 @@ static void http_reject_request_cb(struct evhttp_request* req, void*)
     LogPrint(BCLog::HTTP, "Rejecting request while shutting down\n");
     evhttp_send_error(req, HTTP_SERVUNAVAIL, NULL);
 }
+
 /** Event dispatcher thread */
 static bool ThreadHTTP(struct event_base* base, struct evhttp* http)
 {
@@ -488,9 +490,11 @@ void InterruptHTTPServer()
 {
     LogPrint(BCLog::HTTP, "Interrupting HTTP server\n");
     if (eventHTTP) {
+        // Unlisten sockets
         for (evhttp_bound_socket *socket : boundSockets) {
             evhttp_del_accept_socket(eventHTTP, socket);
         }
+        // Reject requests on current connections
         evhttp_set_gencb(eventHTTP, http_reject_request_cb, NULL);
     }
     if (workQueue)
@@ -517,7 +521,6 @@ void StopHTTPServer()
         if (threadResult.valid() && threadResult.wait_for(std::chrono::milliseconds(2000)) == std::future_status::timeout) {
             LogPrintf("HTTP event loop did not exit within allotted time, sending loopbreak\n");
             event_base_loopbreak(eventBase);
-
         }
         threadHTTP.join();
     }
