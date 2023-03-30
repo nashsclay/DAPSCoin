@@ -102,6 +102,7 @@ The following can be set when running make: `make FOO=bar`
 - `FORCE_USE_SYSTEM_CLANG`: (EXPERTS ONLY) When cross-compiling for macOS, use Clang found in the
   system's `$PATH` rather than the default prebuilt release of Clang
   from llvm.org. Clang 8 or later is required.
+- `LTO`: Use LTO when building packages.
 
 If some packages are not built, for example `make NO_WALLET=1`, the appropriate
 options will be passed to bitcoin's configure. In this case, `--disable-wallet`.
