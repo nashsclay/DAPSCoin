@@ -13,7 +13,7 @@ These are the dependencies currently used by PRCYCoin. You can find instructions
 | FreeType | [2.11.0](https://download.savannah.gnu.org/releases/freetype) |  | No |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Android only) |
 | GCC |  | [4.8+](https://gcc.gnu.org/) (C++11 support) |  |  |  |
 | HarfBuzz-NG |  |  |  |  |  |
-| libevent | [2.1.11-stable](https://github.com/libevent/libevent/releases) | [2.0.21](https://github.com/PRCYCoin/PRCYCoin/pull/385) | No |  |  |
+| libevent | [2.1.12-stable](https://github.com/libevent/libevent/releases) | [2.0.21](https://github.com/PRCYCoin/PRCYCoin/pull/385) | No |  |  |
 | libjpeg |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L65) |
 | libpng |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L64) |
 | MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
