@@ -1,4 +1,10 @@
 openbsd_CFLAGS=-pipe
+
+ifneq ($(LTO),)
+openbsd_CFLAGS += -flto
+openbsd_LDFLAGS += -flto
+endif
+
 openbsd_CFLAGS_CXXFLAGS=$(openbsd_CFLAGS)
 
 openbsd_CFLAGS_release_CFLAGS=-O2
