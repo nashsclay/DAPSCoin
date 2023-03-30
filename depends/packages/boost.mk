@@ -32,7 +32,7 @@ else
 $(package)_toolset_$(host_os)=gcc
 endif
 $(package)_config_libraries=chrono,filesystem,program_options,system,thread,test
-$(package)_cxxflags+=-std=c++17 -fvisibility=hidden
+$(package)_cxxflags+=-std=c++17
 $(package)_cxxflags_linux=-fPIC
 $(package)_cxxflags_freebsd=-fPIC
 $(package)_cxxflags_openbsd=-fPIC
@@ -53,5 +53,5 @@ define $(package)_build_cmds
 endef
 
 define $(package)_stage_cmds
-  b2 -d0 -j4 --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) toolset=$($(package)_toolset_$(host_os)) install
+  b2 -d0 -j4 --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) toolset=$($(package)_toolset_$(host_os)) --no-cmake-config install
 endef
