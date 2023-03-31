@@ -33,7 +33,6 @@ OSX_APP=PRCYcoin-Qt.app
 OSX_VOLNAME = $(subst $(space),-,$(PACKAGE_NAME))
 OSX_DMG = $(OSX_VOLNAME).dmg
 OSX_TEMP_ISO = $(OSX_DMG:.dmg=).temp.iso
-OSX_BACKGROUND_IMAGE=$(top_srcdir)/contrib/macdeploy/background.tiff
 OSX_DEPLOY_SCRIPT=$(top_srcdir)/contrib/macdeploy/macdeployqtplus
 OSX_INSTALLER_ICONS=$(top_srcdir)/src/qt/res/icons/bitcoin.icns
 OSX_PLIST=$(top_builddir)/share/qt/Info.plist #not installed
@@ -124,7 +123,7 @@ $(OSX_DMG): $(OSX_APP_BUILT) $(OSX_PACKAGING)
 deploydir: $(OSX_DMG)
 else
 APP_DIST_DIR=$(top_builddir)/dist
-APP_DIST_EXTRAS=$(APP_DIST_DIR)/.background/background.tiff $(APP_DIST_DIR)/.DS_Store $(APP_DIST_DIR)/Applications
+APP_DIST_EXTRAS=$(APP_DIST_DIR)/.DS_Store $(APP_DIST_DIR)/Applications
 
 $(APP_DIST_DIR)/Applications:
 	@rm -f $@
@@ -138,10 +137,6 @@ $(OSX_TEMP_ISO): $(APP_DIST_EXTRAS)
 
 $(OSX_DMG): $(OSX_TEMP_ISO)
 	$(DMG) dmg "$<" "$@"
-
-$(APP_DIST_DIR)/.background/background.tiff:
-	$(MKDIR_P) $(@D)
-	cp $(OSX_BACKGROUND_IMAGE) $@
 
 $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/PRCYcoin-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
 	INSTALL_NAME_TOOL=$(INSTALL_NAME_TOOL) OTOOL=$(OTOOL) STRIP=$(STRIP) $(PYTHON) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) $(OSX_VOLNAME) -translations-dir=$(QT_TRANSLATION_DIR)
