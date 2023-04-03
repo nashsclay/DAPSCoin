@@ -3,14 +3,15 @@
 # Copyright (c) 2020 The PRivaCY Coin Developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-name: Github Actions CI for PRCY
+name: Github Actions CI for PRCY (Ubuntu 20)
 on: [push, pull_request]
 env:
   SOURCE_ARTIFACT: source
 jobs:
   create-source-distribution:
     name: Create Source Distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    if: "!contains(github.event.head_commit.message, '[debug]')"
     env:
       ARTIFACT_DIR: source
     steps:
@@ -50,63 +51,10 @@ jobs:
       with:
         name: ${{ env.SOURCE_ARTIFACT }}
         path: ${{ env.ARTIFACT_DIR }}
-  build-linux:
-    name: Build for Linux
-    needs: create-source-distribution
-    runs-on: ubuntu-18.04
-    env:
-      ARTIFACT_DIR: prcycoin-linux
-      TEST_LOG_ARTIFACT_DIR: test-logs
-    steps:
-    - name: Getting Source
-      uses: actions/download-artifact@v1
-      with:
-        name: ${{ env.SOURCE_ARTIFACT }}
-    - name: Extract Archives
-      run: |
-        tar -xzf prcycoin.tar.gz --strip-components=1
-      working-directory: ${{ env.SOURCE_ARTIFACT }}
-    - name: Set Env
-      shell: bash
-      run: |
-        export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    - name: Append Commit Hash to Development Builds
-      if: "!contains(github.ref, 'master')"
-      shell: bash
-      run: |
-        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    # May need qt to configure qt and include prcycoin-qt.1 in distribution
-    - name: Install Required Packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libssl1.0-dev libevent-dev libboost-all-dev
-        sudo apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libqrencode-dev
-        sudo add-apt-repository ppa:pivx/pivx
-        sudo apt-get update
-        sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
-    - name: Build PRCY
-      run: |
-        ./autogen.sh
-        ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default
-        make -j$(nproc)
-      working-directory: ${{ env.SOURCE_ARTIFACT }}
-    - name: Prepare Files for Artifact
-      run: |
-        mkdir -p $ARTIFACT_DIR
-        strip $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt}
-        chmod +x $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt}
-        mv $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt} $ARTIFACT_DIR
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: prcycoin-v${{ env.VERSION }}-linux
-        path: ${{ env.ARTIFACT_DIR }}
   build-x86_64-linux:
     name: Build for x86 Linux 64bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-x86_64-linux
       TEST_LOG_ARTIFACT_DIR: test-logs
@@ -138,7 +86,7 @@ jobs:
     - name: Build Dependencies
       run: make -C depends -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
-    - name: Build PRCY
+    - name: Build PRCY 
       run: |
         ./autogen.sh
         CONFIG_SITE=$(realpath depends/x86_64-pc-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default --enable-glibc-back-compat --enable-reduce-exports
@@ -158,7 +106,7 @@ jobs:
   build-win64:
     name: Build for Win64
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-win64
     steps:
@@ -213,7 +161,7 @@ jobs:
   build-osx64:
     name: Build for MacOSX
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-macosx
       SDK_URL: https://bitcoincore.org/depends-sources/sdks
@@ -249,7 +197,7 @@ jobs:
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-setuptools libcap-dev
+        sudo apt-get install -y python3-setuptools libcap-dev libtinfo5
     - name: Get macOS SDK
       run: |
         mkdir -p depends/sdk-sources depends/SDKs
@@ -282,7 +230,7 @@ jobs:
   build-aarch64-linux:
     name: Build for ARM Linux 64bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-aarch64-linux
     steps:
@@ -332,7 +280,7 @@ jobs:
   build-arm-linux-gnueabihf:
     name: Build for ARM Linux 32bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-arm32
     steps:
@@ -382,7 +330,7 @@ jobs:
   build-riscv64-linux-gnu:
     name: Build for RISC-V 64-bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-riscv64
     steps:

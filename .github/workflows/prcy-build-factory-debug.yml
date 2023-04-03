@@ -3,14 +3,14 @@
 # Copyright (c) 2020 The PRivaCY Coin Developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-name: Github Actions CI for PRCY - DEBUG_LOCKORDER
+name: Github Actions CI for PRCY (Ubuntu 20 --enable-debug)
 on: [push, pull_request]
 env:
   SOURCE_ARTIFACT: source
 jobs:
   create-source-distribution:
     name: Create Source Distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     if: "contains(github.event.head_commit.message, '[debug]')"
     env:
       ARTIFACT_DIR: source
@@ -23,22 +23,17 @@ jobs:
         export TAG=v${VERSION}
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
         echo "TAG=${TAG}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Print Variables
       run: |
         echo "VERSION=${VERSION}"
         echo "TAG=${TAG}"
         printenv
-    # May need qt to configure qt and include prcycoin-qt.1 in distribution
-    - name: Install Required Packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libtool bsdmainutils autotools-dev autoconf pkg-config automake python3
-        sudo apt-get install -y libssl1.0-dev libzmq5 libgmp-dev libevent-dev libboost-all-dev libsodium-dev cargo
-        sudo apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libqrencode-dev
-        sudo apt-get install -y software-properties-common g++-multilib binutils-gold patch
-        sudo add-apt-repository ppa:pivx/pivx
-        sudo apt-get update
-        sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
     - name: Create Distribution Tarball
       run: |
         mkdir -p $ARTIFACT_DIR
@@ -59,7 +54,7 @@ jobs:
   build-x86_64-linux:
     name: Build for x86 Linux 64bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-x86_64-linux-debug
       TEST_LOG_ARTIFACT_DIR: test-logs
@@ -78,6 +73,12 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
@@ -88,7 +89,7 @@ jobs:
     - name: Build PRCY 
       run: |
         ./autogen.sh
-        CONFIG_SITE=$(realpath depends/x86_64-pc-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default CXXFLAGS="-DDEBUG_LOCKORDER -g"
+        CONFIG_SITE=$(realpath depends/x86_64-pc-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default --enable-glibc-back-compat --enable-reduce-exports --enable-debug
         make -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Prepare Files for Artifact
@@ -105,7 +106,7 @@ jobs:
   build-win64:
     name: Build for Win64
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-win64-debug
     steps:
@@ -123,6 +124,12 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
@@ -137,7 +144,7 @@ jobs:
     - name: Build PRCY
       run: |
         ./autogen.sh
-        CONFIG_SITE=$(realpath depends/x86_64-w64-mingw32/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default CXXFLAGS="-DDEBUG_LOCKORDER -g"
+        CONFIG_SITE=$(realpath depends/x86_64-w64-mingw32/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default --enable-reduce-exports --enable-debug
         make -j$(nproc)
         make deploy -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
@@ -154,7 +161,7 @@ jobs:
   build-osx64:
     name: Build for MacOSX
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-macosx-debug
       SDK_URL: https://bitcoincore.org/depends-sources/sdks
@@ -172,8 +179,8 @@ jobs:
       shell: bash
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
-        export XCODE_VERSION=10.2.1
-        export XCODE_BUILD_ID=10E1001
+        export XCODE_VERSION=12.1
+        export XCODE_BUILD_ID=12A7403
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
         echo "XCODE_VERSION=${XCODE_VERSION}" >> $GITHUB_ENV
         echo "XCODE_BUILD_ID=${XCODE_BUILD_ID}" >> $GITHUB_ENV
@@ -181,10 +188,16 @@ jobs:
         export OSX_SDK_PATH=depends/sdk-sources/$OSX_SDK_BASENAME
         echo "OSX_SDK_BASENAME=${OSX_SDK_BASENAME}" >> $GITHUB_ENV
         echo "OSX_SDK_PATH=${OSX_SDK_PATH}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-setuptools libcap-dev zlib1g-dev cmake libz-dev libbz2-dev libtinfo5
+        sudo apt-get install -y python3-setuptools libcap-dev libtinfo5
     - name: Get macOS SDK
       run: |
         mkdir -p depends/sdk-sources depends/SDKs
@@ -201,7 +214,7 @@ jobs:
     - name: Build PRCY
       run: |
         ./autogen.sh
-        CONFIG_SITE=$(realpath depends/x86_64-apple-darwin18/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default CXXFLAGS="-DDEBUG_LOCKORDER -g"
+        CONFIG_SITE=$(realpath depends/x86_64-apple-darwin18/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default --enable-reduce-exports --enable-debug
         make -j$(nproc)
         make deploy -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
@@ -217,7 +230,7 @@ jobs:
   build-aarch64-linux:
     name: Build for ARM Linux 64bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-aarch64-linux-debug
     steps:
@@ -235,17 +248,23 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-zmq libcap-dev cmake g++-aarch64-linux-gnu
+        sudo apt-get install -y python3-zmq g++-aarch64-linux-gnu
     - name: Build Dependencies
       run: make -C depends HOST=aarch64-linux-gnu -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build PRCY
       run: |
         ./autogen.sh
-        CONFIG_SITE=$(realpath depends/aarch64-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default CXXFLAGS="-DDEBUG_LOCKORDER -g"
+        CONFIG_SITE=$(realpath depends/aarch64-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-upnp-default --enable-glibc-back-compat --enable-reduce-exports --enable-debug
         make -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Prepare Files for Artifact
@@ -261,7 +280,7 @@ jobs:
   build-arm-linux-gnueabihf:
     name: Build for ARM Linux 32bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-arm32-debug
     steps:
@@ -279,17 +298,23 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++-arm-linux-gnueabihf libzmq5 libgmp-dev 
+        sudo apt-get install -y g++-arm-linux-gnueabihf
     - name: Build Dependencies
       run: make -C depends -j$(nproc) HOST=arm-linux-gnueabihf
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build PRCY
       run: |
         ./autogen.sh
-        CONFIG_SITE=$(realpath depends/arm-linux-gnueabihf/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++ --enable-upnp-default CXXFLAGS="-DDEBUG_LOCKORDER -g"
+        CONFIG_SITE=$(realpath depends/arm-linux-gnueabihf/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-glibc-back-compat --enable-reduce-exports --enable-upnp-default CXXFLAGS=-Wno-psabi --enable-debug
         make -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Prepare Files for Artifact
@@ -305,7 +330,7 @@ jobs:
   build-riscv64-linux-gnu:
     name: Build for RISC-V 64-bit
     needs: create-source-distribution
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARTIFACT_DIR: prcycoin-riscv64-debug
     steps:
@@ -323,24 +348,30 @@ jobs:
       run: |
         export VERSION=$(cat $SOURCE_ARTIFACT/version.txt | sed 's/[^0-9,.]//g')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Append Commit Hash to Development Builds
+      if: "!contains(github.ref, 'master')"
+      shell: bash
+      run: |
+        export VERSION=${{ env.VERSION }}-${GITHUB_SHA::7}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - name: Install Required Packages
       run: |
         sudo apt-get update
         sudo apt-get install -y g++-riscv64-linux-gnu binutils-riscv64-linux-gnu
     - name: Build Dependencies
-      run: make -C depends -j$(nproc) HOST=riscv64-linux-gnu NO_QT=1
+      run: make -C depends -j$(nproc) HOST=riscv64-linux-gnu
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Build PRCY
       run: |
         ./autogen.sh
-        CONFIG_SITE=$(realpath depends/riscv64-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-reduce-exports LDFLAGS=-static-libstdc++ --enable-upnp-default CXXFLAGS="-DDEBUG_LOCKORDER -g"
+        CONFIG_SITE=$(realpath depends/riscv64-linux-gnu/share/config.site) ./configure --disable-jni --disable-tests --disable-gui-tests --disable-bench --enable-reduce-exports --enable-upnp-default --enable-debug
         make -j$(nproc)
       working-directory: ${{ env.SOURCE_ARTIFACT }}
     - name: Prepare Files for Artifact
       run: |
         mkdir -p $ARTIFACT_DIR
-        chmod +x $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind}
-        mv $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind} $ARTIFACT_DIR
+        chmod +x $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt}
+        mv $SOURCE_ARTIFACT/src/{prcycoin-cli,prcycoin-tx,prcycoind,qt/prcycoin-qt} $ARTIFACT_DIR
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
       with:
