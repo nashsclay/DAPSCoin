@@ -11,7 +11,6 @@ jobs:
   create-source-distribution:
     name: Create Source Distribution
     runs-on: ubuntu-20.04
-    if: "contains(github.event.head_commit.message, '[focal]')"
     env:
       ARTIFACT_DIR: source
     steps:
