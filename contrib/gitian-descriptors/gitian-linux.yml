@@ -23,6 +23,7 @@ packages:
 - "g++-8-multilib"
 - "gcc-8-multilib"
 - "binutils-gold"
+- "bison"
 - "git"
 - "pkg-config"
 - "autoconf"
