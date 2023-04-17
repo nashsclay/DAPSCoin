@@ -251,7 +251,6 @@ The list of files should be:
 ```
 prcycoin-${VERSION}-aarch64-linux-gnu.tar.gz
 prcycoin-${VERSION}-arm-linux-gnueabihf.tar.gz
-prcycoin-${VERSION}-i686-pc-linux-gnu.tar.gz
 prcycoin-${VERSION}-riscv64-linux-gnu.tar.gz
 prcycoin-${VERSION}-x86_64-linux-gnu.tar.gz
 prcycoin-${VERSION}-osx64.tar.gz
