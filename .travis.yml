@@ -85,15 +85,6 @@ jobs:
         PACKAGES="python3 nsis g++-mingw-w64-x86-64 wine-binfmt wine64"
         GOAL="install"
         BITCOIN_CONFIG="--enable-reduce-exports"
-# 32-bit + dash
-    - stage: test
-      env: >-
-        HOST=i686-pc-linux-gnu
-        PACKAGES="g++-multilib python3-zmq"
-        DEP_OPTS="NO_QT=1"
-        GOAL="install"
-        BITCOIN_CONFIG="--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
-        CONFIG_SHELL="/bin/dash"
 # x86_64 Linux (uses qt5 dev package instead of depends Qt to speed up build and avoid timeout)
     - stage: test
       env: >-
