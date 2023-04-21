@@ -40,6 +40,7 @@ libtool
 src/config/prcycoin-config.h
 src/config/prcycoin-config.h.in
 src/config/stamp-h1
+src/obj
 src/secp256k1-mw/build-aux/compile
 src/secp256k1-mw/build-aux/config.guess
 src/secp256k1-mw/build-aux/config.sub
