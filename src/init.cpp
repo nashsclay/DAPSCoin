@@ -900,7 +900,7 @@ void InitLogging()
 #else
     version_string += " (release build)";
 #endif
-    LogPrintf("PRCY version %s (%s)\n", version_string, CLIENT_DATE);
+    LogPrintf("PRCY version %s\n", version_string);
 }
 
 /** Initialize prcy.
