@@ -2235,7 +2235,6 @@ UniValue getstakesplitthreshold(const UniValue& params, bool fHelp)
 
 UniValue autocombinedust(const UniValue& params, bool fHelp)
 {
-	if(pwalletMain->fCombineDust){
     bool fEnable;
     if (params.size() >= 1)
         fEnable = params[0].get_bool();
@@ -2271,11 +2270,6 @@ UniValue autocombinedust(const UniValue& params, bool fHelp)
     result.push_back(Pair("autocombinedust", params[0].get_bool()));
     result.push_back(Pair("amount", int(pwalletMain->nAutoCombineThreshold)));
     return result;
-    }
-	else{
-		throw std::runtime_error(
-		"autocombinedust is disabled in your prcycoin.conf");
-	}
 }
 
 UniValue printMultiSend()
