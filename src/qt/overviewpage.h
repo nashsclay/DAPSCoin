@@ -92,10 +92,10 @@ private:
     QRect getCircleGeometry(QWidget* parent, float ratioToParent);
 
     // Check Currency Value via CoinGecko.com API
+    QTimer* updateJSONtimer;
+    QTimer* updateGUItimer;
     QNetworkAccessManager* manager;
     QNetworkReply* reply;
-    QTimer* getCurrencyValueInterval;
-    bool isRuninngQuery = false;
 
 private Q_SLOTS:
     void updateDisplayUnit();
@@ -106,7 +106,7 @@ private Q_SLOTS:
     void updateLockStatus(int status);
     // Check Currency Value via CoinGecko.com API
     void getCurrencyValue();
-    void setCurrencyValue(QNetworkReply* reply);
+    void setCurrencyValue();
 };
 
 #endif // BITCOIN_QT_OVERVIEWPAGE_H

@@ -9,6 +9,7 @@
 #include "ui_overviewpage.h"
 #include "bitcoinunits.h"
 #include "clientmodel.h"
+#include "curl_json.h"
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "init.h"
@@ -123,12 +124,21 @@ OverviewPage::OverviewPage(QWidget* parent) : QDialog(parent, Qt::WindowSystemMe
     pingNetworkInterval->start();
 
     // Init getCurrencyValueInterval
-    getCurrencyValueInterval = new QTimer(this);
+    updateJSONtimer = new QTimer(this);
+    updateGUItimer = new QTimer(this);
     manager = new QNetworkAccessManager(this);
-    connect(getCurrencyValueInterval, SIGNAL(timeout()), this, SLOT(getCurrencyValue()));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(setCurrencyValue(QNetworkReply*)));
-    getCurrencyValueInterval->setInterval(300000);
-    getCurrencyValueInterval->start();
+    reply = nullptr;
+
+    connect(updateJSONtimer, SIGNAL(timeout()), SLOT(getCurrencyValue()));
+    connect(updateGUItimer, SIGNAL(timeout()), SLOT(setCurrencyValue()));
+
+    updateJSONtimer->setInterval(300000); //Check every 5 minutes.
+    updateJSONtimer->start();
+
+    updateGUItimer->setInterval(15000); //Check every 15 seconds.
+    updateGUItimer->start();
+
+    getCurrencyValue();
 
     initSyncCircle(.8);
 
@@ -573,19 +583,10 @@ void OverviewPage::getCurrencyValue()
         ui->labelCurrencyValue->setText("");
         return;
     }
-    if (isRuninngQuery) {
-        return;
-    }
-    isRuninngQuery = true;
-    QNetworkRequest request;
-    QUrl coinGeckoUrl = QUrl("https://api.coingecko.com/api/v3/simple/price?ids=prcy-coin&vs_currencies=" + defaultCurrency + "&include_market_cap=false&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
-    request.setUrl(coinGeckoUrl);
-    request.setHeader(QNetworkRequest::ServerHeader, "application/json");
-    reply = manager->get(request);
-    reply->ignoreSslErrors();
+    getHttpsJson("https://api.coingecko.com/api/v3/simple/price?ids=prcy-coin&vs_currencies=" + defaultCurrency.toStdString() + "&include_market_cap=false&include_24hr_vol=false&include_24hr_change=false&include_last_updated_at=false");
 }
 
-void OverviewPage::setCurrencyValue(QNetworkReply* reply)
+void OverviewPage::setCurrencyValue()
 {
     // Get Default Currency from Settings
     QString defaultCurrency = settings.value("strDefaultCurrency").toString();
@@ -608,12 +609,10 @@ void OverviewPage::setCurrencyValue(QNetworkReply* reply)
         defaultCurrencySymbol = "XAG";
     }
 
-    reply->deleteLater();
-    if(reply->error() == QNetworkReply::NoError) {
+    if (downloadedJSON.failed == false && downloadedJSON.complete == true) {
         try {
             // Parse data
-            QByteArray data = reply->readAll();
-            QJsonDocument jsonDocument(QJsonDocument::fromJson(data));
+            QJsonDocument jsonDocument(QJsonDocument::fromJson(downloadedJSON.response.c_str()));
             const QJsonObject item  = jsonDocument.object();
             const QJsonObject currency  = item["prcy-coin"].toObject();
             auto currencyValue = currency[defaultCurrency.toLower()].toDouble();
@@ -626,8 +625,5 @@ void OverviewPage::setCurrencyValue(QNetworkReply* reply)
         } catch (...) {
             LogPrintf("%s: Error parsing CoinGecko API JSON\n", __func__);
         }
-    } else {
-        LogPrintf("%s: Error checking for Alternative Currency value: %d\n", __func__, reply->error());
     }
-    isRuninngQuery = false;
 }
