@@ -86,6 +86,7 @@ HEADERS += src/activemasternode.h \
            src/compressor.h \
            src/core_io.h \
            src/cuckoocache.h \
+           src/curl_json.h \
            src/crypter.h \
            src/eccryptoverify.h \
            src/ecdhutil.h \
@@ -412,6 +413,7 @@ SOURCES += src/activemasternode.cpp \
            src/compressor.cpp \
            src/core_read.cpp \
            src/core_write.cpp \
+           src/curl_json.cpp \
            src/crypter.cpp \
            src/prcycoin-cli.cpp \
            src/prcycoin-tx.cpp \
