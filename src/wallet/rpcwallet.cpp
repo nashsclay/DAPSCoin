@@ -1167,7 +1167,14 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, s.destination);
             entry.push_back(Pair("category", "send"));
-            entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
+
+            // Calculate amounts for this transaction
+            CAmount nCredit = wtx.GetCredit(filter);
+            CAmount nDebit = wtx.GetDebit(filter);
+            CAmount nNet = (nCredit > nDebit)? (nCredit - nDebit):(nDebit - nCredit);
+            CAmount nAmountWithoutFee = nNet - nFee;
+
+            entry.push_back(Pair("amount", ValueFromAmount(-nAmountWithoutFee)));
             entry.push_back(Pair("vout", s.vout));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
             if (fLong)
@@ -1662,7 +1669,7 @@ UniValue gettransaction(const UniValue& params, bool fHelp)
     CAmount nDebit = wtx.GetDebit(filter);
     CAmount nNet = (nCredit > nDebit)? (nCredit - nDebit):(nDebit - nCredit);
     CAmount nFee = wtx.nTxFee;
-    entry.push_back(Pair("amount", ValueFromAmount(nNet)));
+    entry.push_back(Pair("amount", ValueFromAmount(nNet - nFee)));
     if (wtx.IsFromMe(filter))
         entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
