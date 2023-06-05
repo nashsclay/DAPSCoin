@@ -1669,7 +1669,7 @@ UniValue gettransaction(const UniValue& params, bool fHelp)
     CAmount nDebit = wtx.GetDebit(filter);
     CAmount nNet = (nCredit > nDebit)? (nCredit - nDebit):(nDebit - nCredit);
     CAmount nFee = wtx.nTxFee;
-    entry.push_back(Pair("amount", ValueFromAmount(nNet)));
+    entry.push_back(Pair("amount", ValueFromAmount(nNet - nFee)));
     if (wtx.IsFromMe(filter))
         entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
