@@ -140,12 +140,10 @@ SendCoinsDialog::~SendCoinsDialog(){
 
 void SendCoinsDialog::on_sendButton_clicked(){
     if (!masternodeSync.IsBlockchainSynced()) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Send Disabled - Syncing");
-        msgBox.setText("Sending PRCY is disabled when you are still syncing the wallet. Please allow the wallet to fully sync before attempting to send a transaction.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+        GUIUtil::prompt(
+            tr("Send Disabled - Syncing"),
+            tr("Sending PRCY is disabled when you are still syncing the wallet. Please allow the wallet to fully sync before attempting to send a transaction."),
+            QMessageBox::Warning);
         return;
     }
     if (!ui->entries->count())
@@ -166,22 +164,18 @@ void SendCoinsDialog::on_sendButton_clicked(){
     form->errorAmount(isValidAmount);
 
     if (!isValidAddresss) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Invalid Address");
-        msgBox.setText("Invalid address entered. Please make sure you are sending to a Stealth Address.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+        GUIUtil::prompt(
+            tr("Invalid Address"),
+            tr("Invalid address entered. Please make sure you are sending to a Stealth Address."),
+            QMessageBox::Warning);
         return;
     }
 
     if (!isValidAmount) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Invalid Amount");
-        msgBox.setText("Invalid amount entered. Please enter an amount less than your Spendable Balance.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+        GUIUtil::prompt(
+            tr("Invalid Amount"),
+            tr("Invalid amount entered. Please enter an amount less than your Spendable Balance."),
+            QMessageBox::Warning);
         return;
     }
 
@@ -251,19 +245,15 @@ void SendCoinsDialog::on_sendButton_clicked(){
         CAmount spendable = pwalletMain->GetSpendableBalance();
         if (!(recipient.amount <= nReserveBalance && recipient.amount <= spendable)) {
             if (recipient.amount > spendable) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Insufficient Spendable Funds!");
-                msgBox.setText("Insufficient spendable funds. Send with smaller amount or wait for your coins become mature");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.exec();
+                GUIUtil::prompt(
+                    tr("Insufficient Spendable Funds!"),
+                    tr("Insufficient spendable funds. Send with smaller amount or wait for your coins become mature"),
+                    QMessageBox::Information);
             } else if (recipient.amount > nReserveBalance) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Insufficient Reserve Funds!");
-                msgBox.setText("Insufficient reserve funds. Send with smaller amount or turn off staking mode.");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.exec();
+                GUIUtil::prompt(
+                    tr("Insufficient Reserve Funds!"),
+                    tr("Insufficient reserve funds. Send with smaller amount or turn off staking mode."),
+                    QMessageBox::Information);
             }
             return;
         }
@@ -328,30 +318,23 @@ void SendCoinsDialog::sendTx() {
                                     send_amount, nTime);
                     nReserveBalance = backupReserve;
                     if (success) {
-                        QString msg = "Consolidation transaction created!";
-                        QMessageBox msgBox;
-                        msgBox.setWindowTitle("Information");
-                        msgBox.setIcon(QMessageBox::Information);
-                        msgBox.setText(msg);
-                        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                        msgBox.exec();
+                        GUIUtil::prompt(
+                            tr("Information"),
+                            tr("Consolidation transaction created!"),
+                            QMessageBox::Information);
                     } else {
-                        QMessageBox msgBox;
-                        msgBox.setWindowTitle("Sweeping Transaction Creation Error");
-                        msgBox.setText(QString("Sweeping transaction creation failed due to an internal error. Please try again later."));
-                        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                        msgBox.setIcon(QMessageBox::Critical);
-                        msgBox.exec();
+                        GUIUtil::prompt(
+                            tr("Sweeping Transaction Creation Error"),
+                            tr("Sweeping transaction creation failed due to an internal error. Please try again later."),
+                            QMessageBox::Critical);
                     }
                 } catch (const std::exception& err1) {
                     nReserveBalance = backupReserve;
-                    QMessageBox msgBox;
                     LogPrintf("ERROR:%s: %s\n", __func__, err1.what());
-                    msgBox.setWindowTitle("Sweeping Transaction Creation Error");
-                    msgBox.setText(QString("Sweeping transaction creation failed due to an internal error. Please try again later."));
-                    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                    msgBox.setIcon(QMessageBox::Critical);
-                    msgBox.exec();
+                    GUIUtil::prompt(
+                        tr("Sweeping Transaction Creation Error"),
+                        tr("Sweeping transaction creation failed due to an internal error. Please try again later."),
+                        QMessageBox::Critical);                    
                 }
                 return;
             } else {
@@ -359,15 +342,13 @@ void SendCoinsDialog::sendTx() {
             }
         } else {
             QString msg = err.what();
-            if (msg == "") {
-                msg = "Unable to create transaction. Please try again later.";
+            if (msg.isEmpty()) {
+                msg = tr("Unable to create transaction. Please try again later.");
             }
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Transaction Creation Error");
-            msgBox.setText(msg);
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
+            GUIUtil::prompt(
+                tr("Transaction Creation Error"),
+                msg,
+                QMessageBox::Critical);
         }
         return;
     }

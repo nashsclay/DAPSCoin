@@ -1013,23 +1013,19 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
         } else {
             LogPrintf("Check For Updates: No update available.\n");
             if (!isStartup) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("No Update Available");
-                msgBox.setText("No update available.\n\nYour wallet is up to date.");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.exec();
+                GUIUtil::prompt(
+                    tr("No Update Available"),
+                    tr("No update available.\n\nYour wallet is up to date."),
+                    QMessageBox::Information);
             }
         }
     } else {
         LogPrintf("Check For Updates: Error!\n");
         QByteArray error = reply->readAll();
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Error");
-        msgBox.setText("Error checking for updates.\n\n" + error);
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
+        GUIUtil::prompt(
+            tr("Error"),
+            tr("Error checking for updates.\n\n" + error),
+            QMessageBox::Critical);
     }
     isStartup = false;
 }
