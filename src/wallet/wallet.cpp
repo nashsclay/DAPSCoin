@@ -3150,11 +3150,11 @@ int CWallet::ComputeFee(size_t numIn, size_t numOut, size_t ringSize)
     return nFeeNeeded;
 }
 
-bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey& recipientViewKey, CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay, int ringSize, bool sendtoMyself)
+bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey& recipientViewKey, CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay, bool sendtoMyself)
 {
     std::vector<std::pair<CScript, CAmount> > vecSend;
     vecSend.push_back(std::make_pair(scriptPubKey, nValue));
-    return CreateTransactionBulletProof(txPrivDes, recipientViewKey, vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay, ringSize, sendtoMyself);
+    return CreateTransactionBulletProof(txPrivDes, recipientViewKey, vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay, sendtoMyself);
 }
 
 //settingTime = 0 => auto consolidate on
@@ -3174,7 +3174,7 @@ bool CWallet::IsAutoConsolidateOn()
     return ReadAutoConsolidateSettingTime() > 0;
 }
 
-bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey& recipientViewKey, const std::vector<std::pair<CScript, CAmount> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay, int ringSize, bool tomyself)
+bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey& recipientViewKey, const std::vector<std::pair<CScript, CAmount> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay, bool tomyself)
 {
     if (useIX && nFeePay < CENT) nFeePay = CENT;
     SetRingSize(0);
@@ -3183,7 +3183,7 @@ bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey&
     unsigned char rand_seed[16];
     memcpy(rand_seed, txPrivDes.begin(), 16);
     secp256k1_rand_seed(rand_seed);
-    ringSize = MIN_RING_SIZE + secp256k1_rand32() % (MAX_RING_SIZE - MIN_RING_SIZE + 1);
+    int ringSize = MIN_RING_SIZE + secp256k1_rand32() % (MAX_RING_SIZE - MIN_RING_SIZE + 1);
 
     //Currently we only allow transaction with one or two recipients
     //If two, the second recipient is a change output
@@ -6643,7 +6643,7 @@ bool CWallet::GenerateAddress(CPubKey& pub, CPubKey& txPub, CKey& txPriv) const
     }
 }
 
-bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount nValue, CWalletTx& wtxNew, bool fUseIX, int ringSize)
+bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount nValue, CWalletTx& wtxNew, bool fUseIX, CCoinControl* coinControl)
 {
     LOCK2(cs_main, cs_wallet);
 
@@ -6693,17 +6693,27 @@ bool CWallet::SendToStealthAddress(const std::string& stealthAddr, const CAmount
     secretChange.MakeNewKey(true);
     computeStealthDestination(secretChange, view.GetPubKey(), spend.GetPubKey(), changeDes);
     CBitcoinAddress changeAddress(changeDes.GetID());
-    CCoinControl control;
-    control.destChange = changeAddress.Get();
-    control.receiver = changeDes;
-    control.txPriv = secretChange;
+
+    bool newCoinControlCreated = false;
+    if (!coinControl) {
+        coinControl = new CCoinControl();
+        newCoinControlCreated = true;
+    }
+    // Set destChange, receiver, txPriv
+    coinControl->destChange = changeAddress.Get();
+    coinControl->receiver = changeDes;
+    coinControl->txPriv = secretChange;
+
     CAmount nFeeRequired;
     if (!CreateTransactionBulletProof(secret, pubViewKey, scriptPubKey, nValue, wtxNew, reservekey,
-            nFeeRequired, strFailReason, &control, ALL_COINS, fUseIX, (CAmount)0, 6, tomyself)) {
+            nFeeRequired, strFailReason, coinControl, ALL_COINS, fUseIX, (CAmount)0, tomyself)) {
         if (nValue + nFeeRequired > GetBalance())
             strFailReason = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!, nfee=%d, nValue=%d", FormatMoney(nFeeRequired), nFeeRequired, nValue);
         LogPrintf("%s: %s\n", __func__, strFailReason);
         throw std::runtime_error(strFailReason);
+    }
+    if (newCoinControlCreated) {
+        delete coinControl;
     }
     return true;
 }
