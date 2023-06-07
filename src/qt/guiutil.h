@@ -242,8 +242,8 @@ void disableTooltips(QWidget* widget);
 /** Check whether a theme is not build-in */
 bool isExternal(QString theme);
 
-//display a windowless prompt
-void prompt(QString message);
+//display a prompt
+void prompt(const QString& title, const QString& message, QMessageBox::Icon icon = QMessageBox::Information);
 
 /* Convert QString to OS specific boost path through UTF-8 */
 fs::path qstringToBoostPath(const QString& path);

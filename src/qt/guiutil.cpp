@@ -758,13 +758,16 @@ void setWindowless(QWidget* widget){
 void disableTooltips(QWidget* widget){
 }
 
-void prompt(QString message){
-    QMessageBox* errorPrompt = new QMessageBox();
-    GUIUtil::setWindowless(errorPrompt);
-    errorPrompt->setStyleSheet(GUIUtil::loadStyleSheet());
-    errorPrompt->setText(message);
-    errorPrompt->exec();
-    errorPrompt->deleteLater();
+void prompt(const QString& title, const QString& message, QMessageBox::Icon icon)
+{
+    QMessageBox* promptBox = new QMessageBox();
+    //setWindowless(promptBox);
+    promptBox->setStyleSheet(loadStyleSheet());
+    promptBox->setIcon(icon);
+    promptBox->setWindowTitle(title);
+    promptBox->setText(message);
+    promptBox->exec();
+    promptBox->deleteLater();
 }
 
 void colorCalendarWidgetWeekends(QCalendarWidget* widget, QColor color)
