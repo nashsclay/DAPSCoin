@@ -480,8 +480,8 @@ public:
     bool EraseFromWallet(const uint256& hash);
     void ReorderWalletTransactions(std::map<std::pair<int,int>, CWalletTx*> &mapSorted, int64_t &maxOrderPos);
     void UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletTx*> &mapSorted, bool resetOrder);
-    void DeleteTransactions(std::vector<uint256> &removeTxs);
-    void DeleteWalletTransactions(const CBlockIndex* pindex);
+    bool DeleteTransactions(std::vector<uint256> &removeTxs, bool fRescan = false);
+    bool DeleteWalletTransactions(const CBlockIndex* pindex, bool fRescan = false);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, bool fromStartup = false, int height = -1);
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();

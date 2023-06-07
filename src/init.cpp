@@ -1674,7 +1674,7 @@ bool AppInit2(bool isDaemon)
             //Sort Transactions by block and block index, then reorder
             LOCK2(cs_main, pwalletMain->cs_wallet);
             if (chainActive.Tip()) {
-                LogPrintf("Runnning transaction reorder\n");
+                LogPrintf("Running transaction reorder\n");
                 int64_t maxOrderPos = 0;
                 std::map<std::pair<int,int>, CWalletTx*> mapSorted;
                 pwalletMain->ReorderWalletTransactions(mapSorted, maxOrderPos);

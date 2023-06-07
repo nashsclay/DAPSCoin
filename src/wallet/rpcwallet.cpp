@@ -3093,11 +3093,23 @@ UniValue erasewallettransactions(const UniValue& params, bool fHelp) {
     EnsureWallet();
     EnsureWalletIsUnlocked();
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     CBlockIndex* pindex = chainActive.Tip();
+    int initialCount = (int)pwalletMain->mapWallet.size();
+    int newCount, removedTxes = 0;
 
-    pwalletMain->DeleteWalletTransactions(pindex);
+    pwalletMain->DeleteWalletTransactions(pindex, false);
 
-    return "Done";
+    newCount = (int)pwalletMain->mapWallet.size();
+    removedTxes = initialCount - newCount;
+
+    UniValue ret(UniValue::VOBJ);
+    ret.push_back(Pair("initial_utxo_count", initialCount));
+    ret.push_back(Pair("new_utxo_count", newCount));
+    ret.push_back(Pair("deleted_utxo_count", removedTxes));
+
+    return ret;
 }
 
 UniValue revealmnemonicphrase(const UniValue& params, bool fHelp)
