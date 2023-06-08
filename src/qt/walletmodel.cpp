@@ -34,6 +34,7 @@
 #include <QtMath>
 #include <stdint.h>
 #include <QTextStream>
+#include <QPushButton>
 
 
 WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* parent) : QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
@@ -353,6 +354,78 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction& tran
         return SendCoinsReturn(OK);
 
     return SendCoinsReturn(TransactionCommitFailed);
+}
+
+void WalletModel::showSeedPhrase()
+{
+    WalletModel::EncryptionStatus encryptionStatus = getEncryptionStatus();
+
+    if (encryptionStatus == WalletModel::Locked || encryptionStatus == WalletModel::UnlockedForStakingOnly) {
+        WalletModel::UnlockContext ctx(requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
+        if (!ctx.isValid()) {
+            GUIUtil::showMessageBox(
+                tr("Mnemonic Recovery Phrase"),
+                tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
+                QMessageBox::Information);
+            LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
+            return;
+        } else {
+            SecureString pass;
+            setWalletLocked(false, pass);
+            LogPrintf("Attempt to view Mnemonic Phrase successful.\n");
+        }
+    } else {
+        QMessageBox msgBox;
+        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+        msgBox.setWindowTitle(tr("Are You Sure?"));
+        msgBox.setText(tr("Are you sure you would like to view your Mnemonic Phrase?\nYou will be required to enter your passphrase. Failed or canceled attempts will be logged."));
+        msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        msgBox.setIcon(QMessageBox::Question);
+        int reply = msgBox.exec();
+
+        if (reply == QMessageBox::Yes) {
+            setWalletLocked(true);
+            WalletModel::UnlockContext ctx(requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
+            if (!ctx.isValid()) {
+                GUIUtil::showMessageBox(
+                    tr("Mnemonic Recovery Phrase"),
+                    tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
+                    QMessageBox::Information);
+                LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
+                return;
+            } else {
+                SecureString pass;
+                setWalletLocked(false, pass);
+                LogPrintf("Attempt to view Mnemonic Phrase successful.\n");
+            }
+        } else {
+            LogPrintf("Attempt to view Mnemonic Phrase canceled.\n");
+            return;
+        }
+    }
+
+    QString phrase = "";
+    std::string recoverySeedPhrase = "";
+    if (getSeedPhrase(recoverySeedPhrase)) {
+        phrase = QString::fromStdString(recoverySeedPhrase);
+    }
+
+    QMessageBox msgBox;
+    QPushButton *copyButton = msgBox.addButton(tr("Copy"), QMessageBox::ActionRole);
+    QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
+    copyButton->setStyleSheet("background:transparent;");
+    copyButton->setIcon(QIcon(":/icons/editcopy"));
+    msgBox.setWindowTitle(tr("Mnemonic Recovery Phrase"));
+    msgBox.setText(tr("Below is your Mnemonic Recovery Phrase, consisting of 24 seed words. Please copy/write these words down in order. We strongly recommend keeping multiple copies in different locations."));
+    msgBox.setInformativeText("\n<b>" + phrase + "</b>");
+    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == copyButton) {
+        //Copy Mnemonic Recovery Phrase to clipboard
+        GUIUtil::setClipboard(phrase);
+    }
 }
 
 OptionsModel* WalletModel::getOptionsModel()
