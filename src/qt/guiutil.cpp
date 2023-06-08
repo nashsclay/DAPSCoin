@@ -758,14 +758,20 @@ void setWindowless(QWidget* widget){
 void disableTooltips(QWidget* widget){
 }
 
-void prompt(const QString& title, const QString& message, QMessageBox::Icon icon)
-{
+void prompt(const QString& title, const QString& message, QMessageBox::Icon icon) {
+    prompt("", title, message, icon);
+}
+
+void prompt(const QString& objectName, const QString& title, const QString& message, QMessageBox::Icon icon) {
     QMessageBox* promptBox = new QMessageBox();
-    //setWindowless(promptBox);
-    promptBox->setStyleSheet(loadStyleSheet());
+    if (!objectName.isEmpty()) {
+        promptBox->setObjectName(objectName);
+    }
+    //GUIUtil::setWindowless(promptBox);
+    promptBox->setStyleSheet(GUIUtil::loadStyleSheet());
+    promptBox->setText(message);
     promptBox->setIcon(icon);
     promptBox->setWindowTitle(title);
-    promptBox->setText(message);
     promptBox->exec();
     promptBox->deleteLater();
 }

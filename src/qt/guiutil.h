@@ -243,7 +243,8 @@ void disableTooltips(QWidget* widget);
 bool isExternal(QString theme);
 
 //display a prompt
-void prompt(const QString& title, const QString& message, QMessageBox::Icon icon = QMessageBox::Information);
+void prompt(const QString& title, const QString& message, QMessageBox::Icon icon);
+void prompt(const QString& objectName, const QString& title, const QString& message, QMessageBox::Icon icon);
 
 /* Convert QString to OS specific boost path through UTF-8 */
 fs::path qstringToBoostPath(const QString& path);
