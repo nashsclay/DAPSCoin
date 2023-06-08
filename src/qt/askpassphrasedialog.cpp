@@ -143,14 +143,14 @@ void AskPassphraseDialog::accept()
                             "</b></qt>");
                     QApplication::quit();
                 } else {
-                    GUIUtil::prompt(
+                    GUIUtil::showMessageBox(
                         tr("Wallet Encryption Failed"),
                         tr("Wallet encryption failed due to an internal error. Your wallet was not encrypted. Please try again."),
                         QMessageBox::Critical);
                 }
                 QDialog::accept(); // Success
             } else {
-                GUIUtil::prompt(
+                GUIUtil::showMessageBox(
                     tr("Wallet Encryption Failed"),
                     tr("The supplied passphrases do not match. Please try again."),
                     QMessageBox::Critical);
@@ -162,7 +162,7 @@ void AskPassphraseDialog::accept()
     case Mode::UnlockStaking:
     case Mode::Unlock:
         if (!model->setWalletLocked(false, oldpass, ui->stakingCheckBox->isChecked())) {
-            GUIUtil::prompt(
+            GUIUtil::showMessageBox(
                 tr("Wallet Unlock Failed"),
                 tr("The passphrase entered for the wallet unlock was incorrect. Please try again."),
                 QMessageBox::Critical);
@@ -172,7 +172,7 @@ void AskPassphraseDialog::accept()
         break;
     case Mode::Decrypt:
         if (!model->setWalletEncrypted(false, oldpass)) {
-            GUIUtil::prompt(
+            GUIUtil::showMessageBox(
                 tr("Wallet Decryption Failed"),
                 tr("The passphrase entered for the wallet decryption was incorrect. Please try again."),
                 QMessageBox::Critical);
@@ -183,19 +183,19 @@ void AskPassphraseDialog::accept()
     case Mode::ChangePass:
         if (newpass1 == newpass2) {
             if (model->changePassphrase(oldpass, newpass1)) {
-            GUIUtil::prompt(
+            GUIUtil::showMessageBox(
                 tr("Passphrase Change Successful"),
                 tr("Wallet passphrase was successfully changed.\nPlease remember your passphrase as there is no way to recover it."),
                 QMessageBox::Information);
                 QDialog::accept(); // Success
             } else {
-            GUIUtil::prompt(
+            GUIUtil::showMessageBox(
                 tr("Wallet Encryption Failed"),
                 tr("The passphrase entered for the wallet decryption was incorrect. Please try again."),
                 QMessageBox::Critical);
             }
         } else {
-            GUIUtil::prompt(
+            GUIUtil::showMessageBox(
                 tr("Wallet Encryption Failed"),
                 tr("The supplied passphrases do not match. Please try again."),
                 QMessageBox::Critical);

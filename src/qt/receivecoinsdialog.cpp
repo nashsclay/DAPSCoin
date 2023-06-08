@@ -192,7 +192,7 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
     CAmount maxMoneyInCoins = MAX_MONEY_OUT / COIN;
     CAmount maxMoneyInMillions = maxMoneyInCoins / 1000000;
     if (dAmount < 0.0 || dAmount > maxMoneyInCoins) {
-        GUIUtil::prompt(
+        GUIUtil::showMessageBox(
             tr("Invalid Amount"),
             tr("Invalid amount entered. Please enter an amount less than %1 (%2M) PRCY.").arg(maxMoneyInCoins).arg(maxMoneyInMillions),
             QMessageBox::Warning);

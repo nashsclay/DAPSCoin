@@ -178,7 +178,7 @@ void RevealTxDialog::deleteTransaction()
 
         // Check it exists
         if (!pwalletMain->mapWallet.count(hash)) {
-            GUIUtil::prompt(
+            GUIUtil::showMessageBox(
                 tr("Invalid or non-wallet transaction id"),
                 tr("Invalid or non-wallet transaction id."),
                 QMessageBox::Critical);

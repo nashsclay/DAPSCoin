@@ -231,7 +231,7 @@ void CoinControlDialog::buttonToggleLockClicked()
         CoinControlDialog::updateLabels(model, this);
         updateDialogLabels();
     } else {
-        GUIUtil::prompt(
+        GUIUtil::showMessageBox(
             "lockMessageBox",
             "",
             tr("Please switch to \"List mode\" to use this function."),

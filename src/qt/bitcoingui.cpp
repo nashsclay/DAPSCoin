@@ -1013,7 +1013,7 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
         } else {
             LogPrintf("Check For Updates: No update available.\n");
             if (!isStartup) {
-                GUIUtil::prompt(
+                GUIUtil::showMessageBox(
                     tr("No Update Available"),
                     tr("No update available.\n\nYour wallet is up to date."),
                     QMessageBox::Information);
@@ -1022,7 +1022,7 @@ void BitcoinGUI::serviceRequestFinished(QNetworkReply* reply)
     } else {
         LogPrintf("Check For Updates: Error!\n");
         QByteArray error = reply->readAll();
-        GUIUtil::prompt(
+        GUIUtil::showMessageBox(
             tr("Error"),
             tr("Error checking for updates.\n\n" + error),
             QMessageBox::Critical);

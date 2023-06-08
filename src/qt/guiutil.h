@@ -242,9 +242,9 @@ void disableTooltips(QWidget* widget);
 /** Check whether a theme is not build-in */
 bool isExternal(QString theme);
 
-//display a prompt
-void prompt(const QString& title, const QString& message, QMessageBox::Icon icon);
-void prompt(const QString& objectName, const QString& title, const QString& message, QMessageBox::Icon icon);
+/** Display styled MessageBox **/
+void showMessageBox(const QString& title, const QString& message, QMessageBox::Icon icon);
+void showMessageBox(const QString& objectName, const QString& title, const QString& message, QMessageBox::Icon icon);
 
 /* Convert QString to OS specific boost path through UTF-8 */
 fs::path qstringToBoostPath(const QString& path);
