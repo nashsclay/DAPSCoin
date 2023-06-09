@@ -3182,7 +3182,7 @@ bool CWallet::CreateTransactionBulletProof(const CKey& txPrivDes, const CPubKey&
                     CPubKey sharedSec;
                     ECDHInfo::ComputeSharedSec(txPrivDes, recipientViewKey, sharedSec);
                     EncodeTxOutAmount(txout, txout.nValue, sharedSec.begin());
-                    txNew.vout.push_back(txout);
+                    txNew.vout.emplace_back(txout);
                     nBytes += ::GetSerializeSize(*(CTxOut*)&txout, SER_NETWORK, PROTOCOL_VERSION);
                 }
 
@@ -3365,7 +3365,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                             strFailReason = _("Transaction amount too small");
                             return false;
                         }
-                        txNew.vout.push_back(txout);
+                        txNew.vout.emplace_back(txout);
                     }
                 } else //UTXO Splitter Transaction
                 {
@@ -5350,7 +5350,7 @@ bool CWallet::SendAll(std::string des, CWalletTx& wtxNew, bool inclLocked)
                                 CPubKey sharedSec;
                                 ECDHInfo::ComputeSharedSec(wtxNew.txPrivM, pubViewKey, sharedSec);
                                 EncodeTxOutAmount(txout, txout.nValue, sharedSec.begin());
-                                txNew.vout.push_back(txout);
+                                txNew.vout.emplace_back(txout);
                                 txNew.nTxFee = nFeeNeeded;
 
                                 //Fill vin
@@ -5611,7 +5611,7 @@ bool CWallet::CreateSweepingTransaction(CAmount target, CAmount threshold, uint3
                                 CPubKey sharedSec;
                                 ECDHInfo::ComputeSharedSec(wtxNew.txPrivM, pubViewKey, sharedSec);
                                 EncodeTxOutAmount(txout, txout.nValue, sharedSec.begin());
-                                txNew.vout.push_back(txout);
+                                txNew.vout.emplace_back(txout);
                                 //nBytes += ::GetSerializeSize(*(CTxOut*)&txout, SER_NETWORK, PROTOCOL_VERSION);
 
                                 txNew.nTxFee = nFeeNeeded;
