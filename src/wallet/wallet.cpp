@@ -1595,11 +1595,12 @@ CAmount CWalletTx::GetUnlockedCredit() const
 
     CAmount nCredit = 0;
     uint256 hashTx = GetHash();
+    const CAmount collateralAmount = Params().MNCollateralAmt();
     for (unsigned int i = 0; i < vout.size(); i++) {
         const CTxOut& txout = vout[i];
 
         if (pwallet->IsSpent(hashTx, i) || pwallet->IsLockedCoin(hashTx, i)) continue;
-        if (fMasterNode && pwallet->getCTxOutValue(*this, vout[i]) == Params().MNCollateralAmt()) continue; // do not count MN-like outputs
+        if (fMasterNode && pwallet->getCTxOutValue(*this, vout[i]) == collateralAmount) continue; // do not count MN-like outputs
 
         nCredit += pwallet->GetCredit(*this, txout, ISMINE_SPENDABLE);
     }
@@ -1619,6 +1620,7 @@ CAmount CWalletTx::GetLockedCredit() const
 
     CAmount nCredit = 0;
     uint256 hashTx = GetHash();
+    const CAmount collateralAmount = Params().MNCollateralAmt();
     for (unsigned int i = 0; i < vout.size(); i++) {
         const CTxOut& txout = vout[i];
 
@@ -1630,8 +1632,8 @@ CAmount CWalletTx::GetLockedCredit() const
             nCredit += pwallet->GetCredit(*this, txout, ISMINE_SPENDABLE);
         }
 
-        // Add masternode collaterals which are handled likc locked coins
-         else if (fMasterNode && pwallet->getCTxOutValue(*this, vout[i]) == Params().MNCollateralAmt()) {
+        // Add masternode collaterals which are handled like locked coins
+         else if (fMasterNode && pwallet->getCTxOutValue(*this, vout[i]) == collateralAmount) {
             nCredit += pwallet->GetCredit(*this, txout, ISMINE_SPENDABLE);
         }
 
@@ -2434,6 +2436,7 @@ bool CWallet::AvailableCoins(
     if (IsLocked()) return false;
     vCoins.clear();
     const bool fCoinsSelected = (coinControl != nullptr) && coinControl->HasSelected();
+    const CAmount collateralAmount = Params().MNCollateralAmt();
 
     {
         LOCK2(cs_main, cs_wallet);
@@ -2453,7 +2456,7 @@ bool CWallet::AvailableCoins(
                 bool found = false;
                 CAmount value = getCTxOutValue(*pcoin, pcoin->vout[i]);
                 if (nCoinType == ONLY_5000) {
-                    found = value == Params().MNCollateralAmt();
+                    found = value == collateralAmount;
                 } else {
                     COutPoint outpoint(pcoin->GetHash(), i);
                     if (IsCollateralized(outpoint)) {
@@ -2566,6 +2569,9 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
     std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
     CAmount nAmountSelected = 0;
+    const CAmount collateralAmount = Params().MNCollateralAmt();
+    const CAmount minStakingAmount = Params().MinimumStakeAmount();
+
     if (GetBoolArg("-prcystake", true)) {
         for (const COutput &out : vCoins) {
             //make sure not to outrun target amount
@@ -2574,11 +2580,11 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
                 continue;
 
             //check that it is above Minimum Stake Amount
-            if (value < Params().MinimumStakeAmount())
+            if (value < minStakingAmount)
                 continue;
 
             //check that it is not MN Collateral
-            if (value == Params().MNCollateralAmt()) {
+            if (value == collateralAmount) {
                 COutPoint outpoint(out.tx->GetHash(), out.i);
                 if (IsCollateralized(outpoint)) {
                     continue;
@@ -2609,6 +2615,8 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
 bool CWallet::MintableCoins()
 {
     CAmount nBalance = GetBalance();
+    const CAmount collateralAmount = Params().MNCollateralAmt();
+    const CAmount minStakingAmount = Params().MinimumStakeAmount();
 
     // Regular PRCY
     if (nBalance > 0) {
@@ -2628,7 +2636,7 @@ bool CWallet::MintableCoins()
 
             //check that it is not MN Collateral
             bool isCollateral = false;
-            if (nVal == Params().MNCollateralAmt()) {
+            if (nVal == collateralAmount) {
                 COutPoint outpoint(out.tx->GetHash(), out.i);
                 if (IsCollateralized(outpoint)) {
                     isCollateral = true;
@@ -2636,7 +2644,7 @@ bool CWallet::MintableCoins()
             }
 
             //nTxTime <= nTime: only stake with UTXOs that are received before nTime time
-            if (Params().IsRegTestNet() || (GetAdjustedTime() > Params().StakeMinAge() + nTxTime && nVal >= Params().MinimumStakeAmount() && !isCollateral))
+            if (Params().IsRegTestNet() || (GetAdjustedTime() > Params().StakeMinAge() + nTxTime && nVal >= minStakingAmount && !isCollateral))
                 return true;
         }
     }
@@ -2650,7 +2658,9 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
     maxFee = 0;
     SetRingSize(0);
     CAmount nBalance = GetBalance();
+    const CAmount collateralAmount = Params().MNCollateralAmt();
     const CAmount minStakingAmount = Params().MinimumStakeAmount();
+
     if (IsMasternodeController()) {
         nBalance = GetSpendableBalance();
     }
@@ -2693,7 +2703,7 @@ StakingStatusError CWallet::StakingCoinStatus(CAmount& minFee, CAmount& maxFee)
                             continue;
                         }
                         CAmount value = getCTxOutValue(*pcoin, pcoin->vout[i]);
-                        if (value == Params().MNCollateralAmt()) {
+                        if (value == collateralAmount) {
                             COutPoint outpoint(wtxid, i);
                             if (IsCollateralized(outpoint)) {
                                 continue;
