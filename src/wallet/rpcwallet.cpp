@@ -58,6 +58,7 @@ void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
         entry.push_back(Pair("generated", true));
     if (confirms > 0) {
         entry.push_back(Pair("blockhash", wtx.hashBlock.GetHex()));
+        entry.push_back(Pair("blockheight", mapBlockIndex[wtx.hashBlock]->nHeight));
         entry.push_back(Pair("blockindex", wtx.nIndex));
         entry.push_back(Pair("blocktime", mapBlockIndex[wtx.hashBlock]->GetBlockTime()));
     }
@@ -1629,6 +1630,7 @@ UniValue gettransaction(const UniValue& params, bool fHelp)
             "  \"confirmations\" : n,     (numeric) The number of confirmations\n"
             "  \"bcconfirmations\" : n,   (numeric) The number of blockchain confirmations\n"
             "  \"blockhash\" : \"hash\",  (string) The block hash\n"
+            "  \"blockheight\" : n,       (numeric) The block height\n"
             "  \"blockindex\" : xx,       (numeric) The block index\n"
             "  \"blocktime\" : ttt,       (numeric) The time in seconds since epoch (1 Jan 1970 GMT)\n"
             "  \"txid\" : \"transactionid\",   (string) The transaction id.\n"
