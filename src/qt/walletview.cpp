@@ -276,12 +276,10 @@ void WalletView::showSeedPhrase()
     if (encryptionStatus == WalletModel::Locked || encryptionStatus == WalletModel::UnlockedForStakingOnly) {
         WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
         if (!ctx.isValid()) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Mnemonic Recovery Phrase");
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.setText("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Mnemonic Recovery Phrase"),
+                tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
+                QMessageBox::Information);
             LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
             return;
         } else {
@@ -296,12 +294,10 @@ void WalletView::showSeedPhrase()
             walletModel->setWalletLocked(true);
             WalletModel::UnlockContext ctx(walletModel->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
             if (!ctx.isValid()) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Mnemonic Recovery Phrase");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.exec();
+                GUIUtil::showMessageBox(
+                    tr("Mnemonic Recovery Phrase"),
+                    tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
+                    QMessageBox::Information);
                 LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
                 return;
             } else {

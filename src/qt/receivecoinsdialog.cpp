@@ -189,13 +189,13 @@ void ReceiveCoinsDialog::updateDisplayUnit()
 void ReceiveCoinsDialog::on_receiveButton_clicked()
 {
     double dAmount = ui->reqAmount->text().toDouble();
-    if (dAmount < 0.0 || dAmount > MAX_MONEY_OUT) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Invalid Amount");
-        msgBox.setText("Invalid amount entered. Please enter an amount less than 2.1B PRCY.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+    CAmount maxMoneyInCoins = MAX_MONEY_OUT / COIN;
+    CAmount maxMoneyInMillions = maxMoneyInCoins / 1000000;
+    if (dAmount < 0.0 || dAmount > maxMoneyInCoins) {
+        GUIUtil::showMessageBox(
+            tr("Invalid Amount"),
+            tr("Invalid amount entered. Please enter an amount less than %1 (%2M) PRCY.").arg(maxMoneyInCoins).arg(maxMoneyInMillions),
+            QMessageBox::Warning);
         return;
     }
     if (!model || !model->getOptionsModel() || !model->getAddressTableModel())

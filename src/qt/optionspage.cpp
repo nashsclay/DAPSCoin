@@ -211,21 +211,19 @@ void OptionsPage::on_pushButtonSave_clicked() {
     double dAmount = ui->lineEditWithhold->text().toDouble();
     if (ui->lineEditWithhold->text().trimmed().isEmpty()) {
         ui->lineEditWithhold->setStyleSheet("border: 2px solid red");
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Reserve Balance Empty");
-        msgBox.setText("PRCY reserve amount is empty and must be a minimum of 1.\nPlease click Disable if you would like to turn it off.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Reserve Balance Empty"),
+            tr("PRCY reserve amount is empty and must be a minimum of 1.\nPlease click Disable if you would like to turn it off."),
+            QMessageBox::Information);
         return;
     }
-    if (dAmount < 0.0 || dAmount > 250000000) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Invalid Reserve Amount");
-        msgBox.setText("The amount you have attempted to keep as spendable is greater than the 250,000,000 (250M) limit. Please try a smaller amount.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+    if (dAmount < 0.0 || dAmount > MAX_MONEY_OUT) {
+        CAmount maxMoneyInCoins = MAX_MONEY_OUT / COIN;
+        CAmount maxMoneyInMillions = maxMoneyInCoins / 1000000;
+        GUIUtil::showMessageBox(
+            tr("Invalid Reserve Amount"),
+            tr("The amount you have attempted to keep as spendable is greater than the %1 (%2M) limit. Please try a smaller amount.").arg(maxMoneyInCoins).arg(maxMoneyInMillions),
+            QMessageBox::Warning);
         return;
     }
     nReserveBalance = getValidatedAmount();
@@ -235,14 +233,12 @@ void OptionsPage::on_pushButtonSave_clicked() {
 
     Q_EMIT model->stakingStatusChanged(nLastCoinStakeSearchInterval);
     ui->lineEditWithhold->setStyleSheet(GUIUtil::loadStyleSheet());
-    
+
     QString reserveBalance = ui->lineEditWithhold->text().trimmed();
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("Reserve Balance Set");
-    msgBox.setText("Reserve balance of " + reserveBalance + " PRCY is successfully set.");
-    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.exec();
+    GUIUtil::showMessageBox(
+        tr("Reserve Balance Set"),
+        tr("Reserve balance of %1 PRCY is successfully set.").arg(reserveBalance),
+        QMessageBox::Information);
 }
 
 void OptionsPage::on_pushButtonDisable_clicked() {
@@ -252,12 +248,10 @@ void OptionsPage::on_pushButtonDisable_clicked() {
     walletdb.WriteReserveAmount(0);
 
     Q_EMIT model->stakingStatusChanged(nLastCoinStakeSearchInterval);
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("Reserve Balance Disabled");
-    msgBox.setText("Reserve balance disabled.");
-    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.exec();
+    GUIUtil::showMessageBox(
+        tr("Reserve Balance Disabled"),
+        tr("Reserve balance disabled."),
+        QMessageBox::Information);
 }
 
 void OptionsPage::keyPressEvent(QKeyEvent* event)
@@ -273,12 +267,10 @@ void OptionsPage::setMapper()
 void OptionsPage::on_pushButtonPassword_clicked()
 {
     if ( (!ui->lineEditNewPass->text().length()) || (!ui->lineEditNewPassRepeat->text().length()) ) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Wallet Encryption Failed");
-        msgBox.setText("The passphrase entered for wallet encryption was empty or contained spaces. Please try again.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Wallet Encryption Failed"),
+            tr("The passphrase entered for wallet encryption was empty or contained spaces. Please try again."),
+            QMessageBox::Critical);
         return;
     }
     //disable password submit button
@@ -299,53 +291,41 @@ void OptionsPage::on_pushButtonPassword_clicked()
         double guesses;
 
         if (oldPass == newPass) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Wallet Encryption Failed");
-            msgBox.setText("The passphrase you have entered is the same as your old passphrase. Please use a different passphrase if you would like to change it.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Wallet Encryption Failed"),
+                tr("The passphrase you have entered is the same as your old passphrase. Please use a different passphrase if you would like to change it."),
+                QMessageBox::Critical);
         }
         else if (newPass.length() < 10) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Wallet Encryption Failed");
-            msgBox.setText("The passphrase's length has to be more than 10. Please try again.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Wallet Encryption Failed"),
+                tr("The passphrase's length has to be more than 10. Please try again."),
+                QMessageBox::Critical);
         }
         else if (!pwalletMain->checkPassPhraseRule(newPass.c_str())) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Wallet Encryption Failed");
-            msgBox.setText("The passphrase must contain lower, upper, digit, symbol. Please try again.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Wallet Encryption Failed"),
+                tr("The passphrase must contain lower, upper, digit, symbol. Please try again."),
+                QMessageBox::Critical);
         }
         else if (zxcvbn_password_strength(newPass.c_str(), NULL, &guesses, NULL) < 0 || guesses < 10000) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Wallet Encryption Failed");
-            msgBox.setText("The passphrase is too weak. You must use a minimum passphrase length of 10 characters and use uppercase letters, lowercase letters, numbers, and symbols. Please try again.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Wallet Encryption Failed"),
+                tr("The passphrase is too weak. You must use a minimum passphrase length of 10 characters and use uppercase letters, lowercase letters, numbers, and symbols. Please try again."),
+                QMessageBox::Critical);
         }
         else if (model->changePassphrase(oldPass, newPass)) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Passphrase Change Successful");
-            msgBox.setText("Wallet passphrase was successfully changed.\nPlease remember your passphrase as there is no way to recover it.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Passphrase Change Successful"),
+                tr("Wallet passphrase was successfully changed.\nPlease remember your passphrase as there is no way to recover it."),
+                QMessageBox::Information);
             success = true;
         }
     } else {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Wallet Encryption Failed");
-            msgBox.setText("The passphrases entered for wallet encryption do not match. Please try again.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Wallet Encryption Failed"),
+            tr("The passphrases entered for wallet encryption do not match. Please try again."),
+            QMessageBox::Critical);
     }
 
     if (success)
@@ -374,20 +354,17 @@ void OptionsPage::on_pushButtonBackup_clicked(){
 
     if (model->backupWallet(QString(filename))) {
         ui->pushButtonBackup->setStyleSheet("border: 2px solid green");
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Wallet Backup Successful");
-        msgBox.setText("Wallet has been successfully backed up to " + filename);
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.exec();
+        QString msg = tr("Wallet has been successfully backed up to ");
+        GUIUtil::showMessageBox(
+            tr("Wallet Backup Successful"),
+            msg + filename,
+            QMessageBox::Information);
     } else {
         ui->pushButtonBackup->setStyleSheet("border: 2px solid red");
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Wallet Backup Failed");
-        msgBox.setText("Wallet backup failed. Please try again.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Wallet Backup Failed"),
+            tr("Wallet backup failed. Please try again."),
+            QMessageBox::Critical);
 }
     ui->pushButtonBackup->repaint();
 }
@@ -436,74 +413,72 @@ bool OptionsPage::matchNewPasswords()
 void OptionsPage::on_EnableStaking(ToggleButton* widget)
 {
     if (!masternodeSync.IsSynced()) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Staking Disabled - Syncing Masternode list");
-        msgBox.setText("Enable Staking is disabled when you are still syncing the Masternode list as this is required. Please allow the wallet to fully sync this list before attempting to Enable Staking.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Staking Disabled - Syncing Masternode list"),
+            tr("Enable Staking is disabled when you are still syncing the Masternode list as this is required. Please allow the wallet to fully sync this list before attempting to Enable Staking."),
+            QMessageBox::Warning);
         return;
     }
     int status = model->getEncryptionStatus();
     if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Staking Setting");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Please unlock the wallet with your passphrase before changing this setting.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Staking Setting"),
+            tr("Please unlock the wallet with your passphrase before changing this setting."),
+            QMessageBox::Information);
         widget->setState(!widget->getState());
         return;
     }
 
+    QString errorMessage;
     if (chainActive.Height() < Params().LAST_POW_BLOCK()) {
         if (widget->getState()) {
-            QString msg;
-            msg.sprintf("PoW blocks are still being mined.\nPlease wait until Block %d.", Params().LAST_POW_BLOCK());
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Information");
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.setText(msg);
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.exec();
+            int lastPowBlock = Params().LAST_POW_BLOCK();
+            errorMessage = tr("PoW blocks are still being mined.\nPlease wait until Block %1.").arg(lastPowBlock);
+            GUIUtil::showMessageBox(
+                tr("Information"),
+                errorMessage,
+                QMessageBox::Information);
         }
         widget->setState(false);
         pwalletMain->WriteStakingStatus(false);
         return;
     }
     if (widget->getState()){
-        QString error;
         CAmount minFee, maxFee;
+        const CAmount minStakingAmount = model->getMinStakingAmount();
         StakingStatusError stt = pwalletMain->StakingCoinStatus(minFee, maxFee);
-        std::string errorMessage;
-        if (stt == StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW || 
+        if (stt == StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW ||
             stt == UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH ||
             stt == UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH_CONSOLIDATION_FAILED ||
             stt == UNSTAKABLE_BALANCE_TOO_LOW_CONSOLIDATION_FAILED) {
-            QMessageBox msgBox;
+
             if (stt == StakingStatusError::UNSTAKABLE_BALANCE_TOO_LOW) {
-                errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. Please deposit more PRCY into your account in order to enable staking.";
+                errorMessage = tr("Your stakeable balance is under the threshold of %1 PRCY. Please deposit more PRCY into your account in order to enable staking.").arg(minStakingAmount);
             } else if (stt == UNSTAKABLE_BALANCE_TOO_LOW_CONSOLIDATION_FAILED) {
-                errorMessage = "Your balance requires a consolidation transaction which incurs a fee of between  " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY. However after that transaction fee, your balance will be below the staking threshold of 2500 PRCY. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.";
+                errorMessage = tr("Your balance requires a consolidation transaction which incurs a fee of between %1 to %2 PRCY. However after that transaction fee, your balance will be below the staking threshold of %3 PRCY. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.")
+                          .arg(QString::fromStdString(FormatMoney(minFee)))
+                          .arg(QString::fromStdString(FormatMoney(maxFee)))
+                          .arg(minStakingAmount);
             } else if (stt == UNSTAKABLE_BALANCE_RESERVE_TOO_HIGH) {
-                errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. This is due to your reserve balance being too high. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.";
+                errorMessage = tr("Your stakeable balance is under the threshold of %1 PRCY. This is due to your reserve balance being too high. Please deposit more PRCY into your account or reduce your reserved amount in order to enable staking.").arg(minStakingAmount);
             } else {
                 SetRingSize(0);
                 CAmount totalFee = maxFee + pwalletMain->ComputeFee(1, 2, MAX_RING_SIZE);
-                errorMessage = "Your stakeable balance is under the threshold of 2500 PRCY. This is due to your reserve balance of " + FormatMoney(nReserveBalance) + " PRCY being too high. The wallet software has tried to consolidate your funds with the reserve balance but without success because of a consolidation fee of " + FormatMoney(totalFee) + " PRCY. Please wait around 10 minutes for the wallet to resolve the reserve to enable staking.";
+                errorMessage = tr("Your stakeable balance is under the threshold of %1 PRCY. This is due to your reserve balance of %2 PRCY being too high. The wallet software has tried to consolidate your funds with the reserve balance but without success because of a consolidation fee of %3 PRCY. Please wait around 10 minutes for the wallet to resolve the reserve to enable staking.")
+                          .arg(minStakingAmount)
+                          .arg(QString::fromStdString(FormatMoney(nReserveBalance)))
+                          .arg(QString::fromStdString(FormatMoney(totalFee)));
             }
-            QString msg = QString::fromStdString(errorMessage);
-            msgBox.setWindowTitle("Warning: Staking Issue");
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setText(msg);
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Warning: Staking Issue"),
+                errorMessage,
+                QMessageBox::Warning);
             widget->setState(false);
             nLastCoinStakeSearchInterval = 0;
             Q_EMIT model->stakingStatusChanged(false);
-            pwalletMain->WriteStakingStatus(false);   
-            return; 
-        } 
+            pwalletMain->WriteStakingStatus(false);
+            return;
+        }
         if (stt == StakingStatusError::STAKING_OK) {
             pwalletMain->WriteStakingStatus(true);
             Q_EMIT model->stakingStatusChanged(true);
@@ -514,14 +489,18 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             return;
         }
 
-        QMessageBox::StandardButton reply;
         if (stt == StakingStatusError::STAKABLE_NEED_CONSOLIDATION) {
-            errorMessage = "In order to enable staking with 100% of your current balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY.\n\nWould you like to do this?";
+            errorMessage = tr("In order to enable staking with 100%% of your current balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between %1 to %2 PRCY.\n\nWould you like to do this?")
+                           .arg(QString::fromStdString(FormatMoney(minFee)))
+                           .arg(QString::fromStdString(FormatMoney(maxFee)));
         } else {
-            errorMessage = "In order to enable staking with 100% of your current balance except the reserve balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between " + FormatMoney(minFee) + " to " + FormatMoney(maxFee) + " PRCY.\n\nWould you like to do this?";
+            errorMessage = tr("In order to enable staking with 100%% of your current balance except the reserve balance, your previous PRCY deposits must be consolidated and reorganized. This will incur a fee of between %1 to %2 PRCY.\n\nWould you like to do this?")
+                           .arg(QString::fromStdString(FormatMoney(minFee)))
+                           .arg(QString::fromStdString(FormatMoney(maxFee)));
         }
-        reply = QMessageBox::question(this, "Staking Needs Consolidation", QString::fromStdString(errorMessage), QMessageBox::Yes|QMessageBox::No|QMessageBox::Ignore);
-        if (reply == QMessageBox::Yes) { 
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("Staking Needs Consolidation"), errorMessage, QMessageBox::Yes|QMessageBox::No|QMessageBox::Ignore);
+        if (reply == QMessageBox::Yes) {
             pwalletMain->WriteStakingStatus(true);
             Q_EMIT model->stakingStatusChanged(true);
             model->generateCoins(true, 1);
@@ -529,7 +508,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
             pwalletMain->combineMode = CombineMode::ON;
             saveConsolidationSettingTime(ui->addNewFunds->isChecked());
             bool success = false;
-            const CAmount minStakingAmount = model->getMinStakingAmount();;
             try {
                 uint32_t nTime = pwalletMain->ReadAutoConsolidateSettingTime();
                 nTime = (nTime == 0)? GetAdjustedTime() : nTime;
@@ -538,17 +516,14 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                                 minStakingAmount, nTime);
                 if (success) {
                     //nConsolidationTime = 1800;
-                    QString msg = "Consolidation transaction created!";
-                    QMessageBox msgBox;
-                    msgBox.setWindowTitle("Information");
-                    msgBox.setIcon(QMessageBox::Information);
-                    msgBox.setText(msg);
-                    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                    msgBox.exec();
+                    GUIUtil::showMessageBox(
+                        tr("Information"),
+                        tr("Consolidation transaction created!"),
+                        QMessageBox::Information);
                 }
             } catch (const std::exception& err) {
                 LogPrintf("Sweeping failed, will be done automatically when coins become mature");
-            }            
+            }
             return;
         } else if (reply == QMessageBox::No) {
             nLastCoinStakeSearchInterval = 0;
@@ -606,7 +581,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                         msgBox.exec();
                         return;
                     }
-
                     if (success){
                         WalletUtil::getTx(pwalletMain, resultTx.GetHash());
                         QString txhash = resultTx.GetHash().GetHex().c_str();
@@ -619,7 +593,6 @@ void OptionsPage::on_EnableStaking(ToggleButton* widget)
                         msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
                         msgBox.setIcon(QMessageBox::Information);
                         msgBox.exec();
-
                         if (msgBox.clickedButton() == copyButton) {
                         //Copy txhash to clipboard
                         GUIUtil::setClipboard(txhash);
@@ -645,12 +618,10 @@ void OptionsPage::on_Enable2FA(ToggleButton* widget)
 {
     int status = model->getEncryptionStatus();
     if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("2FA Setting");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Please unlock the wallet with your passphrase before changing this setting.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("2FA Setting"),
+            tr("Please unlock the wallet with your passphrase before changing this setting."),
+            QMessageBox::Information);
 
         ui->toggle2FA->setState(!ui->toggle2FA->getState());
         return;
@@ -695,12 +666,10 @@ void OptionsPage::dialogIsFinished(int result) {
         pwalletMain->Write2FALastTime(current.toTime_t());
         enable2FA();
 
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("SUCCESS!");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Two-factor authentication has been successfully enabled.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("SUCCESS!"),
+            tr("Two-factor authentication has been successfully enabled."),
+            QMessageBox::Information);
    }
 
    if (result == QDialog::Rejected)
@@ -760,7 +729,7 @@ void OptionsPage::enable2FA() {
         value.sprintf("%c", chrlist[5]);
         ui->code_6->setText(value);
     }
-     
+
     int period = pwalletMain->Read2FAPeriod();
     typeOf2FA = NONE2FA;
     if (period == 1) {
@@ -824,7 +793,7 @@ void OptionsPage::on_week() {
     codedlg.setWindowTitle("2FA Code Verification");
     codedlg.setStyleSheet(GUIUtil::loadStyleSheet());
     connect(&codedlg, SIGNAL(finished (int)), this, SLOT(confirmDialogIsFinished(int)));
-    codedlg.exec();   
+    codedlg.exec();
 }
 
 void OptionsPage::on_month() {
@@ -845,12 +814,10 @@ void OptionsPage::onShowMnemonic() {
     if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
         WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
         if (!ctx.isValid()) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Mnemonic Recovery Phrase");
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.setText("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("Mnemonic Recovery Phrase"),
+                tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
+                QMessageBox::Information);
             LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
             return;
         } else {
@@ -865,12 +832,10 @@ void OptionsPage::onShowMnemonic() {
             model->setWalletLocked(true);
             WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
             if (!ctx.isValid()) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Mnemonic Recovery Phrase");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.exec();
+                GUIUtil::showMessageBox(
+                    tr("Mnemonic Recovery Phrase"),
+                    tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
+                    QMessageBox::Information);
                 LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
                 return;
             } else {
@@ -928,12 +893,10 @@ void OptionsPage::mapPortUpnp_clicked(int state)
     } else {
         settings.setValue("fUseUPnP", false);
     }
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("UPNP Settings");
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.setText("UPNP Settings successfully changed. Please restart the wallet for changes to take effect.");
-    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-    msgBox.exec();
+    GUIUtil::showMessageBox(
+        tr("UPNP Settings"),
+        tr("UPNP Settings successfully changed. Please restart the wallet for changes to take effect."),
+        QMessageBox::Information);
 }
 
 void OptionsPage::minimizeToTray_clicked(int state)
@@ -964,20 +927,16 @@ void OptionsPage::changeDigits(int digit)
         if (reply == QMessageBox::Yes) {
             digit = ui->comboBox->currentText().toInt();
             settings.setValue("2fadigits", digit);
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("2FA Digit Settings");
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.setText("2FA Digit Settings have been changed successfully.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("2FA Digit Settings"),
+                tr("2FA Digit Settings have been changed successfully."),
+                QMessageBox::Information);
             return;
         } else {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("2FA Digit Settings");
-            msgBox.setIcon(QMessageBox::Information);
-            msgBox.setText("2FA Digit Settings have not been changed.");
-            msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-            msgBox.exec();
+            GUIUtil::showMessageBox(
+                tr("2FA Digit Settings"),
+                tr("2FA Digit Settings have not been changed."),
+                QMessageBox::Information);
             return;
         }
     }
@@ -1018,12 +977,10 @@ void OptionsPage::hideBalanceStaking_clicked(int state) {
             model->setWalletLocked(true);
             WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
             if (!ctx.isValid()) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Hide Balance When Unlocked");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Attempt to Disable 'Hide Balance when unlocked' failed or canceled. Wallet Locked for security.");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.exec();
+                GUIUtil::showMessageBox(
+                    tr("Hide Balance When Unlocked"),
+                    tr("Attempt to Disable 'Hide Balance when unlocked' failed or canceled. Wallet Locked for security."),
+                    QMessageBox::Information);
                 LogPrintf("Attempt to Disable 'Hide Balance when unlocked' failed or canceled. Wallet Locked for security.\n");
                 settings.setValue("fHideBalance", true);
                 ui->hideBalanceStaking->setChecked(true);
@@ -1054,12 +1011,10 @@ void OptionsPage::lockSendStaking_clicked(int state) {
             model->setWalletLocked(true);
             WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
             if (!ctx.isValid()) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Lock Send Tab When Unlocked");
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText("Attempt to Disable 'Lock Send Tab when unlocked' failed or canceled. Wallet Locked for security.");
-                msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-                msgBox.exec();
+                GUIUtil::showMessageBox(
+                    tr("Lock Send Tab When Unlocked"),
+                    tr("Attempt to Disable 'Lock Send Tab when unlocked' failed or canceled. Wallet Locked for security."),
+                    QMessageBox::Information);
                 LogPrintf("Attempt to Disable 'Lock Send Tab when unlocked' failed or canceled. Wallet Locked for security.\n");
                 settings.setValue("fLockSendStaking", true);
                 ui->lockSendStaking->setChecked(true);
@@ -1103,12 +1058,10 @@ void OptionsPage::checkForUnlock()
 {
     int status = model->getEncryptionStatus();
     if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Password Locked Setting");
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Please unlock the wallet with your passphrase before changing this setting.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            tr("Password Locked Setting"),
+            tr("Please unlock the wallet with your passphrase before changing this setting."),
+            QMessageBox::Information);
         return;
     }
 }

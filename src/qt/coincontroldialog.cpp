@@ -231,11 +231,11 @@ void CoinControlDialog::buttonToggleLockClicked()
         CoinControlDialog::updateLabels(model, this);
         updateDialogLabels();
     } else {
-        QMessageBox msgBox;
-        msgBox.setObjectName("lockMessageBox");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setText(tr("Please switch to \"List mode\" to use this function."));
-        msgBox.exec();
+        GUIUtil::showMessageBox(
+            "lockMessageBox",
+            "",
+            tr("Please switch to \"List mode\" to use this function."),
+            QMessageBox::Warning);
     }
 }
 

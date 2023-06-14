@@ -129,15 +129,16 @@ static inline int64_t roundint64(double d)
     return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
 }
 
-CAmount SendCoinsEntry::getValidatedAmount() {
+CAmount SendCoinsEntry::getValidatedAmount()
+{
     double dAmount = ui->payAmount->text().toDouble();
-    if (dAmount < 0.0 || dAmount > MAX_MONEY_OUT) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Invalid Amount");
-        msgBox.setText("Invalid amount entered. Please enter an amount less than 2.1B PRCY.");
-        msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
+    CAmount maxMoneyInCoins = MAX_MONEY_OUT / COIN;
+    CAmount maxMoneyInMillions = maxMoneyInCoins / 1000000;
+    if (dAmount < 0.0 || dAmount > maxMoneyInCoins) {
+        GUIUtil::showMessageBox(
+            tr("Invalid Amount"),
+            tr("Invalid amount entered. Please enter an amount less than %1 (%2M) PRCY.").arg(maxMoneyInCoins).arg(maxMoneyInMillions),
+            QMessageBox::Warning);
     }
     CAmount nAmount = roundint64(dAmount * COIN);
     return nAmount;
