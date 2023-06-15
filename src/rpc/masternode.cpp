@@ -530,11 +530,12 @@ UniValue createmasternode(const UniValue& params, bool fHelp)
 
     UniValue ret(UniValue::VARR);
     int indexOut = -1;
+    const CAmount collateralAmount = Params().MNCollateralAmt();
     for (int i=0; i < (int)wtx.vout.size(); i++) {
         UniValue obj(UniValue::VOBJ);
         CTxOut& out = wtx.vout[i];
         CAmount value = pwalletMain->getCTxOutValue(wtx, out);
-        if (value == Params().MNCollateralAmt()) {
+        if (value == collateralAmount) {
             indexOut = i;
 
             // Lock collateral output

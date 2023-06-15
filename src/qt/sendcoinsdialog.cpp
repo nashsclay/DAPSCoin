@@ -361,11 +361,12 @@ void SendCoinsDialog::sendTx() {
         pwalletMain->ComputeStealthPublicAddress("masteraccount", myAddress);
         bool showCheckBox = false;
         int indexOut = -1;
+        const CAmount collateralAmount = Params().MNCollateralAmt();
         if (sendAddress == myAddress) {
             for (int i=0; i < (int)resultTx.vout.size(); i++) {
                 CTxOut& out = resultTx.vout[i];
                 CAmount value = pwalletMain->getCTxOutValue(resultTx, out);
-                if (value == Params().MNCollateralAmt()) {
+                if (value == collateralAmount) {
                     showCheckBox = true;
                     indexOut = i;
                 }
