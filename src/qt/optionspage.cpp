@@ -810,65 +810,7 @@ void OptionsPage::onShowMnemonic() {
     if(!model)
         return;
 
-    int status = model->getEncryptionStatus();
-    if (status == WalletModel::Locked || status == WalletModel::UnlockedForStakingOnly) {
-        WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
-        if (!ctx.isValid()) {
-            GUIUtil::showMessageBox(
-                tr("Mnemonic Recovery Phrase"),
-                tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
-                QMessageBox::Information);
-            LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
-            return;
-        } else {
-            SecureString pass;
-            model->setWalletLocked(false, pass);
-            LogPrintf("Attempt to view Mnemonic Phrase successful.\n");
-        }
-    } else {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "Are You Sure?", "Are you sure you would like to view your Mnemonic Phrase?\nYou will be required to enter your passphrase. Failed or canceled attempts will be logged.", QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            model->setWalletLocked(true);
-            WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Unlock_Full, true));
-            if (!ctx.isValid()) {
-                GUIUtil::showMessageBox(
-                    tr("Mnemonic Recovery Phrase"),
-                    tr("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security."),
-                    QMessageBox::Information);
-                LogPrintf("Attempt to view Mnemonic Phrase failed or canceled. Wallet locked for security.\n");
-                return;
-            } else {
-                SecureString pass;
-                model->setWalletLocked(false, pass);
-                LogPrintf("Attempt to view Mnemonic Phrase successful.\n");
-            }
-        } else {
-            LogPrintf("Attempt to view Mnemonic Phrase canceled.\n");
-            return;
-        }
-    }
-    QString phrase = "";
-    std::string recoverySeedPhrase = "";
-    if (model->getSeedPhrase(recoverySeedPhrase)) {
-        phrase = QString::fromStdString(recoverySeedPhrase);
-    }
-
-    QMessageBox msgBox;
-    QPushButton *copyButton = msgBox.addButton(tr("Copy"), QMessageBox::ActionRole);
-    QPushButton *okButton = msgBox.addButton(tr("OK"), QMessageBox::ActionRole);
-    copyButton->setStyleSheet("background:transparent;");
-    copyButton->setIcon(QIcon(":/icons/editcopy"));
-    msgBox.setWindowTitle("Mnemonic Recovery Phrase");
-    msgBox.setText("Below is your Mnemonic Recovery Phrase, consisting of 24 seed words. Please copy/write these words down in order. We strongly recommend keeping multiple copies in different locations.");
-    msgBox.setInformativeText("\n<b>" + phrase + "</b>");
-    msgBox.setStyleSheet(GUIUtil::loadStyleSheet());
-    msgBox.exec();
-
-    if (msgBox.clickedButton() == copyButton) {
-        //Copy Mnemonic Recovery Phrase to clipboard
-        GUIUtil::setClipboard(phrase);
-    }
+    model->showSeedPhrase();
 }
 
 void OptionsPage::setAutoConsolidate(int state) {
