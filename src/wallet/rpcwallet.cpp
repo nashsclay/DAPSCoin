@@ -1167,7 +1167,6 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
                 entry.push_back(Pair("involvesWatchonly", true));
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, s.destination);
-            entry.push_back(Pair("category", "send"));
 
             // Calculate amounts for this transaction
             CAmount nCredit = wtx.GetCredit(filter);
@@ -1175,7 +1174,19 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
             CAmount nNet = (nCredit > nDebit)? (nCredit - nDebit):(nDebit - nCredit);
             CAmount nAmountWithoutFee = nNet - nFee;
 
-            entry.push_back(Pair("amount", ValueFromAmount(-nAmountWithoutFee)));
+            if (wtx.IsCoinStake()) {
+                if (wtx.GetDepthInMainChain() < 1) {
+                    entry.push_back(Pair("category", "orphan"));
+                } else if (wtx.GetBlocksToMaturity() > 0) {
+                    entry.push_back(Pair("category", "immature"));
+                } else {
+                    entry.push_back(Pair("category", "generate"));
+                }
+                entry.push_back(Pair("amount", ValueFromAmount(nAmountWithoutFee)));
+            } else {
+                entry.push_back(Pair("category", "send"));
+                entry.push_back(Pair("amount", ValueFromAmount(-nAmountWithoutFee)));
+            }
             entry.push_back(Pair("vout", s.vout));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
             if (fLong)
