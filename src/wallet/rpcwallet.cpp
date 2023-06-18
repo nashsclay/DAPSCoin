@@ -2936,10 +2936,10 @@ UniValue getdecoyconfirmation(const UniValue& params, bool fHelp)
 }
 
 std::string GetHex(const unsigned char* vch, int sz) {
-    char psz[sz * 2 + 1];
+    std::vector<char> psz(sz * 2 + 1);
     for (int i = 0; i < sz; i++)
-        sprintf(psz + i * 2, "%02x", vch[sz - i - 1]);
-    return std::string(psz, psz + sz * 2);
+        sprintf(&psz[i * 2], "%02x", vch[sz - i - 1]);
+    return std::string(psz.begin(), psz.end() - 1);
 }
 
 UniValue revealviewprivatekey(const UniValue& params, bool fHelp) {
