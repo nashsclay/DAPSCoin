@@ -185,7 +185,13 @@ void RevealTxDialog::deleteTransaction()
             return;
         }
         // Erase it
-        pwalletMain->EraseFromWallet(hash);
+        if (!pwalletMain->EraseFromWallet(hash)) {
+            GUIUtil::showMessageBox(
+                tr("Unable to delete transaction id"),
+                tr("Unable to delete transaction id."),
+                QMessageBox::Critical);
+            return;
+        }
 
         // Display Success! dialog if not disabled
         QMessageBox msgBox;

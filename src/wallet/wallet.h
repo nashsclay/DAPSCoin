@@ -268,6 +268,7 @@ private:
     TxSpends mapTxSpends;
     void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
     void AddToSpends(const uint256& wtxid);
+    void RemoveFromSpends(const uint256& wtxid);
 
     void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 
@@ -476,11 +477,11 @@ public:
     bool AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet, CWalletDB* pwalletdb);
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate);
-    void EraseFromWallet(const uint256& hash);
+    bool EraseFromWallet(const uint256& hash);
     void ReorderWalletTransactions(std::map<std::pair<int,int>, CWalletTx*> &mapSorted, int64_t &maxOrderPos);
     void UpdateWalletTransactionOrder(std::map<std::pair<int,int>, CWalletTx*> &mapSorted, bool resetOrder);
-    void DeleteTransactions(std::vector<uint256> &removeTxs);
-    void DeleteWalletTransactions(const CBlockIndex* pindex);
+    bool DeleteTransactions(std::vector<uint256> &removeTxs, bool fRescan = false);
+    bool DeleteWalletTransactions(const CBlockIndex* pindex, bool fRescan = false);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, bool fromStartup = false, int height = -1);
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();
