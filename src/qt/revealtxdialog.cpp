@@ -82,7 +82,7 @@ void RevealTxDialog::setTxAmount(QString amount)
 void RevealTxDialog::setTxFee(CAmount fee)
 {
     int nDisplayUnit;
-    ui->lblTxFee->setText(BitcoinUnits::formatHtmlWithUnit(0, fee, false, BitcoinUnits::separatorAlways));
+    ui->lblTxFee->setText(BitcoinUnits::format(nDisplayUnit, fee, false, BitcoinUnits::separatorAlways));
 }
 
 void RevealTxDialog::setTxPaymentID(uint64_t paymentID)
