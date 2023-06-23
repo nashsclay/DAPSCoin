@@ -17,38 +17,7 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->pushButtonCopyID->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyID->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyID, SIGNAL(clicked()), this, SLOT(copyID()));
-
-    ui->pushButtonCopyAddr->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyAddr->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyAddr, SIGNAL(clicked()), this, SLOT(copyAddress()));
-
-    ui->pushButtonCopyPrivKey->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyPrivKey->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyPrivKey, SIGNAL(clicked()), this, SLOT(copyPrivateKey()));
-
-    ui->pushButtonCopyTxAmount->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyTxAmount->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyTxAmount, SIGNAL(clicked()), this, SLOT(copyTxAmount()));
-
-    ui->pushButtonCopyTxFee->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyTxFee->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyTxFee, SIGNAL(clicked()), this, SLOT(copyTxFee()));
-
-    ui->pushButtonCopyTxPaymentID->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyTxPaymentID->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyTxPaymentID, SIGNAL(clicked()), this, SLOT(copyTxPaymentID()));
-
-    ui->pushButtonCopyTxRingSize->setStyleSheet("background:transparent;");
-    ui->pushButtonCopyTxRingSize->setIcon(QIcon(":/icons/editcopy"));
-    connect(ui->pushButtonCopyTxRingSize, SIGNAL(clicked()), this, SLOT(copyTxRingSize()));
-
-    ui->pushButtonOpenTXID->setStyleSheet("background:transparent;");
-    ui->pushButtonOpenTXID->setIcon(QIcon(":/icons/eye"));
-    connect(ui->pushButtonOpenTXID, SIGNAL(clicked()), this, SLOT(openTXinExplorer()));
-
+    setupButtons();
     ui->buttonBox->button(QDialogButtonBox::Reset)->setText("Delete Transaction?");
     connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(deleteTransaction()));
 }
@@ -56,6 +25,45 @@ RevealTxDialog::RevealTxDialog(QWidget *parent) :
 RevealTxDialog::~RevealTxDialog()
 {
     delete ui;
+}
+
+struct ButtonInfo
+{
+    QString name;
+    void (RevealTxDialog::*slot)();
+};
+
+void RevealTxDialog::setupButtons()
+{
+    std::vector<ButtonInfo> buttons = {
+        {"pushButtonCopyID", &RevealTxDialog::copyID},
+        {"pushButtonCopyAddr", &RevealTxDialog::copyAddress},
+        {"pushButtonCopyPrivKey", &RevealTxDialog::copyPrivateKey},
+        {"pushButtonCopyTxAmount", &RevealTxDialog::copyTxAmount},
+        {"pushButtonCopyTxFee", &RevealTxDialog::copyTxFee},
+        {"pushButtonCopyTxPaymentID", &RevealTxDialog::copyTxPaymentID},
+        {"pushButtonCopyTxRingSize", &RevealTxDialog::copyTxRingSize},
+        {"pushButtonOpenTXID", &RevealTxDialog::openTXinExplorer},
+        {"pushButtonCopyBlockHash", &RevealTxDialog::copyBlockHash},
+        {"pushButtonCopyBlockHeight", &RevealTxDialog::copyBlockHeight},
+        {"pushButtonOpenBlock", &RevealTxDialog::openBlockInExplorer},
+        {"pushButtonOpenBlock1", &RevealTxDialog::openBlockInExplorer},
+    };
+
+    for(const auto& button : buttons)
+    {
+        QPushButton *pushButton = this->findChild<QPushButton*>(button.name);
+        if(pushButton != nullptr)
+        {
+            pushButton->setStyleSheet("background:transparent;");
+            if(button.name == "pushButtonOpenTXID" || button.name == "pushButtonOpenBlock" || button.name == "pushButtonOpenBlock1") {
+                pushButton->setIcon(QIcon(":/icons/eye"));
+            } else {
+                pushButton->setIcon(QIcon(":/icons/editcopy"));
+            }
+            connect(pushButton, &QPushButton::clicked, this, button.slot);
+        }
+    }
 }
 
 void RevealTxDialog::setTxID(QString strId) 
@@ -100,6 +108,16 @@ void RevealTxDialog::setTxRingSize(int64_t ringSize)
     ui->lblTxRingSize->setText(QString::number(ringSize));
 }
 
+void RevealTxDialog::setBlockHeight(int blockHeight)
+{
+    ui->lblBlockHeight->setText(QString::number(blockHeight));
+}
+
+void RevealTxDialog::setBlockHash(QString blockHash)
+{
+    ui->lblBlockHash->setText(blockHash);
+}
+
 void RevealTxDialog::on_buttonBox_accepted()
 {
     //We currently don't do anything on accept
@@ -140,6 +158,16 @@ void RevealTxDialog::copyTxRingSize(){
     clipboard->setText(ui->lblTxRingSize->text());
 }
 
+void RevealTxDialog::copyBlockHeight(){
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(ui->lblBlockHeight->text());
+}
+
+void RevealTxDialog::copyBlockHash(){
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(ui->lblBlockHash->text());
+}
+
 void RevealTxDialog::openTXinExplorer()
 {
     QString URL;
@@ -150,6 +178,18 @@ void RevealTxDialog::openTXinExplorer()
         URL = "https://testnet.prcycoin.com/tx/";
     }
     QDesktopServices::openUrl(QUrl(URL.append(ui->lblTxID->text())));
+}
+
+void RevealTxDialog::openBlockInExplorer()
+{
+    QString URL;
+    // Adjust link depending on Network
+    if (Params().NetworkID() == CBaseChainParams::MAIN) {
+        URL = "https://explorer.prcycoin.com/block/";
+    } else if (Params().NetworkID() == CBaseChainParams::TESTNET){
+        URL = "https://testnet.prcycoin.com/block/";
+    }
+    QDesktopServices::openUrl(QUrl(URL.append(ui->lblBlockHash->text())));
 }
 
 void RevealTxDialog::deleteTransaction()

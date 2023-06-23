@@ -160,13 +160,30 @@ void HistoryPage::on_cellClicked(int row, int column)
                 txdlg.setTxPaymentID(0);
             }
             txdlg.setTxRingSize(tx.vin[0].decoys.size() + 1);
+
+            // Get block index object using block hash
+            BlockMap::iterator it = mapBlockIndex.find(tx.hashBlock);
+            if (it != mapBlockIndex.end()) {
+                CBlockIndex* pindex = it->second;
+
+                // Get block height
+                int blockHeight = pindex->nHeight;
+                txdlg.setBlockHeight(blockHeight);
+
+                // Get block hash
+                uint256 blockHash = *pindex->phashBlock;
+                txdlg.setBlockHash(blockHash.ToString().c_str());
+            } else {
+                txdlg.setBlockHeight(-1);
+                txdlg.setBlockHash("Not in block");
+            }
         }
     }
     // Determine message to display in case private key is not found
     std::string txdlgMsg = "Request from Sender (if applicable)";
     if (type == "Minted") {
         privkeyFound = false;
-        txdlgMsg = "Minted transactions do not have a PrivKey";
+        txdlgMsg = "Minted transactions do not have a Private Key";
     }
     if (!privkeyFound) txdlg.setTxPrivKey(std::string(txdlgMsg).c_str());
 
