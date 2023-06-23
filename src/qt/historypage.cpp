@@ -94,15 +94,12 @@ void HistoryPage::connectWidgets() //add functions to widget signals
 void HistoryPage::on_cellClicked(int row, int column)
 {
     if (pwalletMain->IsLocked()) return;
-    //1 is column index for type
-    QTableWidgetItem* cell = ui->tableView->item(row, 1);
-    QString type = cell->data(0).toString();
-    std::string stdType = type.trimmed().toStdString();
-    //2 is column index for address
-    cell = ui->tableView->item(row, 2);
-    QString address = cell->data(0).toString();
-    //3 is column index for amount
-    cell = ui->tableView->item(row, 3);
+
+    // Get cell data and convert QString to std::string
+    std::string type = ui->tableView->item(row, 1)->data(0).toString().trimmed().toStdString();
+    std::string address = ui->tableView->item(row, 2)->data(0).toString().trimmed().toStdString();
+
+    QTableWidgetItem* cell = ui->tableView->item(row, 3); //3 is column index for amount
     QString amountQString = cell->data(0).toString();
 
     // Remove any sequence of whitespace with a single space and remove spaces
@@ -112,69 +109,69 @@ void HistoryPage::on_cellClicked(int row, int column)
     double amountDouble = amountQString.toDouble();
     CAmount amount = static_cast<CAmount>(amountDouble * COIN);
 
-    std::string stdAddress = address.trimmed().toStdString();
-    if (pwalletMain->addrToTxHashMap.count(stdAddress) == 1) {
-        RevealTxDialog txdlg;
-        txdlg.setStyleSheet(GUIUtil::loadStyleSheet());
+    // Check if address exists in the hash map
+    auto it = pwalletMain->addrToTxHashMap.find(address);
+    if (it == pwalletMain->addrToTxHashMap.end()) return;
 
-        txdlg.setTxID(pwalletMain->addrToTxHashMap[stdAddress].c_str());
+    // Create transaction dialog
+    RevealTxDialog txdlg;
+    txdlg.setStyleSheet(GUIUtil::loadStyleSheet());
+    txdlg.setTxID(it->second.c_str());
+    txdlg.setTxAddress(address.c_str());
 
-        txdlg.setTxAddress(stdAddress.c_str());
-        bool privkeyFound = false;
-        std::string txHash = pwalletMain->addrToTxHashMap[stdAddress];
-        if (IsHex(txHash)) {
-            uint256 hash;
-            hash.SetHex(txHash);
+    // Retrieve transaction details
+    bool privkeyFound = false;
+    std::string txHash = it->second;
+    if (IsHex(txHash)) {
+        uint256 hash;
+        hash.SetHex(txHash);
 
-            if (pwalletMain && pwalletMain->mapWallet.count(hash) == 1) {
-                CWalletTx tx = pwalletMain->mapWallet[hash];
-                for (size_t i = 0; i < tx.vout.size(); i++) {
-                    txnouttype type;
-                    std::vector<CTxDestination> addresses;
-                    int nRequired;
+        if (pwalletMain && pwalletMain->mapWallet.count(hash) == 1) {
+            CWalletTx tx = pwalletMain->mapWallet[hash];
+            for (size_t i = 0; i < tx.vout.size(); i++) {
+                txnouttype type;
+                std::vector<CTxDestination> addresses;
+                int nRequired;
 
-                    if (ExtractDestinations(tx.vout[i].scriptPubKey, type, addresses, nRequired)) {
-                        std::string parseddAddress = CBitcoinAddress(addresses[0]).ToString();
-                        if (stdAddress == parseddAddress) {
-                            if (tx.IsCoinStake() && !tx.vout[i].txPriv.empty()) {
-                                CKey txPriv;
-                                txPriv.Set(tx.vout[i].txPriv.begin(), tx.vout[i].txPriv.end(), true);
-                                txdlg.setTxPrivKey(CBitcoinSecret(txPriv).ToString().c_str());
+                if (ExtractDestinations(tx.vout[i].scriptPubKey, type, addresses, nRequired)) {
+                    std::string parsedAddress = CBitcoinAddress(addresses[0]).ToString();
+                    if (address == parsedAddress) {
+                        if (tx.IsCoinStake() && !tx.vout[i].txPriv.empty()) {
+                            CKey txPriv;
+                            txPriv.Set(tx.vout[i].txPriv.begin(), tx.vout[i].txPriv.end(), true);
+                            txdlg.setTxPrivKey(CBitcoinSecret(txPriv).ToString().c_str());
+                            privkeyFound = true;
+                        } else {
+                            std::string key = txHash + std::to_string(i);
+                            std::string secret;
+                            if (CWalletDB(pwalletMain->strWalletFile).ReadTxPrivateKey(key, secret)) {
+                                txdlg.setTxPrivKey(secret.c_str());
                                 privkeyFound = true;
-                            } else {
-                                std::string key = txHash + std::to_string(i);
-                                std::string secret;
-                                if (CWalletDB(pwalletMain->strWalletFile).ReadTxPrivateKey(key, secret)) {
-                                    txdlg.setTxPrivKey(secret.c_str());
-                                    privkeyFound = true;
-                                }
                             }
                         }
                     }
                 }
-                txdlg.setTxAmount(amount);
-                txdlg.setTxFee(tx.nTxFee);
-                if (tx.hasPaymentID) {
-                    txdlg.setTxPaymentID(tx.paymentID);
-                } else {
-                    txdlg.setTxPaymentID(0);
-                }
-                txdlg.setTxRingSize(tx.vin[0].decoys.size() + 1);
             }
+            txdlg.setTxAmount(amount);
+            txdlg.setTxFee(tx.nTxFee);
+            if (tx.hasPaymentID) {
+                txdlg.setTxPaymentID(tx.paymentID);
+            } else {
+                txdlg.setTxPaymentID(0);
+            }
+            txdlg.setTxRingSize(tx.vin[0].decoys.size() + 1);
         }
-        std::string txdlgMsg = "Request from Sender (if applicable)";
-        if (stdType == "Minted") {
-            privkeyFound = false;
-            txdlgMsg = "Minted transactions do not have a PrivKey";
-        }
-        if (pwalletMain->IsLocked()) {
-            privkeyFound = false;
-            txdlgMsg = "Wallet must be unlocked to view PrivKey";
-        }
-        if (!privkeyFound) txdlg.setTxPrivKey(std::string(txdlgMsg).c_str());
-
-        txdlg.exec();
     }
+    // Determine message to display in case private key is not found
+    std::string txdlgMsg = "Request from Sender (if applicable)";
+    if (type == "Minted") {
+        privkeyFound = false;
+        txdlgMsg = "Minted transactions do not have a PrivKey";
+    }
+    if (!privkeyFound) txdlg.setTxPrivKey(std::string(txdlgMsg).c_str());
+
+    // Show dialog
+    txdlg.exec();
 }
 
 void HistoryPage::resizeEvent(QResizeEvent* event)
