@@ -103,7 +103,15 @@ void HistoryPage::on_cellClicked(int row, int column)
     QString address = cell->data(0).toString();
     //3 is column index for amount
     cell = ui->tableView->item(row, 3);
-    QString amount = cell->data(0).toString();
+    QString amountQString = cell->data(0).toString();
+
+    // Remove any sequence of whitespace with a single space and remove spaces
+    amountQString = amountQString.simplified();
+    amountQString.remove(' ');
+
+    double amountDouble = amountQString.toDouble();
+    CAmount amount = static_cast<CAmount>(amountDouble * COIN);
+
     std::string stdAddress = address.trimmed().toStdString();
     if (pwalletMain->addrToTxHashMap.count(stdAddress) == 1) {
         RevealTxDialog txdlg;
