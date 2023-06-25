@@ -19,13 +19,16 @@ public:
     explicit RevealTxDialog(QWidget *parent = 0);
     ~RevealTxDialog();
 
+    void setupButtons();
     void setTxID(QString strId);
     void setTxAddress(QString strAddr);
     void setTxPrivKey(QString strPrivKey);
-    void setTxAmount(QString amount);
+    void setTxAmount(CAmount amount);
     void setTxFee(CAmount fee);
     void setTxPaymentID(uint64_t paymentID);
     void setTxRingSize(int64_t ringSize);
+    void setBlockHeight(int blockheight);
+    void setBlockHash(QString blockHash);
 
 private Q_SLOTS:
     void on_buttonBox_accepted();
@@ -36,7 +39,10 @@ private Q_SLOTS:
     void copyTxFee();
     void copyTxPaymentID();
     void copyTxRingSize();
+    void copyBlockHash();
+    void copyBlockHeight();
     void openTXinExplorer();
+    void openBlockInExplorer();
     void deleteTransaction();
 
 private:
