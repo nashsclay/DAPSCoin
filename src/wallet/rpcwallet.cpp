@@ -1341,24 +1341,10 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
     if ((nFrom + nCount) > (int)ret.size())
         nCount = ret.size() - nFrom;
 
-    std::vector<UniValue> arrTmp = ret.getValues();
-
-    std::vector<UniValue>::iterator first = arrTmp.begin();
-    std::advance(first, nFrom);
-
-    std::vector<UniValue>::iterator last = arrTmp.begin();
-    std::advance(last, nFrom + nCount);	   
-
-    if (last != arrTmp.end()) arrTmp.erase(last, arrTmp.end());
-    if (first != arrTmp.begin()) arrTmp.erase(arrTmp.begin(), first);
-
-    std::reverse(arrTmp.begin(), arrTmp.end()); // Return oldest to newest
-
-    ret.clear();
-    ret.setArray();
-    ret.push_backV(arrTmp);
-
-    return ret;
+    const std::vector<UniValue>& txs = ret.getValues();
+    UniValue result{UniValue::VARR};
+    result.push_backV({ txs.rend() - nFrom - nCount, txs.rend() - nFrom }); // Return oldest to newest
+    return result;
 }
 
 UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
@@ -1453,24 +1439,10 @@ UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
     if ((nFrom + nCount) > (int)ret.size())
         nCount = ret.size() - nFrom;
 
-    std::vector<UniValue> arrTmp = ret.getValues();
-
-    std::vector<UniValue>::iterator first = arrTmp.begin();
-    std::advance(first, nFrom);
-
-    std::vector<UniValue>::iterator last = arrTmp.begin();
-    std::advance(last, nFrom + nCount);
-
-    if (last != arrTmp.end()) arrTmp.erase(last, arrTmp.end());
-    if (first != arrTmp.begin()) arrTmp.erase(arrTmp.begin(), first);
-
-    std::reverse(arrTmp.begin(), arrTmp.end()); // Return oldest to newest
-
-    ret.clear();
-    ret.setArray();
-    ret.push_backV(arrTmp);
-
-    return ret;
+    const std::vector<UniValue>& txs = ret.getValues();
+    UniValue result{UniValue::VARR};
+    result.push_backV({ txs.rend() - nFrom - nCount, txs.rend() - nFrom }); // Return oldest to newest
+    return result;
 }
 
 UniValue listaccounts(const UniValue& params, bool fHelp)
