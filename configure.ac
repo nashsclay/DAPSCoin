@@ -203,12 +203,6 @@ if test "x$use_asm" = xyes; then
   AC_DEFINE(USE_ASM, 1, [Define this symbol to build in assembly routines])
 fi
 
-AC_ARG_WITH([system-univalue],
-  [AS_HELP_STRING([--with-system-univalue],
-  [Build with system UniValue (default is no)])],
-  [system_univalue=$withval],
-  [system_univalue=no]
-)
 AC_ARG_ENABLE([zmq],
   [AS_HELP_STRING([--disable-zmq],
   [disable ZMQ notifications])],
@@ -1051,36 +1045,6 @@ if test "x$use_zmq" = xyes; then
   esac
 fi
 
-dnl univalue check
-
-need_bundled_univalue=yes
-
-if test x$build_bitcoin_utils$build_bitcoind$bitcoin_enable_qt$use_tests$use_bench = xnonononono; then
-  need_bundled_univalue=no
-else
-
-  if test x$system_univalue != xno; then
-    PKG_CHECK_MODULES([UNIVALUE], [libunivalue >= 1.0.4], [found_univalue=yes], [found_univalue=no])
-    if test x$found_univalue = xyes; then
-      system_univalue=yes
-      need_bundled_univalue=no
-    elif test x$system_univalue = xyes; then
-      AC_MSG_ERROR([univalue not found])
-    else
-      system_univalue=no
-    fi
-  fi
-
-  if test x$need_bundled_univalue = xyes; then
-    UNIVALUE_CFLAGS='-I$(srcdir)/univalue/include'
-    UNIVALUE_LIBS='univalue/libunivalue.la'
-  fi
-fi
-
-AM_CONDITIONAL([EMBEDDED_UNIVALUE],[test x$need_bundled_univalue = xyes])
-AC_SUBST(UNIVALUE_CFLAGS)
-AC_SUBST(UNIVALUE_LIBS)
-
 AC_MSG_CHECKING([whether to build prcycoind])
 AM_CONDITIONAL([BUILD_BITCOIND], [test x$build_bitcoind = xyes])
 AC_MSG_RESULT($build_bitcoind)
@@ -1327,10 +1291,6 @@ PKG_CONFIG_PATH="$PKGCONFIG_PATH_TEMP"
 PKGCONFIG_LIBDIR_TEMP="$PKG_CONFIG_LIBDIR"
 unset PKG_CONFIG_LIBDIR
 PKG_CONFIG_LIBDIR="$PKGCONFIG_LIBDIR_TEMP"
-
-if test x$need_bundled_univalue = xyes; then
-  AC_CONFIG_SUBDIRS([src/univalue])
-fi
 
 ac_configure_args="${ac_configure_args} --enable-module-bulletproof --enable-experimental --enable-module-generator --enable-module-commitment --disable-shared --with-pic --disable-jni"
 

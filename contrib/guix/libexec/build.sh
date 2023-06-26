@@ -199,7 +199,7 @@ export PATH="${BASEPREFIX}/${HOST}/native/bin:${PATH}"
                     CXXFLAGS="${HOST_CXXFLAGS}" \
                     ${HOST_LDFLAGS:+LDFLAGS="${HOST_LDFLAGS}"}
 
-    sed -i.old 's/-lstdc++ //g' config.status libtool src/univalue/config.status src/univalue/libtool
+    sed -i.old 's/-lstdc++ //g' config.status libtool
 
     # Build PRCYcoin
     make --jobs="$MAX_JOBS" ${V:+V=1}
