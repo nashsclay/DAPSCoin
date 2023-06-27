@@ -1298,8 +1298,6 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
             "\nList transactions 100 to 120 from the tabby account\n" + HelpExampleCli("listtransactions", "\"tabby\" 20 100") +
             "\nAs a json rpc call\n" + HelpExampleRpc("listtransactions", "\"tabby\", 20, 100"));
 
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
     std::string strAccount = "*";
     if (params.size() > 0)
         strAccount = params[0].get_str();
@@ -1321,19 +1319,24 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
 
     UniValue ret(UniValue::VARR);
 
-    const CWallet::TxItems & txOrdered = pwalletMain->wtxOrdered;
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    // iterate backwards until we have nCount items to return:
-    for (CWallet::TxItems::const_reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
-        CWalletTx* const pwtx = (*it).second.first;
-        if (pwtx != 0)
-            ListTransactions(*pwtx, strAccount, 0, true, ret, filter);
-        CAccountingEntry* const pacentry = (*it).second.second;
-        if (pacentry != 0)
-            AcentryToJSON(*pacentry, strAccount, ret);
+        const CWallet::TxItems& txOrdered = pwalletMain->wtxOrdered;
 
-        if ((int)ret.size() >= (nCount + nFrom)) break;
+        // iterate backwards until we have nCount items to return:
+        for (CWallet::TxItems::const_reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
+            CWalletTx* const pwtx = (*it).second.first;
+            if (pwtx != 0)
+                ListTransactions(*pwtx, strAccount, 0, true, ret, filter);
+            CAccountingEntry* const pacentry = (*it).second.second;
+            if (pacentry != 0)
+                AcentryToJSON(*pacentry, strAccount, ret);
+
+            if ((int)ret.size() >= (nCount + nFrom)) break;
+        }
     }
+
     // ret is newest to oldest
 
     if (nFrom > (int)ret.size())
@@ -1398,8 +1401,6 @@ UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
             "\nList transactions 100 to 120 from the Payment ID\n" + HelpExampleCli("listtransactionsbypaymentid", "123456 20 100") +
             "\nAs a json rpc call\n" + HelpExampleRpc("listtransactionsbypaymentid", "123456, 20, 100"));
 
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
     std::string strAccount = "*";
     uint64_t paymentID = 0;
     if (params.size() > 0)
@@ -1419,19 +1420,24 @@ UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
 
     UniValue ret(UniValue::VARR);
 
-    const CWallet::TxItems & txOrdered = pwalletMain->wtxOrdered;
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    // iterate backwards until we have nCount items to return:
-    for (CWallet::TxItems::const_reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
-        CWalletTx* const pwtx = (*it).second.first;
-        if (pwtx != 0 && (pwtx->hasPaymentID && pwtx->paymentID == paymentID))
-            ListTransactions(*pwtx, strAccount, 0, true, ret, filter);
-        CAccountingEntry* const pacentry = (*it).second.second;
-        if (pacentry != 0)
-            AcentryToJSON(*pacentry, strAccount, ret);
+        const CWallet::TxItems& txOrdered = pwalletMain->wtxOrdered;
 
-        if ((int)ret.size() >= (nCount + nFrom)) break;
+        // iterate backwards until we have nCount items to return:
+        for (CWallet::TxItems::const_reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
+            CWalletTx* const pwtx = (*it).second.first;
+            if (pwtx != 0 && (pwtx->hasPaymentID && pwtx->paymentID == paymentID))
+                ListTransactions(*pwtx, strAccount, 0, true, ret, filter);
+            CAccountingEntry* const pacentry = (*it).second.second;
+            if (pacentry != 0)
+                AcentryToJSON(*pacentry, strAccount, ret);
+
+            if ((int)ret.size() >= (nCount + nFrom)) break;
+        }
     }
+
     // ret is newest to oldest
 
     if (nFrom > (int)ret.size())
