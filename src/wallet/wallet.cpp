@@ -46,6 +46,9 @@
 #include <malloc.h>
 #endif
 
+#include <algorithm>
+#include <random>
+
 CWallet* pwalletMain = nullptr;
 /** Transaction fee set by the user */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
@@ -2874,7 +2877,9 @@ bool CWallet::SelectCoinsMinConf(bool needFee, CAmount& feeNeeded, int ringSize,
     CAmount nTotalLower = 0;
     std::string s = "";
 
-    random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(vCoins.begin(), vCoins.end(), g);
 
     for (const COutput& output : vCoins) {
         if (!output.fSpendable)
