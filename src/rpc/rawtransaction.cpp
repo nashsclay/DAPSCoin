@@ -226,7 +226,7 @@ UniValue getrawtransactionbyblockheight(const UniValue& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getrawtransaction", "\"mytxid\"") + HelpExampleCli("getrawtransaction", "\"mytxid\" 1") + HelpExampleRpc("getrawtransaction", "\"mytxid\", 1"));
 
-    int nHeight = params[0].get_int();
+    int nHeight = params[0].getInt<int>();
     if (nHeight > chainActive.Height()) {
         throw JSONRPCError(RPC_INVALID_BLOCK_HEIGHT, "Block height is too high");
     }
@@ -330,7 +330,7 @@ UniValue getrawtransaction(const UniValue& params, bool fHelp)
 
     bool fVerbose = false;
     if (!params[1].isNull()) {
-        fVerbose = params[1].isNum() ? (params[1].get_int() != 0) : params[1].get_bool();
+        fVerbose = params[1].isNum() ? (params[1].getInt<int>() != 0) : params[1].get_bool();
     }
 
     if (!params[2].isNull()) {
@@ -411,11 +411,11 @@ UniValue listunspent(const UniValue& params, bool fHelp)
 
     int nMinDepth = 1;
     if (params.size() > 0)
-        nMinDepth = params[0].get_int();
+        nMinDepth = params[0].getInt<int>();
 
     int nMaxDepth = 9999999;
     if (params.size() > 1)
-        nMaxDepth = params[1].get_int();
+        nMaxDepth = params[1].getInt<int>();
 
     std::set<CBitcoinAddress> setAddress;
     if (params.size() > 2) {
@@ -509,11 +509,11 @@ UniValue getunspentcount(const UniValue& params, bool fHelp)
 
     int nMinDepth = 1;
     if (params.size() > 0)
-        nMinDepth = params[0].get_int();
+        nMinDepth = params[0].getInt<int>();
 
     int nMaxDepth = 9999999;
     if (params.size() > 1)
-        nMaxDepth = params[1].get_int();
+        nMaxDepth = params[1].getInt<int>();
 
     std::set<CBitcoinAddress> setAddress;
     if (params.size() > 2) {
@@ -598,7 +598,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp)
     CMutableTransaction rawTx;
 
     if (params.size() > 2 && !params[2].isNull()) {
-        int64_t nLockTime = params[2].get_int64();
+        int64_t nLockTime = params[2].getInt<int64_t>();
         if (nLockTime < 0 || nLockTime > std::numeric_limits<uint32_t>::max())
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, locktime out of range");
         rawTx.nLockTime = nLockTime;
@@ -613,7 +613,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp)
         const UniValue& vout_v = find_value(o, "vout");
         if (!vout_v.isNum())
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, missing vout key");
-        int nOutput = vout_v.get_int();
+        int nOutput = vout_v.getInt<int>();
         if (nOutput < 0)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout must be positive");
 
@@ -622,7 +622,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp)
         // set the sequence number if passed in the parameters object
         const UniValue& sequenceObj = find_value(o, "sequence");
         if (sequenceObj.isNum()) {
-            int64_t seqNr64 = sequenceObj.get_int64();
+            int64_t seqNr64 = sequenceObj.getInt<int64_t>();
             if (seqNr64 < 0 || seqNr64 > std::numeric_limits<uint32_t>::max())
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, sequence number is out of range");
             else
@@ -923,7 +923,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp)
 
             uint256 txid = ParseHashO(prevOut, "txid");
 
-            int nOut = find_value(prevOut, "vout").get_int();
+            int nOut = find_value(prevOut, "vout").getInt<int>();
             if (nOut < 0)
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "vout must be positive");
 

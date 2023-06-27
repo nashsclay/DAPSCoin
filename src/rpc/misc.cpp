@@ -361,7 +361,7 @@ UniValue validatestealthaddress(const UniValue& params, bool fHelp)
  * Used by addmultisigaddress / createmultisig:
  */
 CScript _createmultisig_redeemScript(const UniValue& params) {
-    int nRequired = params[0].get_int();
+    int nRequired = params[0].getInt<int>();
     const UniValue& keys = params[1].get_array();
 
     // Gather public keys
@@ -520,7 +520,7 @@ UniValue setmocktime(const UniValue& params, bool fHelp) {
     LOCK(cs_main);
 
     RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
-    SetMockTime(params[0].get_int64());
+    SetMockTime(params[0].getInt<int64_t>());
 
     return NullUniValue;
 }

@@ -256,7 +256,7 @@ UniValue waitfornewblock(const UniValue& params, bool fHelp)
         );
     int timeout = 0;
     if (params.size() > 0)
-        timeout = params[0].get_int();
+        timeout = params[0].getInt<int>();
     CUpdatedBlock block;
     {
         std::unique_lock<std::mutex> lock(cs_blockchange);
@@ -300,7 +300,7 @@ UniValue waitforblock(const UniValue& params, bool fHelp)
     uint256 hash = uint256S(params[0].get_str());
 
     if (params.size() > 1)
-        timeout = params[1].get_int();
+        timeout = params[1].getInt<int>();
 
     CUpdatedBlock block;
     {
@@ -343,10 +343,10 @@ UniValue waitforblockheight(const UniValue& params, bool fHelp)
         );
     int timeout = 0;
 
-    int height = params[0].get_int();
+    int height = params[0].getInt<int>();
 
     if (params.size() > 1)
-        timeout = params[1].get_int();
+        timeout = params[1].getInt<int>();
 
     CUpdatedBlock block;
     {
@@ -477,7 +477,7 @@ UniValue getblockhash(const UniValue& params, bool fHelp)
 
     LOCK(cs_main);
 
-    int nHeight = params[0].get_int();
+    int nHeight = params[0].getInt<int>();
     if (nHeight < 0 || nHeight > chainActive.Height())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
 
@@ -675,7 +675,7 @@ UniValue gettxout(const UniValue& params, bool fHelp)
 
     std::string strHash = params[0].get_str();
     uint256 hash(uint256S(strHash));
-    int n = params[1].get_int();
+    int n = params[1].getInt<int>();
     bool fMempool = true;
     if (params.size() > 2)
         fMempool = params[2].get_bool();
@@ -729,7 +729,7 @@ UniValue verifychain(const UniValue& params, bool fHelp)
     int nCheckLevel = 4;
     int nCheckDepth = GetArg("-checkblocks", 288);
     if (params.size() > 0)
-        nCheckDepth = params[0].get_int();
+        nCheckDepth = params[0].getInt<int>();
 
     fVerifyingBlocks = true;
     bool fVerified = CVerifyDB().VerifyDB(pcoinsTip, nCheckLevel, nCheckDepth);
@@ -940,7 +940,7 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getfeeinfo", "5") + HelpExampleRpc("getfeeinfo", "5"));
 
-    int nBlocks = params[0].get_int();
+    int nBlocks = params[0].getInt<int>();
     int nBestHeight;
     {
         LOCK(cs_main);
@@ -1033,7 +1033,7 @@ UniValue resyncfrom(const UniValue& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("resyncfrom", "\"height\"") + HelpExampleRpc("resyncfrom", "\"100000\""));
 
-    int height = params[0].get_int();
+    int height = params[0].getInt<int>();
     CValidationState state;
 
     {
@@ -1212,7 +1212,7 @@ UniValue setmaxreorgdepth(const UniValue& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("setmaxreorgdepth", "100") + HelpExampleRpc("setmaxreorgdepth", "100"));
 
-    int num = params[0].get_int();
+    int num = params[0].getInt<int>();
     if (num <= 5) 
         throw std::runtime_error("Invalid number");
     {
@@ -1370,12 +1370,12 @@ void validaterange(const UniValue& params, int& heightStart, int& heightEnd, int
         nBestHeight = chainActive.Height();
     }
 
-    heightStart = params[0].get_int();
+    heightStart = params[0].getInt<int>();
     if (heightStart > nBestHeight) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid starting block (%d). Out of range.", heightStart));
     }
 
-    const int range = params[1].get_int();
+    const int range = params[1].getInt<int>();
     if (range < 1) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid block range. Must be strictly positive.");
     }

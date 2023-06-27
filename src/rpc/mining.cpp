@@ -92,7 +92,7 @@ UniValue getnetworkhashps(const UniValue& params, bool fHelp)
             HelpExampleCli("getnetworkhashps", "") + HelpExampleRpc("getnetworkhashps", ""));
 
     LOCK(cs_main);
-    return GetNetworkHashPS(params.size() > 0 ? params[0].get_int() : 120, params.size() > 1 ? params[1].get_int() : -1);
+    return GetNetworkHashPS(params.size() > 0 ? params[0].getInt<int>() : 120, params.size() > 1 ? params[1].getInt<int>() : -1);
 }
 
 #ifdef ENABLE_WALLET
@@ -138,7 +138,7 @@ UniValue generate(const UniValue& params, bool fHelp)
     int nHeightStart = 0;
     int nHeightEnd = 0;
     int nHeight = 0;
-    int nGenerate = params[0].get_int();
+    int nGenerate = params[0].getInt<int>();
     CReserveKey reservekey(pwalletMain);
 
     {   // Don't keep cs_main locked
@@ -208,7 +208,7 @@ UniValue setgenerate(const UniValue& params, bool fHelp)
 
     int nGenProcLimit = -1;
     if (params.size() > 1) {
-        nGenProcLimit = params[1].get_int();
+        nGenProcLimit = params[1].getInt<int>();
         if (nGenProcLimit == 0)
             fGenerate = false;
     }
@@ -248,7 +248,7 @@ UniValue generatepoa(const UniValue& params, bool fHelp)
 
     int period = 60;//default value
     if (params.size() > 1) {
-        period = params[1].get_int();
+        period = params[1].getInt<int>();
     }
 
     // don't return until a poa block is successfully generated and added to the chain
@@ -378,7 +378,7 @@ UniValue prioritisetransaction(const UniValue& params, bool fHelp)
 
     uint256 hash = ParseHashStr(params[0].get_str(), "txid");
 
-    CAmount nAmount = params[2].get_int64();
+    CAmount nAmount = params[2].getInt<int64_t>();
 
     mempool.PrioritiseTransaction(hash, params[0].get_str(), params[1].get_real(), nAmount);
     return true;
@@ -873,8 +873,8 @@ UniValue setminingnbits(const UniValue& params, bool fHelp) {
     if (fHelp || params.size() != 2)
         throw std::runtime_error(
                 "setminingnbits value 1/0\n");
-    unsigned int nbits = (unsigned int) params[0].get_int64();
-    int changed= params[1].get_int();
+    unsigned int nbits = (unsigned int) params[0].getInt<int64_t>();
+    int changed= params[1].getInt<int>();
     UniValue result(UniValue::VOBJ);
     result.pushKV("previous_bits", strprintf("%08x", N_BITS));
     if (changed) {
@@ -1000,7 +1000,7 @@ UniValue estimatefee(const UniValue& params, bool fHelp)
 
     RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
 
-    int nBlocks = params[0].get_int();
+    int nBlocks = params[0].getInt<int>();
     if (nBlocks < 1)
         nBlocks = 1;
 
@@ -1031,7 +1031,7 @@ UniValue estimatepriority(const UniValue& params, bool fHelp)
 
     RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
 
-    int nBlocks = params[0].get_int();
+    int nBlocks = params[0].getInt<int>();
     if (nBlocks < 1)
         nBlocks = 1;
 

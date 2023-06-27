@@ -498,7 +498,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp)
     // Minimum confirmations
     int nMinDepth = 1;
     if (params.size() > 1)
-        nMinDepth = params[1].get_int();
+        nMinDepth = params[1].getInt<int>();
 
     // Tally
     CAmount nAmount = 0;
@@ -540,7 +540,7 @@ UniValue getreceivedbyaccount(const UniValue& params, bool fHelp)
     // Minimum confirmations
     int nMinDepth = 1;
     if (params.size() > 1)
-        nMinDepth = params[1].get_int();
+        nMinDepth = params[1].getInt<int>();
 
     // Get the set of pub keys assigned to accountValue getreceivedbyaccount(const Array& params, bool fHelp)
     std::string strAccount = AccountFromValue(params[0]);
@@ -625,7 +625,7 @@ UniValue getbalance(const UniValue& params, bool fHelp)
 
     int nMinDepth = 1;
     if (params.size() > 1)
-        nMinDepth = params[1].get_int();
+        nMinDepth = params[1].getInt<int>();
     isminefilter filter = ISMINE_SPENDABLE;
     if (params.size() > 2)
         if (params[2].get_bool())
@@ -729,7 +729,7 @@ UniValue movecmd(const UniValue& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[2]);
     if (params.size() > 3)
         // unused parameter, used to be nMinDepth, keep type-checking it though
-        (void)params[3].get_int();
+        (void)params[3].getInt<int>();
     std::string strComment;
     if (params.size() > 4)
         strComment = params[4].get_str();
@@ -801,7 +801,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[2]);
     int nMinDepth = 1;
     if (params.size() > 3)
-        nMinDepth = params[3].get_int();
+        nMinDepth = params[3].getInt<int>();
 
     CWalletTx wtx;
     wtx.strFromAccount = strAccount;
@@ -853,7 +853,7 @@ UniValue sendmany(const UniValue& params, bool fHelp)
     UniValue sendTo = params[1].get_obj();
     int nMinDepth = 1;
     if (params.size() > 2)
-        nMinDepth = params[2].get_int();
+        nMinDepth = params[2].getInt<int>();
 
     CWalletTx wtx;
     wtx.strFromAccount = strAccount;
@@ -967,7 +967,7 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
     // Minimum confirmations
     int nMinDepth = 1;
     if (params.size() > 0)
-        nMinDepth = params[0].get_int();
+        nMinDepth = params[0].getInt<int>();
 
     // Whether to include empty accounts
     bool fIncludeEmpty = false;
@@ -1303,10 +1303,10 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
         strAccount = params[0].get_str();
     int nCount = 10;
     if (params.size() > 1)
-        nCount = params[1].get_int();
+        nCount = params[1].getInt<int>();
     int nFrom = 0;
     if (params.size() > 2)
-        nFrom = params[2].get_int();
+        nFrom = params[2].getInt<int>();
     isminefilter filter = ISMINE_SPENDABLE;
     if (params.size() > 3)
         if (params[3].get_bool())
@@ -1404,13 +1404,13 @@ UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
     std::string strAccount = "*";
     uint64_t paymentID = 0;
     if (params.size() > 0)
-        paymentID = params[0].get_int64();
+        paymentID = params[0].getInt<int64_t>();
     int nCount = 10;
     if (params.size() > 1)
-        nCount = params[1].get_int();
+        nCount = params[1].getInt<int>();
     int nFrom = 0;
     if (params.size() > 2)
-        nFrom = params[2].get_int();
+        nFrom = params[2].getInt<int>();
     isminefilter filter = ISMINE_SPENDABLE;
 
     if (nCount < 0)
@@ -1476,7 +1476,7 @@ UniValue listaccounts(const UniValue& params, bool fHelp)
 
     int nMinDepth = 1;
     if (params.size() > 0)
-        nMinDepth = params[0].get_int();
+        nMinDepth = params[0].getInt<int>();
     isminefilter includeWatchonly = ISMINE_SPENDABLE;
     if (params.size() > 1)
         if (params[1].get_bool())
@@ -1573,7 +1573,7 @@ UniValue listsinceblock(const UniValue& params, bool fHelp)
     }
 
     if (params.size() > 1) {
-        target_confirms = params[1].get_int();
+        target_confirms = params[1].getInt<int>();
 
         if (target_confirms < 1)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
@@ -1715,9 +1715,9 @@ UniValue keypoolrefill(const UniValue& params, bool fHelp)
     // 0 is interpreted by TopUpKeyPool() as the default keypool size given by -keypool
     unsigned int kpSize = 0;
     if (params.size() > 0) {
-        if (params[0].get_int() < 0)
+        if (params[0].getInt<int>() < 0)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid size.");
-        kpSize = (unsigned int)params[0].get_int();
+        kpSize = (unsigned int)params[0].getInt<int>();
     }
 
     EnsureWalletIsUnlocked();
@@ -1781,7 +1781,7 @@ UniValue unlockwallet(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
 
     // Get the timeout
-    int64_t nSleepTime = params[1].get_int64();
+    int64_t nSleepTime = params[1].getInt<int64_t>();
     // Timeout cannot be negative, otherwise it will relock immediately
     if (nSleepTime < 0) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Timeout cannot be negative.");
@@ -1986,7 +1986,7 @@ UniValue lockunspent(const UniValue& params, bool fHelp)
         if (!IsHex(txid))
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected hex txid");
 
-        int nOutput = find_value(o, "vout").get_int();
+        int nOutput = find_value(o, "vout").getInt<int>();
         if (nOutput < 0)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout must be positive");
 
@@ -2192,7 +2192,7 @@ UniValue setstakesplitthreshold(const UniValue& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("setstakesplitthreshold", "5000") + HelpExampleRpc("setstakesplitthreshold", "5000"));
 
-    uint64_t nStakeSplitThreshold = params[0].get_int();
+    uint64_t nStakeSplitThreshold = params[0].getInt<int>();
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Unlock wallet to use this feature");
     if (nStakeSplitThreshold > 999999)
@@ -2253,7 +2253,7 @@ UniValue autocombinedust(const UniValue& params, bool fHelp)
     CAmount nThreshold = 0;
 
     if (fEnable) {
-        nThreshold = params[1].get_int();
+        nThreshold = params[1].getInt<int>();
     } else {
         nThreshold = 0;
     }
@@ -2621,7 +2621,7 @@ UniValue generateintegratedaddress(const UniValue& params, bool fHelp)
     uint64_t paymentID = 0;
     std::string address;
     if (params.size() == 1) {
-        paymentID = params[0].get_int64();
+        paymentID = params[0].getInt<int64_t>();
         address = pwalletMain->GenerateIntegratedAddressWithProvidedPaymentID("masteraccount", paymentID);
     } else {
         address = pwalletMain->GenerateIntegratedAddressWithRandomPaymentID("masteraccount", paymentID);
@@ -2903,7 +2903,7 @@ UniValue setdecoyconfirmation(const UniValue& params, bool fHelp)
 
     EnsureWallet();
 
-    int confirmation = params[0].get_int();
+    int confirmation = params[0].getInt<int>();
 
     if (confirmation <= 0) {
         throw JSONRPCError(RPC_PRIVACY_DECOY_MIN,
@@ -3049,7 +3049,7 @@ UniValue rescanwallettransactions(const UniValue& params, bool fHelp) {
 
     int nHeight = 0;
     if (params.size() == 1) {
-        nHeight = params[0].get_int();
+        nHeight = params[0].getInt<int>();
     }
     if (!pwalletMain->RescanAfterUnlock(nHeight)) {
         return "Failed to rescan";

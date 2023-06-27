@@ -44,7 +44,7 @@ namespace invalid_out
             if (!vN.isNum())
                 return false;
 
-            auto n = static_cast<uint32_t>(vN.get_int());
+            auto n = static_cast<uint32_t>(vN.getInt<int>());
             COutPoint out(txid, n);
             setInvalidOutPoints.insert(out);
         }

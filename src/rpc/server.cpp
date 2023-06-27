@@ -157,7 +157,7 @@ int ParseInt(const UniValue& o, std::string strKey) {
     if (!v.isNum())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, " + strKey + "is not an int");
 
-    return v.get_int();
+    return v.getInt<int>();
 }
 
 bool ParseBool(const UniValue& o, std::string strKey) {

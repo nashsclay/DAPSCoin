@@ -905,7 +905,7 @@ UniValue getseesawrewardwithheight (const UniValue& params, bool fHelp)
 
     int nblockHeight = chainActive.Tip()->nHeight;;
     if (params.size() == 1) {
-        nblockHeight = params[0].get_int();
+        nblockHeight = params[0].getInt<int>();
     }
 
     UniValue obj(UniValue::VOBJ);

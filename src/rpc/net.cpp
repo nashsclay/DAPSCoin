@@ -431,7 +431,7 @@ UniValue setban(const UniValue& params, bool fHelp)
             throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: IP/Subnet already banned");
         int64_t banTime = 0; //use standard bantime if not specified
         if (params.size() >= 3 && !params[2].isNull())
-            banTime = params[2].get_int64();
+            banTime = params[2].getInt<int64_t>();
         bool absolute = false;
         if (params.size() == 4)
             absolute = params[3].get_bool();

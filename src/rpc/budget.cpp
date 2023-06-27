@@ -87,14 +87,14 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     if (strURL.size() > 64)
         throw std::runtime_error("Invalid url, limit of 64 characters.");
 
-    int nPaymentCount = params[2].get_int();
+    int nPaymentCount = params[2].getInt<int>();
     if (nPaymentCount < 1)
         throw std::runtime_error("Invalid payment count, must be more than zero.");
 
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
 
-    int nBlockStart = params[3].get_int();
+    int nBlockStart = params[3].getInt<int>();
     if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
         int nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
         throw std::runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
@@ -176,14 +176,14 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
     if (strURL.size() > 64)
         throw std::runtime_error("Invalid url, limit of 64 characters.");
 
-    int nPaymentCount = params[2].get_int();
+    int nPaymentCount = params[2].getInt<int>();
     if (nPaymentCount < 1)
         throw std::runtime_error("Invalid payment count, must be more than zero.");
 
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
 
-    int nBlockStart = params[3].get_int();
+    int nBlockStart = params[3].getInt<int>();
     if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
         int nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
         throw std::runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
@@ -698,7 +698,7 @@ UniValue mnbudgetrawvote(const UniValue& params, bool fHelp)
             HelpExampleCli("mnbudgetrawvote", "") + HelpExampleRpc("mnbudgetrawvote", ""));
 
     uint256 hashMnTx = ParseHashV(params[0], "mn tx hash");
-    int nMnTxIndex = params[1].get_int();
+    int nMnTxIndex = params[1].getInt<int>();
     CTxIn vin = CTxIn(hashMnTx, nMnTxIndex);
 
     uint256 hashProposal = ParseHashV(params[2], "Proposal hash");
@@ -709,7 +709,7 @@ UniValue mnbudgetrawvote(const UniValue& params, bool fHelp)
     if (strVote == "yes") nVote = VOTE_YES;
     if (strVote == "no") nVote = VOTE_NO;
 
-    int64_t nTime = params[4].get_int64();
+    int64_t nTime = params[4].getInt<int64_t>();
     std::string strSig = params[5].get_str();
     bool fInvalid = false;
     std::vector<unsigned char> vchSig = DecodeBase64(strSig.c_str(), &fInvalid);

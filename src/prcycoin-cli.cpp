@@ -242,7 +242,7 @@ int CommandLineRPC(int argc, char* argv[])
 
                 if (!error.isNull()) {
                     // Error
-                    int code = error["code"].get_int();
+                    int code = error["code"].getInt<int>();
                     if (fWait && code == RPC_IN_WARMUP)
                         throw CConnectionFailed("server in warmup");
                     strPrint = "error: " + error.write();
