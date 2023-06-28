@@ -37,52 +37,52 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fInclud
     std::vector<CTxDestination> addresses;
     int nRequired;
 
-    out.push_back(Pair("asm", scriptPubKey.ToString()));
+    out.pushKV("asm", scriptPubKey.ToString());
     if (fIncludeHex)
-        out.push_back(Pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+        out.pushKV("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end()));
 
     if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired)) {
-        out.push_back(Pair("type", GetTxnOutputType(type)));
+        out.pushKV("type", GetTxnOutputType(type));
         return;
     }
 
-    out.push_back(Pair("reqSigs", nRequired));
-    out.push_back(Pair("type", GetTxnOutputType(type)));
+    out.pushKV("reqSigs", nRequired);
+    out.pushKV("type", GetTxnOutputType(type));
 
     UniValue a(UniValue::VARR);
     for (const CTxDestination& addr : addresses)
         a.push_back(CBitcoinAddress(addr).ToString());
-    out.push_back(Pair("addresses", a));
+    out.pushKV("addresses", a);
 }
 
 
 void PoSBlockInfoToJSON(const uint256 hashBlock, int64_t nTime, int height, UniValue& entry) {
-    entry.push_back(Pair("posblockhash", hashBlock.GetHex()));
-    entry.push_back(Pair("time", nTime));
-    entry.push_back(Pair("height", height));
-    entry.push_back(Pair("isauditsuccessful", nTime > 0? "true":"false"));
+    entry.pushKV("posblockhash", hashBlock.GetHex());
+    entry.pushKV("time", nTime);
+    entry.pushKV("height", height);
+    entry.pushKV("isauditsuccessful", nTime > 0? "true":"false");
 }
 
 void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
 {
-    entry.push_back(Pair("txid", tx.GetHash().GetHex()));
-    entry.push_back(Pair("version", tx.nVersion));
-    entry.push_back(Pair("size", (int)::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION)));
-    entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
-    entry.push_back(Pair("txfee", ValueFromAmount(tx.nTxFee)));
+    entry.pushKV("txid", tx.GetHash().GetHex());
+    entry.pushKV("version", tx.nVersion);
+    entry.pushKV("size", (int)::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION));
+    entry.pushKV("locktime", (int64_t)tx.nLockTime);
+    entry.pushKV("txfee", ValueFromAmount(tx.nTxFee));
     if (tx.hasPaymentID && pwalletMain->IsMine(tx)) {
-        entry.push_back(Pair("paymentid", tx.paymentID));
+        entry.pushKV("paymentid", tx.paymentID);
     }
-    entry.push_back(Pair("txType", (int64_t)tx.txType));
+    entry.pushKV("txType", (int64_t)tx.txType);
 #ifdef ENABLE_WALLET
     LOCK(pwalletMain->cs_wallet);
-    entry.push_back(Pair("direction", pwalletMain->GetTransactionType(tx)));
+    entry.pushKV("direction", pwalletMain->GetTransactionType(tx));
 #endif
     UniValue vin(UniValue::VARR);
     for (const CTxIn& txin : tx.vin) {
         UniValue in(UniValue::VOBJ);
         if (tx.IsCoinBase())
-            in.push_back(Pair("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
+            in.pushKV("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
         else {
             {
                 //decoys
@@ -92,8 +92,8 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                 allDecoys.insert(allDecoys.begin(), txin.prevout);
                 for (size_t i = 0; i < allDecoys.size(); i++) {
                     UniValue decoy(UniValue::VOBJ);
-                    decoy.push_back(Pair("txid", allDecoys[i].hash.GetHex()));
-                    decoy.push_back(Pair("vout", (int64_t)allDecoys[i].n));
+                    decoy.pushKV("txid", allDecoys[i].hash.GetHex());
+                    decoy.pushKV("vout", (int64_t)allDecoys[i].n);
 #ifdef ENABLE_WALLET
                     std::map<uint256, CWalletTx>::const_iterator mi = pwalletMain->mapWallet.find(allDecoys[i].hash);
                     if (mi != pwalletMain->mapWallet.end()) {
@@ -108,49 +108,49 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                                         CKey blind;
                                         pwalletMain->RevealTxOutAmount(prev, prev.vout[allDecoys[i].n], decodedAmount, blind);
                                         if (pwalletMain->IsLocked()) {
-                                            decoy.push_back(Pair("decoded_amount", "Wallet is Locked"));
+                                            decoy.pushKV("decoded_amount", "Wallet is Locked");
                                         } else {
-                                            decoy.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+                                            decoy.pushKV("decoded_amount", ValueFromAmount(decodedAmount));
                                         }
                                         
-                                        decoy.push_back(Pair("isMine", true));
+                                        decoy.pushKV("isMine", true);
                                     }
                                 }
                             } else {
-                                decoy.push_back(Pair("isMine", false));
+                                decoy.pushKV("isMine", false);
                             }
                         }
                     }
 #endif
                     decoys.push_back(decoy);
                 }
-                in.push_back(Pair("decoys", decoys));
+                in.pushKV("decoys", decoys);
             }
             UniValue o(UniValue::VOBJ);
-            o.push_back(Pair("asm", txin.scriptSig.ToString()));
-            o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-            in.push_back(Pair("scriptSig", o));
+            o.pushKV("asm", txin.scriptSig.ToString());
+            o.pushKV("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
+            in.pushKV("scriptSig", o);
         }
-        in.push_back(Pair("sequence", (int64_t)txin.nSequence));
-        in.push_back(Pair("keyimage", txin.keyImage.GetHex()));
-        in.push_back(Pair("ringsize", (int64_t) (txin.decoys.size() + 1)));
+        in.pushKV("sequence", (int64_t)txin.nSequence);
+        in.pushKV("keyimage", txin.keyImage.GetHex());
+        in.pushKV("ringsize", (int64_t) (txin.decoys.size() + 1));
         vin.push_back(in);
     }
-    entry.push_back(Pair("vin", vin));
+    entry.pushKV("vin", vin);
     UniValue vout(UniValue::VARR);
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
         const CTxOut& txout = tx.vout[i];
         UniValue out(UniValue::VOBJ);
-        out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-        out.push_back(Pair("n", (int64_t)i));
+        out.pushKV("value", ValueFromAmount(txout.nValue));
+        out.pushKV("n", (int64_t)i);
         UniValue o(UniValue::VOBJ);
         ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
-        out.push_back(Pair("scriptPubKey", o));
-        out.push_back(Pair("encoded_amount", txout.maskValue.amount.GetHex()));
-        out.push_back(Pair("encoded_mask", txout.maskValue.mask.GetHex()));
+        out.pushKV("scriptPubKey", o);
+        out.pushKV("encoded_amount", txout.maskValue.amount.GetHex());
+        out.pushKV("encoded_mask", txout.maskValue.mask.GetHex());
         CPubKey txPubKey(txout.txPub);
-        out.push_back(Pair("txpubkey", txPubKey.GetHex()));
-        out.push_back(Pair("commitment", HexStr(txout.commitment.begin(), txout.commitment.end())));
+        out.pushKV("txpubkey", txPubKey.GetHex());
+        out.pushKV("commitment", HexStr(txout.commitment.begin(), txout.commitment.end()));
 
 #ifdef ENABLE_WALLET
         if (pwalletMain->IsMine(txout)) {
@@ -166,32 +166,32 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                 pBlind = blind.begin();
             }
             if (pwalletMain->IsLocked()) {
-                out.push_back(Pair("decoded_amount", "Wallet is Locked"));
+                out.pushKV("decoded_amount", "Wallet is Locked");
             } else {
-                out.push_back(Pair("decoded_amount", ValueFromAmount(decodedAmount)));
+                out.pushKV("decoded_amount", ValueFromAmount(decodedAmount));
             }
 
-            out.push_back(Pair("isMine", true));
+            out.pushKV("isMine", true);
         } else {
-            out.push_back(Pair("isMine", false));
+            out.pushKV("isMine", false);
         }
 #endif
         vout.push_back(out);
     }
-    entry.push_back(Pair("vout", vout));
+    entry.pushKV("vout", vout);
 
     if (!hashBlock.IsNull()) {
-        entry.push_back(Pair("blockhash", hashBlock.GetHex()));
+        entry.pushKV("blockhash", hashBlock.GetHex());
         BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
         if (mi != mapBlockIndex.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
             if (chainActive.Contains(pindex)) {
-                entry.push_back(Pair("confirmations", 1 + chainActive.Height() - pindex->nHeight));
-                entry.push_back(Pair("time", pindex->GetBlockTime()));
-                entry.push_back(Pair("blocktime", pindex->GetBlockTime()));
+                entry.pushKV("confirmations", 1 + chainActive.Height() - pindex->nHeight);
+                entry.pushKV("time", pindex->GetBlockTime());
+                entry.pushKV("blocktime", pindex->GetBlockTime());
             }
             else
-                entry.push_back(Pair("confirmations", 0));
+                entry.pushKV("confirmations", 0);
         }
     }
 }
@@ -242,10 +242,10 @@ UniValue getrawtransactionbyblockheight(const UniValue& params, bool fHelp)
         std::string strHex = EncodeHexTx(tx);
         hexs.push_back(strHex);
     }
-    result.push_back(Pair("hexs", hexs));
-    result.push_back(Pair("blockhash", block.GetHash().GetHex()));
-    result.push_back(Pair("confirmations", chainActive.Height() - nHeight + 1));
-    result.push_back(Pair("blocktime", block.GetBlockTime()));
+    result.pushKV("hexs", hexs);
+    result.pushKV("blockhash", block.GetHash().GetHex());
+    result.pushKV("confirmations", chainActive.Height() - nHeight + 1);
+    result.pushKV("blocktime", block.GetBlockTime());
     return result;
 }
 
@@ -365,7 +365,7 @@ UniValue getrawtransaction(const UniValue& params, bool fHelp)
     }
 
     UniValue result(UniValue::VOBJ);
-    if (blockindex) result.push_back(Pair("in_active_chain", in_active_chain));
+    if (blockindex) result.pushKV("in_active_chain", in_active_chain);
     TxToJSON(tx, hash_block, result);
     return result;
 }
@@ -452,27 +452,27 @@ UniValue listunspent(const UniValue& params, bool fHelp)
         CAmount nValue = pwalletMain->getCTxOutValue(*out.tx, out.tx->vout[out.i]);
         const CScript& pk = out.tx->vout[out.i].scriptPubKey;
         UniValue entry(UniValue::VOBJ);
-        entry.push_back(Pair("txid", out.tx->GetHash().GetHex()));
-        entry.push_back(Pair("vout", out.i));
+        entry.pushKV("txid", out.tx->GetHash().GetHex());
+        entry.pushKV("vout", out.i);
         CTxDestination address;
         if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) {
-            entry.push_back(Pair("address", CBitcoinAddress(address).ToString()));
+            entry.pushKV("address", CBitcoinAddress(address).ToString());
             if (pwalletMain->mapAddressBook.count(address))
-                entry.push_back(Pair("account", pwalletMain->mapAddressBook[address].name));
+                entry.pushKV("account", pwalletMain->mapAddressBook[address].name);
         }
-        entry.push_back(Pair("scriptPubKey", HexStr(pk.begin(), pk.end())));
+        entry.pushKV("scriptPubKey", HexStr(pk.begin(), pk.end()));
         if (pk.IsPayToScriptHash()) {
             CTxDestination address;
             if (ExtractDestination(pk, address)) {
                 const CScriptID& hash = boost::get<CScriptID>(address);
                 CScript redeemScript;
                 if (pwalletMain->GetCScript(hash, redeemScript))
-                    entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
+                    entry.pushKV("redeemScript", HexStr(redeemScript.begin(), redeemScript.end()));
             }
         }
-        entry.push_back(Pair("amount", ValueFromAmount(nValue)));
-        entry.push_back(Pair("confirmations", out.nDepth));
-        entry.push_back(Pair("spendable", out.fSpendable));
+        entry.pushKV("amount", ValueFromAmount(nValue));
+        entry.pushKV("confirmations", out.nDepth);
+        entry.pushKV("spendable", out.fSpendable);
         results.push_back(entry);
     }
 
@@ -549,7 +549,7 @@ UniValue getunspentcount(const UniValue& params, bool fHelp)
         ++count;
     }
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("unspentcount", count));
+    obj.pushKV("unspentcount", count);
     return obj;
 }
 #endif
@@ -755,7 +755,7 @@ UniValue decodescript(const UniValue& params, bool fHelp)
     }
     ScriptPubKeyToJSON(script, r, false);
 
-    r.push_back(Pair("p2sh", CBitcoinAddress(CScriptID(script)).ToString()));
+    r.pushKV("p2sh", CBitcoinAddress(CScriptID(script)).ToString());
     return r;
 }
 
@@ -763,11 +763,11 @@ UniValue decodescript(const UniValue& params, bool fHelp)
 static void TxInErrorToJSON(const CTxIn& txin, UniValue& vErrorsRet, const std::string& strMessage)
 {
     UniValue entry(UniValue::VOBJ);
-    entry.push_back(Pair("txid", txin.prevout.hash.ToString()));
-    entry.push_back(Pair("vout", (uint64_t)txin.prevout.n));
-    entry.push_back(Pair("scriptSig", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-    entry.push_back(Pair("sequence", (uint64_t)txin.nSequence));
-    entry.push_back(Pair("error", strMessage));
+    entry.pushKV("txid", txin.prevout.hash.ToString());
+    entry.pushKV("vout", (uint64_t)txin.prevout.n);
+    entry.pushKV("scriptSig", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
+    entry.pushKV("sequence", (uint64_t)txin.nSequence);
+    entry.pushKV("error", strMessage);
     vErrorsRet.push_back(entry);
 }
 
@@ -1015,10 +1015,10 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp)
     bool fComplete = vErrors.empty();
 
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("hex", EncodeHexTx(mergedTx)));
-    result.push_back(Pair("complete", fComplete));
+    result.pushKV("hex", EncodeHexTx(mergedTx));
+    result.pushKV("complete", fComplete);
     if (!vErrors.empty()) {
-        result.push_back(Pair("errors", vErrors));
+        result.pushKV("errors", vErrors);
     }
 
     return result;

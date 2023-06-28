@@ -335,19 +335,19 @@ UniValue getmininginfo(const UniValue& params, bool fHelp)
     LOCK(cs_main);
 
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("blocks", (int)chainActive.Height()));
-    obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
-    obj.push_back(Pair("currentblocktx", (uint64_t)nLastBlockTx));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-    obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("genproclimit", (int)GetArg("-genproclimit", -1)));
-    obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
-    obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
-    obj.push_back(Pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
-    obj.push_back(Pair("chain", Params().NetworkIDString()));
+    obj.pushKV("blocks", (int)chainActive.Height());
+    obj.pushKV("currentblocksize", (uint64_t)nLastBlockSize);
+    obj.pushKV("currentblocktx", (uint64_t)nLastBlockTx);
+    obj.pushKV("difficulty", (double)GetDifficulty());
+    obj.pushKV("errors", GetWarnings("statusbar"));
+    obj.pushKV("genproclimit", (int)GetArg("-genproclimit", -1));
+    obj.pushKV("networkhashps", getnetworkhashps(params, false));
+    obj.pushKV("pooledtx", (uint64_t)mempool.size());
+    obj.pushKV("testnet", Params().TestnetToBeDeprecatedFieldRPC());
+    obj.pushKV("chain", Params().NetworkIDString());
 #ifdef ENABLE_WALLET
-    obj.push_back(Pair("generate", getgenerate(params, false)));
-    obj.push_back(Pair("hashespersec", gethashespersec(params, false)));
+    obj.pushKV("generate", getgenerate(params, false));
+    obj.pushKV("hashespersec", gethashespersec(params, false));
 #endif
     return obj;
 }
@@ -620,26 +620,26 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
 
         UniValue entry(UniValue::VOBJ);
 
-        entry.push_back(Pair("data", EncodeHexTx(tx)));
+        entry.pushKV("data", EncodeHexTx(tx));
 
-        entry.push_back(Pair("hash", txHash.GetHex()));
+        entry.pushKV("hash", txHash.GetHex());
 
         UniValue deps(UniValue::VARR);
         for (const CTxIn& in : tx.vin) {
             if (setTxIndex.count(in.prevout.hash))
                 deps.push_back(setTxIndex[in.prevout.hash]);
         }
-        entry.push_back(Pair("depends", deps));
+        entry.pushKV("depends", deps);
 
         int index_in_template = i - 1;
-        entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
-        entry.push_back(Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
+        entry.pushKV("fee", pblocktemplate->vTxFees[index_in_template]);
+        entry.pushKV("sigops", pblocktemplate->vTxSigOps[index_in_template]);
 
         transactions.push_back(entry);
     }
 
     UniValue aux(UniValue::VOBJ);
-    aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
+    aux.pushKV("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end()));
 
     uint256 hashTarget = uint256().SetCompact(pblock->nBits);
 
@@ -653,36 +653,36 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
     UniValue aVotes(UniValue::VARR);
 
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("capabilities", aCaps));
-    result.push_back(Pair("version", pblock->nVersion));
-    result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
-    result.push_back(Pair("transactions", transactions));
-    result.push_back(Pair("coinbaseaux", aux));
-    result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut()));
-    result.push_back(Pair("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + i64tostr(nTransactionsUpdatedLast)));
-    result.push_back(Pair("target", hashTarget.GetHex()));
-    result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
-    result.push_back(Pair("mutable", aMutable));
-    result.push_back(Pair("noncerange", "00000000ffffffff"));
-    result.push_back(Pair("curtime", pblock->GetBlockTime()));
-    result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
-    result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
-    result.push_back(Pair("votes", aVotes));
+    result.pushKV("capabilities", aCaps);
+    result.pushKV("version", pblock->nVersion);
+    result.pushKV("previousblockhash", pblock->hashPrevBlock.GetHex());
+    result.pushKV("transactions", transactions);
+    result.pushKV("coinbaseaux", aux);
+    result.pushKV("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut());
+    result.pushKV("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + i64tostr(nTransactionsUpdatedLast));
+    result.pushKV("target", hashTarget.GetHex());
+    result.pushKV("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1);
+    result.pushKV("mutable", aMutable);
+    result.pushKV("noncerange", "00000000ffffffff");
+    result.pushKV("curtime", pblock->GetBlockTime());
+    result.pushKV("bits", strprintf("%08x", pblock->nBits));
+    result.pushKV("height", (int64_t)(pindexPrev->nHeight + 1));
+    result.pushKV("votes", aVotes);
 
 
     if (pblock->payee != CScript()) {
         CTxDestination address1;
         ExtractDestination(pblock->payee, address1);
         CBitcoinAddress address2(address1);
-        result.push_back(Pair("payee", address2.ToString().c_str()));
-        result.push_back(Pair("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue));
+        result.pushKV("payee", address2.ToString().c_str());
+        result.pushKV("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue);
     } else {
-        result.push_back(Pair("payee", ""));
-        result.push_back(Pair("payee_amount", ""));
+        result.pushKV("payee", "");
+        result.pushKV("payee_amount", "");
     }
 
-    result.push_back(Pair("masternode_payments", pblock->nTime > Params().StartMasternodePayments()));
-    result.push_back(Pair("enforce_masternode_payments", true));
+    result.pushKV("masternode_payments", pblock->nTime > Params().StartMasternodePayments());
+    result.pushKV("enforce_masternode_payments", true);
 
     return result;
 }
@@ -790,31 +790,31 @@ UniValue getpoablocktemplate(const UniValue& params, bool fHelp)
 
             UniValue entry(UniValue::VOBJ);
 
-            entry.push_back(Pair("data", EncodeHexTx(tx)));
+            entry.pushKV("data", EncodeHexTx(tx));
 
-            entry.push_back(Pair("hash", txHash.GetHex()));
+            entry.pushKV("hash", txHash.GetHex());
 
             UniValue deps(UniValue::VARR);
             for (const CTxIn& in : tx.vin) {
                 if (setTxIndex.count(in.prevout.hash))
                     deps.push_back(setTxIndex[in.prevout.hash]);
             }
-            entry.push_back(Pair("depends", deps));
+            entry.pushKV("depends", deps);
 
             int index_in_template = i - 1;
-            entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
-            entry.push_back(Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
+            entry.pushKV("fee", pblocktemplate->vTxFees[index_in_template]);
+            entry.pushKV("sigops", pblocktemplate->vTxSigOps[index_in_template]);
 
             transactions.push_back(entry);
         }
 
         UniValue coinbasetxn(UniValue::VOBJ);
         CTransaction& tx = pblock->vtx[0];
-        coinbasetxn.push_back(Pair("data", EncodeHexTx(tx)));
-        coinbasetxn.push_back(Pair("hash", tx.GetHash().GetHex()));
+        coinbasetxn.pushKV("data", EncodeHexTx(tx));
+        coinbasetxn.pushKV("hash", tx.GetHash().GetHex());
 
         UniValue aux(UniValue::VOBJ);
-        aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
+        aux.pushKV("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end()));
 
         UniValue aMutable(UniValue::VARR);
         if (aMutable.empty()) {
@@ -828,7 +828,7 @@ UniValue getpoablocktemplate(const UniValue& params, bool fHelp)
         for (size_t idx = 0; idx < pblock->posBlocksAudited.size(); idx++) {
             UniValue entry(UniValue::VOBJ);
             PoSBlockSummary pos = pblock->posBlocksAudited.at(idx);
-            entry.push_back(Pair("data", EncodeHexPoSBlockSummary(pos)));
+            entry.pushKV("data", EncodeHexPoSBlockSummary(pos));
             posBlocksAudited.push_back(entry);
         }
 
@@ -838,32 +838,32 @@ UniValue getpoablocktemplate(const UniValue& params, bool fHelp)
 
         pblock->SetVersionPoABlock();
         UniValue result(UniValue::VOBJ);
-        result.push_back(Pair("version", pblock->nVersion));
-        result.push_back(Pair("previouspoablockhash", pblock->hashPrevPoABlock.GetHex()));
-        result.push_back(Pair("poamerkleroot", poaMerkleRoot.GetHex()));
-        result.push_back(Pair("transactions", transactions));
-        result.push_back(Pair("coinbasetxn", coinbasetxn));
-        result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut()));
-        result.push_back(Pair("noncerange", "00000000ffffffff"));
-        result.push_back(Pair("curtime", pblock->GetBlockTime()));
-        result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
-        result.push_back(Pair("target", hashTarget.GetHex()));
-        result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
-        result.push_back(Pair("posblocksaudited", posBlocksAudited));
+        result.pushKV("version", pblock->nVersion);
+        result.pushKV("previouspoablockhash", pblock->hashPrevPoABlock.GetHex());
+        result.pushKV("poamerkleroot", poaMerkleRoot.GetHex());
+        result.pushKV("transactions", transactions);
+        result.pushKV("coinbasetxn", coinbasetxn);
+        result.pushKV("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut());
+        result.pushKV("noncerange", "00000000ffffffff");
+        result.pushKV("curtime", pblock->GetBlockTime());
+        result.pushKV("bits", strprintf("%08x", pblock->nBits));
+        result.pushKV("target", hashTarget.GetHex());
+        result.pushKV("height", (int64_t)(pindexPrev->nHeight + 1));
+        result.pushKV("posblocksaudited", posBlocksAudited);
 
         if (pblock->payee != CScript()) {
             CTxDestination address1;
             ExtractDestination(pblock->payee, address1);
             CBitcoinAddress address2(address1);
-            result.push_back(Pair("payee", address2.ToString().c_str()));
-            result.push_back(Pair("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue));
+            result.pushKV("payee", address2.ToString().c_str());
+            result.pushKV("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue);
         } else {
-            result.push_back(Pair("payee", ""));
-            result.push_back(Pair("payee_amount", ""));
+            result.pushKV("payee", "");
+            result.pushKV("payee_amount", "");
         }
 
-        result.push_back(Pair("masternode_payments", pblock->nTime > Params().StartMasternodePayments()));
-        result.push_back(Pair("enforce_masternode_payments", true));
+        result.pushKV("masternode_payments", pblock->nTime > Params().StartMasternodePayments());
+        result.pushKV("enforce_masternode_payments", true);
         return result;
     }
 }
@@ -875,11 +875,11 @@ UniValue setminingnbits(const UniValue& params, bool fHelp) {
     unsigned int nbits = (unsigned int) params[0].get_int64();
     int changed= params[1].get_int();
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("previous_bits", strprintf("%08x", N_BITS)));
+    result.pushKV("previous_bits", strprintf("%08x", N_BITS));
     if (changed) {
         N_BITS = nbits;
     }
-    result.push_back(Pair("current_bits", strprintf("%08x", N_BITS)));
+    result.pushKV("current_bits", strprintf("%08x", N_BITS));
     return result;
 }
 
