@@ -21,7 +21,7 @@ These are the dependencies currently used by PRCYCoin. You can find instructions
 | PCRE |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L66) |
 | Python (tests) |  | [3.6](https://www.python.org/downloads) |  |  |  |
 | qrencode | [3.4.4](https://fukuchi.org/works/qrencode) |  | No |  |  |
-| Qt | [5.9.9](https://download.qt.io/official_releases/qt/) | [5.5.1](https://github.com/bitcoin/bitcoin/issues/13478) | No |  |  |
+| Qt | [5.12.11](https://download.qt.io/official_releases/qt/) | [5.5.1](https://github.com/bitcoin/bitcoin/issues/13478) | No |  |  |
 | XCB |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L87) (Linux only) |
 | xkbcommon |  |  |  |  | [Yes](https://github.com/prcycoin/prcycoin/blob/master/depends/packages/qt.mk#L86) (Linux only) |
 | ZeroMQ | [4.3.1](https://github.com/zeromq/libzmq/releases) | 4.0.0 | No |  |  |
