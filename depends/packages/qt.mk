@@ -7,9 +7,11 @@ $(package)_sha256_hash=1c1b4e33137ca77881074c140d54c3c9747e845a31338cfe8680f171f
 $(package)_dependencies=openssl zlib
 $(package)_linux_dependencies=freetype fontconfig libxcb libxkbcommon
 $(package)_qt_libs=corelib network widgets gui plugins testlib concurrent
-$(package)_patches=fix_qt_pkgconfig.patch mac-qmake.conf fix_no_printer.patch no-xlib.patch
+$(package)_linguist_tools = lrelease lupdate lconvert
+$(package)_patches = qt.pro qttools_src.pro
+$(package)_patches += fix_qt_pkgconfig.patch mac-qmake.conf fix_no_printer.patch no-xlib.patch
 $(package)_patches+= fix_android_qmake_conf.patch fix_android_jni_static.patch dont_hardcode_pwd.patch
-$(package)_patches+= drop_lrelease_dependency.patch no_sdk_version_check.patch
+$(package)_patches+= no_sdk_version_check.patch
 $(package)_patches+= fix_qpainter_non_determinism.patch fix_lib_paths.patch
 $(package)_patches+= fix_limits_header.patch
 
@@ -61,6 +63,7 @@ $(package)_config_opts += -no-sql-sqlite2
 $(package)_config_opts += -no-use-gold-linker
 $(package)_config_opts += -nomake examples
 $(package)_config_opts += -nomake tests
+$(package)_config_opts += -nomake tools
 $(package)_config_opts += -opensource
 $(package)_config_opts += -openssl-linked
 $(package)_config_opts += -optimized-qmake
@@ -96,14 +99,13 @@ $(package)_config_opts_darwin = -no-dbus
 $(package)_config_opts_darwin += -no-opengl
 $(package)_config_opts_darwin += -pch
 $(package)_config_opts_darwin += -no-feature-corewlan
-$(package)_config_opts_darwin += -device-option QMAKE_MACOSX_DEPLOYMENT_TARGET=$(OSX_MIN_VERSION)
+$(package)_config_opts_darwin += QMAKE_MACOSX_DEPLOYMENT_TARGET=$(OSX_MIN_VERSION)
 
 ifneq ($(build_os),darwin)
 $(package)_config_opts_darwin += -xplatform macx-clang-linux
 $(package)_config_opts_darwin += -device-option MAC_SDK_PATH=$(OSX_SDK)
 $(package)_config_opts_darwin += -device-option MAC_SDK_VERSION=$(OSX_SDK_VERSION)
 $(package)_config_opts_darwin += -device-option CROSS_COMPILE="$(host)-"
-$(package)_config_opts_darwin += -device-option MAC_MIN_VERSION=$(OSX_MIN_VERSION)
 $(package)_config_opts_darwin += -device-option MAC_TARGET=$(host)
 $(package)_config_opts_darwin += -device-option XCODE_VERSION=$(XCODE_VERSION)
 endif
@@ -190,26 +192,24 @@ endef
 #
 # 1. Apply our patches to the extracted source. See each patch for more info.
 #
-# 2. Point to lrelease in qttools/bin/lrelease; otherwise Qt will look for it in
-# $(host)/native/bin/lrelease and not find it.
+# 2. Create a macOS-Clang-Linux mkspec using our mac-qmake.conf.
 #
-# 3. Create a macOS-Clang-Linux mkspec using our mac-qmake.conf.
-#
-# 4. After making a copy of the mkspec for the linux-arm-gnueabi host, named
+# 3. After making a copy of the mkspec for the linux-arm-gnueabi host, named
 # bitcoin-linux-g++, replace instances of linux-arm-gnueabi with $(host). This
 # way we can generically support hosts like riscv64-linux-gnu, which Qt doesn't
 # ship a mkspec for. See it's usage in config_opts_* above.
 #
-# 5. Put our C, CXX and LD FLAGS into gcc-base.conf. Only used for non-host builds.
+# 4. Put our C, CXX and LD FLAGS into gcc-base.conf. Only used for non-host builds.
 #
-# 6. Do similar for the win32-g++ mkspec.
+# 5. Do similar for the win32-g++ mkspec.
 #
-# 7. In clang.conf, swap out clang & clang++, for our compiler + flags. See #17466.
+# 6. In clang.conf, swap out clang & clang++, for our compiler + flags. See #17466.
 #
-# 8. Adjust a regex in toolchain.prf, to accomodate Guix's usage of
+# 7. Adjust a regex in toolchain.prf, to accommodate Guix's usage of
 # CROSS_LIBRARY_PATH. See #15277.
 define $(package)_preprocess_cmds
-  patch -p1 -i $($(package)_patch_dir)/drop_lrelease_dependency.patch && \
+  cp $($(package)_patch_dir)/qt.pro qt.pro && \
+  cp $($(package)_patch_dir)/qttools_src.pro qttools/src/src.pro && \
   patch -p1 -i $($(package)_patch_dir)/dont_hardcode_pwd.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_qt_pkgconfig.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_no_printer.patch && \
@@ -220,7 +220,6 @@ define $(package)_preprocess_cmds
   patch -p1 -i $($(package)_patch_dir)/no_sdk_version_check.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_lib_paths.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_limits_header.patch && \
-  sed -i.old "s|updateqm.commands = \$$$$\$$$$LRELEASE|updateqm.commands = $($(package)_extract_dir)/qttools/bin/lrelease|" qttranslations/translations/translations.pro && \
   mkdir -p qtbase/mkspecs/macx-clang-linux &&\
   cp -f qtbase/mkspecs/macx-clang/qplatformdefs.h qtbase/mkspecs/macx-clang-linux/ &&\
   cp -f $($(package)_patch_dir)/mac-qmake.conf qtbase/mkspecs/macx-clang-linux/qmake.conf && \
@@ -241,36 +240,21 @@ endef
 
 define $(package)_config_cmds
   cd qtbase && \
-  ./configure $($(package)_config_opts) && \
-  echo "host_build: QT_CONFIG ~= s/system-zlib/zlib" >> mkspecs/qconfig.pri && \
-  echo "CONFIG += force_bootstrap" >> mkspecs/qconfig.pri && \
-  cd .. && \
-  $(MAKE) -C qtbase sub-src-clean && \
-  qtbase/bin/qmake -o qttranslations/Makefile qttranslations/qttranslations.pro && \
-  qtbase/bin/qmake -o qttranslations/translations/Makefile qttranslations/translations/translations.pro && \
-  qtbase/bin/qmake -o qttools/src/linguist/lrelease/Makefile qttools/src/linguist/lrelease/lrelease.pro && \
-  qtbase/bin/qmake -o qttools/src/linguist/lupdate/Makefile qttools/src/linguist/lupdate/lupdate.pro && \
-  qtbase/bin/qmake -o qttools/src/linguist/lconvert/Makefile qttools/src/linguist/lconvert/lconvert.pro
+  ./configure -top-level $($(package)_config_opts)
 endef
 
 define $(package)_build_cmds
   export PATH=$(build_prefix)/bin:$(PATH) && \
-  $(MAKE) -C qtbase/src $(addprefix sub-,$($(package)_qt_libs)) && \
-  $(MAKE) -C qttools/src/linguist/lrelease && \
-  $(MAKE) -C qttools/src/linguist/lupdate && \
-  $(MAKE) -C qttools/src/linguist/lconvert && \
-  $(MAKE) -C qttranslations
+  $(MAKE)
 endef
 
 define $(package)_stage_cmds
   $(MAKE) -C qtbase/src INSTALL_ROOT=$($(package)_staging_dir) $(addsuffix -install_subtargets,$(addprefix sub-,$($(package)_qt_libs))) && \
-  $(MAKE) -C qttools/src/linguist/lrelease INSTALL_ROOT=$($(package)_staging_dir) install_target && \
-  $(MAKE) -C qttools/src/linguist/lupdate INSTALL_ROOT=$($(package)_staging_dir) install_target && \
-  $(MAKE) -C qttools/src/linguist/lconvert INSTALL_ROOT=$($(package)_staging_dir) install_target && \
+  $(MAKE) -C qttools/src/linguist INSTALL_ROOT=$($(package)_staging_dir) $(addsuffix -install_subtargets,$(addprefix sub-,$($(package)_linguist_tools))) && \
   $(MAKE) -C qttranslations INSTALL_ROOT=$($(package)_staging_dir) install_subtargets
 endef
 
 define $(package)_postprocess_cmds
   rm -rf native/mkspecs/ native/lib/ lib/cmake/ && \
-  rm -f lib/lib*.la lib/*.prl plugins/*/*.prl
+  rm -f lib/lib*.la
 endef
