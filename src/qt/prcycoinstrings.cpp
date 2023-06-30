@@ -47,10 +47,15 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Delete all wallet transactions and only recover those parts of the "
 "blockchain through -rescan on startup"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Delete transaction every <n> blocks during inital block download (default: "
+"%i)"),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Distributed under the MIT software license, see the accompanying file "
 "COPYING or <http://www.opensource.org/licenses/mit-license.php>."),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Enable SwiftX, show confirmations for locked transactions (bool, default: %s)"),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Enable or disable staking functionality for PRCY inputs (0-1, default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Enter regression test mode, which uses a special chain in which blocks can "
 "be solved instantly."),
@@ -108,8 +113,13 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Maintain a full transaction index, used by the getrawtransaction rpc call "
 "(default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Maximum average size of an index occurrence in the block spam filter "
+"(default: %u)"),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Maximum size of data in data carrier transactions we relay and mine "
 "(default: %u)"),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Maximum size of the list of indexes in the block spam filter (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Maximum total fees to use in a single wallet transaction, setting too low "
 "may abort large transactions (default: %s)"),
@@ -171,11 +181,12 @@ QT_TRANSLATE_NOOP("prcycoin-core", ""
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Unable to bind to %s on this computer. PRCY is probably already running."),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
-"Unable to locate enough funds for this transaction that are not equal 10000 "
-"PRCY."),
-QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: "
 "%s)"),
+QT_TRANSLATE_NOOP("prcycoin-core", ""
+"Username and hashed password for JSON-RPC connections. The field <userpw> "
+"comes in the format: <USERNAME>:<SALT>$<HASH>. A canonical python script is "
+"included in share/rpcuser. This option can be specified multiple times"),
 QT_TRANSLATE_NOOP("prcycoin-core", ""
 "Warning: -maxtxfee is set very high! Fees this large could be paid on a "
 "single transaction."),
@@ -264,6 +275,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Display verbose coin stake messages in the d
 QT_TRANSLATE_NOOP("prcycoin-core", "Do not load the wallet and disable wallet RPC calls"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Do you want to rebuild the block database now?"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Done loading"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Enable Old Transaction Deletion"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Enable publish hash block in <address>"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Enable publish hash transaction (locked via SwiftX) in <address>"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Enable publish hash transaction in <address>"),
@@ -282,7 +294,6 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Error loading wallet.dat: Wallet corrupted")
 QT_TRANSLATE_NOOP("prcycoin-core", "Error loading wallet.dat: Wallet requires newer version of PRCYcoin"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error opening block database"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error reading from database, shutting down."),
-QT_TRANSLATE_NOOP("prcycoin-core", "Error recovering public key."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: -listen must be true if -masternode is set."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: A fatal internal error occured, see debug.log for details"),
@@ -290,12 +301,10 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Error: A fatal internal error occurred, see 
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: Disk space is low!"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: Invalid port %d for running a masternode."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Error: Unsupported argument -tor found, use -onion."),
-QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate RingCT for Sweeping transaction"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate bulletproof for Sweeping transaction"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate RingCT"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to generate bulletproof"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to listen on any port. Use -listen=0 if you want this."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Failed to parse host:port string"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Failed to read block"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Fee (in %s/kB) to add to transactions you send (default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Force safe mode (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Generate coins (default: %u)"),
@@ -318,9 +327,10 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Invalid amount for -reservebalance=<amount>"
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid masternodeprivkey. Please see documenation."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid netmask specified in -whitelist: '%s'"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Invalid port %d detected in masternode.conf"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Invalid private key."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Limit size of signature cache to <n> entries (default: %u)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Keep the last <n> transactions (default: %i)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Keep transactions for at least <n> blocks (default: %i)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Limit size of signature cache to <n> MiB (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Line: %d"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Listen for JSON-RPC connections on <port> (default: %u or testnet: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Listen for connections on <port> (default: %u or testnet: %u)"),
@@ -341,6 +351,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Need to specify a port with -whitebind: '%s'
 QT_TRANSLATE_NOOP("prcycoin-core", "Node relay options:"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Not enough file descriptors available."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Number of automatic wallet backups (default: 10)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Number of custom location backups to retain (default: %d)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Only accept block chain matching built-in checkpoints (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Only connect to nodes in network <net> (ipv4, ipv6 or onion)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Options:"),
@@ -361,7 +372,6 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Rescanning..."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Run a thread to flush wallet periodically (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Run in the background as a daemon and accept commands"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Send transactions as zero-fee transactions if possible (default: %u)"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Session timed out."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Set database cache size in megabytes (%d to %d, default: %d)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Set external address:port to get to this masternode (example: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Set key pool size to <n> (default: %u)"),
@@ -373,8 +383,6 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Set the number of threads to service RPC cal
 QT_TRANSLATE_NOOP("prcycoin-core", "Sets the DB_PRIVATE flag in the wallet db environment (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Show all debugging options (usage: --help -help-debug)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Shrink debug.log file on client startup (default: 1 when no -debug)"),
-QT_TRANSLATE_NOOP("prcycoin-core", "Signing failed."),
-QT_TRANSLATE_NOOP("prcycoin-core", "Signing timed out."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Signing transaction failed"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Specify configuration file (default: %s)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Specify connection timeout in milliseconds (minimum: 1, default: %d)"),
@@ -412,6 +420,7 @@ QT_TRANSLATE_NOOP("prcycoin-core", "Upgrade wallet to latest format"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Use UPnP to map the listening port (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Use UPnP to map the listening port (default: 1 when listening)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Use a custom max chain reorganization depth (default: %u)"),
+QT_TRANSLATE_NOOP("prcycoin-core", "Use block spam filter (default: %u)"),
 QT_TRANSLATE_NOOP("prcycoin-core", "Use the test network"),
 QT_TRANSLATE_NOOP("prcycoin-core", "User Agent comment (%s) contains unsafe characters."),
 QT_TRANSLATE_NOOP("prcycoin-core", "Username for JSON-RPC connections"),
