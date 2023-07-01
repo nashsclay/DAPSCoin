@@ -11,7 +11,6 @@ $(package)_linguist_tools = lrelease lupdate lconvert
 $(package)_patches = qt.pro qttools_src.pro
 $(package)_patches += fix_qt_pkgconfig.patch mac-qmake.conf fix_no_printer.patch no-xlib.patch
 $(package)_patches+= fix_android_qmake_conf.patch fix_android_jni_static.patch dont_hardcode_pwd.patch
-$(package)_patches+= no_sdk_version_check.patch
 $(package)_patches+= fix_qpainter_non_determinism.patch fix_lib_paths.patch
 $(package)_patches+= fix_limits_header.patch
 $(package)_patches+= fix_montery_include.patch
@@ -222,7 +221,6 @@ define $(package)_preprocess_cmds
   patch -p1 -i $($(package)_patch_dir)/fix_android_jni_static.patch && \
 	patch -p1 -i $($(package)_patch_dir)/no-xlib.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_qpainter_non_determinism.patch && \
-  patch -p1 -i $($(package)_patch_dir)/no_sdk_version_check.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_lib_paths.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_limits_header.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_montery_include.patch && \
@@ -245,6 +243,7 @@ define $(package)_preprocess_cmds
 endef
 
 define $(package)_config_cmds
+  export QT_MAC_SDK_NO_VERSION_CHECK=1 && \
   cd qtbase && \
   ./configure -top-level $($(package)_config_opts)
 endef
