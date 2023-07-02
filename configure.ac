@@ -563,6 +563,21 @@ case $host in
    *android*)
      dnl make sure android stays above linux for hosts like *linux-android*
      TARGET_OS=android
+     case $host in
+       *x86_64*)
+          ANDROID_ARCH=x86_64
+          ;;
+        *aarch64*)
+          ANDROID_ARCH=arm64-v8a
+          ;;
+        *armv7a*)
+          ANDROID_ARCH=armeabi-v7a
+          ;;
+        *i686*)
+          ANDROID_ARCH=i686
+          ;;
+        *) AC_MSG_ERROR("Could not determine Android arch") ;;
+      esac
      ;;
    *linux*)
      TARGET_OS=linux

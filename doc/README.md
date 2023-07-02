@@ -42,6 +42,7 @@ The following are developer notes on how to build PRCYCoin on your native platfo
 - [FreeBSD Build Notes](build-freebsd.md)
 - [OpenBSD Build Notes](build-openbsd.md)
 - [NetBSD Build Notes](build-netbsd.md)
+- [Android Build Notes](build-android.md)
 - [Gitian Building Guide](gitian-building.md)
 
 Development

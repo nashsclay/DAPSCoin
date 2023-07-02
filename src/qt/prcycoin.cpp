@@ -594,6 +594,12 @@ int main(int argc, char* argv[])
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
 
+#if defined(QT_QPA_PLATFORM_ANDROID)
+    QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
+    QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+    QApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
+#endif
+
     BitcoinApplication app(argc, argv);
 
     // Register meta types used for QMetaObject::invokeMethod
