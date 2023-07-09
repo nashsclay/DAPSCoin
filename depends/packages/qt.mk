@@ -11,6 +11,7 @@ $(package)_linguist_tools = lrelease lupdate lconvert
 $(package)_patches = qt.pro qttools_src.pro
 $(package)_patches += fix_qt_pkgconfig.patch mac-qmake.conf fix_no_printer.patch no-xlib.patch
 $(package)_patches += support_new_android_ndks.patch fix_android_jni_static.patch dont_hardcode_pwd.patch
+$(package)_patches += dont_hardcode_x86_64.patch
 $(package)_patches+= fix_qpainter_non_determinism.patch fix_lib_paths.patch fix_android_pch.patch
 $(package)_patches+= fix_limits_header.patch
 $(package)_patches+= fix_montery_include.patch
@@ -110,8 +111,10 @@ $(package)_config_opts_darwin += -device-option MAC_TARGET=$(host)
 $(package)_config_opts_darwin += -device-option XCODE_VERSION=$(XCODE_VERSION)
 endif
 
-# for macOS on Apple Silicon (ARM) see https://bugreports.qt.io/browse/QTBUG-85279
+ifneq ($(build_arch),$(host_arch))
 $(package)_config_opts_aarch64_darwin += -device-option QMAKE_APPLE_DEVICE_ARCHS=arm64
+$(package)_config_opts_x86_64_darwin += -device-option QMAKE_APPLE_DEVICE_ARCHS=x86_64
+endif
 
 $(package)_config_opts_linux = -qt-xcb
 $(package)_config_opts_linux += -no-xcb-xlib
@@ -222,6 +225,7 @@ define $(package)_preprocess_cmds
   patch -p1 -i $($(package)_patch_dir)/fix_android_jni_static.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_android_pch.patch && \
 	patch -p1 -i $($(package)_patch_dir)/no-xlib.patch && \
+  patch -p1 -i $($(package)_patch_dir)/dont_hardcode_x86_64.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_qpainter_non_determinism.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_lib_paths.patch && \
   patch -p1 -i $($(package)_patch_dir)/fix_limits_header.patch && \
