@@ -6,6 +6,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "rpc/blockchain.h"
+
 #include "checkpoints.h"
 #include "main.h"
 #include "rpc/server.h"
@@ -92,7 +94,7 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
     return result;
 }
 
-UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
+UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails)
 {
     UniValue result(UniValue::VOBJ);
     result.pushKV("hash", block.GetHash().GetHex());
@@ -377,7 +379,7 @@ UniValue getdifficulty(const UniValue& params, bool fHelp)
 }
 
 
-UniValue mempoolToJSON(bool fVerbose = false)
+UniValue mempoolToJSON(bool fVerbose)
 {
     if (fVerbose) {
         LOCK(mempool.cs);

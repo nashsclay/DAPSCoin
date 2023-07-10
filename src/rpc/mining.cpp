@@ -15,6 +15,7 @@
 #include "miner.h"
 #include "net.h"
 #include "poa.h"
+#include "rpc/blockchain.h"
 #include "rpc/server.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
