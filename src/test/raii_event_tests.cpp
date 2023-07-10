@@ -8,7 +8,7 @@
 
 #include "support/events.h"
 
-#include "test/test_bitcoin.h"
+#include "test/test_prcycoin.h"
 
 #include <vector>
 

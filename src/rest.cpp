@@ -18,10 +18,8 @@
 #include <univalue.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/dynamic_bitset.hpp>
 
 static const size_t MAX_GETUTXOS_OUTPOINTS = 15; //allow a max of 15 outpoints to be queried at once
-
 
 enum RetFormat {
     RF_UNDEF,
@@ -477,7 +475,8 @@ static bool rest_getutxos(HTTPRequest *req, const std::string &strURIPart) {
     std::vector<unsigned char> bitmap;
     std::vector<CCoin> outs;
     std::string bitmapStringRepresentation;
-    boost::dynamic_bitset<unsigned char> hits(vOutPoints.size());
+    std::vector<bool> hits;
+    bitmap.resize((vOutPoints.size() + 7) / 8);
     {
         LOCK2(cs_main, mempool.cs);
 
@@ -493,12 +492,12 @@ static bool rest_getutxos(HTTPRequest *req, const std::string &strURIPart) {
         for (size_t i = 0; i < vOutPoints.size(); i++) {
             CCoins coins;
             uint256 hash = vOutPoints[i].hash;
+            bool hit = false;
             if (view.GetCoins(hash, coins)) {
                 mempool.pruneSpent(hash, coins);
                 if (coins.IsAvailable(vOutPoints[i].n)) {
-                    hits[i] = true;
+                    hit = true;
                     // Safe to index into vout here because IsAvailable checked if it's off the end of the array, or if
-
                     // n is valid but points to an already spent output (IsNull).
                     CCoin coin;
                     coin.nTxVer = coins.nVersion;
@@ -509,11 +508,12 @@ static bool rest_getutxos(HTTPRequest *req, const std::string &strURIPart) {
                 }
             }
 
-            bitmapStringRepresentation.append(
-                    hits[i] ? "1" : "0"); // form a binary string representation (human-readable for json output)
+            hits.push_back(hit);
+            bitmapStringRepresentation.append(hit ? "1" : "0"); // form a binary string representation (human-readable for json output)
+            bitmap[i / 8] |= ((uint8_t)hit) << (i % 8);
         }
     }
-    boost::to_block_range(hits, std::back_inserter(bitmap));
+
     switch (rf) {
         case RF_BINARY: {
             // serialize data
