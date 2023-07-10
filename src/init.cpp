@@ -31,6 +31,7 @@
 #include "miner.h"
 #include "netbase.h"
 #include "net.h"
+#include "rpc/blockchain.h"
 #include "rpc/server.h"
 #include "script/standard.h"
 #include "script/sigcache.h"
