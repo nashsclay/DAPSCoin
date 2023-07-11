@@ -1149,81 +1149,107 @@ static void MaybePushAddress(UniValue & entry, const CTxDestination &dest)
 
 void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int nMinDepth, bool fLong, UniValue& ret, const isminefilter& filter)
 {
-    CAmount nFee;
-    std::string strSentAccount;
-    std::list<COutputEntry> listReceived;
-    std::list<COutputEntry> listSent;
+    try {
+        //LogPrintf("ListTransactions - Start\n");
 
-    wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
+        CAmount nFee;
+        std::string strSentAccount;
+        std::list<COutputEntry> listReceived;
+        std::list<COutputEntry> listSent;
 
-    bool fAllAccounts = (strAccount == std::string("*"));
-    bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
+        wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
 
-    // Sent
-    if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
-        for (const COutputEntry& s : listSent) {
-            UniValue entry(UniValue::VOBJ);
-            if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
-                entry.pushKV("involvesWatchonly", true);
-            entry.pushKV("account", strSentAccount);
-            MaybePushAddress(entry, s.destination);
+        //LogPrintf("ListTransactions - Got Amounts\n");
 
-            // Calculate amounts for this transaction
-            CAmount nCredit = wtx.GetCredit(filter);
-            CAmount nDebit = wtx.GetDebit(filter);
-            CAmount nNet = (nCredit > nDebit)? (nCredit - nDebit):(nDebit - nCredit);
-            CAmount nAmountWithoutFee = nNet - nFee;
+        bool fAllAccounts = (strAccount == std::string("*"));
+        bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
 
-            if (wtx.IsCoinStake()) {
-                if (wtx.GetDepthInMainChain() < 1) {
-                    entry.pushKV("category", "orphan");
-                } else if (wtx.GetBlocksToMaturity() > 0) {
-                    entry.pushKV("category", "immature");
-                } else {
-                    entry.pushKV("category", "generate");
-                }
-                entry.pushKV("amount", ValueFromAmount(nAmountWithoutFee));
-            } else {
-                entry.pushKV("category", "send");
-                entry.pushKV("amount", ValueFromAmount(-nAmountWithoutFee));
-            }
-            entry.pushKV("vout", s.vout);
-            entry.pushKV("fee", ValueFromAmount(-nFee));
-            if (fLong)
-                WalletTxToJSON(wtx, entry);
-            ret.push_back(entry);
-        }
-    }
+        // Sent
+        if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
+            //LogPrintf("ListTransactions - Processing Sent\n");
 
-    // Received
-    if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth) {
-        for (const COutputEntry& r : listReceived) {
-            std::string account;
-            if (pwalletMain->mapAddressBook.count(r.destination))
-                account = pwalletMain->mapAddressBook[r.destination].name;
-            if (fAllAccounts || (account == strAccount)) {
+            for (const COutputEntry& s : listSent) {
+                //LogPrintf("ListTransactions - Processing Sent Entry\n");
+
                 UniValue entry(UniValue::VOBJ);
-                if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
+                if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
                     entry.pushKV("involvesWatchonly", true);
-                entry.pushKV("account", account);
-                MaybePushAddress(entry, r.destination);
-                if (wtx.IsCoinBase()) {
-                    if (wtx.GetDepthInMainChain() < 1)
+                entry.pushKV("account", strSentAccount);
+                MaybePushAddress(entry, s.destination);
+
+                // Calculate amounts for this transaction
+                CAmount nCredit = wtx.GetCredit(filter);
+                CAmount nDebit = wtx.GetDebit(filter);
+                CAmount nNet = (nCredit > nDebit) ? (nCredit - nDebit) : (nDebit - nCredit);
+                CAmount nAmountWithoutFee = nNet - nFee;
+
+                if (wtx.IsCoinStake()) {
+                    if (wtx.GetDepthInMainChain() < 1) {
                         entry.pushKV("category", "orphan");
-                    else if (wtx.GetBlocksToMaturity() > 0)
+                    } else if (wtx.GetBlocksToMaturity() > 0) {
                         entry.pushKV("category", "immature");
-                    else
+                    } else {
                         entry.pushKV("category", "generate");
+                    }
+                    entry.pushKV("amount", ValueFromAmount(nAmountWithoutFee));
                 } else {
-                    entry.pushKV("category", "receive");
+                    entry.pushKV("category", "send");
+                    entry.pushKV("amount", ValueFromAmount(-nAmountWithoutFee));
                 }
-                entry.pushKV("amount", ValueFromAmount(r.amount));
-                entry.pushKV("vout", r.vout);
+                entry.pushKV("vout", s.vout);
+                entry.pushKV("fee", ValueFromAmount(-nFee));
                 if (fLong)
                     WalletTxToJSON(wtx, entry);
                 ret.push_back(entry);
+
+                //LogPrintf("ListTransactions - Processed Sent Entry\n");
             }
         }
+
+        // Received
+        if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth) {
+            //LogPrintf("ListTransactions - Processing Received\n");
+
+            for (const COutputEntry& r : listReceived) {
+                //LogPrintf("ListTransactions - Processing Received Entry\n");
+                std::string account;
+                if (pwalletMain->mapAddressBook.count(r.destination))
+                    account = pwalletMain->mapAddressBook[r.destination].name;
+                if (fAllAccounts || (account == strAccount)) {
+                    UniValue entry(UniValue::VOBJ);
+                    if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
+                        entry.pushKV("involvesWatchonly", true);
+                    entry.pushKV("account", account);
+                    MaybePushAddress(entry, r.destination);
+                    if (wtx.IsCoinBase()) {
+                        if (wtx.GetDepthInMainChain() < 1)
+                            entry.pushKV("category", "orphan");
+                        else if (wtx.GetBlocksToMaturity() > 0)
+                            entry.pushKV("category", "immature");
+                        else
+                            entry.pushKV("category", "generate");
+                    } else {
+                        entry.pushKV("category", "receive");
+                    }
+                    entry.pushKV("amount", ValueFromAmount(r.amount));
+                    entry.pushKV("vout", r.vout);
+                    if (fLong)
+                        WalletTxToJSON(wtx, entry);
+                    ret.push_back(entry);
+
+                    //LogPrintf("ListTransactions - Processed Received Entry\n");
+                }
+            }
+        }
+
+        //LogPrintf("ListTransactions - End\n");
+    } catch (const std::exception& e) {
+        // Error handling and recovery actions
+        LogPrintf("Exception occurred in ListTransactions: %s\n", e.what());
+        // Perform necessary cleanup or error recovery here
+
+        // Example: Set an error flag or status variable to indicate the error
+        // errorFlag = true;
     }
 }
 
