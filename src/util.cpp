@@ -164,30 +164,6 @@ public:
     }
 } instance_of_cinit;
 
-std::string FilterInjection(const std::string& str) 
-{
-    //std::cout << "filtering" << std::endl;
-    int n = str.length(); 
-    char char_array[n + 1];
-    strcpy(char_array, str.c_str());
-    
-    for (int i = 0; i < n; i++) {
-        if (char_array[i] == '\r' || char_array[i] == '\t' || char_array[i] == '\0')
-            char_array[i] = ' ';
-        else if (char_array[i] == '\n') {
-            if (i == n - 1)
-                continue;
-            char_array[i] = ' ';
-        }
-        else if (char_array[i] == '%' || char_array[i] == '&' || char_array[i] == '<' ||
-            char_array[i] == '>' || char_array[i] == '\"' || char_array[i] == '\'')
-            char_array[i] = '$';
-    }
-
-    std::string result(char_array);
-    return result;
-}
-
 /** Interpret string as boolean, for argument parsing */
 static bool InterpretBool(const std::string& strValue)
 {
