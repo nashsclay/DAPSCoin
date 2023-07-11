@@ -1215,6 +1215,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
                 std::string account;
                 if (pwalletMain->mapAddressBook.count(r.destination))
                     account = pwalletMain->mapAddressBook[r.destination].name;
+
                 if (fAllAccounts || (account == strAccount)) {
                     UniValue entry(UniValue::VOBJ);
                     if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
@@ -1247,9 +1248,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
         // Error handling and recovery actions
         LogPrintf("Exception occurred in ListTransactions: %s\n", e.what());
         // Perform necessary cleanup or error recovery here
-        UniValue entry(UniValue::VOBJ);
-        entry.pushKV("error", e.what());
-        ret.push_back(entry);
+        throw std::runtime_error("error in listtransactions.\n See Debug.log \n");
         // Example: Set an error flag or status variable to indicate the error
         // errorFlag = true;
     }
@@ -1272,7 +1271,7 @@ void AcentryToJSON(const CAccountingEntry& acentry, const std::string& strAccoun
 }
 
 UniValue listtransactions(const UniValue& params, bool fHelp)
-{
+{ try {
     if (fHelp || params.size() > 4)
         throw std::runtime_error(
             "listtransactions ( \"account\" count from includeWatchonly)\n"
@@ -1376,10 +1375,20 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
     UniValue result{UniValue::VARR};
     result.push_backV({ txs.rend() - nFrom - nCount, txs.rend() - nFrom }); // Return oldest to newest
     return result;
+    } catch (const std::exception& e) {
+        // Error handling and recovery actions
+        LogPrintf("Exception occurred in ListTransactions Startup Part: %s\n", e.what());
+        return "error ListTransactions Startup Part"
+        // Perform necessary cleanup or error recovery here
+
+        // Example: Set an error flag or status variable to indicate the error
+        // errorFlag = true;
+    }
 }
 
 UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
 {
+  
     if (fHelp || params.size() > 3)
         throw std::runtime_error(
             "listtransactionsbypaymentid ( paymentid count from includeWatchonly)\n"
@@ -1477,6 +1486,7 @@ UniValue listtransactionsbypaymentid(const UniValue& params, bool fHelp)
     UniValue result{UniValue::VARR};
     result.push_backV({ txs.rend() - nFrom - nCount, txs.rend() - nFrom }); // Return oldest to newest
     return result;
+    
 }
 
 UniValue listaccounts(const UniValue& params, bool fHelp)
