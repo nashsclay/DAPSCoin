@@ -1247,7 +1247,9 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
         // Error handling and recovery actions
         LogPrintf("Exception occurred in ListTransactions: %s\n", e.what());
         // Perform necessary cleanup or error recovery here
-
+        UniValue entry(UniValue::VOBJ);
+        entry.pushKV("error", e.what());
+        ret.push_back(entry);
         // Example: Set an error flag or status variable to indicate the error
         // errorFlag = true;
     }
