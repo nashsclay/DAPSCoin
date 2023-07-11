@@ -193,10 +193,10 @@ public:
     std::string GetHex() const
     {
         unsigned int sz = size();
-        char psz[sz * 2 + 1];
+        std::vector<char> psz(sz * 2 + 1);
         for (unsigned int i = 0; i < sz; i++)
-            sprintf(psz + i * 2, "%02x", vch[sz - i - 1]);
-        return std::string(psz, psz + sz * 2);
+            snprintf(&psz[i * 2], 3, "%02x", vch[sz - i - 1]);
+        return std::string(psz.begin(), psz.end() - 1);
     }
 };
 
