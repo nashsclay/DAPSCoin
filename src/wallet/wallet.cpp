@@ -4279,7 +4279,8 @@ void CWallet::AddComputedPrivateKey(const CTxOut& out)
         unsigned char aR[33];
         CPubKey txPub = out.txPub;
         //copy R into a
-        memcpy(aR, txPub.begin(), txPub.size());
+        size_t copySize = std::min(static_cast<size_t>(sizeof(aR)), static_cast<size_t>(txPub.size()));
+        memcpy(aR, txPub.begin(), copySize);
         if (!secp256k1_ec_pubkey_tweak_mul(aR, txPub.size(), view.begin())) {
             throw std::runtime_error("Failed to do secp256k1_ec_privkey_tweak_mul");
         }
