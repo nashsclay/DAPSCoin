@@ -1378,7 +1378,7 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
     } catch (const std::exception& e) {
         // Error handling and recovery actions
         LogPrintf("Exception occurred in ListTransactions Startup Part: %s\n", e.what());
-        return "error ListTransactions Startup Part"
+        return "error ListTransactions Startup Part";
         // Perform necessary cleanup or error recovery here
 
         // Example: Set an error flag or status variable to indicate the error
